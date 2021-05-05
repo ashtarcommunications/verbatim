@@ -1,0 +1,17 @@
+node_modules/
+logs
+*.log
+.vscode/
+.idea
+coverage/
+.nyc_output/
+.env
+.env.bk
+*.env
+/**/.env
+*.pem
+*.code-workspace
+pids
+*.pid
+*.seed
+v8-compile-cache-0/
