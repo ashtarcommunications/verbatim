@@ -1,0 +1,14 @@
+{
+  "name": "verbatim",
+  "version": "1.0.0",
+  "description": "Verbatim",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/google-apps-script": "^1.0.31"
+  }
+}

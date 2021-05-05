@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+    <!-- The CSS package above applies Google styling to buttons and other elements. -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
+</head>
+
+<body>
+    <div class="sidebar">
+        <form>
+            <div class="block" id="button-bar">
+                <button id="send"><span class="fa fa-arrow-right" style="font-size: 16px; color: blue;"></span></button>
+                <button id="condense">Condense</button>
+                <button id="copy">Copy</button>
+                <button id="paste">Paste</button>
+                <button id="select">Select Heading</button>
+                <button id="moveup">Move Up</button>
+                <button id="styles">Styles</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.5/mousetrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" integrity="sha512-RXf+QSDCUQs5uwRKaDoXt55jygZZm2V++WUZduaU/Ui/9EGp3f/2KZVahFZBKGH0s774sd3HmrhUy+SgOFQLVQ==" crossorigin="anonymous"></script>
+    <script>
+        $(function () {
+            console.log('sending from inner frame');
+            window.parent.parent.parent.postMessage('innerFrame', '*');
+            window.addEventListener('message', (event) => {
+                if (event.data === 'sendToSpeech') {
+                    console.log('sending to speech');
+                    sendToSpeech();
+                }
+            }, false);
+
+            $('#send').click(sendToSpeech);
+            $('#condense').click(condense);
+            $('#copy').click(copySelected);
+            $('#paste').click(pasteSelected);
+            $('#select').click(selectHeading);
+            $('#moveup').click(moveUp);
+            $('#styles').click(styles);
+        });
+
+        function styles() {
+            google.script.run
+                .withSuccessHandler(
+                    function (returnSuccess, element) {
+                    })
+                .withFailureHandler(
+                    function (msg, element) {
+                        alert(msg);
+                    })
+                .withUserObject(this)
+                .restoreStyles();
+        }
+
+        function sendToSpeech() {
+            this.disabled = true;
+            $('#error').remove();
+            google.script.run
+                .withSuccessHandler(
+                    function (returnSuccess, element) {
+                        element.disabled = false;
+                    })
+                .withFailureHandler(
+                    function (msg, element) {
+                        alert(msg);
+                        element.disabled = false;
+                    })
+                .withUserObject(this)
+                .sendToSpeech();
+        }
+        function condense() {
+            google.script.run
+                .withSuccessHandler(
+                    function (returnSuccess, element) {
+                    })
+                .withFailureHandler(
+                    function (msg, element) {
+                        alert(msg);
+                    })
+                .withUserObject(this)
+                .condense();
+        }
+        function selectHeading() {
+            google.script.run
+                .withSuccessHandler(
+                    function (returnSuccess, element) {
+                    })
+                .withFailureHandler(
+                    function (msg, element) {
+                        alert(msg);
+                    })
+                .withUserObject(this)
+                .selectHeading();
+        }
+        function moveUp() {
+            google.script.run
+                .withSuccessHandler(
+                    function (returnSuccess, element) {
+                    })
+                .withFailureHandler(
+                    function (msg, element) {
+                        alert(msg);
+                    })
+                .withUserObject(this)
+                .moveUp();
+        }
+        
+        Mousetrap.bind('`', function(e) {
+            alert('You pressed tilde');
+            return false;
+        });
+        function copySelected() {
+            google.script.run
+                .withSuccessHandler(
+                    function (returnSuccess, element) {
+                    })
+                .withFailureHandler(
+                    function (msg, element) {
+                        alert(msg);
+                    })
+                .withUserObject(this)
+                .copySelected();
+        }
+        function pasteSelected() {
+            google.script.run
+                .withSuccessHandler(
+                    function (returnSuccess, element) {
+                    })
+                .withFailureHandler(
+                    function (msg, element) {
+                        alert(msg);
+                    })
+                .withUserObject(this)
+                .pasteSelected();
+        }
+
+    </script>
+</body>
+
+</html>

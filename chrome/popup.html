@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="cite.css">
+		<script src="popup.js"></script>
+		<!-- Popup CSS included here to avoid it overwriting on-page elements -->
+		<style>
+			body{
+				font-size: 14px;
+			}
+			h3{
+				font-size: 18px;
+			}			
+			#cite_popupwrapper{
+				margin: 0px 0px;
+				width: 275px;
+				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+				font-size: 13px;
+				max-height: 600px;
+			}
+			#cite_popupoptions{
+				float: right;
+				margin: 5px 5px;
+			}
+		</style>
+	</head>
+	
+	<body>
+		<div id="cite_popupwrapper">
+			<h3>Cite Creator</h3>
+			<div class="cm_onoffswitch">
+				<input type="checkbox" name="cm_onoffswitch" class="cm_onoffswitch-checkbox" id="cm_myonoffswitch" checked>
+				<label class="cm_onoffswitch-label" for="cm_myonoffswitch">
+					<span class="cm_onoffswitch-inner"></span>
+					<span class="cm_onoffswitch-switch"></span>
+				</label>
+			</div>
+			
+			<div id="instructions">
+				<strong>~</strong> - Send to Speech </br>
+			</div>
+
+			</br>
+			
+			<div id="cite_popupoptions">
+				<a id="cite_popupoptionslink">Options</a>
+			</div>
+			
+		</div>
+	</body>
+</html>
