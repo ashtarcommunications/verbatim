@@ -1,0 +1,16 @@
+# Default to normalizing line endings
+* text=auto
+
+# For VBA source files, force crlf
+*.bas text eol=crlf
+*.frm text eol=crlf
+*.frx text eol=crlf
+
+# Treat Office files as binary
+*.dotm binary
+*.docx binary
+*.docm binary
+*.dot binary
+*.doc binary
+*.xls binary
+*.xlsm binary
