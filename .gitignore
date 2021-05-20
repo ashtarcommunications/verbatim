@@ -15,3 +15,4 @@ pids
 *.pid
 *.seed
 v8-compile-cache-0/
+~*
