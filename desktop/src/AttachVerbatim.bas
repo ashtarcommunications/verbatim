@@ -77,6 +77,7 @@ Public Function CheckVerbatimExists() As Boolean
     
     CheckVerbatimExists = False
 
+    'TODO - remove hardwired HD name, convert to same code as Filesystem module function
     #If Mac Then
         If AppleScriptTask("Verbatim.scpt", "FileExists", "Macintosh HD" & Replace(Replace(Application.NormalTemplate.Path & Application.PathSeparator & "Debate.dotm", ".localized", ""), "/", ":")) = "true" Then
             CheckVerbatimExists = True
