@@ -29,6 +29,10 @@
                 <button id="highlight">Highlight</button>
                 <button id="clear">Clear</button>
             </div>
+            <select id="highlight-color">
+                <option value="#ffff00">Yellow</option>
+                <option value="#cccccc">Gray</option>
+            </select>
         </form>
     </div>
 
@@ -63,7 +67,24 @@
             $('#emphasis').click(setFormatting);
             $('#highlight').click(setFormatting);
             $('#clear').click(setFormatting);
+
+            $('#highlight-color').change(changeHighlight);
         });
+
+        function changeHighlight(e) {
+            const color = e.currentTarget.value;
+            google.script.run
+                .withSuccessHandler(
+                    function (returnSuccess, element) {
+                    })
+                .withFailureHandler(
+                    function (msg, element) {
+                        alert(msg);
+                    })
+                .withUserObject(this)
+                .changeHighlight(color);
+
+        }
 
         function setHeading(e) {
             const heading = e.currentTarget.id;

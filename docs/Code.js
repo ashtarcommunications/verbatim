@@ -319,8 +319,9 @@ function setFormatting(format) {
                 partial ? e.setBold(start, end, true) : e.setBold(true);
                 break;
             case 'highlight':
-                partial ? e.setBackgroundColor(start, end, '#ffff00') : e.setBackgroundColor('#ffff00');
-                partial ? e.setForegroundColor(start, end, '#000000') : e.setForegroundColor('#000000');
+                var color = PropertiesService.getUserProperties().getProperty('HIGHLIGHT_COLOR') || '#ffff00';
+                partial ? e.setBackgroundColor(start, end, color) : e.setBackgroundColor(color);
+                // partial ? e.setForegroundColor(start, end, '#000000') : e.setForegroundColor('#000000');
                 break;
             case 'clear':
             default:
@@ -331,4 +332,10 @@ function setFormatting(format) {
                 e.setForegroundColor(null);
         }
     });
+}
+
+function changeHighlight(color) {
+    Logger.log(color);
+    var prop = PropertiesService.getUserProperties();
+    prop.setProperty('HIGHLIGHT_COLOR', color);
 }
