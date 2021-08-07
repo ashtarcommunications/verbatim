@@ -19,6 +19,15 @@
                 <button id="select">Select Heading</button>
                 <button id="moveup">Move Up</button>
                 <button id="styles">Styles</button>
+                <button id="pocket">Pocket</button>
+                <button id="hat">Hat</button>
+                <button id="block">Block</button>
+                <button id="tag">Tag</button>
+                <button id="cite">Cite</button>
+                <button id="underline">Underline</button>
+                <button id="emphasis">Emphasis</button>
+                <button id="highlight">Highlight</button>
+                <button id="clear">Clear</button>
             </div>
         </form>
     </div>
@@ -44,7 +53,45 @@
             $('#select').click(selectHeading);
             $('#moveup').click(moveUp);
             $('#styles').click(styles);
+
+            $('#pocket').click(setHeading);
+            $('#hat').click(setHeading);
+            $('#block').click(setHeading);
+            $('#tag').click(setHeading);
+            $('#cite').click(setFormatting);
+            $('#underline').click(setFormatting);
+            $('#emphasis').click(setFormatting);
+            $('#highlight').click(setFormatting);
+            $('#clear').click(setFormatting);
         });
+
+        function setHeading(e) {
+            const heading = e.currentTarget.id;
+            google.script.run
+                .withSuccessHandler(
+                    function (returnSuccess, element) {
+                    })
+                .withFailureHandler(
+                    function (msg, element) {
+                        alert(msg);
+                    })
+                .withUserObject(this)
+                .setHeading(heading);
+        }
+
+        function setFormatting(e) {
+            const format = e.currentTarget.id;
+            google.script.run
+                .withSuccessHandler(
+                    function (returnSuccess, element) {
+                    })
+                .withFailureHandler(
+                    function (msg, element) {
+                        alert(msg);
+                    })
+                .withUserObject(this)
+                .setFormatting(format);
+        }
 
         function styles() {
             google.script.run

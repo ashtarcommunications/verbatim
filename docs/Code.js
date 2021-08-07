@@ -272,3 +272,63 @@ function moveUp() {
         body.insertParagraph(body.getChildIndex(elementToInsertBefore) - 1, e);
     });
 }
+
+function setHeading(heading) {
+    var cursor = DocumentApp.getActiveDocument().getCursor();
+    var element = cursor.getElement();
+    var p = element.getParent().asParagraph();
+    Logger.log(p.getAttributes());
+    switch (heading) {
+        case 'pocket':
+            p.setHeading(DocumentApp.ParagraphHeading.HEADING1);
+            break;
+        case 'hat':
+            p.setHeading(DocumentApp.ParagraphHeading.HEADING2);
+            break;
+        case 'block':
+            p.setHeading(DocumentApp.ParagraphHeading.HEADING3);
+            break;
+        case 'tag':
+            p.setHeading(DocumentApp.ParagraphHeading.HEADING4);
+            break;
+        case 'normal':
+        default:
+            p.setHeading(DocumentApp.ParagraphHeading.NORMAL);
+    }
+}
+
+function setFormatting(format) {
+    var selection = DocumentApp.getActiveDocument().getSelection();
+    if (!selection) { return false; }
+    var elements = selection.getRangeElements();
+    elements.forEach(element => {
+        var partial = element.isPartial();
+        var start = element.getStartOffset();
+        var end = element.getEndOffsetInclusive();
+        var e = element.getElement().asText();
+
+        switch (format) {
+            case 'cite':
+                partial ? e.setBold(start, end, true) : e.setBold(true);
+                partial ? e.setFontSize(start, end, 13) : e.setFontSize(13);
+                break;
+            case 'underline':
+                partial ? e.setUnderline(start, end, true) : e.setUnderline(true);
+                break;
+            case 'emphasis':
+                partial ? e.setBold(start, end, true) : e.setBold(true);
+                break;
+            case 'highlight':
+                partial ? e.setBackgroundColor(start, end, '#ffff00') : e.setBackgroundColor('#ffff00');
+                partial ? e.setForegroundColor(start, end, '#000000') : e.setForegroundColor('#000000');
+                break;
+            case 'clear':
+            default:
+                e.setBold(false);
+                e.setUnderline(false);
+                e.setFontSize(11);
+                e.setBackgroundColor(null);
+                e.setForegroundColor(null);
+        }
+    });
+}
