@@ -339,3 +339,16 @@ function changeHighlight(color) {
     var prop = PropertiesService.getUserProperties();
     prop.setProperty('HIGHLIGHT_COLOR', color);
 }
+
+function shrink() {
+    // TODO - doesn't work, only shrinks the whole paragraph
+    var cursor = DocumentApp.getActiveDocument().getCursor();
+    var element = cursor.getElement();
+    var p = element.getParent().asText();
+    var length = p.getText().length;
+    for (var i = 0; i < length; i++) {
+        if (!p.isUnderline(i)) {
+            p.setFontSize(i, i, 8);
+        }
+    }
+}

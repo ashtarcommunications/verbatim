@@ -28,12 +28,14 @@
                 <button id="emphasis">Emphasis</button>
                 <button id="highlight">Highlight</button>
                 <button id="clear">Clear</button>
+                <button id="shrink">Shrink</button>
             </div>
             <select id="highlight-color">
                 <option value="#ffff00">Yellow</option>
                 <option value="#cccccc">Gray</option>
             </select>
         </form>
+        <div id="error-message"></div>
     </div>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -68,147 +70,45 @@
             $('#highlight').click(setFormatting);
             $('#clear').click(setFormatting);
 
+            $('#shrink').click(shrink);
+
             $('#highlight-color').change(changeHighlight);
         });
 
-        function changeHighlight(e) {
-            const color = e.currentTarget.value;
-            google.script.run
+        const run = () => {
+            return google.script.run
                 .withSuccessHandler(
                     function (returnSuccess, element) {
                     })
                 .withFailureHandler(
                     function (msg, element) {
-                        alert(msg);
+                        $('#error-message').text(msg);
                     })
-                .withUserObject(this)
-                .changeHighlight(color);
-
+                .withUserObject(this);
         }
 
-        function setHeading(e) {
-            const heading = e.currentTarget.id;
-            google.script.run
-                .withSuccessHandler(
-                    function (returnSuccess, element) {
-                    })
-                .withFailureHandler(
-                    function (msg, element) {
-                        alert(msg);
-                    })
-                .withUserObject(this)
-                .setHeading(heading);
-        }
-
-        function setFormatting(e) {
-            const format = e.currentTarget.id;
-            google.script.run
-                .withSuccessHandler(
-                    function (returnSuccess, element) {
-                    })
-                .withFailureHandler(
-                    function (msg, element) {
-                        alert(msg);
-                    })
-                .withUserObject(this)
-                .setFormatting(format);
-        }
-
-        function styles() {
-            google.script.run
-                .withSuccessHandler(
-                    function (returnSuccess, element) {
-                    })
-                .withFailureHandler(
-                    function (msg, element) {
-                        alert(msg);
-                    })
-                .withUserObject(this)
-                .restoreStyles();
-        }
-
-        function sendToSpeech() {
+        const sendToSpeech = () => {
             this.disabled = true;
             $('#error').remove();
-            google.script.run
-                .withSuccessHandler(
-                    function (returnSuccess, element) {
-                        element.disabled = false;
-                    })
-                .withFailureHandler(
-                    function (msg, element) {
-                        alert(msg);
-                        element.disabled = false;
-                    })
-                .withUserObject(this)
-                .sendToSpeech();
+            run().sendToSpeech();
+            this.disabled = false;
         }
-        function condense() {
-            google.script.run
-                .withSuccessHandler(
-                    function (returnSuccess, element) {
-                    })
-                .withFailureHandler(
-                    function (msg, element) {
-                        alert(msg);
-                    })
-                .withUserObject(this)
-                .condense();
-        }
-        function selectHeading() {
-            google.script.run
-                .withSuccessHandler(
-                    function (returnSuccess, element) {
-                    })
-                .withFailureHandler(
-                    function (msg, element) {
-                        alert(msg);
-                    })
-                .withUserObject(this)
-                .selectHeading();
-        }
-        function moveUp() {
-            google.script.run
-                .withSuccessHandler(
-                    function (returnSuccess, element) {
-                    })
-                .withFailureHandler(
-                    function (msg, element) {
-                        alert(msg);
-                    })
-                .withUserObject(this)
-                .moveUp();
-        }
-        
+
         Mousetrap.bind('`', function(e) {
             alert('You pressed tilde');
             return false;
         });
-        function copySelected() {
-            google.script.run
-                .withSuccessHandler(
-                    function (returnSuccess, element) {
-                    })
-                .withFailureHandler(
-                    function (msg, element) {
-                        alert(msg);
-                    })
-                .withUserObject(this)
-                .copySelected();
-        }
-        function pasteSelected() {
-            google.script.run
-                .withSuccessHandler(
-                    function (returnSuccess, element) {
-                    })
-                .withFailureHandler(
-                    function (msg, element) {
-                        alert(msg);
-                    })
-                .withUserObject(this)
-                .pasteSelected();
-        }
 
+        const setHeading = (e) => run().setHeading(e.currentTarget.id);
+        const setFormatting = (e) => run().setFormatting(e.currentTarget.id);
+        const styles = () => run().restoreStyles();
+        const shrink = () => run().shrink();
+        const condense = () => run().condense();
+        const selectHeading = () => run().selectHeading();
+        const moveUp = () => run().moveUp();
+        const copySelected = () => run().copySelected();
+        const pasteSelected = () => run().pasteSelected();
+        const changeHighlight = (e) => run().changeHighlight(e.currentTarget.value);
     </script>
 </body>
 
