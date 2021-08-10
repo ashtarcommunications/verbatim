@@ -352,3 +352,29 @@ function shrink() {
         }
     }
 }
+
+const searchDrive = (q) => {
+    // TODO - escape quotes in q
+    var files = DriveApp.searchFiles(`title contains "${q}"`);
+    // var fulltext = DriveApp.searchFiles(`fulltext contains "${q}"`);
+    while (files.hasNext()) {
+        let file = files.next();
+        Logger.log(file.getName());
+    }
+    // while (fulltext.hasNext()) {
+    //     let file = fulltext.next();
+    //     Logger.log(file.getName());
+    // }
+}
+
+const newSpeech = () => {
+    const speechName = 'Speech 2AC 8-9 6PM';
+    var doc = DocumentApp.create(speechName);
+    const id = doc.getId();
+    Logger.log(id);
+    var html = "<script>window.open(`https://docs.doogle.com/document/d/${id}`);google.script.host.close();</script>";
+    var html = "<script>var link=document.createElement('a');link.href=`https://docs.doogle.com/document/d/${id}`;link.target='_blank';link.click();google.script.host.close();</script>";
+    var ui = HtmlService.createHtmlOutput(html);
+    DocumentApp.getUi().showModalDialog(ui, 'Open Doc');
+    return id;
+}

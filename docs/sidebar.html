@@ -13,6 +13,7 @@
         <form>
             <div class="block" id="button-bar">
                 <button id="send"><span class="fa fa-arrow-right" style="font-size: 16px; color: blue;"></span></button>
+                <button id="new-speech">New Speech</button>
                 <button id="condense">Condense</button>
                 <button id="copy">Copy</button>
                 <button id="paste">Paste</button>
@@ -34,6 +35,8 @@
                 <option value="#ffff00">Yellow</option>
                 <option value="#cccccc">Gray</option>
             </select>
+            <input id="search-query" type="text" />
+            <button id="search-button">Search</button>
         </form>
         <div id="error-message"></div>
     </div>
@@ -52,6 +55,7 @@
                 }
             }, false);
 
+            $('#new-speech').click(newSpeech);
             $('#send').click(sendToSpeech);
             $('#condense').click(condense);
             $('#copy').click(copySelected);
@@ -73,16 +77,18 @@
             $('#shrink').click(shrink);
 
             $('#highlight-color').change(changeHighlight);
+
+            $('#search-button').click(search);
         });
 
         const run = () => {
             return google.script.run
                 .withSuccessHandler(
-                    function (returnSuccess, element) {
+                    function (returnSuccess, context) {
                     })
                 .withFailureHandler(
-                    function (msg, element) {
-                        $('#error-message').text(msg);
+                    function (err, context) {
+                        $('#error-message').text(err);
                     })
                 .withUserObject(this);
         }
@@ -99,6 +105,25 @@
             return false;
         });
 
+        const newSpeech = () => {
+            console.log('running new speech');
+            google.script.run
+                .withSuccessHandler(
+                    function (documentId) {
+                        console.log(documentId);
+                        // const link = document.createElement('a');
+                        // link.href = `https://docs.google.com/document/d/${documentId}`;
+                        // link.target = '_blank';
+                        // link.click();
+                        // window.open(`https://docs.google.com/document/d/${returnSuccess}`);
+                    })
+                .withFailureHandler(
+                    function (err) {
+                        $('#error-message').text(err);
+                    })
+                .withUserObject(this)
+                .newSpeech();
+        }
         const setHeading = (e) => run().setHeading(e.currentTarget.id);
         const setFormatting = (e) => run().setFormatting(e.currentTarget.id);
         const styles = () => run().restoreStyles();
@@ -109,6 +134,7 @@
         const copySelected = () => run().copySelected();
         const pasteSelected = () => run().pasteSelected();
         const changeHighlight = (e) => run().changeHighlight(e.currentTarget.value);
+        const search = () => run().searchDrive($('#search-query').val());
     </script>
 </body>
 
