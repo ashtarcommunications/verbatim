@@ -104,33 +104,108 @@ function sendToSpeech() {
 }
 
 function condense() {
+    // Credit to Mark Crimmins' Remove Line Breaks add-on
+    // https://workspace.google.com/marketplace/app/remove_line_breaks/253339336957
     var selection = DocumentApp.getActiveDocument().getSelection();
-    if (selection) {
-        var elements = selection.getRangeElements();
-        for (var i = 0; i < elements.length; i++) {
-            var element = elements[i];
 
-            // Only deal with text elements
-            if (element.getElement().editAsText) {
-                // var text = element.getElement().editAsText();
+    if (!selection) {
+        DocumentApp.getUi().alert('No text is selected.  Please select a text region in which line breaks are to be removed.');
+        return;
+    }
 
-                // if (element.isPartial()) {
-                //     text.replaceText("\\n", " ");
-                //     text.replaceText("\\p{Cc}+", " ")
-                //     text.replaceText("\\v+", " ");
-                // } else {
-                //     // Deal with fully selected text
-                //     text.replaceText("\\n", " ");
-                //     text.replaceText("\\p{Cc}+", " ")
-                //     text.replaceText("\\v+", " ");
-                // }
-              var text2 = element.getElement().getText();
-              text2 = text2.replace('\n', ' ');
-              element.getElement().setText(text2);
-            }
+    /**
+     * selectedElements is a list of Body components (such as Paragraphs, List Items, Tables, etc., 
+     * but the first and last items might be partially selected, in which case they are Ranges
+     * whose Parents are the components.
+     */
+    var selectedElements = selection.getSelectedElements();
+
+    /**
+     * We will merge a paragraph with a preceding one only if both are of the NORMAL
+     * Heading type (Normal text rather than Title, Heading 1, etc.).  We consider list items
+     * "normal" too.  We start with false (non-normal) so that we don't try to merge the 
+     * first paragraph with a nonexistent predecessor.
+     */
+    var normalPredecessor = false;
+    var prevType = DocumentApp.ElementType.PARAGRAPH;
+
+    /**
+     * Main loop.  Get next element in the selection.  If it's a normal-text paragraph or a list-item, then 
+     * after removing CR and LF characters we will merge it with its predecessor if the predecessor is normal 
+     * and of the same type.
+     */
+    var len = selectedElements.length;
+    for (var i = 0; i < len; i++) {
+        var nextElementOrRange = selectedElements[i];
+
+        /* If the next element is only partially selected, get the whole element */
+        if (nextElementOrRange.isPartial()) {
+            var nextElement = nextElementOrRange.getElement().getParent();
+        } else {
+            var nextElement = nextElementOrRange.getElement();
         }
-    } else {
-        DocumentApp.getUi().alert('Select something first!');
+
+        /* What is the type of the next element? */
+        var nextType = nextElement.getType();
+        if ((nextType == DocumentApp.ElementType.PARAGRAPH && nextElement.getHeading() == DocumentApp.ParagraphHeading.NORMAL) || nextType == DocumentApp.ElementType.LIST_ITEM) {
+
+            /* We have a normal paragraph or a list item now */
+
+            var nextText = nextElement.editAsText();
+
+            /* Trim any preceding and trailing spaces. */
+            nextText.replaceText('^\\s*', '');
+            nextText.replaceText('\\s*$', '');
+
+            if (nextText.getText() != "") {
+                /* A nonempty normal paragraph or list item. */
+
+                /* Replace carriage returns and newlines (characters) with spaces
+                   Unfortunately, replaceText doesn't actually work, as at least CR 
+                   seems not to be recognized as \r, despite having ascii code 13 */
+
+                /* nextText.replaceText('[\\r\\n]',' '); */
+
+                /* So as a kludge, we seek for CR and LF characters (ascii 10 and 13) 
+                   and delete them, inserting spaces in their places. */
+                var str = nextText.getText();
+                var str2 = '';
+                if (nextElementOrRange.isPartial()) {
+                    endindex = nextElementOrRange.getEndOffsetInclusive();
+                    startindex = nextElementOrRange.getStartOffset();
+                } else {
+                    endindex = str.length - 1;
+                    startindex = 0;
+                }
+                for (var j = endindex; j >= startindex; j--) {
+                    var ascii = str.charCodeAt(j);
+                    if (ascii == 10 || ascii == 13) {
+                        nextText.deleteText(j, j);
+                        nextText.insertText(j, ' ');
+                    }
+                }
+
+                /* If predecessor is normal and of same type, prepend a space and merge. */
+
+                if (normalPredecessor && nextType == prevType) {
+                    nextElement.asText().insertText(0, ' ');
+                    nextElement.merge();
+                }
+                normalPredecessor = true;
+                prevType = nextType;
+            } else {
+                /* Blank paragraph or list item. Remove it if it's not the end of the document
+                 * and preserve values of normalPredecessor and prevType. 
+                 */
+                if (i < len - 1) {
+                    /* You can't remove the last element in a document. */
+                    nextElement.removeFromParent();
+                }
+            }
+        } else {
+            /* nextElement is not a normal paragraph or list item. */
+            normalPredecessor = false;
+        }
     }
 }
 
