@@ -341,7 +341,6 @@ function changeHighlight(color) {
 }
 
 function shrink() {
-    // TODO - doesn't work, only shrinks the whole paragraph
     var cursor = DocumentApp.getActiveDocument().getCursor();
     var element = cursor.getElement();
     var p = element.getParent().asText();
@@ -377,4 +376,27 @@ const newSpeech = () => {
     var ui = HtmlService.createHtmlOutput(html);
     DocumentApp.getUi().showModalDialog(ui, 'Open Doc');
     return id;
+}
+
+function invisibilityOn() {
+    // TODO - rewrite to go paragraph by paragrah and skip headings
+    // TODO - add a safety check to bail if document is too long
+    var body = DocumentApp.getActiveDocument().getBody();
+    var text = body.editAsText();
+    var length = text.getText().length;
+    for (var i = 0; i < length; i++) {
+        if (!text.getBackgroundColor(i)) {
+            text.setForegroundColor(i, i, '#ffffff');
+        }
+    }
+}
+function invisibilityOff() {
+    var body = DocumentApp.getActiveDocument().getBody();
+    var text = body.editAsText();
+    var length = text.getText().length;
+    for (var i = 0; i < length; i++) {
+        if (!text.getBackgroundColor(i)) {
+            text.setForegroundColor(i, i, '#000000');
+        }
+    }
 }

@@ -30,6 +30,8 @@
                 <button id="highlight">Highlight</button>
                 <button id="clear">Clear</button>
                 <button id="shrink">Shrink</button>
+                <button id="invisibilityOn">Invisibility On</button>
+                <button id="invisibilityOff">Invisibility Off</button>
             </div>
             <select id="highlight-color">
                 <option value="#ffff00">Yellow</option>
@@ -75,6 +77,8 @@
             $('#clear').click(setFormatting);
 
             $('#shrink').click(shrink);
+            $('#invisibilityOn').click(invisibilityOn);
+            $('#invisibilityOff').click(invisibilityOff);
 
             $('#highlight-color').change(changeHighlight);
 
@@ -128,6 +132,8 @@
         const setFormatting = (e) => run().setFormatting(e.currentTarget.id);
         const styles = () => run().restoreStyles();
         const shrink = () => run().shrink();
+        const invisibilityOn = () => run().invisibilityOn();
+        const invisibilityOff = () => run().invisibilityOff();
         const condense = () => run().condense();
         const selectHeading = () => run().selectHeading();
         const moveUp = () => run().moveUp();
