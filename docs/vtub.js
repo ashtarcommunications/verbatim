@@ -39,3 +39,39 @@ function getHeadingFromDoc(id, index) {
     var body = activeDoc.getBody();
     body.appendParagraph(p);
 }
+
+function getFilesInFolder(folder) {
+    var vtub = {};
+    var files = folder.getFiles();
+    while (files.hasNext()) {
+        var file = files.next();
+        var fileId = file.getId();
+        vtub[fileId] = { name: file.getName(), type: 'file', headings: getDocContent(fileId) };
+    }
+    return vtub;
+}
+
+function createVtub() {
+    var vtub = {};
+    var folder = DriveApp.getFolderById('1NZ4Rgx6-nU9aYjPCCA7A-ZqYgLdcGSFq');
+    var subfolders = folder.getFolders();
+    while (subfolders.hasNext()) {
+        var subfolder = subfolders.next();
+        var subfolderId = subfolder.getId();
+        vtub[subfolderId] = { name: subfolder.getName(), type: 'folder', ...getFilesInFolder(subfolder) };
+        var subsubfolders = subfolder.getFolders();
+        while (subsubfolders.hasNext()) {
+            var subsubfolder = subsubfolders.next();
+            var subsubfolderId = subsubfolder.getId();
+            vtub[subfolderId][subsubfolderId] = { name: subsubfolder.getName(), type: 'folder', ...getFilesInFolder(subsubfolder) };
+            var subsubsubfolders = subsubfolder.getFolders();
+            while (subsubsubfolders.hasNext()) {
+                var subsubsubfolder = subsubsubfolders.next();
+                var subsubsubfolderId = subsubsubfolder.getId();
+                vtub[subfolderId][subsubfolderId][subsubsubfolderId] = { name: subsubsubfolder.getName(), type: 'folder', ...getFilesInFolder(subsubsubfolder) };
+            }
+        }
+    }
+    vtub = { ...vtub, ...getFilesInFolder(folder) };
+    DriveApp.createFile('vtub.json', JSON.stringify(vtub));
+}

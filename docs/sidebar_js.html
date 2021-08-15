@@ -3,7 +3,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"
     integrity="sha512-RXf+QSDCUQs5uwRKaDoXt55jygZZm2V++WUZduaU/Ui/9EGp3f/2KZVahFZBKGH0s774sd3HmrhUy+SgOFQLVQ=="
     crossorigin="anonymous"></script>
-<script src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
 <script>
     $(function () {
         console.log('sending from inner frame');
@@ -46,6 +45,7 @@
         $('#get-files').click(getFiles);
         $('#get-doc').click(getDoc);
         $('#get-heading').click(getHeadingFromDoc);
+        $('#create-vtub').click(createVtub);
     });
 
     const run = (
@@ -106,4 +106,5 @@
     const getHeadingFromDoc = () => {
         run().getHeadingFromDoc('1Dj1loasY1jM38Hl3dOujHZs9Y0gKM93iUoTFPVtbxBc', 1);
     }
+    const createVtub = () => run().createVtub();
 </script>

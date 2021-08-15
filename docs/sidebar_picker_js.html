@@ -37,11 +37,12 @@
      *     file type specified in the addView call.
      */
     function createPicker(token) {
+        console.log(`token: ${token}`);
         if (pickerApiLoaded && token) {
             var picker = new google.picker.PickerBuilder()
                 // Instruct Picker to display only Docs in Drive. For other
                 // views, see https://developers.google.com/picker/docs/#otherviews
-                .addView(google.picker.ViewId.DOCS)
+                .addView(google.picker.ViewId.DOCUMENTS)
                 // Hide the navigation panel so that Picker fills more of the dialog.
                 .enableFeature(google.picker.Feature.NAV_HIDDEN)
                 // Hide the title bar since an Apps Script dialog already has a title.
@@ -91,3 +92,4 @@
         document.getElementById('picker-result').innerHTML = 'Error: ' + message;
     }
 </script>
+<script src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
