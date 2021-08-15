@@ -4,8 +4,7 @@ function getOAuthToken() {
 }
 
 function showPicker() {
-    var html = HtmlService.createTemplateFromFile('picker_dialog')
-        .evaluate()
+    var html = HtmlService.createHtmlOutputFromFile('picker_dialog')
         .setWidth(600)
         .setHeight(425)
         .setSandboxMode(HtmlService.SandboxMode.IFRAME);
