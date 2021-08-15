@@ -58,6 +58,7 @@
             picker.setVisible(true);
         } else {
             showError('Unable to load the file picker.');
+            google.script.host.close();
         }
     }
 
@@ -75,11 +76,14 @@
             var id = doc[google.picker.Document.ID];
             var url = doc[google.picker.Document.URL];
             var title = doc[google.picker.Document.NAME];
-            document.getElementById('picker-result').innerHTML =
-                '<b>You chose:</b><br>Name: <a href="' + url + '">' + title +
-                '</a><br>ID: ' + id;
+            // document.getElementById('picker-result').innerHTML =
+            //     '<b>You chose:</b><br>Name: <a href="' + url + '">' + title +
+            //     '</a><br>ID: ' + id;
+            google.script.run.setSetting('ACTIVE_SPEECH', id);
+            google.script.host.close();
         } else if (action == google.picker.Action.CANCEL) {
-            document.getElementById('picker-result').innerHTML = 'Picker canceled.';
+            // document.getElementById('picker-result').innerHTML = 'Picker canceled.';
+            google.script.host.close();
         }
     }
 
@@ -89,7 +93,7 @@
      * @param {string} message The error message to display.
      */
     function showError(message) {
-        document.getElementById('picker-result').innerHTML = 'Error: ' + message;
+        // document.getElementById('picker-result').innerHTML = 'Error: ' + message;
     }
 </script>
 <script src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>

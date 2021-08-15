@@ -81,7 +81,7 @@
         }
         run(sucessHandler).newSpeech();
     }
-    const chooseSpeech = () => getOAuthToken();
+    const chooseSpeech = () => run().showPicker();
     const setHeading = (e) => run().setHeading(e.currentTarget.id);
     const setFormatting = (e) => run().setFormatting(e.currentTarget.id);
     const styles = () => run().restoreStyles();
