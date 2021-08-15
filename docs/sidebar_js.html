@@ -3,6 +3,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"
     integrity="sha512-RXf+QSDCUQs5uwRKaDoXt55jygZZm2V++WUZduaU/Ui/9EGp3f/2KZVahFZBKGH0s774sd3HmrhUy+SgOFQLVQ=="
     crossorigin="anonymous"></script>
+<script src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
 <script>
     $(function () {
         console.log('sending from inner frame');
@@ -15,6 +16,7 @@
         }, false);
 
         $('#new-speech').click(newSpeech);
+        $('#choose-speech').click(chooseSpeech);
         $('#send').click(sendToSpeech);
         $('#condense').click(condense);
         $('#copy').click(copySelected);
@@ -79,6 +81,7 @@
         }
         run(sucessHandler).newSpeech();
     }
+    const chooseSpeech = () => getOAuthToken();
     const setHeading = (e) => run().setHeading(e.currentTarget.id);
     const setFormatting = (e) => run().setFormatting(e.currentTarget.id);
     const styles = () => run().restoreStyles();

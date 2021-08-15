@@ -13,25 +13,37 @@
     <div class="sidebar">
         <div class="block" id="button-bar">
             <button id="send"><span class="fa fa-arrow-right" style="font-size: 16px; color: blue;"></span></button>
+            <button id="choose-speech">Choose Speech</button>
             <button id="new-speech">New Speech</button>
-            <button id="condense">Condense</button>
             <button id="copy">Copy</button>
-            <button id="paste">Paste</button>
             <button id="select">Select Heading</button>
             <button id="moveup">Move Up</button>
             <button id="styles">Styles</button>
             <br />
-            <div id="format-buttons">
-                <button id="pocket">Pocket</button>
-                <button id="hat">Hat</button>
-                <button id="block">Block</button>
-                <button id="tag">Tag</button>
-                <button id="cite">Cite</button>
-                <button id="underline">Underline</button>
-                <button id="emphasis">Emphasis</button>
-                <button id="highlight">Highlight</button>
-                <button id="clear">Clear</button>
-            </div>
+            <fieldset id="format-buttons">
+                <legend>Format</legend>
+                <button id="paste">F2 Paste</button>
+                <span> | </span>
+                <button id="condense">F3 Condense</button>
+                <span> | </span>
+                <button id="pocket">F4 Pocket</button>
+                <span> | </span>
+                <button id="hat">F5 Hat</button>
+                <br />
+                <button id="block">F6 Block</button>
+                <span> | </span>
+                <button id="tag">F7 Tag</button>
+                <span> | </span>
+                <button id="cite">F8 Cite</button>
+                <span> | </span>
+                <button id="underline">F9 Underline</button>
+                <br />
+                <button id="emphasis">F10 Emphasis</button>
+                <span> | </span>
+                <button id="highlight">F11 Highlight</button>
+                <span> | </span>
+                <button id="clear">F12 Clear</button>
+            </fieldset>
             <br />
             <button id="shrink">Shrink</button>
             <button id="invisibility-on">Invisibility On</button>
@@ -47,8 +59,10 @@
         <input id="search-query" type="text" />
         <button id="search-button">Search</button>
         <div id="error-message"></div>
+        <div id="picker-result"></div>
     </div>
     <?!= include('sidebar_js'); ?>
+    <?!= include('sidebar_picker_js'); ?>
 </body>
 
 </html>

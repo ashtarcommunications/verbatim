@@ -1,3 +1,8 @@
+function getOAuthToken() {
+    DriveApp.getRootFolder();
+    return ScriptApp.getOAuthToken();
+}
+
 function sendToSpeech() {
     var activeDoc = DocumentApp.getActiveDocument();
     selectHeading();
