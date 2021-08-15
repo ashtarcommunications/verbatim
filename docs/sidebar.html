@@ -30,8 +30,11 @@
                 <button id="highlight">Highlight</button>
                 <button id="clear">Clear</button>
                 <button id="shrink">Shrink</button>
-                <button id="invisibilityOn">Invisibility On</button>
-                <button id="invisibilityOff">Invisibility Off</button>
+                <button id="invisibility-on">Invisibility On</button>
+                <button id="invisibility-off">Invisibility Off</button>
+                <button id="get-files">Get Files</button>
+                <button id="get-doc">Get Doc</button>
+                <button id="get-heading">Get Heading</button>
             </div>
             <select id="highlight-color">
                 <option value="#ffff00">Yellow</option>
@@ -77,12 +80,16 @@
             $('#clear').click(setFormatting);
 
             $('#shrink').click(shrink);
-            $('#invisibilityOn').click(invisibilityOn);
-            $('#invisibilityOff').click(invisibilityOff);
+            $('#invisibility-on').click(invisibilityOn);
+            $('#invisibility-off').click(invisibilityOff);
 
             $('#highlight-color').change(changeHighlight);
 
             $('#search-button').click(search);
+
+            $('#get-files').click(getFiles);
+            $('#get-doc').click(getDoc);
+            $('#get-heading').click(getHeadingFromDoc);
         });
 
         const run = () => {
@@ -141,6 +148,44 @@
         const pasteSelected = () => run().pasteSelected();
         const changeHighlight = (e) => run().changeHighlight(e.currentTarget.value);
         const search = () => run().searchDrive($('#search-query').val());
+        const getFiles = () => {
+            google.script.run
+                .withSuccessHandler(
+                    function (files) {
+                        files.forEach(f => console.log(f));
+                    })
+                .withFailureHandler(
+                    function (err) {
+                        $('#error-message').text(err);
+                    })
+                .withUserObject(this)
+                .getDriveDocs();
+        }
+        const getDoc = () => {
+            google.script.run
+                .withSuccessHandler(
+                    function (headings) {
+                        headings.forEach(h => console.log(h));
+                    })
+                .withFailureHandler(
+                    function (err) {
+                        $('#error-message').text(err);
+                    })
+                .withUserObject(this)
+                .getDocContent('1Dj1loasY1jM38Hl3dOujHZs9Y0gKM93iUoTFPVtbxBc');
+        }
+        const getHeadingFromDoc = () => {
+            google.script.run
+                .withSuccessHandler(
+                    function () {
+                    })
+                .withFailureHandler(
+                    function (err) {
+                        $('#error-message').text(err);
+                    })
+                .withUserObject(this)
+                .getHeadingFromDoc('1Dj1loasY1jM38Hl3dOujHZs9Y0gKM93iUoTFPVtbxBc', 1);
+        }
     </script>
 </body>
 

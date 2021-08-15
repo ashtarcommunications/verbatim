@@ -2,9 +2,6 @@ function onOpen(e) {
     DocumentApp.getUi().createAddonMenu()
         .addItem('Start', 'showSidebar')
         .addToUi();
-
-    showSidebar();
-    setStyles();
 }
 
 function onInstall(e) {
@@ -15,6 +12,8 @@ function showSidebar() {
     var ui = HtmlService.createHtmlOutputFromFile('sidebar')
         .setTitle('Verbatim');
     DocumentApp.getUi().showSidebar(ui);
+
+    setStyles();
 }
 
 var heading1Style = {};
@@ -34,7 +33,7 @@ heading2Style[DocumentApp.Attribute.HORIZONTAL_ALIGNMENT] = DocumentApp.Horizont
 
 var heading3Style = {};
 heading3Style[DocumentApp.Attribute.BOLD] = true;
-heading3Style[DocumentApp.Attribute.UNDERLINE] = true;
+// heading3Style[DocumentApp.Attribute.UNDERLINE] = true;
 heading3Style[DocumentApp.Attribute.FONT_FAMILY] = 'Arial';
 heading3Style[DocumentApp.Attribute.FONT_SIZE] = '18';
 heading3Style[DocumentApp.Attribute.HORIZONTAL_ALIGNMENT] = DocumentApp.HorizontalAlignment.CENTER;
@@ -465,6 +464,7 @@ function invisibilityOn() {
         }
     }
 }
+
 function invisibilityOff() {
     var body = DocumentApp.getActiveDocument().getBody();
     var text = body.editAsText();
@@ -474,4 +474,46 @@ function invisibilityOff() {
             text.setForegroundColor(i, i, '#000000');
         }
     }
+}
+
+function getDriveDocs() {
+    var docs = [];
+    var folders = DriveApp.getFoldersByName('Tub');
+    while (folders.hasNext()) {
+        var folder = folders.next();
+        var files = folder.getFiles();
+        while (files.hasNext()) {
+            var file = files.next();
+            docs.push({ name: file.getName(), id: file.getId() });
+        }
+    }
+    return docs;
+}
+
+function getDocContent(id) {
+    var headings = [];
+    var file = DocumentApp.openById(id);
+    var body = file.getBody();
+    var para = body.getParagraphs();
+    for (var i = 0; i < para.length; i++) {
+        var elem = para[i];
+        if (elem.getHeading() === DocumentApp.ParagraphHeading.HEADING1
+            || elem.getHeading() === DocumentApp.ParagraphHeading.HEADING2
+            || elem.getHeading() === DocumentApp.ParagraphHeading.HEADING3
+        ) {
+            headings.push({ index: i, heading: elem.getHeading(), text: elem.getText() });
+        }
+    }
+    return headings;
+}
+
+function getHeadingFromDoc(id, index) {
+    var file = DocumentApp.openById(id);
+    var body = file.getBody();
+    var paragraphs = body.getParagraphs();
+    var p = paragraphs[index].copy();
+
+    var activeDoc = DocumentApp.getActiveDocument();
+    var body = activeDoc.getBody();
+    body.appendParagraph(p);
 }
