@@ -1,0 +1,106 @@
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.5/mousetrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"
+    integrity="sha512-RXf+QSDCUQs5uwRKaDoXt55jygZZm2V++WUZduaU/Ui/9EGp3f/2KZVahFZBKGH0s774sd3HmrhUy+SgOFQLVQ=="
+    crossorigin="anonymous"></script>
+<script>
+    $(function () {
+        console.log('sending from inner frame');
+        window.parent.parent.parent.postMessage('innerFrame', '*');
+        window.addEventListener('message', (event) => {
+            if (event.data === 'sendToSpeech') {
+                console.log('sending to speech');
+                sendToSpeech();
+            }
+        }, false);
+
+        $('#new-speech').click(newSpeech);
+        $('#send').click(sendToSpeech);
+        $('#condense').click(condense);
+        $('#copy').click(copySelected);
+        $('#paste').click(pasteSelected);
+        $('#select').click(selectHeading);
+        $('#moveup').click(moveUp);
+        $('#styles').click(styles);
+
+        $('#pocket').click(setHeading);
+        $('#hat').click(setHeading);
+        $('#block').click(setHeading);
+        $('#tag').click(setHeading);
+        $('#cite').click(setFormatting);
+        $('#underline').click(setFormatting);
+        $('#emphasis').click(setFormatting);
+        $('#highlight').click(setFormatting);
+        $('#clear').click(setFormatting);
+
+        $('#shrink').click(shrink);
+        $('#invisibility-on').click(invisibilityOn);
+        $('#invisibility-off').click(invisibilityOff);
+
+        $('#highlight-color').change(changeHighlight);
+
+        $('#search-button').click(search);
+
+        $('#get-files').click(getFiles);
+        $('#get-doc').click(getDoc);
+        $('#get-heading').click(getHeadingFromDoc);
+    });
+
+    const run = (
+        successHandler,
+        failureHandler = (err) => $('#error-message').text(err),
+        userObject = this
+    ) => {
+        return google.script.run
+            .withSuccessHandler(successHandler)
+            .withFailureHandler(failureHandler)
+            .withUserObject(userObject);
+    }
+
+    const sendToSpeech = () => {
+        this.disabled = true;
+        $('#error').remove();
+        run().sendToSpeech();
+        this.disabled = false;
+    }
+
+    Mousetrap.bind('`', function (e) {
+        alert('You pressed tilde');
+        return false;
+    });
+
+    const newSpeech = () => {
+        console.log('running new speech');
+        const successHandler = (documentId) => {
+            console.log(documentId);
+            // const link = document.createElement('a');
+            // link.href = `https://docs.google.com/document/d/${documentId}`;
+            // link.target = '_blank';
+        }
+        run(sucessHandler).newSpeech();
+    }
+    const setHeading = (e) => run().setHeading(e.currentTarget.id);
+    const setFormatting = (e) => run().setFormatting(e.currentTarget.id);
+    const styles = () => run().restoreStyles();
+    const shrink = () => run().shrink();
+    const invisibilityOn = () => run().invisibilityOn();
+    const invisibilityOff = () => run().invisibilityOff();
+    const condense = () => run().condense();
+    const selectHeading = () => run().selectHeading();
+    const moveUp = () => run().moveUp();
+    const copySelected = () => run().copySelected();
+    const pasteSelected = () => run().pasteSelected();
+    const changeHighlight = (e) => run().changeHighlight(e.currentTarget.value);
+    const search = () => run().searchDrive($('#search-query').val());
+    const getFiles = () => {
+        const successHandler = (files) => files.forEach(f => console.log(f));
+        run(successHandler).getDriveDocs();
+    }
+    const getDoc = () => {
+        const successHandler = (headings) => headings.forEach(h => console.log(h));
+        run(successHandler).getDocContent('1Dj1loasY1jM38Hl3dOujHZs9Y0gKM93iUoTFPVtbxBc');
+    }
+    const getHeadingFromDoc = () => {
+        run().getHeadingFromDoc('1Dj1loasY1jM38Hl3dOujHZs9Y0gKM93iUoTFPVtbxBc', 1);
+    }
+</script>

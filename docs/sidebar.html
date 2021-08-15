@@ -6,20 +6,22 @@
     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
     <!-- The CSS package above applies Google styling to buttons and other elements. -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
+    <?!= include('sidebar_css'); ?>
 </head>
 
 <body>
     <div class="sidebar">
-        <form>
-            <div class="block" id="button-bar">
-                <button id="send"><span class="fa fa-arrow-right" style="font-size: 16px; color: blue;"></span></button>
-                <button id="new-speech">New Speech</button>
-                <button id="condense">Condense</button>
-                <button id="copy">Copy</button>
-                <button id="paste">Paste</button>
-                <button id="select">Select Heading</button>
-                <button id="moveup">Move Up</button>
-                <button id="styles">Styles</button>
+        <div class="block" id="button-bar">
+            <button id="send"><span class="fa fa-arrow-right" style="font-size: 16px; color: blue;"></span></button>
+            <button id="new-speech">New Speech</button>
+            <button id="condense">Condense</button>
+            <button id="copy">Copy</button>
+            <button id="paste">Paste</button>
+            <button id="select">Select Heading</button>
+            <button id="moveup">Move Up</button>
+            <button id="styles">Styles</button>
+            <br />
+            <div id="format-buttons">
                 <button id="pocket">Pocket</button>
                 <button id="hat">Hat</button>
                 <button id="block">Block</button>
@@ -29,164 +31,24 @@
                 <button id="emphasis">Emphasis</button>
                 <button id="highlight">Highlight</button>
                 <button id="clear">Clear</button>
-                <button id="shrink">Shrink</button>
-                <button id="invisibility-on">Invisibility On</button>
-                <button id="invisibility-off">Invisibility Off</button>
-                <button id="get-files">Get Files</button>
-                <button id="get-doc">Get Doc</button>
-                <button id="get-heading">Get Heading</button>
             </div>
-            <select id="highlight-color">
-                <option value="#ffff00">Yellow</option>
-                <option value="#cccccc">Gray</option>
-            </select>
-            <input id="search-query" type="text" />
-            <button id="search-button">Search</button>
-        </form>
+            <br />
+            <button id="shrink">Shrink</button>
+            <button id="invisibility-on">Invisibility On</button>
+            <button id="invisibility-off">Invisibility Off</button>
+            <button id="get-files">Get Files</button>
+            <button id="get-doc">Get Doc</button>
+            <button id="get-heading">Get Heading</button>
+        </div>
+        <select id="highlight-color">
+            <option value="#ffff00">Yellow</option>
+            <option value="#cccccc">Gray</option>
+        </select>
+        <input id="search-query" type="text" />
+        <button id="search-button">Search</button>
         <div id="error-message"></div>
     </div>
-
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.5/mousetrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" integrity="sha512-RXf+QSDCUQs5uwRKaDoXt55jygZZm2V++WUZduaU/Ui/9EGp3f/2KZVahFZBKGH0s774sd3HmrhUy+SgOFQLVQ==" crossorigin="anonymous"></script>
-    <script>
-        $(function () {
-            console.log('sending from inner frame');
-            window.parent.parent.parent.postMessage('innerFrame', '*');
-            window.addEventListener('message', (event) => {
-                if (event.data === 'sendToSpeech') {
-                    console.log('sending to speech');
-                    sendToSpeech();
-                }
-            }, false);
-
-            $('#new-speech').click(newSpeech);
-            $('#send').click(sendToSpeech);
-            $('#condense').click(condense);
-            $('#copy').click(copySelected);
-            $('#paste').click(pasteSelected);
-            $('#select').click(selectHeading);
-            $('#moveup').click(moveUp);
-            $('#styles').click(styles);
-
-            $('#pocket').click(setHeading);
-            $('#hat').click(setHeading);
-            $('#block').click(setHeading);
-            $('#tag').click(setHeading);
-            $('#cite').click(setFormatting);
-            $('#underline').click(setFormatting);
-            $('#emphasis').click(setFormatting);
-            $('#highlight').click(setFormatting);
-            $('#clear').click(setFormatting);
-
-            $('#shrink').click(shrink);
-            $('#invisibility-on').click(invisibilityOn);
-            $('#invisibility-off').click(invisibilityOff);
-
-            $('#highlight-color').change(changeHighlight);
-
-            $('#search-button').click(search);
-
-            $('#get-files').click(getFiles);
-            $('#get-doc').click(getDoc);
-            $('#get-heading').click(getHeadingFromDoc);
-        });
-
-        const run = () => {
-            return google.script.run
-                .withSuccessHandler(
-                    function (returnSuccess, context) {
-                    })
-                .withFailureHandler(
-                    function (err, context) {
-                        $('#error-message').text(err);
-                    })
-                .withUserObject(this);
-        }
-
-        const sendToSpeech = () => {
-            this.disabled = true;
-            $('#error').remove();
-            run().sendToSpeech();
-            this.disabled = false;
-        }
-
-        Mousetrap.bind('`', function(e) {
-            alert('You pressed tilde');
-            return false;
-        });
-
-        const newSpeech = () => {
-            console.log('running new speech');
-            google.script.run
-                .withSuccessHandler(
-                    function (documentId) {
-                        console.log(documentId);
-                        // const link = document.createElement('a');
-                        // link.href = `https://docs.google.com/document/d/${documentId}`;
-                        // link.target = '_blank';
-                        // link.click();
-                        // window.open(`https://docs.google.com/document/d/${returnSuccess}`);
-                    })
-                .withFailureHandler(
-                    function (err) {
-                        $('#error-message').text(err);
-                    })
-                .withUserObject(this)
-                .newSpeech();
-        }
-        const setHeading = (e) => run().setHeading(e.currentTarget.id);
-        const setFormatting = (e) => run().setFormatting(e.currentTarget.id);
-        const styles = () => run().restoreStyles();
-        const shrink = () => run().shrink();
-        const invisibilityOn = () => run().invisibilityOn();
-        const invisibilityOff = () => run().invisibilityOff();
-        const condense = () => run().condense();
-        const selectHeading = () => run().selectHeading();
-        const moveUp = () => run().moveUp();
-        const copySelected = () => run().copySelected();
-        const pasteSelected = () => run().pasteSelected();
-        const changeHighlight = (e) => run().changeHighlight(e.currentTarget.value);
-        const search = () => run().searchDrive($('#search-query').val());
-        const getFiles = () => {
-            google.script.run
-                .withSuccessHandler(
-                    function (files) {
-                        files.forEach(f => console.log(f));
-                    })
-                .withFailureHandler(
-                    function (err) {
-                        $('#error-message').text(err);
-                    })
-                .withUserObject(this)
-                .getDriveDocs();
-        }
-        const getDoc = () => {
-            google.script.run
-                .withSuccessHandler(
-                    function (headings) {
-                        headings.forEach(h => console.log(h));
-                    })
-                .withFailureHandler(
-                    function (err) {
-                        $('#error-message').text(err);
-                    })
-                .withUserObject(this)
-                .getDocContent('1Dj1loasY1jM38Hl3dOujHZs9Y0gKM93iUoTFPVtbxBc');
-        }
-        const getHeadingFromDoc = () => {
-            google.script.run
-                .withSuccessHandler(
-                    function () {
-                    })
-                .withFailureHandler(
-                    function (err) {
-                        $('#error-message').text(err);
-                    })
-                .withUserObject(this)
-                .getHeadingFromDoc('1Dj1loasY1jM38Hl3dOujHZs9Y0gKM93iUoTFPVtbxBc', 1);
-        }
-    </script>
+    <?!= include('sidebar_js'); ?>
 </body>
 
 </html>
