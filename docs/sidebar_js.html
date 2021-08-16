@@ -22,6 +22,7 @@
         $('#paste').click(pasteSelected);
         $('#select').click(selectHeading);
         $('#moveup').click(moveUp);
+        $('#movedown').click(moveDown);
         $('#styles').click(styles);
 
         $('#pocket').click(setHeading);
@@ -59,6 +60,17 @@
             .withUserObject(userObject);
     }
 
+    let settings;
+    const settingsSuccess = (s) => {
+        console.log(s);
+        settings = s;
+        const activeSpeech = settings && settings.ACTIVE_SPEECH ? JSON.parse(settings.ACTIVE_SPEECH) : null;
+        if (activeSpeech) {
+            $('#current-speech').html(`<p>Current Speech:</p><p><a target="_blank" href="${activeSpeech.url}">${activeSpeech.name}</a></p>`);
+        }
+    }
+    run(settingsSuccess).getProperties();
+
     const sendToSpeech = () => {
         this.disabled = true;
         $('#error').remove();
@@ -91,6 +103,7 @@
     const condense = () => run().condense();
     const selectHeading = () => run().selectHeading();
     const moveUp = () => run().moveUp();
+    const moveDown = () => run().moveDown();
     const copySelected = () => run().copySelected();
     const pasteSelected = () => run().pasteSelected();
     const changeHighlight = (e) => run().changeHighlight(e.currentTarget.value);

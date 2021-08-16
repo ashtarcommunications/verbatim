@@ -85,7 +85,7 @@
             // document.getElementById('picker-result').innerHTML =
             //     '<b>You chose:</b><br>Name: <a href="' + url + '">' + title +
             //     '</a><br>ID: ' + id;
-            google.script.run.setSetting('ACTIVE_SPEECH', id);
+            google.script.run.setProperty('ACTIVE_SPEECH', JSON.stringify({ id, url, name: title }));
             google.script.host.close();
         } else if (action == google.picker.Action.CANCEL) {
             // document.getElementById('picker-result').innerHTML = 'Picker canceled.';

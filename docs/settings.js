@@ -1,10 +1,18 @@
-function setSetting(setting, value) {
-    var prop = PropertiesService.getUserProperties();
-    prop.setProperty(setting, value);
+function setProperty(property, value) {
+    var properties = PropertiesService.getUserProperties();
+    properties.setProperty(property, value);
     return true;
 }
 
-function getSetting(setting) {
-    var prop = PropertiesService.getUserProperties();
-    return prop.getProperty(setting);
+function getProperty(property) {
+    var properties = PropertiesService.getUserProperties();
+    return properties.getProperty(property);
+}
+
+const getProperties = () => {
+    return PropertiesService.getUserProperties().getProperties();
+}
+
+const setProperties = (properties) => {
+    return PropertiesService.getUserProperties().setProperties(properties);
 }

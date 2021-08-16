@@ -3,8 +3,13 @@ function sendToSpeech() {
     selectHeading();
     var selection = activeDoc.getSelection();
 
-    var speechId = '1hmhWoqEIRYMEhafTnGmPmzoJ_BDbqzJbj1aCKrhQ2yo';
-    var speechDoc = DocumentApp.openById(speechId);
+    let activeSpeech = getProperty('ACTIVE_SPEECH');
+    if (activeSpeech) {
+        activeSpeech = JSON.parse(activeSpeech);
+    } else {
+        return false;
+    }
+    var speechDoc = DocumentApp.openById(activeSpeech.id);
     var speechBody = speechDoc.getBody();
 
     var elements = selection.getRangeElements();

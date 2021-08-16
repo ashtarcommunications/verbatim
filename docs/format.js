@@ -213,7 +213,7 @@ function setFormatting(format) {
                 partial ? e.setBold(start, end, true) : e.setBold(true);
                 break;
             case 'highlight':
-                var color = getSetting('HIGHLIGHT_COLOR') || '#ffff00';
+                var color = getProperty('HIGHLIGHT_COLOR') || '#ffff00';
                 partial ? e.setBackgroundColor(start, end, color) : e.setBackgroundColor(color);
                 // partial ? e.setForegroundColor(start, end, '#000000') : e.setForegroundColor('#000000');
                 break;
@@ -229,9 +229,7 @@ function setFormatting(format) {
 }
 
 function changeHighlight(color) {
-    Logger.log(color);
-    var prop = PropertiesService.getUserProperties();
-    prop.setProperty('HIGHLIGHT_COLOR', color);
+    setProperty('HIGHLIGHT_COLOR', color);
 }
 
 function shrink() {
