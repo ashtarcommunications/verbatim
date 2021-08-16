@@ -2,6 +2,7 @@
     #format-buttons {
         text-align: center;
     }
+
     #format-buttons button {
         font-size: 10px;
         margin: 0;
@@ -9,5 +10,20 @@
         min-width: 0;
         background: none;
         border: none;
+    }
+    .tab-container {
+        display: flex;
+        margin: -12px;
+    }
+    .tab-container div {
+        cursor: pointer;
+        width: 25%;
+        border: 1px solid #eee;
+        padding: 5px;
+        text-align: center;
+    }
+    .tab-container div.active {
+        background-color: #ccc;
+        color: white;
     }
 </style>
