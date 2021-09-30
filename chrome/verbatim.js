@@ -82,3 +82,8 @@ window.addEventListener('message', (event) => {
 	
 //     return false;
 // });
+
+window.addEventListener('load', function() {
+    console.log('All assets are loaded')
+    // document.querySelector('.goog-menu-item').click();
+});
