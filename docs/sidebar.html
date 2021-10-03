@@ -17,53 +17,84 @@
             <div>Caselist</div>
             <div>Settings</div>
         </div>
-        <div class="block" id="button-bar">
+        <fieldset>
+            <legend>Paperless</legend>
             <div id="current-speech"><p>Current Speech:</p></div>
-            <button id="send"><span class="fa fa-arrow-right" style="font-size: 16px; color: blue;"></span></button>
-            <button id="choose-speech">Choose Speech</button>
-            <button id="new-speech">New Speech</button>
-            <button id="copy">Copy</button>
-        </div>
-        <div>
-            <button id="select"><span class="fa fa-heading" style="font-size: 24px; color: blue;"></span>Select Heading</button>
-            <button id="moveup"><span class="fa fa-arrow-up" style="font-size: 24px; color: blue;"></span>Move Up</button>
-            <button id="movedown"><span class="fa fa-arrow-down" style="font-size: 24px; color: blue;"></span>Move Down</button>
-        </div>
-        <div>
-            <br />
-            <fieldset id="format-buttons">
-                <legend>Format</legend>
-                <button id="paste">F2 Paste</button>
-                <span> | </span>
-                <button id="condense">F3 Condense</button>
-                <span> | </span>
-                <button id="pocket">F4 Pocket</button>
-                <span> | </span>
-                <button id="hat">F5 Hat</button>
-                <span> | </span>
-                <button id="block">F6 Block</button>
-                <span> | </span>
-                <button id="tag">F7 Tag</button>
+            <div class="thirds">
                 <br />
-                <button id="cite">F8 Cite</button>
-                <span> | </span>
-                <button id="underline">F9 Underline</button>
-                <span> | </span>
-                <button id="emphasis">F10 Emphasis</button>
-                <span> | </span>
-                <button id="highlight">F11 Highlight</button>
-                <span> | </span>
-                <button id="clear">F12 Clear</button>
+                <div><button id="send">
+                    <span class="icon fas fa-arrow-right"></span>
+                    <br />
+                    <span>Send to Speech</span>
+                </button></div>
+                <div><button id="choose-speech">
+                    <span class="icon fas fa-object-group"></span>
+                    <br />
+                    <span>Choose Speech</span>
+                </button></div>
+                <div><button id="new-speech">
+                    <span class="icon fas fa-file-alt"></span>
+                    <br />
+                    <span>New Speech</span>
+                </button></div>
+                <br />
+                <div><button id="select">
+                    <span class="icon fas fa-heading"></span>
+                    <br />
+                    <span>Select Heading</span>
+                </button></div>
+                <div><button id="moveup">
+                    <span class="icon fas fa-arrow-up"></span>
+                    <br />
+                    <span>Move Up</span>
+                </button></div>
+                <div><button id="movedown">
+                    <span class="icon fas fa-arrow-down"></span>
+                    <br />
+                    <span>Move Down</span>
+                </button></div>
+                <br />
+                <div><button id="copy">
+                    <span class="icon fas fa-copy"></span>
+                    <br />
+                    <span>Copy</span>
+                </button></div>
+            </div>
+        </fieldset> 
+        <div class="quarters">
+            <fieldset>
+                <legend>Format</legend>
+                <div><button id="paste">F2<br />Paste</button></div>
+                <div><button id="condense">F3<br />Condense</button></div>
+                <div><button id="pocket">F4<br />Pocket</button></div>
+                <div><button id="hat">F5<br />Hat</button></div>
+                <br />
+                <div><button id="block">F6<br />Block</button></div>
+                <div><button id="tag">F7<br />Tag</button></div>
+                <div><button id="cite">F8<br />Cite</button></div>
+                <div><button id="underline">F9<br />Underline</button></div>
+                <br />
+                <div><button id="emphasis">F10<br />Emphasis</button></div>
+                <div><button id="highlight">F11<br />Highlight</button></div>
+                <div><button id="clear">F12<br />Clear</button></div>
+                <div><button id="shrink">
+                    <span class="icon fas fa-compress-arrows-alt"></span>
+                    <br />
+                    <span>Shrink</span>
+                </button></div>
             </fieldset>
+        </div>
+        <div class="halves">
+            <div><button id="styles">Set Styles</button></div>
+            <div><button id="invisibility-on">Invisibility On</button></div>
             <br />
-            <button id="shrink">Shrink</button>
-            <button id="styles">Set Styles</button>
-            <button id="invisibility-on">Invisibility On</button>
-            <button id="invisibility-off">Invisibility Off</button>
-            <button id="get-files">Get Files</button>
-            <button id="get-doc">Get Doc</button>
-            <button id="get-heading">Get Heading</button>
-            <button id="create-vtub">Create Vtub</button>
+            <div><button id="invisibility-off">Invisibility Off</button></div>
+            <div><button id="get-files">Get Files</button></div>
+            <br />
+            <div><button id="get-doc">Get Doc</button></div>
+            <div><button id="get-heading">Get Heading</button></div>
+            <br />
+            <div><button id="create-vtub">Create Vtub</button></div>
         </div>
         <select id="highlight-color">
             <option value="#ffff00">Yellow</option>
