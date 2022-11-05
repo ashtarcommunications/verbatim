@@ -1,0 +1,9 @@
+Combined Mac & PC code bases
+Updated window arranger to work on Mac and with different dock positions
+Reordered ribbon to put formatting functions fisrt
+Removed deprecated ribbon functions
+Removed Email feature, superceded by Tabroom sharing functionality
+Restyled VBA userforms
+Custom mouse icons?
+Removed backfile converter because nobody uses old formats anymore
+Rebuilt VTub to be cross-platform

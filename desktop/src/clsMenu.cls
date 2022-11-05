@@ -1,0 +1,56 @@
+VERSION 1.0 CLASS
+BEGIN
+  MultiUse = -1  'True
+END
+Attribute VB_Name = "clsMenu"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = False
+Option Explicit
+
+Private m_MenuType As String
+Private m_Name As String
+Private m_Path As String
+Private m_DateLastModified As Date
+
+Public Property Get MenuType() As String
+    MenuType = m_MenuType
+End Property
+
+Public Property Get Name() As String
+    Name = m_Name
+End Property
+
+Public Property Get Path() As String
+    Path = m_Path
+End Property
+
+Public Property Get DateLastModified() As Date
+    DateLastModified = m_DateLastModified
+End Property
+
+Public Sub Init(MenuType As String, Name As String, Path As String, DateLastModified As Date)
+    m_MenuType = MenuType
+    m_Name = Name
+    m_Path = Path
+    m_DateLastModified = m_DateLastModified
+    
+    Exit Sub
+
+Handler:
+    MsgBox "Error reading " & Path & " - Error " & Err.number & ": " & Err.Description
+End Sub
+
+Public Function ToJSON() As String
+    ToJSON = "{""MenuType"":"""
+    ToJSON = ToJSON & m_MenuType
+    ToJSON = ToJSON & """, ""Name"":"""
+    ToJSON = ToJSON & m_Name
+    ToJSON = ToJSON & """, ""Path"":"""
+    ToJSON = ToJSON & m_Path
+    ToJSON = ToJSON & """, ""DateLastModified"":"""
+    ToJSON = ToJSON & m_DateLastModified
+    ToJSON = ToJSON & """}"
+End Function
+

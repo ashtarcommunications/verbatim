@@ -1,0 +1,18 @@
+Convert all library references to late binding
+All bug fixes from bug list
+Normalize form styles
+Convert all MacScript calls to AppleScriptTask
+Mac installer check for Mac OS keyboard shortcuts
+Standalone install checker tool
+Plugin system for GetFromCitemaker, timer, OCR
+Bluetooth add-on disabler
+VTub refresh
+Splash screen for first start
+Search functions
+Replacement for tutorial
+Rewrite update check
+Class documentation
+Contributions.MD
+Add default event selection to settings
+Troubleshooting form
+Fix new speech dropdown
