@@ -110,14 +110,6 @@ End Sub
 Sub GetSpeeches(control As IRibbonControl, ByRef returnedVal)
 
     Dim xml As String
-    Dim RoundNodeList As MSXML2.IXMLDOMNodeList
-    Dim RoundElem As MSXML2.IXMLDOMElement
-        
-    Dim i
-    Dim Side As String
-    Dim Tournament As String
-    Dim RoundNum As String
-    Dim Opponent As String
     
     On Error Resume Next
         
@@ -127,50 +119,58 @@ Sub GetSpeeches(control As IRibbonControl, ByRef returnedVal)
     ' Initialize XML
     xml = "<menu xmlns=""http://schemas.microsoft.com/office/2006/01/customui"">"
 
-    ' Get rounds from tabroom - use email setting to limit rounds and make faster
-    Set RoundNodeList = Tabroom.GetTabroomRounds(Email:=True)
-        
-    ' Get info from first two rounds
-    If RoundNodeList.length > 1 Then
-        For i = 0 To 1
-        
-            Set RoundElem = RoundNodeList(i)
-            Side = Trim(ScrubString(RoundElem.getElementsByTagName("SIDE")(0).ChildNodes(0).NodeValue))
-            Tournament = Trim(ScrubString(RoundElem.getElementsByTagName("TOURNAMENT")(0).ChildNodes(0).NodeValue))
-            RoundNum = Trim(ScrubString(RoundElem.getElementsByTagName("ROUND_NAME")(0).ChildNodes(0).NodeValue))
-            
-            Select Case RoundNum
-                Case "1", "2", "3", "4", "5", "6", "7", "8"
-                    RoundNum = "Round " & RoundNum
-                Case Else
-                    ' Do nothing
-            End Select
-                       
-            Opponent = Trim(ScrubString(RoundElem.getElementsByTagName("OPPONENT")(0).ChildNodes(0).NodeValue))
-                
-            If Side = "Aff" Then
-                xml = xml & "<button id=""Speech2AC" & i & """ label=""2AC" & " " & Tournament & " " & RoundNum & " vs " & Opponent & """ tag=""2AC" & " " & Tournament & " " & RoundNum & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
-                xml = xml & "<button id=""Speech1AR" & i & """ label=""1AR" & " " & Tournament & " " & RoundNum & " vs " & Opponent & """ tag=""1AR" & " " & Tournament & " " & RoundNum & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
-                xml = xml & "<button id=""Speech2AR" & i & """ label=""2AR" & " " & Tournament & " " & RoundNum & " vs " & Opponent & """ tag=""2AR" & " " & Tournament & " " & RoundNum & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
-                xml = xml & "<button id=""Speech1AC" & i & """ label=""1AC" & " " & Tournament & " " & RoundNum & " vs " & Opponent & """ tag=""1AC" & " " & Tournament & " " & RoundNum & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
-                If i = 0 Then xml = xml & "<menuSeparator id=""separator"" />"
-            Else
-                xml = xml & "<button id=""Speech1NC" & i & """ label=""1NC" & " " & Tournament & " " & RoundNum & " vs " & Opponent & """ tag=""1NC" & " " & Tournament & " " & RoundNum & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
-                xml = xml & "<button id=""Speech2NC" & i & """ label=""2NC" & " " & Tournament & " " & RoundNum & " vs " & Opponent & """ tag=""2NC" & " " & Tournament & " " & RoundNum & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
-                xml = xml & "<button id=""Speech1NR" & i & """ label=""1NR" & " " & Tournament & " " & RoundNum & " vs " & Opponent & """ tag=""1NR" & " " & Tournament & " " & RoundNum & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
-                xml = xml & "<button id=""Speech2NR" & i & """ label=""2NR" & " " & Tournament & " " & RoundNum & " vs " & Opponent & """ tag=""2NR" & " " & Tournament & " " & RoundNum & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
-                If i = 0 Then xml = xml & "<menuSeparator id=""separator"" />"
-            End If
-        Next
-    End If
+    Dim Response As Dictionary
+    'Set Response = HTTP.GetReq(Globals.CASELIST_URL & "/tabroom/rounds?current=true")
+    Set Response = HTTP.GetReq(Globals.MOCK_ROUNDS & "?current=true")
     
+    If Response("status") = 401 Then
+        UI.ShowForm "Login"
+        Exit Sub
+    End If
+
+    Dim Round
+    Dim Tournament As String
+    Dim RoundName As String
+    Dim Side As String
+    Dim SideName As String
+    Dim Opponent As String
+    
+    Dim i As Long
+    i = 0
+
+    For Each Round In Response("body")
+        i = i + 1
+        Tournament = Round("tournament")
+        Side = Round("side")
+        RoundName = Round("round")
+        Opponent = Round("opponent")
+        Tournament = Trim(ScrubString(Tournament))
+        Side = Trim(ScrubString(Side))
+        SideName = Strings.DisplaySide(Side)
+        RoundName = Strings.RoundName(Trim(ScrubString(RoundName)))
+        Opponent = Trim(ScrubString(Opponent))
+            
+        If Side = "A" Then
+            xml = xml & "<button id=""Speech2AC" & i & """ label=""2AC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""2AC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
+            xml = xml & "<button id=""Speech1AR" & i & """ label=""1AR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""1AR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
+            xml = xml & "<button id=""Speech2AR" & i & """ label=""2AR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""2AR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
+            xml = xml & "<button id=""Speech1AC" & i & """ label=""1AC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""1AC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
+            xml = xml & "<menuSeparator id=""separator" & i & """ />"
+        Else
+            xml = xml & "<button id=""Speech1NC" & i & """ label=""1NC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""1NC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
+            xml = xml & "<button id=""Speech2NC" & i & """ label=""2NC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""2NC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
+            xml = xml & "<button id=""Speech1NR" & i & """ label=""1NR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""1NR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
+            xml = xml & "<button id=""Speech2NR" & i & """ label=""2NR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""2NR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
+            xml = xml & "<menuSeparator id=""separator" & i & """ />"
+        End If
+    Next Round
+        
     ' Add default speech options
-    xml = xml & "<menuSeparator id=""separator1"" />"
     xml = xml & "<button id=""Speech2AC"" label=""2AC"" tag=""2AC"" onAction=""Paperless.NewSpeechFromMenu"" />"
     xml = xml & "<button id=""Speech1AR"" label=""1AR"" tag=""1AR"" onAction=""Paperless.NewSpeechFromMenu"" />"
     xml = xml & "<button id=""Speech2AR"" label=""2AR"" tag=""2AR"" onAction=""Paperless.NewSpeechFromMenu"" />"
     xml = xml & "<button id=""Speech1AC"" label=""1AC"" tag=""1AC"" onAction=""Paperless.NewSpeechFromMenu"" />"
-    xml = xml & "<menuSeparator id=""separator2"" />"
+    xml = xml & "<menuSeparator id=""separator"" />"
     xml = xml & "<button id=""Speech1NC"" label=""1NC"" tag=""1NC"" onAction=""Paperless.NewSpeechFromMenu"" />"
     xml = xml & "<button id=""Speech2NC"" label=""2NC"" tag=""2NC"" onAction=""Paperless.NewSpeechFromMenu"" />"
     xml = xml & "<button id=""Speech1NR"" label=""1NR"" tag=""1NR"" onAction=""Paperless.NewSpeechFromMenu"" />"
@@ -180,16 +180,16 @@ Sub GetSpeeches(control As IRibbonControl, ByRef returnedVal)
     xml = xml & "</menu>"
                  
     returnedVal = xml
+    
+    Set Response = Nothing
 
     System.Cursor = wdCursorNormal
-    Set RoundNodeList = Nothing
     Exit Sub
 
 Handler:
+    Set Response = Nothing
     System.Cursor = wdCursorNormal
-    Set RoundNodeList = Nothing
     MsgBox "Error " & Err.number & ": " & Err.Description
-
 End Sub
 
 Sub NewSpeechFromMenu(control As IRibbonControl)

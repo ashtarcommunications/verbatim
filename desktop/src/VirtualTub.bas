@@ -851,7 +851,6 @@ Private Sub TestVTub()
 
     RootMenu.Add "FileCount", FileCount
     RootMenu.Add "FolderCount", Folder.Subfolders.Count
-    RootMenu.Add "DateLastModified", Folder.DateLastModified
 
     For i = 1 To Folder.Subfolders.Count
         Set Subfolder = GetFolder(Folder.Subfolders(i))
@@ -859,7 +858,6 @@ Private Sub TestVTub()
         SubfolderMenu.Add "MenuType", "Folder"
         SubfolderMenu.Add "Name", Subfolder.Name
         SubfolderMenu.Add "Path", Subfolder.Path
-        
         
         Set Children = New Dictionary
         
@@ -874,14 +872,15 @@ Private Sub TestVTub()
                 Set Headings = VirtualTub.AddBookmarks(File.Path)
                 
                 FileMenu.Add "Children", Headings
-                FileMenu.Add "DateLastModified", File.DateLastModified
+                Set File = GetFile(Subfolder.Files(j))
+                FileMenu.Add "DateLastModified", Format(File.DateLastModified)
                 
                 Children.Add Replace(File.Path, "\", "\\"), FileMenu
             End If
         Next
         
         SubfolderMenu.Add "Children", Children
-        SubfolderMenu.Add "DateLastModified", Subfolder.DateLastModified
+        SubfolderMenu.Add "DateLastModified", Format(Subfolder.DateLastModified)
 
         RootMenu.Add Replace(Subfolder.Path, "\", "\\"), SubfolderMenu
     Next
@@ -897,11 +896,15 @@ Private Sub TestVTub()
             Set Headings = VirtualTub.AddBookmarks(File.Path)
             
             FileMenu.Add "Children", Headings
-            FileMenu.Add "DateLastModified", File.DateLastModified
+            Set File = GetFile(Folder.Files(i))
+            FileMenu.Add "DateLastModified", Format(File.DateLastModified)
             
             RootMenu.Add Replace(File.Path, "\", "\\"), FileMenu
         End If
     Next
+    
+    Set Folder = GetFolder(GetSetting("Verbatim", "VTub", "VTubPath", ""))
+    RootMenu.Add "DateLastModified", Format(Folder.DateLastModified)
         
     JSON = JSONTools.ConvertToJson(RootMenu)
     Debug.Print JSON
@@ -926,7 +929,7 @@ Sub RefreshVTub()
     Dim VTubPath
     Dim JSON As String
     Dim RootMenu As Object
-    Dim Menu
+    Dim Menu As Object
     Dim Children As Object
     Dim xml As String
     
@@ -946,7 +949,9 @@ Sub RefreshVTub()
     FileCount = 0
        
     Set Folder = GetFolder(GetSetting("Verbatim", "VTub", "VTubPath", ""))
-      
+    
+    Dim i As Long
+    Dim Subfolder
     For i = 1 To Folder.Subfolders.Count
         Set Subfolder = GetFolder(Folder.Subfolders(i))
         FileCount = FileCount + Subfolder.Files.Count
@@ -954,41 +959,64 @@ Sub RefreshVTub()
     
     FileCount = FileCount + Folder.Files.Count
     
-    If (FileCount <> RootMenu("FileCount") Or Folder.Subfolders.Count <> RootMenu("FolderCount")) Then
+    If (CInt(FileCount) <> CInt(RootMenu("FileCount")) Or CInt(Folder.Subfolders.Count) <> CInt(RootMenu("FolderCount"))) Then
         If MsgBox("The number of files or folders in your VTub appear to have changed and needs to be rebuilt from scratch. Rebuild now?", vbOKCancel) = vbCancel Then Exit Sub
         VirtualTub.TestVTub
         Exit Sub
     End If
     
     Dim key As Variant
+    Dim subkey As Variant
+    Dim Child
+    Dim File
     For Each key In RootMenu.Keys
-        Set Menu = RootMenu(key)
-        If (Menu("MenuType") = "Folder" And Menu.Exists("Children")) Then
-            Set Children = Menu("Children")
-
-            For Each key In Children.Keys
-                Set Child = Children(key)
-                If Child("MenuType") = "File" Then
-                    Set File = GetFile(Child("Path"))
-                    If Child("DateLastModified") <> File.DateLastModified Then
-                        Child("Children") = AddHeadings(File.Path)
-                        Set File = GetFile(File.Path)
-                        Child("DateLastModified") = File.DateLastModified
+        If key <> "FileCount" And key <> "FolderCount" And key <> "DateLastModified" Then
+            Set Menu = RootMenu(key)
+            If (Menu("MenuType") = "Folder" And Menu.Exists("Children")) Then
+                Set Children = Menu("Children")
+    
+                For Each subkey In Children.Keys
+                    Set Child = Children(subkey)
+                    If Child("MenuType") = "File" Then
+                        Dim Path As String
+                        Path = Child("Path")
+                        Set File = GetFile(Path)
+                        If Child("DateLastModified") <> Format(File.DateLastModified) Then
+                            Set Child("Children") = VirtualTub.AddBookmarks(File.Path)
+                            Set File = GetFile(File.Path)
+                            Child("DateLastModified") = Format(File.DateLastModified)
+                            'Set Children(Replace(subkey, "\", "\\")) = Child
+                        End If
                     End If
+                    
+                    Children.Remove subkey
+                    Children.Add Replace(subkey, "\", "\\"), Child
+                Next subkey
+                
+                Path = Menu("Path")
+                Set Folder = GetFolder(Path)
+                Menu("DateLastModified") = Format(Folder.DateLastModified)
+                'Set RootMenu(Replace(key, "\", "\\")) = Menu
+            ElseIf Menu("MenuType") = "File" Then
+                Path = Menu("Path")
+                Set File = GetFile(Path)
+                If Menu("DateLastModified") <> Format(File.DateLastModified) Then
+                    Set Menu("Children") = VirtualTub.AddBookmarks(File.Path)
+                    Set File = GetFile(File.Path)
+                    Menu("DateLastModified") = Format(File.DateLastModified)
+                    'Set RootMenu(Replace(key, "\", "\\")) = Menu
                 End If
-            Next key
-            
-            Set Folder = GetFolder(Menu("Path"))
-            Menu("DateLastModified") = Folder.DateLastModified
-        ElseIf Menu("MenuType") = "File" Then
-            Set File = GetFile(Menu("Path"))
-            If Menu("DateLastModified") <> File.DateLastModified Then
-                Menu("Children") = AddHeadings(File.Path)
-                Set File = GetFile(File.Path)
-                Menu("DateLastModified") = File.DateLastModified
             End If
+            
+            RootMenu.Remove key
+            RootMenu.Add Replace(key, "\", "\\"), Menu
         End If
     Next key
+    
+    Set Folder = GetFolder(GetSetting("Verbatim", "VTub", "VTubPath", ""))
+    RootMenu("DateLastModified") = Format(Folder.DateLastModified)
+  
+    JSON = JSONTools.ConvertToJson(RootMenu)
   
     'Save file
     Dim VTubFilePath
@@ -1117,9 +1145,10 @@ Sub ConvertVTubToXML()
     
     Dim key As Variant
     For Each key In RootMenu.Keys
-        Set Menu = RootMenu(key)
-        xml = xml & ConvertDictionaryToXML(Menu)
-        
+        If key <> "FileCount" And key <> "FolderCount" And key <> "DateLastModified" Then
+            Set Menu = RootMenu(key)
+            xml = xml & ConvertDictionaryToXML(Menu)
+        End If
     Next key
   
     xml = xml & "</menu>"
