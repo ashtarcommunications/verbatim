@@ -8,7 +8,7 @@ Public Sub ShowForm(FormName As String)
         Case "Login"
             Set Form = New frmLogin
         Case "Caselist"
-            Set Form = New frmCaselist2
+            Set Form = New frmCaselist
         Case "ChooseSpeechDoc"
             'Set Form = New frmChooseSpeechDoc
         Case "Stats"
