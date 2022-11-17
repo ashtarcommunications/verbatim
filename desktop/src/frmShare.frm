@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmShare 
-   Caption         =   "Share"
-   ClientHeight    =   7035
+   Caption         =   "Share on share.tabroom.com"
+   ClientHeight    =   7440
    ClientLeft      =   120
    ClientTop       =   465
-   ClientWidth     =   5760
+   ClientWidth     =   9060.001
    OleObjectBlob   =   "frmShare.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -14,12 +14,24 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 
+Private Sub lblLogin2_Click()
+    Me.Hide
+    UI.ShowForm "Login"
+    Unload Me
+    Exit Sub
+End Sub
+
 Private Sub btnShare_Click()
-    Debug.Print lboxRounds.List(lboxRounds.ListIndex, 1)
-    ' UploadToShare lboxRounds.List(lboxRounds.ListIndex, 1)
+    UploadToShare lboxRounds.List(lboxRounds.ListIndex, 1)
+End Sub
+
+Private Sub lblURL_Click()
+    Settings.LaunchWebsite Globals.SHARE_URL
 End Sub
 
 Private Sub UserForm_Initialize()
+    On Error GoTo Handler
+    
     #If Mac Then
         UI.ResizeUserForm Me
     #End If
@@ -27,34 +39,62 @@ Private Sub UserForm_Initialize()
     Dim Phrase
     Phrase = RandomPhrase
     
-    Dim Rounds As Object
-    Set Rounds = Caselist.GetRounds
-    
-    If Rounds Is Nothing Then
-        ' Me.lblNoRounds.Visible = True
-    Else
-        Dim Item
-        For Each Item In Rounds
-            Dim Round
-            If Item("share") <> "" Then
-                Round = Item("tournament") + " Round " + Item("round") + " (" + Item("share") + ")"
-                Me.lboxRounds.AddItem Round
-                Me.lboxRounds.List(Me.lboxRounds.ListCount - 1, 1) = Item("share")
+    If GetSetting("Verbatim", "Caselist", "TabroomDisable", False) = False Then
+        Dim Response As Dictionary
+        'Set Response = HTTP.GetReq(Globals.CASELIST_URL & "/tabroom/rounds?current=true")
+        Set Response = HTTP.GetReq(Globals.MOCK_ROUNDS)
+        
+        Select Case Response("status")
+        Case Is = "200"
+            Me.lblError.Visible = False
+        Case Is = "401"
+            Me.lblLogin1.Visible = True
+            Me.lblLogin2.Visible = True
+            Exit Sub
+        Case Else
+            Me.lblError.Caption = Response("body")("message")
+            Me.lblError.Visible = True
+            Exit Sub
+        End Select
+                
+        Dim Round
+        Dim RoundName
+        Dim Side As String
+        Dim SideName
+        
+        For Each Round In Response("body")
+            If (Round("share") <> vbNullString) Then
+                RoundName = Strings.RoundName(Round("round"))
+                Side = Round("side")
+                SideName = Strings.DisplaySide(Side)
+                Me.lboxRounds.AddItem
+                Me.lboxRounds.List(Me.lboxRounds.ListCount - 1, 0) = Round("tournament") & " " & RoundName & " " & SideName & " vs " & Round("opponent") & " (" & Round("share") & ")"
+                Me.lboxRounds.List(Me.lboxRounds.ListCount - 1, 1) = Round("share")
             End If
-        Next Item
-     
+        Next Round
+
     End If
-    Me.lboxRounds.AddItem "Random New Room: " + Phrase
+
+    Me.lboxRounds.AddItem
+    Me.lboxRounds.List(Me.lboxRounds.ListCount - 1, 0) = "Random New Room: " + Phrase
+    Me.lboxRounds.List(Me.lboxRounds.ListCount - 1, 1) = Phrase
+
+    Exit Sub
+
+Handler:
+    Set Request = Nothing
+    MsgBox "Error " & Err.number & ": " & Err.Description
     
 End Sub
 
-Private Sub lboxRounds_Click()
+Private Sub lboxRounds_Change()
     Me.txtRoom.Value = ""
     ValidateForm
 End Sub
 
 Private Sub txtRoom_Change()
-    Me.lboxRounds.Selected(0) = False
+    Me.lboxRounds.Value = vbNullString
+    Me.txtRoom.Value = Strings.OnlyAlphaNumericChars(Me.txtRoom.Value)
     ValidateForm
 End Sub
 
@@ -76,15 +116,23 @@ Private Sub ValidateForm()
 
 End Sub
 
-Sub btnSubmit_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
-    ' btnSubmit.BackColor = RGB(114, 142, 171)
+Sub btnShare_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    Me.btnShare.BackColor = Globals.LIGHT_BLUE
+End Sub
+Sub btnBrowser_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    Me.btnBrowser.BackColor = Globals.LIGHT_BLUE
 End Sub
 Sub btnCancel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
-    ' btnCancel.BackColor = RGB(241, 136, 136)
+    Me.btnCancel.BackColor = Globals.LIGHT_RED
 End Sub
 Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
-    ' btnSubmit.BackColor = RGB(64, 92, 121)
-    ' btnCancel.BackColor = RGB(191, 86, 86)
+    Me.btnShare.BackColor = Globals.BLUE
+    Me.btnBrowser.BackColor = Globals.BLUE
+    Me.btnCancel.BackColor = Globals.RED
+End Sub
+
+Sub btnCancel_Click()
+    Unload Me
 End Sub
 
 Private Function RandomPhrase() As String
@@ -126,3 +174,66 @@ Private Function RandomPhrase() As String
 
     RandomPhrase = Adjective + Animal + CStr(RandomNumber)
 End Function
+
+Private Sub UploadToShare()
+
+    On Error GoTo Handler
+    
+    Application.ScreenUpdating = False
+    System.Cursor = wdCursorWait
+    
+    If ValidateForm = False Then Exit Sub
+
+    If ActiveDocument.Saved = False Then ActiveDocument.Save
+    
+    Dim Body As Dictionary
+    Set Body = New Dictionary
+       
+    Dim Base64
+    Base64 = Filesystem.GetFileAsBase64(ActiveDocument.FullName)
+    Body.Add "file", Base64
+    Body.Add "filename", ActiveDocument.Name
+           
+           
+    Dim Room As String
+    If Me.lboxRounds.Value <> vbNullString Then Room = Me.lboxRounds.Value
+    If Me.txtRoom.Value <> vbNullString Then Room = Strings.OnlyAlphaNumericChars(Me.txtRoom.Value)
+    
+    Dim Request
+    Set Request = HTTP.PostReq(Globals.SHARE_URL & "/" & Room, Body)
+    
+    Select Case Request("status")
+    Case Is = "200"                              ' Success
+        MsgBox "File successfully shared to https://share.tabroom.com/" & Room & " - anyone linked to your round on Tabroom has been emailed!"
+        Me.Hide
+        Unload Me
+        
+    Case Is = "400"                              ' Bad file
+        Me.lblError.Caption = "Something appears to be wrong with your file, please try again"
+        Me.lblError.Visible = True
+
+    Case Is = "500"                              ' Server error
+        Me.lblError.Caption = "Failed to upload file, please try again"
+        Me.lblError.Visible = True
+    
+    Case Else
+        Me.lblError.Caption = Request("body")("message")
+        Me.lblError.Visible = True
+    End Select
+    
+    Set Body = Nothing
+    Set Request = Nothing
+    
+    Application.ScreenUpdating = True
+    System.Cursor = wdCursorNormal
+    Exit Sub
+    
+Handler:
+    Set Body = Nothing
+    Set Request = Nothing
+    Application.ScreenUpdating = True
+    System.Cursor = wdCursorNormal
+    MsgBox "Error " & Err.number & ": " & Err.Description
+End Sub
+
+

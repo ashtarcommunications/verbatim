@@ -36,6 +36,7 @@ Public UnderlineModeToggle As Boolean
 
 ' Caselist globals
 Public Const CASELIST_URL As String = "https://api.opencaselist.com/v1"
+Public Const SHARE_URL As String = "https://share.tabroom.com"
 Public Const MOCK_ROUNDS As String = "https://run.mocky.io/v3/be382c53-e49c-4de4-99b6-44ba5e6a3e7c"
  
 ' Paperless globals
