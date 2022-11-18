@@ -1,3 +1,4 @@
+Reorganize settings form
 Convert all library references to late binding
 All bug fixes from bug list
 Normalize form styles
@@ -16,3 +17,6 @@ Contributions.MD
 Add default event selection to settings
 Troubleshooting form
 Fix new speech dropdown
+Remove custom pointer ico's from form
+Rebuild ribbon
+Rename CiteMaker functions to Cite Creator
