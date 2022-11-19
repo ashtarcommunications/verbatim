@@ -25,7 +25,7 @@ Sub UnverbatimizeNormal()
     Exit Sub
     
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
 '*************************************************************************************
@@ -98,7 +98,7 @@ Handler:
         Set FSO = Nothing
     #End If
     Set p = Nothing
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -150,7 +150,7 @@ Sub ExportCustomCode(Optional Notify As Boolean)
 Handler:
     Set p = Nothing
     Set Module = Nothing
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -249,8 +249,8 @@ Sub UpdateCheck(Optional Notify As Boolean)
 
 Handler:
     Set FileStream = Nothing
-    Application.StatusBar = "Update Check Failed. Error " & Err.number & ": " & Err.Description
-    If Notify = True Then MsgBox "Update Check Failed. Error " & Err.number & ": " & Err.Description
+    Application.StatusBar = "Update Check Failed. Error " & Err.Number & ": " & Err.Description
+    If Notify = True Then MsgBox "Update Check Failed. Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -401,10 +401,10 @@ Sub LaunchWebsite(URL As String)
     Exit Sub
    
 Handler:
-    If Err.number = 4198 Then
+    If Err.Number = 4198 Then
         MsgBox "Opening website failed. Check your internet connection."
     Else
-        MsgBox "Error " & Err.number & ": " & Err.Description
+        MsgBox "Error " & Err.Number & ": " & Err.Description
     End If
 
 End Sub

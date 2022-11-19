@@ -38,7 +38,7 @@ Private Sub UserForm_Initialize()
     Exit Sub
 
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
 Sub btnCombine_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
@@ -131,6 +131,6 @@ Private Sub btnCombine_Click()
     Exit Sub
     
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub

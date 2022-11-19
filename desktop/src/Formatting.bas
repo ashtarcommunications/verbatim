@@ -773,7 +773,7 @@ Handler:
     Set TagSynonyms = Nothing
     Set dict = Nothing
     Set SI = Nothing
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
 Sub AutoEmphasizeFirst()
@@ -851,7 +851,7 @@ Handler:
     #If Not Mac Then
         Set FSO = Nothing
     #End If
-    MsgBox "Getting from CiteMaker failed - ensure Google Chrome and the CiteMaker extension are installed and open." & vbCrLf & vbCrLf & "Error " & Err.number & ": " & Err.Description
+    MsgBox "Getting from CiteMaker failed - ensure Google Chrome and the CiteMaker extension are installed and open." & vbCrLf & vbCrLf & "Error " & Err.Number & ": " & Err.Description
 End Sub
 
 Sub AutoNumberTags()

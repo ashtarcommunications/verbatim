@@ -103,7 +103,7 @@ Handler:
         Set Files = Nothing
     #End If
     Ribbon.RefreshRibbon
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -189,7 +189,7 @@ Sub GetSpeeches(control As IRibbonControl, ByRef returnedVal)
 Handler:
     Set Response = Nothing
     System.Cursor = wdCursorNormal
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
 Sub NewSpeechFromMenu(control As IRibbonControl)
@@ -229,7 +229,7 @@ Sub NewSpeechFromMenu(control As IRibbonControl)
     Exit Sub
 
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -353,7 +353,7 @@ Sub MoveUp()
     
 Handler:
     Application.ScreenUpdating = True
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -447,7 +447,7 @@ Sub MoveDown()
     
 Handler:
     Application.ScreenUpdating = True
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -596,7 +596,7 @@ Handler:
     Application.ScreenUpdating = True
     Set SpeechDoc = Nothing
     
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -651,7 +651,7 @@ SpeechName:
     Exit Sub
     
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -770,7 +770,7 @@ Handler:
         Set FSO = Nothing
         Set Drv = Nothing
     #End If
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -841,7 +841,7 @@ Handler:
     #If Not Mac Then
         Set FSO = Nothing
     #End If
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
 '*************************************************************************************

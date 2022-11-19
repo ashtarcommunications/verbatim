@@ -144,6 +144,44 @@ Function CheckDocx(Optional Notify As Boolean) As Boolean
     End If
 End Function
 
+Public Function CheckDefaultSave() As Boolean
+    If Application.DefaultSaveFormat = "Docx" Then
+        CheckDefaultSave = True
+    Else
+        CheckDefaultSave = False
+    End If
+End Function
+
+Public Function CheckDuplicateTemplates() As Boolean
+
+    On Error Resume Next
+    
+    If Filesystem.FileExists(Environ("USERPROFILE") & "\Desktop\Debate.dotm") = False And _
+    Filsystem.FileExists(Environ("USERPROFILE") & "\Downloads\Debate.dotm") = False Then
+        CheckDuplicateTemplates = True
+    Else
+        CheckDuplicateTemplates = False
+    End If
+    
+End Function
+
+Public Function CheckAddins() As Boolean
+    On Error Resume Next
+
+    #If Mac Then
+        CheckAddins = True
+        Exit Sub
+    #Else
+        Dim Addin As COMAddIn
+               
+        For Each Addin In Application.COMAddIns
+            If Addin.Description = "Send to Bluetooth" And Addin.Connect = True Then
+                CheckAddins = False
+            End If
+        Next Addin
+    #End If
+End Function
+
 ' *************************************************************************************
 ' * FIX FUNCTIONS                                                                     *
 ' *************************************************************************************

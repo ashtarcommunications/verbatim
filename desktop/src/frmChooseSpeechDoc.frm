@@ -40,10 +40,10 @@ Private Sub UserForm_Initialize()
     
 Handler:
     ' Periodic inexplicable runtime error
-    If Err.number = 5097 Then
+    If Err.Number = 5097 Then
         MsgBox "Your Word interface has been corrupted, probably because of the Windows Explorer Preview Pane. Try running the Verbatim Troubleshooter to solve this. You can also try closing any open Explorer windows, opening a new document, or restarting Word to fix it."
     Else
-        MsgBox "Error " & Err.number & ": " & Err.Description
+        MsgBox "Error " & Err.Number & ": " & Err.Description
     End If
 End Sub
 

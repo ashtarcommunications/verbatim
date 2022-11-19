@@ -11,7 +11,7 @@ Attribute VB_Name = "Globals"
     Public Declare PtrSafe Function VkKeyScan Lib "user32" Alias "VkKeyScanA" (ByVal cChar As Byte) As Integer
     
     'ShellExecute needed to launch installer package after updates
-    Public Declare PtrSafe Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+    Public Declare PtrSafe Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hwnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
 #End If
 
 Public IsMac As Boolean
@@ -78,6 +78,8 @@ Public GREEN As Long
 Public LIGHT_GREEN As Long
 Public RED As Long
 Public LIGHT_RED As Long
+Public ORANGE As Long
+Public LIGHT_ORANGE As Long
 Public DARK_GRAY As Long
 
 Sub InitializeGlobals()
@@ -89,9 +91,9 @@ Sub InitializeGlobals()
     LIGHT_GREEN = RGB(169, 221, 116) ' 7658921, &H0074DDA9&
     RED = RGB(191, 86, 86) ' 5658303, &H005656BF&
     LIGHT_RED = RGB(241, 136, 136) ' 8947953, &H008888F1&
+    ORANGE = RGB(191, 139, 86) ' 5671871, &H00568BBF&
+    LIGHT_ORANGE = RGB(223, 197, 170) ' 11191775, &H00AAC5DF&
     DARK_GRAY = RGB(169, 169, 169) ' 11119017, &H00A9A9A9&
-    
-    
 End Sub
 
 

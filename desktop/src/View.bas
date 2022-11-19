@@ -93,7 +93,7 @@ Sub ArrangeWindows()
     
 Handler:
     Set CurrentWindow = Nothing
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
 Sub SwitchWindows()

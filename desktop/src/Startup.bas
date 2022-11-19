@@ -127,13 +127,14 @@ Public Sub FirstRun()
     SaveSetting "Verbatim", "Admin", "FirstRun", False
     
     ' Unverbatimize Normal to clear out old installs
+    ' TODO - this won't work if no VBOM access
     Settings.UnverbatimizeNormal
     
     ' Remove old registry keys
-    'SaveSetting "Verbatim", "Main", "TabroomUsername", ""
-    'SaveSetting "Verbatim", "Main", "TabroomPassword", ""
-    'SaveSetting "Verbatim", "Main", "GmailUsername", ""
-    'SaveSetting "Verbatim", "Main", "GmailPassword", ""
+    DeleteSetting "Verbatim", "Main", "TabroomUsername"
+    DeleteSetting "Verbatim", "Main", "TabroomPassword"
+    DeleteSetting "Verbatim", "Main", "GmailUsername"
+    DeleteSetting "Verbatim", "Main", "GmailPassword"
     
     ' Setup keyboard shortcuts (includes tilde fix)
     Settings.ResetKeyboardShortcuts

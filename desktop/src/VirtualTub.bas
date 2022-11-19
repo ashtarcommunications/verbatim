@@ -66,7 +66,7 @@ Sub GetVTubContent(control As IRibbonControl, ByRef returnedVal)
 
 Handler:
     Set VTubFolder = Nothing
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -249,7 +249,7 @@ Private Sub VTubCreate()
 Handler:
     Unload ProgressForm
     Set ProgressForm = Nothing
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -399,7 +399,7 @@ Handler:
     Unload ProgressForm
     Set ProgressForm = Nothing
     
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
 Public Function ConvertDictionaryToXML(d) As String
@@ -542,7 +542,7 @@ Sub ConvertVTubToXML()
     Exit Sub
     
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
 Public Function HeadingTitle(p As String) As String
@@ -656,7 +656,7 @@ Function AddBookmarks(Path As String) As Dictionary
     Exit Function
     
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Function
 

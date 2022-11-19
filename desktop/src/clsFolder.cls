@@ -89,6 +89,6 @@ Handler:
     #If Not Mac Then
         Set FSO = Nothing
     #End If
-    MsgBox "Error reading " & Path & " - Error " & Err.number & ": " & Err.Description
+    MsgBox "Error reading " & Path & " - Error " & Err.Number & ": " & Err.Description
 End Sub
 

@@ -95,7 +95,7 @@ Sub GetSearchResultsContent(control As IRibbonControl, ByRef returnedVal)
 Handler:
     Set objRecordset = Nothing
     Set objConnection = Nothing
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 

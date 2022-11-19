@@ -89,6 +89,6 @@ Public Sub PopulateComboBoxFromJSON(URL As String, DisplayKey As String, ValueKe
 Handler:
     Set Response = Nothing
     System.Cursor = wdCursorNormal
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 

@@ -39,7 +39,7 @@ Public Sub Init(MenuType As String, Name As String, Path As String, DateLastModi
     Exit Sub
 
 Handler:
-    MsgBox "Error reading " & Path & " - Error " & Err.number & ": " & Err.Description
+    MsgBox "Error reading " & Path & " - Error " & Err.Number & ": " & Err.Description
 End Sub
 
 Public Function ToJSON() As String

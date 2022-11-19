@@ -207,7 +207,7 @@ Private Sub UserForm_Initialize()
     
     Exit Sub
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
 Private Sub lblCaselistLink_Click()
@@ -243,7 +243,7 @@ Private Sub cboCaselists_DropButtonClick()
     Exit Sub
 
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
 Private Sub cboCaselists_Change()
@@ -294,7 +294,7 @@ Private Sub cboCaselistSchoolName_DropButtonClick()
     Exit Sub
 
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -340,7 +340,7 @@ Private Sub cboCaselistTeamName_DropButtonClick()
     Exit Sub
 
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -672,7 +672,7 @@ Handler:
     Set Request = Nothing
     Application.ScreenUpdating = True
     System.Cursor = wdCursorNormal
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
 Private Function WikifySelection() As String
@@ -719,7 +719,7 @@ Private Function WikifySelection() As String
     
 Handler:
     Application.ScreenUpdating = True
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
     
 End Function
 

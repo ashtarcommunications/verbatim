@@ -22,7 +22,7 @@ Public Function GetReq(URL As String) As Dictionary
         Set Response = New Dictionary
         Response.Add "status", HttpReq.Status
         Response.Add "body", JSONTools.ParseJson(HttpReq.responseText)
-      
+             
         Set GetReq = Response
 
         Set HttpReq = Nothing
@@ -32,7 +32,7 @@ Public Function GetReq(URL As String) As Dictionary
     
 Handler:
     If Not IsMac Then Set HttpReq = Nothing
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 End Function
 
 Public Function PostReq(URL As String, Body As Dictionary) As Dictionary
@@ -85,5 +85,24 @@ Handler:
     Set HttpReq = Nothing
     Set Response = Nothing
     Set ResponseBody = Nothing
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 End Function
+
+Public Sub DownloadFile(URL As String, FilePath As Variant)
+    #If Mac Then
+        MacScript ("do shell script ""curl -o '" & URL & "'" & " " & FilePath & """")
+    #Else
+        Dim HttpReq As MSXML2.ServerXMLHTTP60
+        Set HttpReq = New ServerXMLHTTP60
+        HttpReq.Open "GET", URL, False
+        HttpReq.send
+        Dim FileStream
+        Set FileStream = CreateObject("ADODB.Stream")
+        FileStream.Open
+        FileStream.Type = 1
+        FileStream.Write HttpReq.ResponseBody
+        FileStream.SaveToFile FilePath, 2 '1 = no overwrite, 2 = overwrite
+        FileStream.Close
+        Set FileStream = Nothing
+    #End If
+End Sub

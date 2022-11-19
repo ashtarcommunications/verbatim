@@ -25,7 +25,7 @@ Private Sub UserForm_Initialize()
     Exit Sub
 
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
 Private Sub btnCancel_Click()

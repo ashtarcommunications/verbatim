@@ -176,7 +176,7 @@ Sub CiteRequestDoc()
 
 Handler:
     Set FSO = Nothing
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
 '*************************************************************************************
@@ -196,7 +196,7 @@ Sub Word2MarkdownCites()
     Exit Sub
 
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -599,5 +599,5 @@ Public Function CheckCaselistToken() As Boolean
     Exit Function
 
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 End Function

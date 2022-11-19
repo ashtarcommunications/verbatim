@@ -26,7 +26,7 @@ Public Function FileExists(ByVal FilePath As String) As Boolean
 
 Handler:
     Set FSO = Nothing
-    Application.StatusBar = "Error checking for file " & FilePath & " - Error " & Err.number & ": " & Err.Description
+    Application.StatusBar = "Error checking for file " & FilePath & " - Error " & Err.Number & ": " & Err.Description
 End Function
 
 Public Function FolderExists(ByVal FolderPath As String) As Boolean
@@ -53,7 +53,7 @@ Public Function FolderExists(ByVal FolderPath As String) As Boolean
 
 Handler:
     Set FSO = Nothing
-    Application.StatusBar = "Error checking for folder " & FolderPath & " - Error " & Err.number & ": " & Err.Description
+    Application.StatusBar = "Error checking for folder " & FolderPath & " - Error " & Err.Number & ": " & Err.Description
 End Function
 
 Function GetSubfoldersInFolder(FolderPath) As String
@@ -116,6 +116,19 @@ Sub DeleteFile(Path As String)
     #End If
 End Sub
 
+Sub DeleteFolder(Path As String)
+    On Error Resume Next
+    
+    #If Mac Then
+        AppleScriptTask "Verbatim.scpt", "KillFolderOnMac", Path
+    #Else
+        Dim FSO As FileSystemObject
+        Set FSO = New FileSystemObject
+        FSO.DeleteFolder Path
+        Set FSO = Nothing
+    #End If
+End Sub
+
 Public Function GetFile(Path As String) As clsFile
     Set GetFile = New clsFile
     GetFile.Init Path
@@ -166,7 +179,7 @@ Handler:
     #If Not Mac Then
         Set FSO = Nothing
     #End If
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
     
 End Sub
 
@@ -222,5 +235,5 @@ Handler:
     #End If
     
     Filesystem.DeleteFile Path & ".base64"
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 End Function

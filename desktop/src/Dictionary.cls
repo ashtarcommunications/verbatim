@@ -191,17 +191,17 @@ End Function
 '
 ' @return {Variant}
 ' --------------------------------------------- '
-Public Function Items() As Variant
-Attribute Items.VB_Description = "Get an array containing all items in the dictionary."
+Public Function items() As Variant
+Attribute items.VB_Description = "Get an array containing all items in the dictionary."
 #If Mac Or Not UseScriptingDictionaryIfAvailable Then
     If Me.Count > 0 Then
-        Items = dict_pItems
+        items = dict_pItems
     Else
         ' Split("") creates initialized empty array that matches Dictionary Keys and Items
-        Items = VBA.Split("")
+        items = VBA.Split("")
     End If
 #Else
-    Items = dict_pDictionary.Items
+    items = dict_pDictionary.items
 #End If
 End Function
 

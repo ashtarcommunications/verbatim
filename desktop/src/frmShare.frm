@@ -4,7 +4,7 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmShare
    ClientHeight    =   7440
    ClientLeft      =   120
    ClientTop       =   465
-   ClientWidth     =   9060.001
+   ClientWidth     =   9060
    OleObjectBlob   =   "frmShare.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -83,7 +83,7 @@ Private Sub UserForm_Initialize()
 
 Handler:
     Set Request = Nothing
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
     
 End Sub
 
@@ -233,7 +233,7 @@ Handler:
     Set Request = Nothing
     Application.ScreenUpdating = True
     System.Cursor = wdCursorNormal
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
 

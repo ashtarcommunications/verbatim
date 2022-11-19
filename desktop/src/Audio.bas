@@ -32,7 +32,7 @@ Public Sub StartRecord(ByVal BPS As BitsPerSec, ByVal SPS As SamplesPerSec, ByVa
     Exit Sub
     
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
     RecordAudioToggle = False
     If Audio.RecordStatus = "recording" Then
         Audio.SaveRecord
@@ -118,7 +118,7 @@ Handler:
             mciSendString "stop capture", retStr, 128, cBack
         End If
     #End If
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
     Ribbon.RefreshRibbon
 End Sub
 
@@ -154,6 +154,6 @@ Sub RecordAudio(control As IRibbonControl, pressed As Boolean)
     
 Handler:
     RecordAudioToggle = False
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
     Ribbon.RefreshRibbon
 End Sub

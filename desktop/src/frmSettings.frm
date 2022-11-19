@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmSettings 
    Caption         =   "Verbatim Settings"
-   ClientHeight    =   9225.001
+   ClientHeight    =   9225
    ClientLeft      =   45
    ClientTop       =   375
    ClientWidth     =   11925
@@ -261,7 +261,7 @@ Private Sub UserForm_Initialize()
     Exit Sub
         
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -371,7 +371,7 @@ Private Sub btnResetAllSettings_Click()
     Exit Sub
         
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -624,7 +624,7 @@ Private Sub btnSave_Click()
     Exit Sub
         
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -824,7 +824,7 @@ Private Sub btnImportSettings_Click()
     Exit Sub
 
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -974,7 +974,7 @@ Private Sub btnExportSettings_Click()
     Exit Sub
 
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -1162,7 +1162,7 @@ Private Sub btnResetFormatting_Click()
     Exit Sub
         
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -1199,7 +1199,7 @@ Private Sub btnResetKeyboard_Click()
     Exit Sub
     
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -1328,7 +1328,7 @@ Private Sub GetPaDSFolder(c As control)
     Exit Sub
     
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
     
 End Sub
 
@@ -1402,7 +1402,7 @@ Private Sub cboCaselistSchoolName_DropButtonClick()
     Exit Sub
 
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
@@ -1433,7 +1433,7 @@ Private Sub cboCaselistTeamName_DropButtonClick()
     Exit Sub
 
 Handler:
-    MsgBox "Error " & Err.number & ": " & Err.Description
+    MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
