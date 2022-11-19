@@ -25,6 +25,8 @@ Partial Class frmMain
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmMain))
         Me.chkMacroSecurity = New System.Windows.Forms.CheckBox()
         Me.chkAccessVBOM = New System.Windows.Forms.CheckBox()
+        Me.btnInstallOCR = New System.Windows.Forms.Button()
+        Me.btnUninstallOCR = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'chkMacroSecurity
@@ -47,11 +49,31 @@ Partial Class frmMain
         Me.chkAccessVBOM.Text = "Access VBOM"
         Me.chkAccessVBOM.UseVisualStyleBackColor = True
         '
+        'btnInstallOCR
+        '
+        Me.btnInstallOCR.Location = New System.Drawing.Point(261, 54)
+        Me.btnInstallOCR.Name = "btnInstallOCR"
+        Me.btnInstallOCR.Size = New System.Drawing.Size(111, 23)
+        Me.btnInstallOCR.TabIndex = 3
+        Me.btnInstallOCR.Text = "Install OCR Plugin"
+        Me.btnInstallOCR.UseVisualStyleBackColor = True
+        '
+        'btnUninstallOCR
+        '
+        Me.btnUninstallOCR.Location = New System.Drawing.Point(378, 54)
+        Me.btnUninstallOCR.Name = "btnUninstallOCR"
+        Me.btnUninstallOCR.Size = New System.Drawing.Size(170, 23)
+        Me.btnUninstallOCR.TabIndex = 4
+        Me.btnUninstallOCR.Text = "Uninstall OCR Plugin"
+        Me.btnUninstallOCR.UseVisualStyleBackColor = True
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 15.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(800, 450)
+        Me.Controls.Add(Me.btnUninstallOCR)
+        Me.Controls.Add(Me.btnInstallOCR)
         Me.Controls.Add(Me.chkAccessVBOM)
         Me.Controls.Add(Me.chkMacroSecurity)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -64,4 +86,7 @@ Partial Class frmMain
 
     Friend WithEvents chkMacroSecurity As CheckBox
     Friend WithEvents chkAccessVBOM As CheckBox
+    Friend WithEvents btnInstallOCR As Button
+    Friend WithEvents Button1 As Button
+    Friend WithEvents btnUninstallOCR As Button
 End Class
