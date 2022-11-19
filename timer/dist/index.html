@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+  <body>
+    <h1>timer</h1>
+    <div id="prepTimers" class="no-debate-timers">
+      <form id="firstPrepTimerForm" class="flex-column flex-even mui-panel">
+        <div class="flex-row flex-even">
+          <button type="reset" class="mui-btn mui-btn--small mui-btn--danger"> reset </button>
+          <div class="timer-display">
+            00:00
+          </div>
+          <button type="submit" class="mui-btn mui-btn--small mui-btn--primary">
+            start
+          </button>
+        </div>
+        <div class="flex-row flex-justify-center">
+          <button type="button" class="mui-btn mui-btn--small mui-btn--accent plus-second">
+            + S
+          </button>
+          <button type="button" class="mui-btn mui-btn--small mui-btn--accent plus-minute">
+            + M
+          </button>
+          <button type="button" class="mui-btn mui-btn--small mui-btn--accent minus-second">
+            - S
+          </button>
+          <button type="button" class="mui-btn mui-btn--small mui-btn--accent minus-minute">
+            - M
+          </button>
+        </div>
+      </form>
+      <form id="secondPrepTimerForm" class="flex-column flex-even mui-panel">
+        <div class="flex-row flex-even">
+          <button type="reset" class="mui-btn mui-btn--small mui-btn--danger"> reset </button>
+          <div class="timer-display">
+            00:00
+          </div>
+          <button type="submit" class="mui-btn mui-btn--small mui-btn--primary">
+            start
+          </button>
+        </div>
+        <div class="flex-row flex-justify-center">
+          <button type="button" class="mui-btn mui-btn--small mui-btn--accent plus-second">
+            + S
+          </button>
+          <button type="button" class="mui-btn mui-btn--small mui-btn--accent plus-minute">
+            + M
+          </button>
+          <button type="button" class="mui-btn mui-btn--small mui-btn--accent minus-second">
+            - S
+          </button>
+          <button type="button" class="mui-btn mui-btn--small mui-btn--accent minus-minute">
+            - M
+          </button>
+        </div>
+      </form>
+    </div>
+    <div class="flex-column" id="timerContainer">
+      <div class="timer-display" id="mainTimerDisplay">
+        00:00
+      </div>
+      <form action="" class="mui-form--inline flex-row" id="timerForm">
+        <div class="flex-component">
+          <div class="mui-select">
+            <select class="time-select" id="minuteSelect" name="minuteSelect">
+              {{> timerIntervalOptions }}
+            </select>
+            <label for="minuteSelect">minutes</label>
+          </div>
+          <div class="mui-select">
+            <select class="time-select" id="secondSelect" name="secondSelect">
+              {{> timerIntervalOptions }}
+            </select>
+            <label for="secondSelect">seconds</label>
+          </div>
+        </div>
+        <button id="timerSubmit" class="mui-btn mui-btn--primary" type="submit">start</button>
+        <button id="timerReset" class="mui-btn mui-btn--danger" type="reset">reset</button>
+        <div id="timerOptions" class="flex-row flex-even">
+          <div class="mui-checkbox">
+            <label>
+              <input id="prepTimersCheckbox" type="checkbox" value="" checked>
+              Prep Timers
+            </label>
+          </div>
+        </div>
+      </form>
+    </div>
+    </div>
+  </body>
+</html>

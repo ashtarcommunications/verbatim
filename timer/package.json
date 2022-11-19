@@ -1,0 +1,12 @@
+{
+  "name": "debate-timer",
+  "scripts": {
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^1.0.0-rc.6"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.0.0-rc.13"
+  }
+}

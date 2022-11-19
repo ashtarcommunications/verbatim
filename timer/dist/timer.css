@@ -1,0 +1,137 @@
+/* Timer */
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.flex-component {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.timer-display {
+    align-self: center;
+    font-size: 20px;
+    letter-spacing: 1px;
+}
+
+#timerForm {
+    display: flex;
+    flex-direction: column;
+    min-height: 200px;
+    justify-content: space-evenly;
+}
+
+#timerForm .mui-select {
+    display: flex;
+    align-content: center;
+    padding-top: 0;
+}
+
+#timerForm .mui-select .time-select {
+    width: 50px;
+    padding-left: 5px;
+}
+
+/* Prep Timers */
+#prepTimers form {
+    margin: 10px 0;
+}
+
+.no-debate-timers {
+    display: none;
+}
+
+#tab-timer .mui-select label {
+    position: relative;
+    align-self: center;
+    padding: 0 5px;
+}
+
+#mainTimer {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+#mainTimerDisplay {
+    margin-top: 20px;
+    margin-bottom: 5px;
+}
+
+#timerReset {
+    margin-left: 0 !important;
+}
+
+.mui-btn--accent {
+    background-color: #004E85;
+}
+
+@media screen and (max-width: 767px) {
+    .flex-row {
+        display: flex;
+        justify-content: space-evenly;
+        align-content: center;
+    }
+
+    .flex-column {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-content: center;
+    }
+
+    #timerContainer {
+        min-height: 180px;
+    }
+
+    .timer-display {
+        margin: 0 2px;
+    }
+
+    #timerForm .mui-select {
+        display: flex;
+        align-content: center;
+        padding-top: 0;
+    }
+
+    #timerForm .mui-select .time-select {
+        width: 50px;
+        padding-left: 5px;
+    }
+
+    #tab-timer .mui-select label {
+        position: relative;
+        align-self: center;
+        padding: 0 5px;
+    }
+
+    .flex-component {
+        display: flex;
+    }
+
+    .flex-component .mui-select:first-child {
+        margin-right: 20px;
+    }
+
+    #timerContainer .mui-select > label {
+        font-size: 14px;
+        line-height: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .mui-col-md-8 {
+        width: 100% !important;
+    }
+
+    #featureTabs {
+        margin: 0 15px;
+        width: auto;
+        margin-bottom: 15px;
+    }
+}
+
+#timerWarning {
+    font-size: 10px;
+}
