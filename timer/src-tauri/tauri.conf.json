@@ -59,7 +59,7 @@
         "width": 200,
         "height": 233,
         "resizable": false,
-        "label": "DebateTimer",
+        "label": "timer",
         "title": "Debate Timer",
         "fileDropEnabled": false,
         "transparent": true,

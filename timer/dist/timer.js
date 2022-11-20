@@ -1,5 +1,6 @@
 import { Timer } from './easytimer/easytimer.js';
 // import { Store } from './store.js';
+// import { WebviewWindow } from '@tauri-apps/api/window';
 
 document.addEventListener("DOMContentLoaded", async () => {
     // const store = new Store('.settings.dat');
@@ -45,6 +46,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelector('#pause').style.display = 'block';
 
         // TODO - better approach to window transparency and turning it off
+        // const webview = new WebviewWindow('timer', { url: '/' });
+        // webview.once('tauri://created', () => {
+        //     webview.transparent = true;
+        //     webview.width = 200;
+        //     webview.height = 50;
+        // });
+        // webview.once('tauri://error', (e) => {
+        //     console.log(e);
+        // });
         // document.querySelector('#smalltimers').style.display = 'none';
         // document.querySelector('#controls').style.display = 'none';
         // document.querySelector('#active').style.backgroundColor = 'transparent';
