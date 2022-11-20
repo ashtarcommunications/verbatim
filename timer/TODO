@@ -1,0 +1,10 @@
+Normalize speech times when saving settings
+Fix vertical scroll bar on settings page
+Add better beep sound
+Add voice count sounds for alerts
+Fix alerts on 0:00
+Cancel and reset buttons on settings page
+Right-click add/remove time and reset prep times
+Fix non-numeric input entry
+README
+Window icons
