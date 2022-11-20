@@ -4,9 +4,10 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@tauri-apps/api": "^1.0.0-rc.6"
+    "@tauri-apps/api": "^1.1.2",
+    "tauri-plugin-store-api": "github:tauri-apps/tauri-plugin-store#dev"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.0.0-rc.13"
+    "@tauri-apps/cli": "^1.1.2"
   }
 }

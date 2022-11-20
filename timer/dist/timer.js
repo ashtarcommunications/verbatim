@@ -1,193 +1,219 @@
-/* eslint no-unused-vars: "off", no-undef: "off", no-new: "off" */
-// import * as  Timer from './easytimer.js';
 import { Timer } from './easytimer/easytimer.js';
+// import { Store } from './store.js';
 
-export const countdownString = timer => {
-    const minutes = timer.getTimeValues().minutes < 10 ? `0${timer.getTimeValues().minutes}` : timer.getTimeValues().minutes;
-    const seconds = timer.getTimeValues().seconds < 10 ? `0${timer.getTimeValues().seconds}` : timer.getTimeValues().seconds;
-    return `${minutes}:${seconds}`;
-};
+document.addEventListener("DOMContentLoaded", async () => {
+    // const store = new Store('.settings.dat');
+    // await store.set('some-key', { value: 5 });
+    // const val = await store.get('some-key');
+    // assert(val, { value: 5 });
 
-export const setupTimer = () => {
     const timer = new Timer();
-    const getTimerForm = document.getElementById('timerForm');
-    const getTimerDisplay = document.getElementById('mainTimerDisplay');
-    const getTimerSubmit = document.getElementById('timerSubmit');
-    const getMinutes = () => parseInt(document.getElementById('minuteSelect').value);
-    const getSeconds = () => parseInt(document.getElementById('secondSelect').value);
+    let selectedTimer = '#speechtimer';
 
-    timer.addEventListener('secondsUpdated', () => (
-        getTimerDisplay.textContent = countdownString(timer)
-    ));
+    const beep = new Audio();
+    beep.src = './beep.wav';
 
-    const startCountdown = () => {
+    const resetTimers = () => {
+        document.querySelector('#activetimer').value = `9:00`;
+        document.querySelector('#activetimer').classList = 'speech';
+        document.querySelector('#active').classList = 'speech';
+        document.querySelector('#afftimer').textContent = `10:00`;
+        document.querySelector('#speechtimer').textContent = `9:00`;
+        document.querySelector('#negtimer').textContent = `10:00`;
+    }
+    resetTimers();
+
+    const currentTime = () => {
+        const minutes = timer.getTimeValues().minutes;
+        let seconds = timer.getTimeValues().seconds;
+        seconds = seconds < 10 ? `0${seconds}` : seconds;
+        return `${minutes}:${seconds}`;
+    };
+
+    const start = () => {
+        const value = document.querySelector('#activetimer').value;
+        console.log(parseInt(value.split(':')[0]));
+        console.log(parseInt(value.split(':')[1]));
         timer.start({
             countdown: true,
             startValues: {
-                seconds: getSeconds(),
-                minutes: getMinutes(),
+                minutes: parseInt(value.split(':')[0]),
+                seconds: parseInt(value.split(':')[1]),
             },
         });
+        document.querySelector('#start').style.display = 'none';
+        document.querySelector('#pause').style.display = 'block';
+
+        // TODO - better approach to window transparency and turning it off
+        // document.querySelector('#smalltimers').style.display = 'none';
+        // document.querySelector('#controls').style.display = 'none';
+        // document.querySelector('#active').style.backgroundColor = 'transparent';
+        // document.querySelector('#activetimer').style.color = 'blue';
     };
 
-    getTimerForm.addEventListener('submit', event => {
-        event.preventDefault();
-        const submitTextValue = getTimerSubmit.textContent;
-        switch (submitTextValue) {
-            case 'start':
-                startCountdown();
-                getTimerSubmit.textContent = 'pause';
-                break;
-            case 'pause':
-                timer.pause();
-                getTimerSubmit.textContent = 'resume';
-                break;
-            case 'resume':
-                timer.start();
-                getTimerSubmit.textContent = 'pause';
-                break;
-            default:
-                timer.pause();
-                break;
-        }
-    });
-
-    getTimerForm.addEventListener('reset', event => {
-        event.preventDefault();
-        timer.reset();
+    const stop = () => {
         timer.stop();
-        getTimerSubmit.textContent = 'start';
-        getTimerDisplay.textContent = '00:00';
-    });
-};
+        document.querySelector('#pause').style.display = 'none';
+        document.querySelector('#start').style.display = 'block';
+    }
 
-export const timeOperations = (timer, classList) => {
-    timer.pause();
-    if (classList.contains('plus-minute')) {
-        const newMin = timer.getTimeValues().minutes + 1;
-        if (newMin <= 59) timer.getTimeValues().minutes = newMin;
-    }
-    if (classList.contains('minus-minute')) {
-        const newMin = timer.getTimeValues().minutes - 1;
-        if (newMin >= 0) timer.getTimeValues().minutes = newMin;
-    }
-    if (classList.contains('plus-second')) {
-        const newSec = timer.getTimeValues().seconds + 1;
-        if (newSec <= 59) timer.getTimeValues().seconds = newSec;
-    }
-    if (classList.contains('minus-second')) {
-        const newSec = timer.getTimeValues().seconds - 1;
-        if (newSec >= 0) timer.getTimeValues().seconds = newSec;
-    }
-    return new Timer({
-        countdown: true,
-        startValues: [0, timer.getTimeValues().seconds, timer.getTimeValues().minutes, 0, 0],
-    });
-};
-
-export const setupPrepTimers = () => {
-    const handleTimerState = (timer, form) => {
-        const submitButton = form.querySelector('button[type="submit"]');
-        switch (submitButton.textContent) {
-            case 'start':
-                timer.start();
-                submitButton.textContent = 'pause';
+    const switchTimer = (className) => {
+        document.querySelector('#activetimer').classList = className;
+        document.querySelector('#active').classList = className;
+        switch (className) {
+            case 'aff':
+                selectedTimer = '#afftimer';
                 break;
-            case 'pause':
-                timer.pause();
-                submitButton.textContent = 'resume';
+            case 'speech':
+                selectedTimer = '#speechtimer';
                 break;
-            case 'resume':
-                timer.start();
-                submitButton.textContent = 'pause';
+            case 'neg':
+                selectedTimer = '#negtimer';
                 break;
             default:
-                timer.pause();
                 break;
         }
+        document.querySelector('#activetimer').value = document.querySelector(selectedTimer).textContent;
+    }
+
+    const flashWarning = () => {
+        const currentClass = document.querySelector('#activetimer').classList.toString();
+        let repeat = 0;
+        const clear = setInterval(() => {
+            if (document.querySelector('#activetimer').classList.toString() === currentClass) {
+                document.querySelector('#activetimer').classList = 'warn';
+                document.querySelector('#active').classList = 'warn';
+            } else {
+                document.querySelector('#activetimer').classList = currentClass;
+                document.querySelector('#active').classList = currentClass;
+            }
+            if (repeat++ === 5) {
+                clearInterval(clear);
+                document.querySelector('#activetimer').classList = currentClass;
+                document.querySelector('#active').classList = currentClass;
+            }
+        }, 200);
+    }
+
+    timer.addEventListener('secondsUpdated', () => {
+        const time = currentTime();
+        document.querySelector('#activetimer').value = time;
+        document.querySelector(selectedTimer).textContent = time;
+
+        if (time === '0:30') {
+            flashWarning();
+        }
+    });
+
+    timer.addEventListener('targetAchieved', (e) => {
+        flashWarning();
+        beep.play();
+        stop();
+    });
+
+    document.querySelector('#start').addEventListener('click', () => {
+        validate();
+        start();
+    });
+
+    document.querySelector('#pause').addEventListener('click', () => {
+        stop();
+    });
+
+    document.querySelector('#active').addEventListener('click', () => {
+        timer.isRunning ? stop() : start();
+    });
+
+    document.querySelector('#affprep').addEventListener('click', () => {
+        stop();
+        switchTimer('aff');
+    });
+
+    document.querySelector('#speech').addEventListener('click', () => {
+        stop();
+        switchTimer('speech');
+
+    });
+
+    document.querySelector('#negprep').addEventListener('click', () => {
+        stop();
+        switchTimer('neg');
+    });
+
+    document.querySelector('#reset').addEventListener('click', () => {
+        document.querySelector('#confirmreset').style.display = 'block';
+        document.querySelector('#reset svg').style.display = 'none';
+        setTimeout(() => {
+            document.querySelector('#confirmreset').style.display = 'none';
+            document.querySelector('#reset svg').style.display = 'block';
+        }, 3000);
+    });
+
+    document.querySelector('#confirmreset').addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevents the reset div click handler firing again
+        resetTimers();
+        document.querySelector('#confirmreset').style.display = 'none';
+        document.querySelector('#reset svg').style.display = 'block';
+    });
+
+    const validate = () => {
+        const value = document.querySelector('#activetimer').value.replace(/\D/g, '');
+        const seconds = value.length < 3 ? parseInt(value) : parseInt(value.slice(-2));
+        const minutes = value.length > 2
+            ? value.length === 3
+                ? parseInt(value[0])
+                : parseInt(value.substring(0, 2))
+            : 0;
+        let timeString = '0:00';
+
+        switch (value.length) {
+            case 0:
+                break;
+            case 1:
+                timeString = `0:${value}`;
+            case 2:
+                if (seconds <= 59) {
+                    timeString = `0:${value}`;
+                } else {
+                    timeString = `1:${seconds - 60 < 10 ? `0${seconds - 60}` : seconds - 60}`;
+                }
+                break;
+            case 3:
+                timeString = `${value[0]}:${seconds > 59 ? 59 : seconds < 10 ? `0${seconds}` : seconds}`;
+                break;
+            case 4:
+                timeString = `${minutes > 59 ? 59 : minutes}:${seconds > 59 ? 59 : seconds < 10 ? `0${seconds}` : seconds}`;
+                break;
+            default:
+                break;
+        }
+        document.querySelector('#activetimer').value = timeString;
     };
 
-    const setPrepTimerDisplay = form => form.querySelector('.timer-display');
-
-    let firstPrepTimer = new Timer({ countdown: true, startValues: [0, 0, 3, 0, 0] });
-    const firstPrepTimerForm = document.querySelector('#firstPrepTimerForm');
-    const setFirstPrepTimerDisplay = () => (
-        setPrepTimerDisplay(firstPrepTimerForm).textContent = countdownString(firstPrepTimer)
-    );
-    setFirstPrepTimerDisplay();
-
-    firstPrepTimerForm.addEventListener('submit', event => {
-        event.preventDefault();
-        handleTimerState(firstPrepTimer, event.target);
-    });
-    firstPrepTimerForm.addEventListener('reset', event => {
-        event.preventDefault();
-        firstPrepTimer = new Timer({ countdown: true, startValues: [0, 0, 3, 0, 0] });
-        setFirstPrepTimerDisplay();
-        firstPrepTimerForm.querySelector('button[type="submit"]').textContent = 'start';
+    document.querySelector('#activetimer').addEventListener('change', () => {
+        validate();
     });
 
-    Array.from(
-        firstPrepTimerForm.querySelectorAll('.minus-second, .minus-minute, .plus-second, .plus-minute')
-    )
-    .forEach(element => element.addEventListener('click', event => {
-        event.preventDefault();
-        event.target.form.querySelector('button[type="submit"]').textContent = 'resume';
-
-        firstPrepTimer.removeEventListener('secondsUpdated', setFirstPrepTimerDisplay);
-        firstPrepTimer = timeOperations(firstPrepTimer, event.target.classList);
-        setFirstPrepTimerDisplay();
-        firstPrepTimer.addEventListener('secondsUpdated', setFirstPrepTimerDisplay);
-    })
-    );
-
-    firstPrepTimer.addEventListener('secondsUpdated', setFirstPrepTimerDisplay);
-
-    let secondPrepTimer = new Timer({ countdown: true, startValues: [0, 0, 3, 0, 0] });
-    const secondPrepTimerForm = document.querySelector('#secondPrepTimerForm');
-    const setSecondPrepTimerDisplay = () => (
-        // eslint-disable-next-line max-len
-        setPrepTimerDisplay(secondPrepTimerForm).textContent = countdownString(secondPrepTimer)
-    );
-    setSecondPrepTimerDisplay();
-
-    secondPrepTimerForm.addEventListener('submit', event => {
-        event.preventDefault();
-        handleTimerState(secondPrepTimer, event.target);
-    });
-    secondPrepTimerForm.addEventListener('reset', event => {
-        event.preventDefault();
-        secondPrepTimer = new Timer({ countdown: true, startValues: [0, 0, 3, 0, 0] });
-        setSecondPrepTimerDisplay();
-        secondPrepTimerForm.querySelector('button[type="submit"]').textContent = 'start';
+    Array.from(document.getElementsByClassName('presettime')).forEach(element => {
+        element.addEventListener('click', (e) => {
+            stop();
+            document.querySelector('#activetimer').value = e.target.textContent;
+            document.querySelector('#speechtimer').textContent = e.target.textContent;
+            switchTimer('speech');
+        });
     });
 
-    Array.from(
-        secondPrepTimerForm.querySelectorAll('.minus-second, .minus-minute, .plus-second, .plus-minute')
-    )
-    .forEach(element => element.addEventListener('click', event => {
-        event.preventDefault();
-        event.target.form.querySelector('button[type="submit"]').textContent = 'resume';
+    document.querySelector('#showsettings').addEventListener('click', () => {
+        document.querySelector('#app').style.display = 'none';
+        document.querySelector('#settings').style.display = 'block';
+    });
+    document.querySelector('#exitsettings').addEventListener('click', () => {
+        document.querySelector('#app').style.display = 'block';
+        document.querySelector('#settings').style.display = 'none';
+    });
 
-        secondPrepTimer.removeEventListener('secondsUpdated', setSecondPrepTimerDisplay);
-        secondPrepTimer = timeOperations(secondPrepTimer, event.target.classList);
-        setSecondPrepTimerDisplay();
-        secondPrepTimer.addEventListener('secondsUpdated', setSecondPrepTimerDisplay);
-    })
-    );
-
-    secondPrepTimer.addEventListener('secondsUpdated', setSecondPrepTimerDisplay);
-
-    const setPrepTimersDisplay = () => {
-        const prepTimers = document.getElementById('prepTimers');
-        /* eslint-disable no-unused-expressions */
-        document.getElementById('prepTimersCheckbox').checked ?
-            prepTimers.classList.remove('no-debate-timers')
-        :
-            prepTimers.classList.add('no-debate-timers');
-        /* eslint-enable no-unused-expressions */
-    };
-    setPrepTimersDisplay();
-
-    document.getElementById('prepTimersCheckbox').addEventListener('change', setPrepTimersDisplay);
-};
+    document.querySelector('#affprep').addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        return false;
+    }, false);
+});

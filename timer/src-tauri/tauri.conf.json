@@ -56,10 +56,15 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
-        "resizable": true,
+        "width": 200,
+        "height": 233,
+        "resizable": false,
+        "label": "DebateTimer",
         "title": "Debate Timer",
-        "width": 800
+        "fileDropEnabled": false,
+        "transparent": true,
+        "decorations": true,
+        "alwaysOnTop": true
       }
     ]
   }

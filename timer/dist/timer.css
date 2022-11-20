@@ -1,137 +1,248 @@
-/* Timer */
-.flex-column {
+/* Global setup */
+:root {
+    /* Harmonic 16 - janniks.github.io/harmonic16 */
+    --black: #0b1c2c;
+    --darkblue: #223b54;
+    --blue: #405c79;
+    --lightblue: #627e99;
+    --darkgray: #aabcce;
+    --gray: #cbd6e2;
+    --lightgray: #e5ebf1;
+    --white: #f7f9fb;
+    --orange: #bf8b56;
+    --yellow: #bfbf56;
+    --green: #8bbf56;
+    --lightgreen: #56bf8b;
+    --brightblue: #568bbf;
+    --purple: #8b56bf;
+    --magenta: #bf568b;
+    --red: #bf5656;
+}
+
+html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
     display: flex;
-    flex-direction: column;
+}
+
+#app {
+    width: 200px;
+}
+
+/* Global timer colors */
+.aff {
+    background-color: var(--green);
+    color: var(--black);
+}
+
+.speech {
+    background-color: var(--blue);
+    color: white;
+}
+
+.neg {
+    background-color: var(--red);
+    color: var(--black);
+}
+
+.warn {
+    background-color: var(--orange);
+    color: var(--black);
+}
+
+/* Active Timer */
+#active {
+    width: 100%;
+    font-size: 72px;
     text-align: center;
 }
 
-.flex-component {
+#activetimer {
+    width: 90%;
+    font-size: 72px;
+    text-align: center;
+    background-color: transparent;
+    border: none;
+}
+
+#activetimer:focus {
+    outline: none;
+    box-shadow: none;
+    border: none;
+}
+
+/* Small Timers */
+#smalltimers {
+    width: 100%;
     display: flex;
-    justify-content: space-evenly;
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    justify-content: space-around;
+    text-align: center;
 }
 
-.timer-display {
-    align-self: center;
-    font-size: 20px;
-    letter-spacing: 1px;
+.smalltimer {
+    padding: 0px 8px;
+    border: 1px solid var(--darkgray);
+    border-collapse: collapse;
+    cursor: pointer;
+    flex: 1;
 }
 
-#timerForm {
+.timerlabel {
+    font-size: 10px;
+}
+
+/* Controls */
+#controls {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    align-content: center;
+    justify-content: space-around;
+    text-align: center;
+}
+
+#controls div {
+    flex: 1;
+}
+
+/* Left controls */
+#leftcontrols {
     display: flex;
     flex-direction: column;
-    min-height: 200px;
-    justify-content: space-evenly;
 }
 
-#timerForm .mui-select {
+#reset,
+#showsettings {
+    border: 1px solid var(--darkgray);
     display: flex;
-    align-content: center;
-    padding-top: 0;
+    justify-content: center;
+    cursor: pointer;
 }
 
-#timerForm .mui-select .time-select {
-    width: 50px;
-    padding-left: 5px;
+#reset {
+    background-color: var(--orange);
 }
 
-/* Prep Timers */
-#prepTimers form {
-    margin: 10px 0;
+#showsettings {
+    background-color: var(--gray);
 }
 
-.no-debate-timers {
+#reset svg,
+#showsettings svg {
+    width: 20px;
+}
+
+#confirmreset {
+    display: none;
+    border: 1px solid var(--white);
+    background-color: var(--white);
+    color: var(--orange);
+    border-radius: 10px;
+    padding: 5px;
+    margin: 3px 1px;
+    cursor: pointer;
+}
+
+#confirmreset:hover {
+    background-color: var(--orange);
+    color: var(--white);
+}
+
+/* Center controls */
+#centercontrols {
+    border: 1px solid var(--darkgray);
+    background-color: var(--darkblue);
+}
+
+#start,
+#pause {
+    background-color: var(--darkblue);
+    border: none;
+    font-size: 48px;
+    width: 100%;
+    padding: 10px;
+    cursor: pointer;
+}
+
+#pause {
     display: none;
 }
 
-#tab-timer .mui-select label {
-    position: relative;
-    align-self: center;
-    padding: 0 5px;
+#start svg,
+#pause svg {
+    width: 30px;
 }
 
-#mainTimer {
+/* Right controls */
+#rightcontrols {
+    background-color: var(--blue);
+    color: white;
     display: flex;
-    justify-content: space-evenly;
+    flex-direction: column;
 }
 
-#mainTimerDisplay {
-    margin-top: 20px;
-    margin-bottom: 5px;
+.presettime {
+    border: 1px solid var(--darkgray);
+    border-collapse: collapse;
+    display: block;
+    cursor: pointer;
+    padding-top: 5px;
 }
 
-#timerReset {
-    margin-left: 0 !important;
-}
-
-.mui-btn--accent {
-    background-color: #004E85;
-}
-
-@media screen and (max-width: 767px) {
-    .flex-row {
-        display: flex;
-        justify-content: space-evenly;
-        align-content: center;
-    }
-
-    .flex-column {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-        align-content: center;
-    }
-
-    #timerContainer {
-        min-height: 180px;
-    }
-
-    .timer-display {
-        margin: 0 2px;
-    }
-
-    #timerForm .mui-select {
-        display: flex;
-        align-content: center;
-        padding-top: 0;
-    }
-
-    #timerForm .mui-select .time-select {
-        width: 50px;
-        padding-left: 5px;
-    }
-
-    #tab-timer .mui-select label {
-        position: relative;
-        align-self: center;
-        padding: 0 5px;
-    }
-
-    .flex-component {
-        display: flex;
-    }
-
-    .flex-component .mui-select:first-child {
-        margin-right: 20px;
-    }
-
-    #timerContainer .mui-select > label {
-        font-size: 14px;
-        line-height: 16px;
-    }
-}
-
-@media (max-width: 768px) {
-    .mui-col-md-8 {
-        width: 100% !important;
-    }
-
-    #featureTabs {
-        margin: 0 15px;
-        width: auto;
-        margin-bottom: 15px;
-    }
-}
-
-#timerWarning {
+/* Settings */
+#settings {
+    padding: 5px 10px;
+    width: 200px;
+    height: 233px;
+    display: none;
     font-size: 10px;
+    background-color: var(--lightgray);
+}
+
+#settings p {
+    margin: 5px 0px 0px 0px;
+}
+
+#alerts div {
+    display: inline;
+}
+
+#presets {
+    margin-top: 5px;
+}
+
+#times {
+    margin-top: 5px;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    align-content: center;
+    justify-content: space-around;
+    text-align: center;
+}
+
+#times input {
+    width: 35px;
+}
+
+#exit {
+    text-align: right;
+}
+
+#window div {
+    display: inline;
 }
