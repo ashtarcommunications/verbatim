@@ -1,13 +1,18 @@
 {
   "name": "debate-timer",
   "scripts": {
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "dev": "NODE_ENV=development webpack serve",
+    "build": "NODE_ENV='production' webpack"
   },
   "dependencies": {
-    "@tauri-apps/api": "^1.1.2",
+    "@tauri-apps/api": "^1.2.0",
     "tauri-plugin-store-api": "github:tauri-apps/tauri-plugin-store#dev"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.1.2"
+    "@tauri-apps/cli": "^1.2.0",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.0",
+    "webpack-dev-server": "^4.11.1"
   }
 }

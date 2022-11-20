@@ -4,7 +4,7 @@
 <head>
     <title>Debate Timer</title>
     <link rel="stylesheet" href="timer.css">
-    <script defer type="module" src="timer.js"></script>
+    <script defer type="module" src="timer.min.js"></script>
 </head>
 
 <body>
@@ -48,94 +48,90 @@
                 </button>
             </div>
             <div id="rightcontrols">
-                <div class="presettime">9:00</div>
-                <div class="presettime">6:00</div>
-                <div class="presettime">3:00</div>
+                <div id="presetconstructive" class="presettime">9:00</div>
+                <div id="presetrebuttal" class="presettime">6:00</div>
+                <div id="presetcx" class="presettime">3:00</div>
             </div>
         </div>
     </div>
     <div id="settings">
-        <div>
-            <p>Alerts</p>
-            <div id="alerts">
-                <div>
-                    <input type="checkbox" id="alert6" name="alert6" value="6">
-                    <label for="alert6">6:00</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="alert5" name="alert5" value="5">
-                    <label for="alert5">5:00</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="alert4" name="alert4" value="4">
-                    <label for="alert4">4:00</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="alert3" name="alert3" value="3">
-                    <label for="alert3">3:00</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="alert2" name="alert2" value="2">
-                    <label for="alert2">2:00</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="alert1" name="alert1" value="1">
-                    <label for="alert1">1:00</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="alert30" name="alert30" value="30">
-                    <label for="alert30">0:30</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="alert0" name="alert0" value="0">
-                    <label for="alert0">0:00</label>
-                </div>
+        <p>Alerts</p>
+        <div id="alerts">
+            <div>
+                <input type="checkbox" id="alert6" name="alert6" value="6">
+                <label for="alert6">6:00</label>
             </div>
-
-            <p>Alert types</p>
-            <input type="checkbox" id="warnflash" name="warnflash" value="flash">
-            <label for="warnflash">Flash</label>
-            <input type="checkbox" id="warnaudio" name="warnaudio" value="audio">
-            <label for="warnaudio">Audio</label>
-            <input type="checkbox" id="warnvoice" name="warnvoice" value="voice">
-            <label for="warnvoice">Voice</label>
-
-            <div id="presets">
-                <select>
-                    <option>Select a preset</option>
-                    <option>College CX</option>
-                    <option>HS CX</option>
-                    <option>HS LD</option>
-                    <option>HS PF</option>
-                    <option>Custom</option>
-                </select>
+            <div>
+                <input type="checkbox" id="alert5" name="alert5" value="5">
+                <label for="alert5">5:00</label>
             </div>
-
-            <div id="times">
-                <div>
-                    <label for="constructive">Constructive</label>
-                    <br />
-                    <input id="constructive" type="text" value="9:00" maxlength="4" pattern="[0-9]+" />
-                </div>
-                <div>
-                    <label for="rebuttal">Rebuttal</label>
-                    <br />
-                    <input id="rebuttal" type="text" value="6:00" maxlength="4" pattern="[0-9]+" />
-                </div>
-                <div>
-                    <label for="cx">CX</label>
-                    <br />
-                    <input id="cx" type="text" value="3:00" maxlength="4" pattern="[0-9]+" />
-                </div>
-                <div>
-                    <label for="prep">Prep</label>
-                    <br />
-                    <input id="prep" type="text" value="10:00" maxlength="4" pattern="[0-9]+" />
-                </div>
+            <div>
+                <input type="checkbox" id="alert4" name="alert4" value="4">
+                <label for="alert4">4:00</label>
+            </div>
+            <div>
+                <input type="checkbox" id="alert3" name="alert3" value="3">
+                <label for="alert3">3:00</label>
+            </div>
+            <div>
+                <input type="checkbox" id="alert2" name="alert2" value="2">
+                <label for="alert2">2:00</label>
+            </div>
+            <div>
+                <input type="checkbox" id="alert1" name="alert1" value="1">
+                <label for="alert1">1:00</label>
+            </div>
+            <div>
+                <input type="checkbox" id="alert30" name="alert30" value="30">
+                <label for="alert30">0:30</label>
+            </div>
+            <div>
+                <input type="checkbox" id="alert0" name="alert0" value="0">
+                <label for="alert0">0:00</label>
             </div>
         </div>
 
-        <p>Window</p>
+        <p>Alert types</p>
+        <input type="checkbox" id="warnflash" name="warnflash" value="flash">
+        <label for="warnflash">Flash</label>
+        <input type="checkbox" id="warnaudio" name="warnaudio" value="audio">
+        <label for="warnaudio">Audio</label>
+        <input type="checkbox" id="warnvoice" name="warnvoice" value="voice">
+        <label for="warnvoice">Voice</label>
+
+        <div id="presets">
+            <select id="presettimes">
+                <option value="">Select a preset</option>
+                <option value="ccx">College CX</option>
+                <option value="hscx">HS CX</option>
+                <option value="hsld">HS LD</option>
+                <option value="hspf">HS PF</option>
+            </select>
+        </div>
+
+        <div id="times">
+            <div>
+                <label for="constructive">Constructive</label>
+                <br />
+                <input id="constructive" type="text" value="9:00" maxlength="4" pattern="[0-9]+" />
+            </div>
+            <div>
+                <label for="rebuttal">Rebuttal</label>
+                <br />
+                <input id="rebuttal" type="text" value="6:00" maxlength="4" pattern="[0-9]+" />
+            </div>
+            <div>
+                <label for="cx">CX</label>
+                <br />
+                <input id="cx" type="text" value="3:00" maxlength="4" pattern="[0-9]+" />
+            </div>
+            <div>
+                <label for="prep">Prep</label>
+                <br />
+                <input id="prep" type="text" value="10:00" maxlength="4" pattern="[0-9]+" />
+            </div>
+        </div>
+
         <div id="window">
             <div>
                 <input type="checkbox" id="autoshrink" name="autoshrink" value="autoshrink">
@@ -146,8 +142,8 @@
                 <label for="transparent">Transparent</label>
             </div>
         </div>
-        <div id="exit">
-            <button id="exitsettings" type="button">Exit</button>
+        <div id="save">
+            <button id="savesettings" type="button">Save</button>
         </div>
     </div>
 </body>

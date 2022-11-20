@@ -60,6 +60,11 @@ body {
     color: var(--black);
 }
 
+.transparent {
+    background-color: 'transparent';
+    color: var(--yellow);
+}
+
 /* Active Timer */
 #active {
     width: 100%;
@@ -223,6 +228,9 @@ body {
 
 #presets {
     margin-top: 5px;
+}
+#presets select {
+    font-size: 8px;
 }
 
 #times {

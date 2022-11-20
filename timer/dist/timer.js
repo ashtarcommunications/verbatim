@@ -1,12 +1,67 @@
 import { Timer } from './easytimer/easytimer.js';
-// import { Store } from './store.js';
-// import { WebviewWindow } from '@tauri-apps/api/window';
+import { Store } from 'tauri-plugin-store-api';
+import { appWindow, LogicalSize } from '@tauri-apps/api/window';
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // const store = new Store('.settings.dat');
-    // await store.set('some-key', { value: 5 });
-    // const val = await store.get('some-key');
-    // assert(val, { value: 5 });
+    const store = new Store('.settings');
+    store.load();
+
+    const defaultSettings = {
+        alerts: {
+            '6:00': false,
+            '5:00': true,
+            '4:00': false,
+            '3:00': false,
+            '2:00': false,
+            '1:00': false,
+            '0:30': true,
+            '0:00': true,
+        },
+        alertTypes: {
+            flash: true,
+            audio: false,
+            voice: false,
+        },
+        speechTimes: {
+            constructive: '9:00',
+            rebuttal: '6:00',
+            cx: '3:00',
+            prep: '10:00',
+        },
+        window: {
+            autoshrink: true,
+            transparent: true,
+        },
+    };
+    const savedSettings = await store.get('settings');
+    const settings = {...defaultSettings, ...savedSettings};
+
+    document.querySelector('#alert6').checked = settings.alerts['6:00'];
+    document.querySelector('#alert5').checked = settings.alerts['5:00'];
+    document.querySelector('#alert4').checked = settings.alerts['4:00'];
+    document.querySelector('#alert3').checked = settings.alerts['3:00'];
+    document.querySelector('#alert2').checked = settings.alerts['2:00'];
+    document.querySelector('#alert1').checked = settings.alerts['1:00'];
+    document.querySelector('#alert30').checked = settings.alerts['0:30'];
+    document.querySelector('#alert0').checked = settings.alerts['0:00'];
+
+    document.querySelector('#warnflash').checked = settings.alertTypes.flash;
+    document.querySelector('#warnaudio').checked = settings.alerts.audio;
+    document.querySelector('#warnvoice').checked = settings.alerts.voice;
+
+    document.querySelector('#constructive').value = settings.speechTimes.constructive;
+    document.querySelector('#rebuttal').value = settings.speechTimes.rebuttal;
+    document.querySelector('#cx').value = settings.speechTimes.cx;
+    document.querySelector('#prep').value = settings.speechTimes.prep;
+
+    document.querySelector('#presetconstructive').textContent = settings.speechTimes.constructive;
+    document.querySelector('#presetrebuttal').textContent = settings.speechTimes.rebuttal;
+    document.querySelector('#presetcx').textContent = settings.speechTimes.cx;
+    document.querySelector('#afftimer').textContent = settings.speechTimes.prep;
+    document.querySelector('#negtimer').textContent = settings.speechTimes.prep;
+
+    document.querySelector('#autoshrink').checked = settings.window.autoshrink;
+    document.querySelector('#transparent').checked = settings.window.transparent;
 
     const timer = new Timer();
     let selectedTimer = '#speechtimer';
@@ -15,12 +70,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     beep.src = './beep.wav';
 
     const resetTimers = () => {
-        document.querySelector('#activetimer').value = `9:00`;
+        document.querySelector('#activetimer').value = settings.speechTimes.constructive || `9:00`;
         document.querySelector('#activetimer').classList = 'speech';
         document.querySelector('#active').classList = 'speech';
-        document.querySelector('#afftimer').textContent = `10:00`;
-        document.querySelector('#speechtimer').textContent = `9:00`;
-        document.querySelector('#negtimer').textContent = `10:00`;
+        document.querySelector('#afftimer').textContent = settings.speechTimes.prep || `10:00`;
+        document.querySelector('#speechtimer').textContent = settings.speechTimes.constructive || `9:00`;
+        document.querySelector('#negtimer').textContent = settings.speechTimes.prep || `10:00`;
     }
     resetTimers();
 
@@ -31,10 +86,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         return `${minutes}:${seconds}`;
     };
 
-    const start = () => {
+    const start = async () => {
+        document.querySelector('#activetimer').disabled = true;
         const value = document.querySelector('#activetimer').value;
-        console.log(parseInt(value.split(':')[0]));
-        console.log(parseInt(value.split(':')[1]));
         timer.start({
             countdown: true,
             startValues: {
@@ -42,27 +96,50 @@ document.addEventListener("DOMContentLoaded", async () => {
                 seconds: parseInt(value.split(':')[1]),
             },
         });
+
         document.querySelector('#start').style.display = 'none';
         document.querySelector('#pause').style.display = 'block';
 
-        // TODO - better approach to window transparency and turning it off
-        // const webview = new WebviewWindow('timer', { url: '/' });
-        // webview.once('tauri://created', () => {
-        //     webview.transparent = true;
-        //     webview.width = 200;
-        //     webview.height = 50;
-        // });
-        // webview.once('tauri://error', (e) => {
-        //     console.log(e);
-        // });
-        // document.querySelector('#smalltimers').style.display = 'none';
-        // document.querySelector('#controls').style.display = 'none';
-        // document.querySelector('#active').style.backgroundColor = 'transparent';
-        // document.querySelector('#activetimer').style.color = 'blue';
+        if (settings.window.autoshrink) {
+            await appWindow.setResizable(true);
+            await appWindow.setSize(new LogicalSize(200, 105));
+            await appWindow.setDecorations(false);
+            document.querySelector('#smalltimers').style.display = 'none';
+            document.querySelector('#controls').style.display = 'none';
+        }
+
+        if (settings.window.transparent) {
+            document.querySelector('#active').classList = 'transparent';
+            document.querySelector('#activetimer').classList = 'transparent';
+        }
     };
 
-    const stop = () => {
+    const stop = async () => {
         timer.stop();
+        document.querySelector('#activetimer').disabled = false;
+        await appWindow.setResizable(true);
+        await appWindow.setSize(new LogicalSize(200, 233));
+        await appWindow.setResizable(false);
+        await appWindow.setDecorations(true);
+        document.querySelector('#smalltimers').style.display = 'flex';
+        document.querySelector('#controls').style.display = 'flex';
+        switch (selectedTimer) {
+            case '#afftimer':
+                document.querySelector('#activetimer').classList = 'aff';
+                document.querySelector('#active').classList = 'aff';
+                break;
+            case '#speechtimer':
+                document.querySelector('#activetimer').classList = 'speech';
+                document.querySelector('#active').classList = 'speech';
+                break;
+            case '#negtimer':
+                document.querySelector('#activetimer').classList = 'neg';
+                document.querySelector('#active').classList = 'neg';
+                break;
+            default:
+                break;
+        }
+
         document.querySelector('#pause').style.display = 'none';
         document.querySelector('#start').style.display = 'block';
     }
@@ -110,15 +187,26 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelector('#activetimer').value = time;
         document.querySelector(selectedTimer).textContent = time;
 
-        if (time === '0:30') {
-            flashWarning();
+        if (Object.keys(settings.alerts).includes(time) && settings.alerts[time]) {
+            if (window.settings.alertTypes.flash) {
+                flashWarning();
+            }
+            if (window.settings.alertTypes.beep) {
+                beep.play();
+            }
         }
     });
 
-    timer.addEventListener('targetAchieved', (e) => {
-        flashWarning();
-        beep.play();
-        stop();
+    timer.addEventListener('targetAchieved', async () => {
+        await stop();
+        if (settings.alerts['0:00']) {
+            if (window.settings.alertTypes.flash) {
+                flashWarning();
+            }
+            if (window.settings.alertTypes.beep) {
+                beep.play();
+            }
+        }
     });
 
     document.querySelector('#start').addEventListener('click', () => {
@@ -217,7 +305,70 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelector('#app').style.display = 'none';
         document.querySelector('#settings').style.display = 'block';
     });
-    document.querySelector('#exitsettings').addEventListener('click', () => {
+
+    document.querySelector('#presettimes').addEventListener('change', () => {
+        const value = document.querySelector('#presettimes').value;
+        switch (value) {
+            case '':
+                break;
+            case 'ccx':
+                document.querySelector('#constructive').value = '9:00';
+                document.querySelector('#rebuttal').value = '6:00';
+                document.querySelector('#cx').value = '3:00';
+                document.querySelector('#prep').value = '10:00';
+                break;
+            case 'hscx':
+                document.querySelector('#constructive').value = '8:00';
+                document.querySelector('#rebuttal').value = '5:00';
+                document.querySelector('#cx').value = '3:00';
+                document.querySelector('#prep').value = '8:00';
+                break;
+            case 'hsld':
+                document.querySelector('#constructive').value = '6:00';
+                document.querySelector('#rebuttal').value = '4:00';
+                document.querySelector('#cx').value = '3:00';
+                document.querySelector('#prep').value = '4:00';
+                break;
+            case 'hspf':
+                document.querySelector('#constructive').value = '4:00';
+                document.querySelector('#rebuttal').value = '3:00';
+                document.querySelector('#cx').value = '3:00';
+                document.querySelector('#prep').value = '3:00';
+                break;
+            default:
+                break;
+        }
+    });
+
+    document.querySelector('#savesettings').addEventListener('click', () => {
+        settings.alerts['6:00'] = document.querySelector('#alert6').checked;
+        settings.alerts['5:00'] = document.querySelector('#alert5').checked;
+        settings.alerts['4:00'] = document.querySelector('#alert4').checked;
+        settings.alerts['3:00'] = document.querySelector('#alert3').checked;
+        settings.alerts['2:00'] = document.querySelector('#alert2').checked;
+        settings.alerts['1:00'] = document.querySelector('#alert1').checked;
+        settings.alerts['0:30'] = document.querySelector('#alert30').checked;
+        settings.alerts['0:00'] = document.querySelector('#alert0').checked;
+
+        settings.alertTypes.flash = document.querySelector('#warnflash').checked;
+        settings.alertTypes.audio = document.querySelector('#warnaudio').checked;
+        settings.alertTypes.voice = document.querySelector('#warnvoice').checked;
+
+        // TODO - normalize values;
+        settings.speechTimes.constructive = document.querySelector('#constructive').value;
+        settings.speechTimes.rebuttal = document.querySelector('#rebuttal').value;
+        settings.speechTimes.cx = document.querySelector('#cx').value;
+        settings.speechTimes.prep = document.querySelector('#prep').value;
+
+        settings.window.autoshrink = document.querySelector('#autoshrink').checked;
+        settings.window.transparent = document.querySelector('#transparent').checked;
+
+        store.save();
+
+        document.querySelector('#presetconstructive').textContent = settings.speechTimes.constructive;
+        document.querySelector('#presetrebuttal').textContent = settings.speechTimes.rebuttal;
+        document.querySelector('#presetcx').textContent = settings.speechTimes.cx;
+        
         document.querySelector('#app').style.display = 'block';
         document.querySelector('#settings').style.display = 'none';
     });
