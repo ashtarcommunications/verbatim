@@ -4,8 +4,8 @@ import { appWindow, LogicalSize } from '@tauri-apps/api/window';
 
 document.addEventListener("DOMContentLoaded", async () => {
     const store = new Store('.settings');
-    store.load();
-
+    await store.load();
+    
     const defaultSettings = {
         alerts: {
             '6:00': false,
@@ -20,7 +20,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         alertTypes: {
             flash: true,
             audio: false,
-            voice: false,
         },
         speechTimes: {
             constructive: '9:00',
@@ -31,10 +30,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         window: {
             autoshrink: true,
             transparent: true,
+            alwaysOnTop: true,
         },
     };
     const savedSettings = await store.get('settings');
+
     const settings = {...defaultSettings, ...savedSettings};
+
+    await appWindow.setAlwaysOnTop(settings.window.alwaysOnTop);
 
     document.querySelector('#alert6').checked = settings.alerts['6:00'];
     document.querySelector('#alert5').checked = settings.alerts['5:00'];
@@ -47,7 +50,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.querySelector('#warnflash').checked = settings.alertTypes.flash;
     document.querySelector('#warnaudio').checked = settings.alerts.audio;
-    document.querySelector('#warnvoice').checked = settings.alerts.voice;
 
     document.querySelector('#constructive').value = settings.speechTimes.constructive;
     document.querySelector('#rebuttal').value = settings.speechTimes.rebuttal;
@@ -62,6 +64,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.querySelector('#autoshrink').checked = settings.window.autoshrink;
     document.querySelector('#transparent').checked = settings.window.transparent;
+    document.querySelector('#alwaysontop').checked = settings.window.alwaysOnTop;
 
     const timer = new Timer();
     let selectedTimer = '#speechtimer';
@@ -99,7 +102,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         document.querySelector('#start').style.display = 'none';
         document.querySelector('#pause').style.display = 'block';
-
+        
         if (settings.window.autoshrink) {
             await appWindow.setSize(new LogicalSize(200, 105));
             await appWindow.setDecorations(false);
@@ -298,7 +301,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     });
 
-    document.querySelector('#showsettings').addEventListener('click', () => {
+    document.querySelector('#showsettings').addEventListener('click', async () => {
+        // I do not know why this is necessary, but apparently it is
+        document.body.style.height = 'auto';
+        
+        // Swap to settings view
         document.querySelector('#app').style.display = 'none';
         document.querySelector('#settings').style.display = 'block';
     });
@@ -337,7 +344,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
-    document.querySelector('#savesettings').addEventListener('click', () => {
+    document.querySelector('#savesettings').addEventListener('click', async () => {
         settings.alerts['6:00'] = document.querySelector('#alert6').checked;
         settings.alerts['5:00'] = document.querySelector('#alert5').checked;
         settings.alerts['4:00'] = document.querySelector('#alert4').checked;
@@ -349,7 +356,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         settings.alertTypes.flash = document.querySelector('#warnflash').checked;
         settings.alertTypes.audio = document.querySelector('#warnaudio').checked;
-        settings.alertTypes.voice = document.querySelector('#warnvoice').checked;
 
         // TODO - normalize values;
         settings.speechTimes.constructive = document.querySelector('#constructive').value;
@@ -359,15 +365,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         settings.window.autoshrink = document.querySelector('#autoshrink').checked;
         settings.window.transparent = document.querySelector('#transparent').checked;
+        settings.window.alwaysOnTop = document.querySelector('#alwaysontop').checked;
 
         store.save();
 
+        // I, again, do not know why this is necessary, but it works
+        document.body.style.height = '100%';
+
+        // Set preset speech times to match new settings
         document.querySelector('#presetconstructive').textContent = settings.speechTimes.constructive;
         document.querySelector('#presetrebuttal').textContent = settings.speechTimes.rebuttal;
         document.querySelector('#presetcx').textContent = settings.speechTimes.cx;
         
-        document.querySelector('#app').style.display = 'block';
+        // Switch back to main app view
+        document.querySelector('#app').style.display = 'flex';
         document.querySelector('#settings').style.display = 'none';
+
+        await appWindow.setAlwaysOnTop(settings.window.alwaysOnTop);
     });
 
     document.querySelector('#affprep').addEventListener('contextmenu', (e) => {

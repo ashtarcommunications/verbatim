@@ -81,7 +81,7 @@ body {
 
 #activetimer {
     width: 90%;
-    font-size: 25vw;
+    font-size: 20vw;
     text-align: center;
     background-color: transparent;
     border: none;
@@ -228,46 +228,54 @@ body {
 
 /* Settings */
 #settings {
-    padding: 5px 10px;
-    width: 200px;
+    padding: 1em;
+    width: 100%;
+    height: 100%;
     display: none;
-    font-size: 10px;
+    font-size: 1em;
     background-color: var(--lightgray);
+    flex: 1;
 }
 
 #settings p {
-    margin: 5px 0px 0px 0px;
-}
-
-#alerts div {
-    display: inline;
-}
-
-#presets {
-    margin-top: 5px;
-}
-#presets select {
-    font-size: 8px;
+    font-weight: bold;
+    margin: 1em 0 0.5em 0;
 }
 
 #times {
-    margin-top: 5px;
     display: flex;
     flex-direction: row;
-    align-items: stretch;
-    align-content: center;
-    justify-content: space-around;
-    text-align: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+#presettimes {
+    margin-bottom: 0.5em;
 }
 
 #times input {
-    width: 35px;
+    width: 3em;
 }
 
-#exit {
+#times label {
+    font-size: 0.75em;
+}
+
+#save {
     text-align: right;
 }
 
-#window div {
-    display: inline;
+#savesettings {
+    background-color: var(--darkblue);
+    border: none;
+    color: var(--white);
+    border-radius: 10px;
+    font-size: 1.25em;
+    padding: 0.5em;
+    margin: 0.5em 0;
+    cursor: pointer;
+}
+
+#savesettings:hover {
+    background-color: var(--lightblue);
 }

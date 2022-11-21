@@ -3,7 +3,7 @@
   "build": {
     "beforeBuildCommand": "",
     "beforeDevCommand": "",
-    "devPath": "../dist",
+    "devPath": "http://localhost:8080/",
     "distDir": "../dist"
   },
   "package": {

@@ -10,7 +10,7 @@
 <body>
     <div id="app">
         <div id="active" class="speech">
-            <input id="activetimer" class="speech" type="text" value="0:00" maxlength="4" pattern="[0-9]+" />
+            <input id="activetimer" class="speech" type="text" value="0:00" maxlength="4" />
         </div>
         <div id="smalltimers">
             <div id="affprep" class="aff smalltimer">
@@ -31,11 +31,11 @@
         </div>
         <div id="controls">
             <div id="leftcontrols">
-                <div id="reset">
+                <div title="Reset timers" id="reset">
                     <svg fill="#ffffff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M105.1 202.6c7.7-21.8 20.2-42.3 37.8-59.8c62.5-62.5 163.8-62.5 226.3 0L386.3 160H336c-17.7 0-32 14.3-32 32s14.3 32 32 32H463.5c0 0 0 0 0 0h.4c17.7 0 32-14.3 32-32V64c0-17.7-14.3-32-32-32s-32 14.3-32 32v51.2L414.4 97.6c-87.5-87.5-229.3-87.5-316.8 0C73.2 122 55.6 150.7 44.8 181.4c-5.9 16.7 2.9 34.9 19.5 40.8s34.9-2.9 40.8-19.5zM39 289.3c-5 1.5-9.8 4.2-13.7 8.2c-4 4-6.7 8.8-8.1 14c-.3 1.2-.6 2.5-.8 3.8c-.3 1.7-.4 3.4-.4 5.1V448c0 17.7 14.3 32 32 32s32-14.3 32-32V396.9l17.6 17.5 0 0c87.5 87.4 229.3 87.4 316.7 0c24.4-24.4 42.1-53.1 52.9-83.7c5.9-16.7-2.9-34.9-19.5-40.8s-34.9 2.9-40.8 19.5c-7.7 21.8-20.2 42.3-37.8 59.8c-62.5 62.5-163.8 62.5-226.3 0l-.1-.1L125.6 352H176c17.7 0 32-14.3 32-32s-14.3-32-32-32H48.4c-1.6 0-3.2 .1-4.8 .3s-3.1 .5-4.6 1z"/></svg>
                     <button id="confirmreset" type="button">Sure?</button>
                 </div>
-                <div id="showsettings">
+                <div title="Show Settings" id="showsettings">
                     <svg fill="#000000" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L83.1 425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336c44.2 0 80-35.8 80-80s-35.8-80-80-80s-80 35.8-80 80s35.8 80 80 80z"/></svg>
                 </div>
             </div>
@@ -50,9 +50,9 @@
                 </div>                
             </div>
             <div id="rightcontrols">
-                <div id="presetconstructive" class="presettime">9:00</div>
-                <div id="presetrebuttal" class="presettime">6:00</div>
-                <div id="presetcx" class="presettime">3:00</div>
+                <div title="Constructive" id="presetconstructive" class="presettime">9:00</div>
+                <div title="Rebuttal" id="presetrebuttal" class="presettime">6:00</div>
+                <div title="CX" id="presetcx" class="presettime">3:00</div>
             </div>
         </div>
     </div>
@@ -93,48 +93,48 @@
             </div>
         </div>
 
-        <p>Alert types</p>
-        <input type="checkbox" id="warnflash" name="warnflash" value="flash">
-        <label for="warnflash">Flash</label>
-        <input type="checkbox" id="warnaudio" name="warnaudio" value="audio">
-        <label for="warnaudio">Audio</label>
-        <input type="checkbox" id="warnvoice" name="warnvoice" value="voice">
-        <label for="warnvoice">Voice</label>
-
-        <div id="presets">
-            <select id="presettimes">
-                <option value="">Select a preset</option>
-                <option value="ccx">College CX</option>
-                <option value="hscx">HS CX</option>
-                <option value="hsld">HS LD</option>
-                <option value="hspf">HS PF</option>
-            </select>
+        <p>Alert type</p>
+        <div id="alerttypes">
+            <input type="checkbox" id="warnflash" name="warnflash" value="flash">
+            <label for="warnflash">Flash</label>
+            <input type="checkbox" id="warnaudio" name="warnaudio" value="audio">
+            <label for="warnaudio">Audio</label>
         </div>
-
+   
+        <p>Speech Times</p>
+        <select id="presettimes">
+            <option value="">Select a preset</option>
+            <option value="ccx">College CX</option>
+            <option value="hscx">HS CX</option>
+            <option value="hsld">HS LD</option>
+            <option value="hspf">HS PF</option>
+        </select>
         <div id="times">
             <div>
                 <label for="constructive">Constructive</label>
                 <br />
-                <input id="constructive" type="text" value="9:00" maxlength="4" pattern="[0-9]+" />
+                <input id="constructive" type="text" value="9:00" maxlength="4" />
             </div>
             <div>
                 <label for="rebuttal">Rebuttal</label>
                 <br />
-                <input id="rebuttal" type="text" value="6:00" maxlength="4" pattern="[0-9]+" />
+                <input id="rebuttal" type="text" value="6:00" maxlength="4" />
             </div>
             <div>
                 <label for="cx">CX</label>
                 <br />
-                <input id="cx" type="text" value="3:00" maxlength="4" pattern="[0-9]+" />
+                <input id="cx" type="text" value="3:00" maxlength="4" />
             </div>
             <div>
                 <label for="prep">Prep</label>
                 <br />
-                <input id="prep" type="text" value="10:00" maxlength="4" pattern="[0-9]+" />
+                <input id="prep" type="text" value="10:00" maxlength="4" />
             </div>
         </div>
 
+        <p>Window Settings</p>
         <div id="window">
+
             <div>
                 <input type="checkbox" id="autoshrink" name="autoshrink" value="autoshrink">
                 <label for="autoshrink">Autoshrink</label>
@@ -142,6 +142,10 @@
             <div>
                 <input type="checkbox" id="transparent" name="transparent" value="transparent">
                 <label for="transparent">Transparent</label>
+            </div>
+            <div>
+                <input type="checkbox" id="alwaysontop" name="alwaysontop" value="alwaysontop">
+                <label for="alwaysontop">Always On Top</label>
             </div>
         </div>
         <div id="save">
