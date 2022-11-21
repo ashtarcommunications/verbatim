@@ -5,6 +5,9 @@ Add voice count sounds for alerts
 Fix alerts on 0:00
 Cancel and reset buttons on settings page
 Right-click add/remove time and reset prep times
-Fix non-numeric input entry
+Fix non-numeric input entry, remove pattern attribute
 README
 Window icons
+Fix install directories
+Configurable timer transparent text color
+Restore to previous window size on stop, not fixed

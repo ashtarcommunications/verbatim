@@ -7,8 +7,8 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "timer",
-    "version": "0.1.0"
+    "productName": "VerbatimTimer",
+    "version": "1.0.0"
   },
   "tauri": {
     "allowlist": {
@@ -29,8 +29,8 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.paperlessdebate.timer",
-      "longDescription": "",
+      "identifier": "com.paperlessdebate.VerbatimTimer",
+      "longDescription": "Verbatim Timer",
       "macOS": {
         "entitlements": null,
         "exceptionDomain": "",
@@ -39,7 +39,7 @@
         "signingIdentity": null
       },
       "resources": [],
-      "shortDescription": "",
+      "shortDescription": "VerbatimTimer",
       "targets": "all",
       "windows": {
         "certificateThumbprint": null,
@@ -57,10 +57,10 @@
       {
         "fullscreen": false,
         "width": 200,
-        "height": 233,
-        "resizable": false,
-        "label": "timer",
-        "title": "Debate Timer",
+        "height": 200,
+        "resizable": true,
+        "label": "VerbatimTimer",
+        "title": "Verbatim Timer",
         "fileDropEnabled": false,
         "transparent": true,
         "decorations": true,

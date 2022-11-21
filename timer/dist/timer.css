@@ -36,7 +36,11 @@ body {
 }
 
 #app {
-    width: 200px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
 }
 
 /* Global timer colors */
@@ -68,16 +72,20 @@ body {
 /* Active Timer */
 #active {
     width: 100%;
-    font-size: 72px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 2;
 }
 
 #activetimer {
     width: 90%;
-    font-size: 72px;
+    font-size: 25vw;
     text-align: center;
     background-color: transparent;
     border: none;
+    margin: auto;
 }
 
 #activetimer:focus {
@@ -95,10 +103,14 @@ body {
     align-content: center;
     justify-content: space-around;
     text-align: center;
+    flex: 1;
 }
 
 .smalltimer {
-    padding: 0px 8px;
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 10vw;
     border: 1px solid var(--darkgray);
     border-collapse: collapse;
     cursor: pointer;
@@ -106,7 +118,7 @@ body {
 }
 
 .timerlabel {
-    font-size: 10px;
+    font-size: 5vw;
 }
 
 /* Controls */
@@ -118,6 +130,7 @@ body {
     align-content: center;
     justify-content: space-around;
     text-align: center;
+    flex: 2;
 }
 
 #controls div {
@@ -148,7 +161,7 @@ body {
 
 #reset svg,
 #showsettings svg {
-    width: 20px;
+    width: 8vw;
 }
 
 #confirmreset {
@@ -157,8 +170,6 @@ body {
     background-color: var(--white);
     color: var(--orange);
     border-radius: 10px;
-    padding: 5px;
-    margin: 3px 1px;
     cursor: pointer;
 }
 
@@ -169,17 +180,22 @@ body {
 
 /* Center controls */
 #centercontrols {
+    display: flex;
     border: 1px solid var(--darkgray);
     background-color: var(--darkblue);
+}
+
+#centercontrols div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 #start,
 #pause {
     background-color: var(--darkblue);
     border: none;
-    font-size: 48px;
     width: 100%;
-    padding: 10px;
     cursor: pointer;
 }
 
@@ -189,7 +205,7 @@ body {
 
 #start svg,
 #pause svg {
-    width: 30px;
+    width: 10vw;
 }
 
 /* Right controls */
@@ -201,18 +217,19 @@ body {
 }
 
 .presettime {
+    font-size: 8vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     border: 1px solid var(--darkgray);
     border-collapse: collapse;
-    display: block;
     cursor: pointer;
-    padding-top: 5px;
 }
 
 /* Settings */
 #settings {
     padding: 5px 10px;
     width: 200px;
-    height: 233px;
     display: none;
     font-size: 10px;
     background-color: var(--lightgray);

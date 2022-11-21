@@ -101,7 +101,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelector('#pause').style.display = 'block';
 
         if (settings.window.autoshrink) {
-            await appWindow.setResizable(true);
             await appWindow.setSize(new LogicalSize(200, 105));
             await appWindow.setDecorations(false);
             document.querySelector('#smalltimers').style.display = 'none';
@@ -117,9 +116,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const stop = async () => {
         timer.stop();
         document.querySelector('#activetimer').disabled = false;
-        await appWindow.setResizable(true);
         await appWindow.setSize(new LogicalSize(200, 233));
-        await appWindow.setResizable(false);
         await appWindow.setDecorations(true);
         document.querySelector('#smalltimers').style.display = 'flex';
         document.querySelector('#controls').style.display = 'flex';
