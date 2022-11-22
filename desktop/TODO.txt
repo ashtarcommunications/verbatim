@@ -20,3 +20,5 @@ Fix new speech dropdown
 Remove custom pointer ico's from form
 Rebuild ribbon
 Rename CiteMaker functions to Cite Creator
+Check all settings namespaces/names throughout
+Build UI for autotext functions
