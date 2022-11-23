@@ -1,5 +1,5 @@
 {
-  "name": "debate-timer",
+  "name": "verbatim-timer",
   "scripts": {
     "tauri": "tauri",
     "lint": "eslint .",
