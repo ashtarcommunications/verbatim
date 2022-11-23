@@ -60,13 +60,27 @@ body {
 }
 
 .warn {
-    background-color: var(--orange);
-    color: var(--black);
+    color: var(--orange);
 }
 
 .transparent {
     background-color: 'transparent';
+}
+
+.black {
+    color: var(--black);
+}
+
+.white {
+    color: var(--white);
+}
+
+.yellow {
     color: var(--yellow);
+}
+
+.green {
+    color: var(--green);
 }
 
 /* Active Timer */
@@ -82,6 +96,7 @@ body {
 #activetimer {
     width: 90%;
     font-size: 20vw;
+    font-weight: bolder;
     text-align: center;
     background-color: transparent;
     border: none;
@@ -121,6 +136,33 @@ body {
     font-size: 5vw;
 }
 
+#affprep,
+#negprep {
+    display: flex;
+}
+
+#affprepmenu,
+#negprepmenu {
+    display: none;
+    justify-content: space-evenly;
+}
+
+#affprepreset,
+#negprepreset {
+    display: inline;
+    width: 20%;
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    cursor: pointer;
+}
+
+#affprepreset svg,
+#negprepreset svg {
+    width: 80%;
+    vertical-align: middle;
+}
+
 /* Controls */
 #controls {
     width: 100%;
@@ -148,6 +190,7 @@ body {
     border: 1px solid var(--darkgray);
     display: flex;
     justify-content: center;
+    align-items: center;
     cursor: pointer;
 }
 
@@ -171,6 +214,8 @@ body {
     color: var(--orange);
     border-radius: 10px;
     cursor: pointer;
+    width: 80%;
+    height: 80%;
 }
 
 #confirmreset:hover {
@@ -261,21 +306,38 @@ body {
     font-size: 0.75em;
 }
 
-#save {
+#timersettings label {
+    display: block;
+    font-size: 1em;
+    margin-top: 1em;
+}
+
+#buttons {
     text-align: right;
 }
 
-#savesettings {
-    background-color: var(--darkblue);
+#buttons button {
     border: none;
     color: var(--white);
     border-radius: 10px;
     font-size: 1.25em;
-    padding: 0.5em;
-    margin: 0.5em 0;
+    padding: 0.25em;
+    margin: 1em 0.25em;
     cursor: pointer;
+}
+
+#savesettings {
+    background-color: var(--darkblue);
 }
 
 #savesettings:hover {
     background-color: var(--lightblue);
+}
+
+#about {
+    font-size: 0.75em;
+}
+
+#about a {
+    color: var(--blue);
 }
