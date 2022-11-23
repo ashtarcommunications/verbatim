@@ -225,8 +225,8 @@ const stop = async () => {
         await appWindow.setSize(new PhysicalSize(
             settings.window.currentWidth || 200,
             settings.window.currentHeight || 200
-        ));       
-        
+        ));
+
         document.querySelector('#smalltimers').style.display = 'flex';
         document.querySelector('#controls').style.display = 'flex';
     }
