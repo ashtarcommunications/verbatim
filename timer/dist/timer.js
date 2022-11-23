@@ -69,6 +69,7 @@ appWindow.onResized(async ({ payload: size }) => {
     settings.window.defaultWidth = size.width;
     settings.window.defaultHeight = size.height;
 
+    // If paused, save window resizes to have the right size before timer start
     if (!timer.isRunning() || timer.isPaused()) {
         settings.window.currentWidth = size.width;
         settings.window.currentHeight = size.height;
