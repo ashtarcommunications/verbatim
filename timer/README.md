@@ -32,9 +32,13 @@ Then run Tauri in dev mode to get the app running with hot reload:
 `npm run tauri dev`
 
 ## Build
+First, create a production JS bundle with webpack:
+
+`npm run build`
+
 The final installation packages can be built with:
 
-npm run tauri build
+`npm run tauri build`
 
 Cross-compilation isn't possible, so you have to build the package on each operating system separately and then get the final package from the `src-tauri/target` directory
 
