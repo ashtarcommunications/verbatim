@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary, no-plusplus, import/no-unresolved */
 /* global document, Audio */
 import { Store } from 'tauri-plugin-store-api';
-import { appWindow, LogicalSize } from '@tauri-apps/api/window';
+import { appWindow, PhysicalSize } from '@tauri-apps/api/window';
 import { Timer } from './easytimer/easytimer.js';
 
 // Set up a persistent store for settings, file location is in OS-specific config directory
@@ -68,12 +68,6 @@ appWindow.onResized(async ({ payload: size }) => {
     // Save resized window so we can restore on open
     settings.window.defaultWidth = size.width;
     settings.window.defaultHeight = size.height;
-
-    // If paused, save window resizes to have the right size before timer start
-    if (!timer.isRunning() || timer.isPaused()) {
-        settings.window.currentWidth = size.width;
-        settings.window.currentHeight = size.height;
-    }
 });
 
 const setSideNames = () => {
@@ -110,7 +104,7 @@ const setupDefaultSettings = async () => {
 
     // Restore window to saved size
     await appWindow.setAlwaysOnTop(settings.window.alwaysOnTop);
-    await appWindow.setSize(new LogicalSize(
+    await appWindow.setSize(new PhysicalSize(
         settings.window.defaultWidth || 200,
         settings.window.defaultHeight || 200
     ));
@@ -204,7 +198,7 @@ const start = async () => {
         const currentSize = await appWindow.innerSize();
         settings.window.currentWidth = currentSize.width;
         settings.window.currentHeight = currentSize.height;
-        await appWindow.setSize(new LogicalSize(
+        await appWindow.setSize(new PhysicalSize(
             currentSize.width || 200,
             document.querySelector('#active').offsetHeight || 105
         ));
@@ -227,11 +221,12 @@ const stop = async () => {
 
     // Restore the window to pre-shrunk size
     if (settings.window.autoshrink) {
-        await appWindow.setSize(new LogicalSize(
+        await appWindow.setDecorations(true);
+        await appWindow.setSize(new PhysicalSize(
             settings.window.currentWidth || 200,
             settings.window.currentHeight || 200
-        ));
-        await appWindow.setDecorations(true);
+        ));       
+        
         document.querySelector('#smalltimers').style.display = 'flex';
         document.querySelector('#controls').style.display = 'flex';
     }
