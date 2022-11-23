@@ -22,3 +22,4 @@ Rebuild ribbon
 Rename CiteMaker functions to Cite Creator
 Check all settings namespaces/names throughout
 Build UI for autotext functions
+Consider paragraph spacing adjustments
