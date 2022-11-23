@@ -1,0 +1,4 @@
+Capture2Text is licensed under the GPL3.
+
+For a copy of the GNU General Public License 3 see:
+http://www.gnu.org/licenses/gpl-3.0.txt
