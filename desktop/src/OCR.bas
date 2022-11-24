@@ -1,7 +1,7 @@
 Attribute VB_Name = "OCR"
 Option Explicit
 
-Public Sub GetOCR()
+Public Sub PasteOCR()
     On Error GoTo Handler
     #If Mac Then
         ' TODO - Mac version
@@ -22,7 +22,7 @@ Public Sub GetOCR()
         ExternalOCR = GetSetting("Verbatim", "Plugins", "ExternalOCR", vbNullString)
         If ExternalOCR <> "" Then
             If Filesystem.FileExists(ExternalOCR) = False Then
-                MsgBox "External OCR program not found. Please check your settings."
+                MsgBox "External OCR program not found. Please check the path to the application in your Verbatim settings, or remove it to use the built-in Windows Snipping Tool."
                 Exit Sub
             Else
                 CreateObject("WSCript.Shell").Run ExternalOCR, 0, True
@@ -38,9 +38,11 @@ Public Sub GetOCR()
         End If
         
         C2TPath = GetSetting("Verbatim", "Plugins", "Capture2Text", vbNullString)
-        C2TPath = "C:\Users\Aaron\Desktop\Capture2Text\Capture2Text_CLI.exe"
-        If C2TPath = vbNullString Or Filesystem.FileExists(C2TPath) = False Then
-            MsgBox "Capture2Text must be installed to run OCR. Please see https://paperlessdebate.com/plugins for more details."
+        If C2TPath = vbNullString Then
+            C2TPath = Environ("ProgramW6432") & Application.PathSeparator & "Capture2Text" & Application.PathSeparator & "Capture2Text_CLI.exe"
+        End If
+        If Filesystem.FileExists(C2TPath) = False Then
+            MsgBox "Capture2Text must be installed to run OCR. Please see https://paperlessdebate.com/ for more details or check the path to the application in your Verbatim settings."
         End If
         
         ' Take a screenshot with the snipping tool

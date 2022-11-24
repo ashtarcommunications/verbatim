@@ -38,7 +38,10 @@ Public UnderlineModeToggle As Boolean
 Public Const CASELIST_URL As String = "https://api.opencaselist.com/v1"
 Public Const SHARE_URL As String = "https://share.tabroom.com"
 Public Const MOCK_ROUNDS As String = "https://run.mocky.io/v3/be382c53-e49c-4de4-99b6-44ba5e6a3e7c"
- 
+Public Const PAPERLESSDEBATE_URL As String = "https://paperlessdebate.com"
+Public Const TABROOM_REGISTER_URL As String = "https://www.tabroom.com/user/login/new_user.mhtml"
+Public Const WPM_URL As String = "http://www.readingsoft.com/"
+
 ' Paperless globals
 Public ActiveSpeechDoc As String
 

@@ -197,58 +197,20 @@ Sub UpdateCheck(Optional Notify As Boolean)
     SaveSetting "Verbatim", "Main", "LastUpdateCheck", Now
     
     ' If newer version is found
-    If Response("body")("version") > Settings.GetVersion Then
+    If Settings.NewerVersion(Response("body")("version"), Settings.GetVersion) Then
     
-        ' Confirm update
-        If MsgBox("There is a newer version of Verbatim available for download. Would you like to close Word and update automatically? You will be given the option of saving any open files, and any custom code will be exported automatically.", vbYesNo) = vbNo Then Exit Sub
+        ' Prompt to launch website - no longer download automatically because it tends to trip antivirus heuristics
+        If MsgBox("There is a newer version of Verbatim available. Download now?", vbYesNo) = vbNo Then Exit Sub
             
-        Application.StatusBar = "Downloading updates..."
-        
-        ' Get the URL for latest PC version
-        HttpReq.Open "GET", xmlDoc.getElementsByTagName("pcurl").Item(0).Text, False
-        HttpReq.send
-        
-        ' Save file to disk
-        #If Mac Then
-            DownloadFile = MacScript("return POSIX path of (path to temporary items from user domain) as string")
-            DownloadFile = DownloadFile & Mid(xml, InStr(xml, "<macfilename>") + 13, InStr(xml, "</macfilename>") - InStr(xml, "<macfilename>") - 13)
-            MacScript ("do shell script ""curl -o '" & DownloadFile & "' '" & DownloadURL & "'""")
-        #Else
-            Set FileStream = CreateObject("ADODB.Stream")
-            FileStream.Open
-            FileStream.Type = 1
-            FileStream.Write HttpReq.ResponseBody
-            TempFile = CStr(Environ("TEMP")) & "\" & xmlDoc.getElementsByTagName("pcfilename").Item(0).Text
-            FileStream.SaveToFile TempFile, 2 '1 = no overwrite, 2 = overwrite
-            FileStream.Close
-            Set FileStream = Nothing
-        #End If
-        
-        ' Try exporting settings
-        Settings.ExportCustomCode False
-        
-        ' Launch installer
-        Application.StatusBar = "Launching installer..."
-        #If Mac Then
-            MacScript ("do shell script ""open '" & DownloadFile & "'""")
-        #Else
-            retval = ShellExecute(0, "OPEN", TempFile, "", "", 0)
-        #End If
-        Application.Quit wdPromptToSaveChanges
-    
+        Settings.LaunchWebsite "https://paperlessdebate.com"
     Else
         Application.StatusBar = "No Verbatim updates found."
         If Notify = True Then MsgBox "No Verbatim updates found."
     End If
          
-    ' Close HttpReq
-    Set HttpReq = Nothing
-    Set xmlDoc = Nothing
-    
     Exit Sub
 
 Handler:
-    Set FileStream = Nothing
     Application.StatusBar = "Update Check Failed. Error " & Err.Number & ": " & Err.Description
     If Notify = True Then MsgBox "Update Check Failed. Error " & Err.Number & ": " & Err.Description
 
@@ -429,15 +391,6 @@ Sub OpenTemplatesFolder()
     #End If
 End Sub
 
-Sub ResetFileDialog(FD As Byte)
-    ' Resets a built-in FileDialog - can pass in a Word constant
-    Application.FileDialog(FD).AllowMultiSelect = False
-    Application.FileDialog(FD).Filters.Clear
-    Application.FileDialog(FD).Title = ""
-    Application.FileDialog(FD).ButtonName = ""
-    Application.FileDialog(FD).InitialFileName = ""
-End Sub
-
 Sub QuitWord()
     Application.Quit wdPromptToSaveChanges
 End Sub
@@ -470,3 +423,34 @@ Sub EditStyle(StyleToEdit As String)
     Selection.End = SelEnd
 End Sub
 
+Public Function NewerVersion(Version1 As String, Version2 As String) As Boolean
+' Adapted from https://forum.ozgrid.com/forum/index.php?thread%2F52830-compare-version-number-strings%2F=
+' Returns true if Version1 is newer
+    Dim i As Integer
+    Dim Version1Array() As String
+    Dim Version2Array() As String
+    Version1Array = Split(Version1, ".")
+    Version2Array = Split(Version2, ".")
+    Dim k As Integer
+    
+    k = UBound(Version1Array)
+    If UBound(Version2Array) < k Then k = UBound(Version2Array)
+    
+    For i = 0 To k
+        If Version1Array(i) > Version2Array(i) Then
+            NewerVersion = True
+            Exit For
+        ElseIf Version1Array(i) < Version2Array(i) Then
+            NewerVersion = False
+            Exit For
+        Else
+            If UBound(Version1Array) = UBound(Version2Array) Then
+                NewerVersion = False
+            ElseIf UBound(Version1Array) > UBound(Version2Array) Then
+                NewerVersion = True
+            Else
+                NewerVersion = False
+            End If
+        End If
+    Next i
+End Function

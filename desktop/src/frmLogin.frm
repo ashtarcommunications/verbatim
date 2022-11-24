@@ -66,13 +66,13 @@ Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
-Sub btnLogin_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Sub btnLogin_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnLogin.BackColor = Globals.LIGHT_GREEN
 End Sub
-Sub btnCancel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Sub btnCancel_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     'btnCancel.BackColor = Globals.CANCEL_BUTTON_HOVER
 End Sub
-Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Sub Userform_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnLogin.BackColor = Globals.GREEN
     'btnCancel.BackColor = Globals.CANCEL_BUTTON_NORMAL
 End Sub

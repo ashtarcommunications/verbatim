@@ -63,9 +63,9 @@ Private Sub btnChooseSpeechDoc_Click()
         Unload Me
     End If
 End Sub
-Sub btnChooseSpeechDoc_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Sub btnChooseSpeechDoc_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnChooseSpeechDoc.BackColor = Globals.SUBMIT_BUTTON_HOVER
 End Sub
-Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Sub Userform_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnChooseSpeechDoc.BackColor = Globals.SUBMIT_BUTTON_NORMAL
 End Sub

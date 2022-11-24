@@ -92,3 +92,63 @@ Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
+Public Function GetFileFromDialog(FilterName As String, FilterExtension As String, Title As String, ButtonText As String) As String
+    On Error GoTo Handler
+
+    ' Show the built-in file picker, only allow picking 1 file at a time
+    Application.FileDialog(msoFileDialogOpen).AllowMultiSelect = False
+    Application.FileDialog(msoFileDialogOpen).Filters.Clear
+    Application.FileDialog(msoFileDialogOpen).Filters.Add FilterName, FilterExtension
+    Application.FileDialog(msoFileDialogOpen).Title = Title
+    Application.FileDialog(msoFileDialogOpen).ButtonName = ButtonText
+    If Application.FileDialog(msoFileDialogOpen).Show = 0 Then ' Error trap cancel button
+        UI.ResetFileDialog msoFileDialogOpen
+        Exit Function
+    End If
+    
+    ' Return the first selected filename
+    GetFileFromDialog = Application.FileDialog(msoFileDialogOpen).SelectedItems(1)
+    
+    ' Reset the dialog
+    UI.ResetFileDialog msoFileDialogOpen
+    
+    Exit Function
+
+Handler:
+    MsgBox "Error " & Err.Number & ": " & Err.Description
+End Function
+
+Public Function GetFolderFromDialog(Title As String, ButtonName As String)
+    On Error GoTo Handler
+    
+    'Show the built-in folder picker, only allow picking 1 folder at a time
+    Application.FileDialog(msoFileDialogFolderPicker).AllowMultiSelect = False
+    Application.FileDialog(msoFileDialogFolderPicker).Title = Title
+    Application.FileDialog(msoFileDialogFolderPicker).ButtonName = ButtonName
+    If Application.FileDialog(msoFileDialogFolderPicker).Show = 0 Then 'Error trap cancel button
+        UI.ResetFileDialog msoFileDialogFolderPicker
+        Exit Function
+    End If
+    
+    ' Return the first selected folder
+    GetFolderFromDialog = Application.FileDialog(msoFileDialogFolderPicker).SelectedItems(1)
+    
+    ' Reset the dialog
+    UI.ResetFileDialog msoFileDialogFolderPicker
+
+    Exit Function
+
+Handler:
+    MsgBox "Error " & Err.Number & ": " & Err.Description
+End Function
+
+Sub ResetFileDialog(FD As Byte)
+    ' Resets a built-in FileDialog - can pass in a Word constant, also works for folder dialog
+    Application.FileDialog(FD).AllowMultiSelect = False
+    Application.FileDialog(FD).Filters.Clear
+    Application.FileDialog(FD).Title = ""
+    Application.FileDialog(FD).ButtonName = ""
+    Application.FileDialog(FD).InitialFileName = ""
+End Sub
+
+

@@ -493,16 +493,16 @@ Private Sub AddCiteEntry(Title As String, Content As String)
     Me.fCites.ScrollTop = Me.fCites.ScrollHeight
 End Sub
 
-Sub btnSubmit_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Sub btnSubmit_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnSubmit.BackColor = Globals.LIGHT_BLUE
 End Sub
-Sub btnAddCite_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Sub btnAddCite_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnAddCite.BackColor = Globals.LIGHT_GREEN
 End Sub
-Sub btnDeleteCite_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Sub btnDeleteCite_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnDeleteCite.BackColor = Globals.LIGHT_RED
 End Sub
-Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Sub Userform_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnSubmit.BackColor = Globals.BLUE
     btnAddCite.BackColor = Globals.GREEN
     btnDeleteCite.BackColor = Globals.RED

@@ -116,16 +116,16 @@ Private Sub ValidateForm()
 
 End Sub
 
-Sub btnShare_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Sub btnShare_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnShare.BackColor = Globals.LIGHT_BLUE
 End Sub
-Sub btnBrowser_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Sub btnBrowser_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnBrowser.BackColor = Globals.LIGHT_BLUE
 End Sub
-Sub btnCancel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Sub btnCancel_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnCancel.BackColor = Globals.LIGHT_RED
 End Sub
-Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Sub Userform_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnShare.BackColor = Globals.BLUE
     Me.btnBrowser.BackColor = Globals.BLUE
     Me.btnCancel.BackColor = Globals.RED

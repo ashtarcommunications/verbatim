@@ -119,51 +119,54 @@ Sub GetSpeeches(control As IRibbonControl, ByRef returnedVal)
     ' Initialize XML
     xml = "<menu xmlns=""http://schemas.microsoft.com/office/2006/01/customui"">"
 
-    Dim Response As Dictionary
-    'Set Response = HTTP.GetReq(Globals.CASELIST_URL & "/tabroom/rounds?current=true")
-    Set Response = HTTP.GetReq(Globals.MOCK_ROUNDS & "?current=true")
+    If GetSetting("Verbatim", "Caselist", "DisableTabroomIntegration", False) = False Then
     
-    If Response("status") = 401 Then
-        UI.ShowForm "Login"
-        Exit Sub
-    End If
-
-    Dim Round
-    Dim Tournament As String
-    Dim RoundName As String
-    Dim Side As String
-    Dim SideName As String
-    Dim Opponent As String
-    
-    Dim i As Long
-    i = 0
-
-    For Each Round In Response("body")
-        i = i + 1
-        Tournament = Round("tournament")
-        Side = Round("side")
-        RoundName = Round("round")
-        Opponent = Round("opponent")
-        Tournament = Trim(ScrubString(Tournament))
-        Side = Trim(ScrubString(Side))
-        SideName = Strings.DisplaySide(Side)
-        RoundName = Strings.RoundName(Trim(ScrubString(RoundName)))
-        Opponent = Trim(ScrubString(Opponent))
-            
-        If Side = "A" Then
-            xml = xml & "<button id=""Speech2AC" & i & """ label=""2AC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""2AC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
-            xml = xml & "<button id=""Speech1AR" & i & """ label=""1AR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""1AR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
-            xml = xml & "<button id=""Speech2AR" & i & """ label=""2AR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""2AR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
-            xml = xml & "<button id=""Speech1AC" & i & """ label=""1AC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""1AC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
-            xml = xml & "<menuSeparator id=""separator" & i & """ />"
-        Else
-            xml = xml & "<button id=""Speech1NC" & i & """ label=""1NC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""1NC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
-            xml = xml & "<button id=""Speech2NC" & i & """ label=""2NC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""2NC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
-            xml = xml & "<button id=""Speech1NR" & i & """ label=""1NR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""1NR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
-            xml = xml & "<button id=""Speech2NR" & i & """ label=""2NR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""2NR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
-            xml = xml & "<menuSeparator id=""separator" & i & """ />"
+        Dim Response As Dictionary
+        'Set Response = HTTP.GetReq(Globals.CASELIST_URL & "/tabroom/rounds?current=true")
+        Set Response = HTTP.GetReq(Globals.MOCK_ROUNDS & "?current=true")
+        
+        If Response("status") = 401 Then
+            UI.ShowForm "Login"
+            Exit Sub
         End If
-    Next Round
+    
+        Dim Round
+        Dim Tournament As String
+        Dim RoundName As String
+        Dim Side As String
+        Dim SideName As String
+        Dim Opponent As String
+        
+        Dim i As Long
+        i = 0
+    
+        For Each Round In Response("body")
+            i = i + 1
+            Tournament = Round("tournament")
+            Side = Round("side")
+            RoundName = Round("round")
+            Opponent = Round("opponent")
+            Tournament = Trim(ScrubString(Tournament))
+            Side = Trim(ScrubString(Side))
+            SideName = Strings.DisplaySide(Side)
+            RoundName = Strings.RoundName(Trim(ScrubString(RoundName)))
+            Opponent = Trim(ScrubString(Opponent))
+                
+            If Side = "A" Then
+                xml = xml & "<button id=""Speech2AC" & i & """ label=""2AC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""2AC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
+                xml = xml & "<button id=""Speech1AR" & i & """ label=""1AR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""1AR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
+                xml = xml & "<button id=""Speech2AR" & i & """ label=""2AR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""2AR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
+                xml = xml & "<button id=""Speech1AC" & i & """ label=""1AC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""1AC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
+                xml = xml & "<menuSeparator id=""separator" & i & """ />"
+            Else
+                xml = xml & "<button id=""Speech1NC" & i & """ label=""1NC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""1NC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
+                xml = xml & "<button id=""Speech2NC" & i & """ label=""2NC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""2NC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
+                xml = xml & "<button id=""Speech1NR" & i & """ label=""1NR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""1NR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
+                xml = xml & "<button id=""Speech2NR" & i & """ label=""2NR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""2NR" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
+                xml = xml & "<menuSeparator id=""separator" & i & """ />"
+            End If
+        Next Round
+    End If
         
     ' Add default speech options
     xml = xml & "<button id=""Speech2AC"" label=""2AC"" tag=""2AC"" onAction=""Paperless.NewSpeechFromMenu"" />"
@@ -776,71 +779,54 @@ End Sub
 
 Sub StartTimer()
 ' Starts a user supplied timer.
-' To install, place any timer in the same folder as Debate.dotm, and name the executable "Timer.exe"
-
+    On Error GoTo Handler
+    Dim TimerPath As String
+    
     #If Mac Then
-        Dim TimerApp As String
-        Dim TimerAppPOSIX As String
+        Dim TimerPOSIX As String
         
         On Error GoTo Handler
         
         ' Get path to timer app
-        TimerApp = GetSetting("Verbatim", "Paperless", "TimerApp", "?")
+        TimerPath = GetSetting("Verbatim", "Plugins", "TimerPath", "?")
         
         ' If not set, try default
-        If TimerApp = "?" Then TimerApp = MacScript("return path to applications folder as string") & "Debate Timer for Mac.app"
+        If TimerPath = "?" Then TimerPath = MacScript("return path to applications folder as string") & "Debate Timer for Mac.app"
     
         ' Make sure timer app exists
-        #If MAC_OFFICE_VERSION >= 15 Then
-        If AppleScriptTask("Verbatim.scpt", "FileExists", TimerApp) = "false" Then
-        #Else
-        If MacScript("tell application ""Finder""" & Chr(13) & "exists file """ & TimerApp & """" & Chr(13) & "end tell") = "false" Then
-        #End If
+        If AppleScriptTask("Verbatim.scpt", "FileExists", TimerPath) = "false" Then
             MsgBox "Timer application not found. Ensure you have one installed and enter the correct path to the application in the Verbatim Settings." & vbCrLf & vbCrLf & "See the Verbatim manual on paperlessdebate.com for suggestions of Mac timer programs."
             Exit Sub
         Else
             ' If java app selected, run it from the shell
-            If Right(TimerApp, 5) = ".jar:" Or Right(TimerApp, 4) = ".jar" Then
-                TimerAppPOSIX = MacScript("return POSIX path of """ & TimerApp & """")
-                #If MAC_OFFICE_VERSION >= 15 Then
-                    AppleScriptTask "Verbatim.scpt", "RunShellScript", "open '" & TimerAppPOSIX & "'"
-                #Else
-                    MacScript ("do shell script ""open '" & TimerAppPOSIX & "'""")
-                #End If
+            If Right(TimerPath, 5) = ".jar:" Or Right(TimerPath, 4) = ".jar" Then
+                TimerPathPOSIX = MacScript("return POSIX path of """ & TimerPath & """")
+                AppleScriptTask "Verbatim.scpt", "RunShellScript", "open '" & TimerPathPOSIX & "'"
             Else
-                #If MAC_OFFICE_VERSION >= 15 Then
-                    AppleScriptTask "Verbatim.scpt", "ActivateTimer", TimerApp
-                #Else
-                    MacScript ("tell application """ & TimerApp & """ to activate")
-                #End If
+                AppleScriptTask "Verbatim.scpt", "ActivateTimer", TimerPath
             End If
         End If
     
         Exit Sub
     #Else
-        Dim FSO As Scripting.FileSystemObject
-        Set FSO = New Scripting.FileSystemObject
-        
-        On Error GoTo Handler
+        TimerPath = GetSetting("Verbatim", "Plugins", "TimerPath", vbNullString)
+        If TimerPath = vbNullString Then
+            TimerPath = Environ("ProgramW6432" & Application.PathSeparator & "Verbatim\Plugins\Timer.exe")
+        End If
         
         ' Check timer exists
-        If FSO.FileExists(ActiveDocument.AttachedTemplate.Path & "\Timer.exe") = False Then
-            MsgBox "Timer not found.  Make sure Timer.exe is in the same folder as your template."
+        If Filesystem.FileExists(TimerPath) = False Then
+            MsgBox "Timer application not found. Ensure you have installed the Verbatim Timer or entered a custom path to another application in the Verbatim Settings."
             Exit Sub
         End If
         
         ' Run Timer
-        Shell ActiveDocument.AttachedTemplate.Path & "\Timer.exe", vbNormalFocus
-    
-        Set FSO = Nothing
-    
+        Shell TimerPath, vbNormalFocus
+       
         Exit Sub
     #End If
     
 Handler:
-    #If Not Mac Then
-        Set FSO = Nothing
-    #End If
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 

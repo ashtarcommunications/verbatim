@@ -32,11 +32,11 @@ Private Sub btnCancel_Click()
     Me.Hide
 End Sub
 
-Sub btnCancel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Sub btnCancel_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnCancel.BackColor = Globals.CANCEL_BUTTON_HOVER
 End Sub
 
-Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Sub Userform_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnCancel.BackColor = Globals.CANCEL_BUTTON_NORMAL
 End Sub
 

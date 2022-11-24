@@ -99,7 +99,7 @@ Sub RibbonMain(ByVal control As IRibbonControl)
     Case Is = "AutoUnderline"
         Formatting.AutoUnderline
     Case Is = "PasteOCR"
-        ' OCR.PasteOCR
+        OCR.PasteOCR
         
     Case Is = "UpdateStyles"
         Formatting.UpdateStyles
@@ -141,7 +141,7 @@ Sub RibbonMain(ByVal control As IRibbonControl)
     Case Is = "CaselistWizard"
         UI.ShowForm "Caselist"
     Case Is = "ConvertToWiki"
-        'Caselist.Word2Markdown
+        Caselist.Word2MarkdownCites
     Case Is = "CiteRequestDoc"
         Caselist.CiteRequestDoc
     Case Is = "CiteRequest"
@@ -245,6 +245,11 @@ Sub GetRibbonToggles(control As IRibbonControl, ByRef state)
         
     Case Is = "AutoUnderline"
         state = Globals.UnderlineModeToggle
+        
+    Case Is = "Pilcrows"
+        Dim PilcrowsMode
+        PilcrowsMode = GetSetting("Verbatim", "Format", "PilcrowsMode", True)
+        state = PilcrowsMode
         
     Case Else
         state = False

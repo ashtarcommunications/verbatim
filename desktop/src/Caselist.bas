@@ -589,11 +589,13 @@ Public Function CheckCaselistToken() As Boolean
     
     CheckCaselistToken = False
     
-    CaselistToken = GetSetting("Verbatim", "Caselist", "CaselistToken", "")
-    CaselistTokenExpires = GetSetting("Verbatim", "Caselist", "CaselistTokenExpires", "")
+    CaselistToken = GetSetting("Verbatim", "Caselist", "CaselistToken", vbNullString)
+    CaselistTokenExpires = GetSetting("Verbatim", "Caselist", "CaselistTokenExpires", vbNullString)
     
-    If CaselistToken <> "" And CDate(Now()) < CDate(CaselistTokenExpires) Then
-        CheckCaselistToken = True
+    If CaselistToken <> vbNullString And CaselistTokenExpires <> vbNullString Then
+        If CDate(Now()) < CDate(CaselistTokenExpires) Then
+            CheckCaselistToken = True
+        End If
     End If
 
     Exit Function
