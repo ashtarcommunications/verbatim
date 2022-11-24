@@ -23,3 +23,28 @@ Rename CiteMaker functions to Cite Creator
 Check all settings namespaces/names throughout
 Build UI for autotext functions
 Consider paragraph spacing adjustments
+
+Flow TODO
+send selected or heading to excel in cell or column
+Send outline tag/cite from word to excel
+send excel cell/column to word at cursor or end of doc
+insert row(s) above/below current based on hotkey
+delete row
+delete empty sheets
+delete single sheet
+easy move between sheets
+add sheets quickly (aff/neg/etc)
+toggle enter/alt-enter mode
+highlight argument
+Create flow for tabroom round/Speech from Verbatim
+Label flows based on title in A1
+Info tracking/scouting info
+auto-move columns to chosen speech
+macro to designate evidence for an argument
+auto-organize windows for flow/speech side-by-side
+vtub for analytics
+Add/remove numbers for args automatically
+Merge/group cells
+Move up/down like with blocks
+Configurable for different events
+Keyboard shortcuts cheat sheet
