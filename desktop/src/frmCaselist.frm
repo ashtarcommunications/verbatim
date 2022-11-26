@@ -23,7 +23,7 @@ Option Explicit
 Private Sub UserForm_Initialize()
     On Error GoTo Handler
     
-    If GetSetting("Verbatim", "Caselist", "DisableCaselist", False) = True Then
+    If GetSetting("Verbatim", "Profile", "DisableTabroom", False) = True Then
         MsgBox "Caselist functions are disabled in the Verbatim settings. Please enable to use this feature."
         Me.Hide
         Unload Me
@@ -404,7 +404,6 @@ Private Sub ProcessCiteEntries()
     
 End Sub
 
-
 Private Sub btnSubmit_Click()
     Me.UploadToCaselist
 End Sub
@@ -493,20 +492,29 @@ Private Sub AddCiteEntry(Title As String, Content As String)
     Me.fCites.ScrollTop = Me.fCites.ScrollHeight
 End Sub
 
-Sub btnSubmit_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Sub btnSubmit_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnSubmit.BackColor = Globals.LIGHT_BLUE
 End Sub
-Sub btnAddCite_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+
+Sub btnCancel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    btnCacncel.BackColor = Globals.LIGHT_RED
+End Sub
+
+Sub btnAddCite_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnAddCite.BackColor = Globals.LIGHT_GREEN
 End Sub
-Sub btnDeleteCite_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+
+Sub btnDeleteCite_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnDeleteCite.BackColor = Globals.LIGHT_RED
 End Sub
-Sub Userform_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+
+Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnSubmit.BackColor = Globals.BLUE
+    btnCancel.BackColor = Globals.RED
     btnAddCite.BackColor = Globals.GREEN
     btnDeleteCite.BackColor = Globals.RED
 End Sub
+
 Public Function ValidateForm() As Boolean
 
     Me.cboTournament.BorderColor = Globals.DARK_GRAY

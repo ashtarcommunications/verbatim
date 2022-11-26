@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmShare 
    Caption         =   "Share on share.tabroom.com"
-   ClientHeight    =   7440
+   ClientHeight    =   6975
    ClientLeft      =   120
    ClientTop       =   465
-   ClientWidth     =   9060
+   ClientWidth     =   8955
    OleObjectBlob   =   "frmShare.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -13,21 +13,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-
-Private Sub lblLogin2_Click()
-    Me.Hide
-    UI.ShowForm "Login"
-    Unload Me
-    Exit Sub
-End Sub
-
-Private Sub btnShare_Click()
-    UploadToShare lboxRounds.List(lboxRounds.ListIndex, 1)
-End Sub
-
-Private Sub lblURL_Click()
-    Settings.LaunchWebsite Globals.SHARE_URL
-End Sub
+Option Explicit
 
 Private Sub UserForm_Initialize()
     On Error GoTo Handler
@@ -39,7 +25,7 @@ Private Sub UserForm_Initialize()
     Dim Phrase
     Phrase = RandomPhrase
     
-    If GetSetting("Verbatim", "Caselist", "TabroomDisable", False) = False Then
+    If GetSetting("Verbatim", "Profile", "DisableTabroom", False) = False Then
         Dim Response As Dictionary
         'Set Response = HTTP.GetReq(Globals.CASELIST_URL & "/tabroom/rounds?current=true")
         Set Response = HTTP.GetReq(Globals.MOCK_ROUNDS)
@@ -76,7 +62,7 @@ Private Sub UserForm_Initialize()
     End If
 
     Me.lboxRounds.AddItem
-    Me.lboxRounds.List(Me.lboxRounds.ListCount - 1, 0) = "Random New Room: " + Phrase
+    Me.lboxRounds.List(Me.lboxRounds.ListCount - 1, 0) = "Random New Room: " & Phrase
     Me.lboxRounds.List(Me.lboxRounds.ListCount - 1, 1) = Phrase
 
     Exit Sub
@@ -99,40 +85,56 @@ Private Sub txtRoom_Change()
 End Sub
 
 Private Sub ValidateForm()
-
-    If Me.txtRoom.Value = "" And Me.lboxRounds.Value = "" Then
+    If Me.txtRoom.Value = vbNullString And Me.lboxRounds.Value = vbNullString Then
         Me.btnShare.Enabled = False
         Me.btnBrowser.Enabled = False
-    ElseIf Me.lboxRounds.Value = "" And Me.txtRoom.TextLength < 8 Then
+    ElseIf Me.lboxRounds.Value = vbNullString And Me.txtRoom.TextLength < 8 Then
         Me.btnShare.Enabled = False
         Me.btnBrowser.Enabled = False
-    ' ElseIf Me.lboxRounds.Value = "" And Not Strings.IsAlphanumeric(Me.txtRoom.Value) Then
-    
+    ElseIf Me.lboxRounds.Value = vbNullString And Len(Strings.OnlyAlphaNumericChars(Me.txtRoom.Value)) < 8 Then
+        Me.btnShare.Enabled = False
+        Me.btnBrowser.Enabled = False
     Else
-    
         Me.btnShare.Enabled = True
         Me.btnBrowser.Enabled = True
     End If
-
 End Sub
 
-Sub btnShare_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Sub btnShare_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnShare.BackColor = Globals.LIGHT_BLUE
 End Sub
-Sub btnBrowser_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+
+Sub btnBrowser_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnBrowser.BackColor = Globals.LIGHT_BLUE
 End Sub
-Sub btnCancel_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+
+Sub btnCancel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnCancel.BackColor = Globals.LIGHT_RED
 End Sub
-Sub Userform_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+
+Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnShare.BackColor = Globals.BLUE
     Me.btnBrowser.BackColor = Globals.BLUE
     Me.btnCancel.BackColor = Globals.RED
 End Sub
 
+Private Sub lblURL_Click()
+    Settings.LaunchWebsite Globals.SHARE_URL
+End Sub
+
 Sub btnCancel_Click()
     Unload Me
+End Sub
+
+Private Sub lblLoginLink_Click()
+    Me.Hide
+    UI.ShowForm "Login"
+    Unload Me
+    Exit Sub
+End Sub
+
+Private Sub btnShare_Click()
+    UploadToShare lboxRounds.List(lboxRounds.ListIndex, 1)
 End Sub
 
 Private Function RandomPhrase() As String
@@ -176,7 +178,6 @@ Private Function RandomPhrase() As String
 End Function
 
 Private Sub UploadToShare()
-
     On Error GoTo Handler
     
     Application.ScreenUpdating = False
@@ -193,7 +194,6 @@ Private Sub UploadToShare()
     Base64 = Filesystem.GetFileAsBase64(ActiveDocument.FullName)
     Body.Add "file", Base64
     Body.Add "filename", ActiveDocument.Name
-           
            
     Dim Room As String
     If Me.lboxRounds.Value <> vbNullString Then Room = Me.lboxRounds.Value

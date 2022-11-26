@@ -15,13 +15,15 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-
 Private Sub UserForm_Initialize()
 
     On Error GoTo Handler
     
+    #If Mac Then
+        UI.ResizeUserForm Me
+    #End If
+    
     ' Run install checks
-    ' TODO - get correct setting name
     If GetSetting("Verbatim", "Admin", "SkipInstallChecks", False) = False Then
         If Troubleshooting.InstallCheckTemplateName = True Then
             MsgBox "WARNING - Verbatim appears to be installed incorrectly as " & ActiveDocument.AttachedTemplate.Name & " - Verbatim should always be named ""Debate.dotm"" or many features will not work correctly. It is strongly recommended you change the file name back." & vbCrLf & vbCrLf & "Please close Verbatim and install correctly before proceeding."
@@ -43,7 +45,7 @@ Private Sub UserForm_Initialize()
         Me.chkAlwaysOn.Value = True
     End If
     
-    If GetSetting("Verbatim", "Main", "CollegeHS", "College") = "College" Then
+    If GetSetting("Verbatim", "Profile", "CollegeHS", "College") = "College" Then
         Me.optCollege.Value = True
     Else
         Me.optK12.Value = True
@@ -66,19 +68,19 @@ Private Sub btnOK_Click()
     SaveSetting "Verbatim", "Admin", "AlwaysOn", Me.chkAlwaysOn.Value
         
     If Me.optCollege.Value = True Then
-        SaveSetting "Verbatim", "Main", "CollegeHS", "College"
+        SaveSetting "Verbatim", "Profile", "CollegeHS", "College"
     Else
-        SaveSetting "Verbatim", "Main", "CollegeHS", "K12"
+        SaveSetting "Verbatim", "Profile", "CollegeHS", "K12"
     End If
     
     If Me.optCX.Value = True Then
-        SaveSetting "Verbatim", "Main", "Event", "CX"
+        SaveSetting "Verbatim", "Profile", "Event", "CX"
     ElseIf Me.optLD.Value = True Then
-        SaveSetting "Verbatim", "Main", "Event", "LD"
+        SaveSetting "Verbatim", "Profile", "Event", "LD"
     ElseIf Me.optPF.Value = True Then
-        SaveSetting "Verbatim", "Main", "Event", "PF"
+        SaveSetting "Verbatim", "Profile", "Event", "PF"
     Else
-        SaveSetting "Verbatim", "Main", "Event", "CX"
+        SaveSetting "Verbatim", "Profile", "Event", "CX"
     End If
     
     Unload Me
@@ -94,4 +96,17 @@ End Sub
 
 Private Sub btnCancel_Click()
     If MsgBox("Are you sure you want to exit without completing the Setup Wizard?", vbYesNo) = vbYes Then Unload Me
+End Sub
+
+Sub btnOK_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    btnOK.BackColor = Globals.LIGHT_BLUE
+End Sub
+
+Sub btnCancel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    btnCancel.BackColor = Globals.LIGHT_RED
+End Sub
+
+Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    btnOK.BackColor = Globals.BLUE
+    btnCancel.BackColor = Globals.RED
 End Sub

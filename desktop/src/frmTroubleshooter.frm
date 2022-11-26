@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmTroubleshooter 
    Caption         =   "Verbatim Troubleshooter"
-   ClientHeight    =   10155
+   ClientHeight    =   5775
    ClientLeft      =   120
    ClientTop       =   450
-   ClientWidth     =   9285
+   ClientWidth     =   9045
    OleObjectBlob   =   "frmTroubleshooter.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -18,6 +18,10 @@ Option Explicit
 Private Sub UserForm_Activate()
 
     On Error GoTo Handler
+
+    #If Mac Then
+        UI.ResizeUserForm Me
+    #End If
 
     Dim TemplateLocation As String
 
@@ -82,5 +86,17 @@ Private Sub btnFix_Click()
     Me.Show
 End Sub
 
+Sub btnFix_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    btnFix.BackColor = Globals.LIGHT_BLUE
+End Sub
+
+Sub btnCancel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    btnCancel.BackColor = Globals.LIGHT_RED
+End Sub
+
+Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    btnFix.BackColor = Globals.BLUE
+    btnCancel.BackColor = Globals.RED
+End Sub
 
 

@@ -132,6 +132,10 @@ Private Sub UserForm_Initialize()
     ' Turn on Error handling
     On Error GoTo Handler
     
+    #If Mac Then
+        UI.ResizeUserForm Me
+    #End If
+    
     ' Get Settings from the registry to populate the settings boxes
     
     ' Profile Tab

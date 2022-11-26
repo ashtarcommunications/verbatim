@@ -4,7 +4,7 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmStats
    ClientHeight    =   3015
    ClientLeft      =   120
    ClientTop       =   450
-   ClientWidth     =   2445
+   ClientWidth     =   2760
    OleObjectBlob   =   "frmStats.frx":0000
    ShowModal       =   0   'False
    StartUpPosition =   1  'CenterOwner
@@ -19,6 +19,10 @@ Option Explicit
 Public ComputingStats As Boolean
 
 Private Sub UserForm_Initialize()
+    #If Mac Then
+        UI.ResizeUserForm Me
+    #End If
+
     ComputingStats = False
 
     ' Save parent doc
@@ -31,7 +35,7 @@ Private Sub UserForm_Initialize()
         Me.Caption = "Stats - " & ActiveDocument.Name
     End If
 
-    Select Case GetSetting("Verbatim", "Main", "CollegeHS", "College")
+    Select Case GetSetting("Verbatim", "Profile", "CollegeHS", "College")
         Case Is = "College"
             If InStr(ActiveDocument.Name, "1AC") > 0 Or _
             InStr(ActiveDocument.Name, "1NC") > 0 Or _
@@ -163,7 +167,6 @@ Private Sub ComputeHighlightedWords()
             HighlightCount = HighlightCount + r.ComputeStatistics(wdStatisticWords)
             Application.ScreenRefresh
         Loop
-        
     End With
     
     ' Print results
@@ -253,7 +256,7 @@ Private Sub ComputeTotal()
     Dim WPM As Integer
     Dim Remain
     
-    WPM = Int(GetSetting("Verbatim", "Main", "WPM", "350"))
+    WPM = Int(GetSetting("Verbatim", "Profile", "WPM", "350"))
     
     Me.lblTotal.Caption = Int(Me.lblHighlightCount.Caption) + Int(Me.lblTagCount.Caption)
     Remain = Round(((Int(Me.lblTotal.Caption) Mod WPM) / WPM) * 60, 0)

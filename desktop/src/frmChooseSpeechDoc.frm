@@ -4,7 +4,7 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmChooseSpeechDoc
    ClientHeight    =   3735
    ClientLeft      =   120
    ClientTop       =   465
-   ClientWidth     =   6270
+   ClientWidth     =   6285
    OleObjectBlob   =   "frmChooseSpeechDoc.frx":0000
 End
 Attribute VB_Name = "frmChooseSpeechDoc"
@@ -19,6 +19,10 @@ Private Sub UserForm_Initialize()
     Dim i As Integer
     
     On Error GoTo Handler
+    
+    #If Mac Then
+        UI.ResizeUserForm Me
+    #End If
     
     ' Loop through open Windows - use Windows because Application.Documents collection gets corrupted
     For Each w In Application.Windows
@@ -41,7 +45,7 @@ Private Sub UserForm_Initialize()
 Handler:
     ' Periodic inexplicable runtime error
     If Err.Number = 5097 Then
-        MsgBox "Your Word interface has been corrupted, probably because of the Windows Explorer Preview Pane. Try running the Verbatim Troubleshooter to solve this. You can also try closing any open Explorer windows, opening a new document, or restarting Word to fix it."
+        MsgBox "Your Word interface has been corrupted, probably because of the Windows Explorer Preview Pane. Try running the Verbatim Setup Tool to solve this. You can also try closing any open Explorer windows, opening a new document, or restarting Word to fix it."
     Else
         MsgBox "Error " & Err.Number & ": " & Err.Description
     End If
@@ -63,9 +67,9 @@ Private Sub btnChooseSpeechDoc_Click()
         Unload Me
     End If
 End Sub
-Sub btnChooseSpeechDoc_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
-    btnChooseSpeechDoc.BackColor = Globals.SUBMIT_BUTTON_HOVER
+Sub btnChooseSpeechDoc_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    btnChooseSpeechDoc.BackColor = Globals.LIGHT_BLUE
 End Sub
-Sub Userform_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
-    btnChooseSpeechDoc.BackColor = Globals.SUBMIT_BUTTON_NORMAL
+Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    btnChooseSpeechDoc.BackColor = Globals.BLUE
 End Sub

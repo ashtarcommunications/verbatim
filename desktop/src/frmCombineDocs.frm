@@ -4,7 +4,7 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmCombineDocs
    ClientHeight    =   5505
    ClientLeft      =   120
    ClientTop       =   465
-   ClientWidth     =   8160
+   ClientWidth     =   8220
    OleObjectBlob   =   "frmCombineDocs.frx":0000
 End
 Attribute VB_Name = "frmCombineDocs"
@@ -17,23 +17,75 @@ Option Explicit
 Private Sub UserForm_Initialize()
     Dim rFile As RecentFile
            
-    'Turn on error checking
+    ' Turn on error checking
     On Error GoTo Handler
     
-    'Add all recent files to the box
+    #If Mac Then
+        UI.ResizeUserForm Me
+    #End If
+    
+    ' Add all recent files to the box
     For Each rFile In Application.RecentFiles
         Me.lboxDocs.AddItem
         Me.lboxDocs.List(Me.lboxDocs.ListCount - 1, 0) = rFile.Name
         Me.lboxDocs.List(Me.lboxDocs.ListCount - 1, 1) = rFile.Path & "\" & rFile.Name
     Next rFile
        
-    'Reset AutoName box and add a blank item
+    ' Reset AutoName box and add a blank item
     Me.cboAutoName.Clear
     Me.cboAutoName.AddItem
     Me.cboAutoName.List(Me.cboAutoName.ListCount - 1) = ""
     
-    'Get rounds from Tabroom
-    Caselist.PopulateComboBox Globals.MOCK_ROUNDS, "tournament", Me.cboAutoName
+    ' Get rounds from Tabroom
+    If GetSetting("Verbatim", "Profile", "DisableTabroom", False) = True Then
+        Exit Sub
+    End If
+
+    If Caselist.CheckCaselistToken = False Then
+        Me.Hide
+        UI.ShowForm "Login"
+        Unload Me
+        Exit Sub
+    End If
+    
+    Dim Response As Dictionary
+    'Set Response = HTTP.GetReq(Globals.CASELIST_URL & "/tabroom/rounds")
+    Set Response = HTTP.GetReq(Globals.MOCK_ROUNDS)
+    
+    If Response("status") = 401 Then
+        Me.Hide
+        UI.ShowForm "Login"
+        Unload Me
+        Exit Sub
+    End If
+    
+    Me.cboAutoName.AddItem
+    Me.cboAutoName.List(Me.cboAutoName.ListCount - 1, 0) = "Select a Round"
+    Me.cboAutoName.List(Me.cboAutoName.ListCount - 1, 1) = vbNullString
+    Me.cboAutoName.ListIndex = 0
+       
+    Dim Round
+    Dim RoundName As String
+    Dim Side As String
+    Dim SideName As String
+
+    If Response("body").Count = 0 Then
+        Me.cboAutoName.List(0, 0) = "No rounds found on Tabroom"
+        Me.cboAutoName.ListIndex = 0
+        Me.cboAutoName.Enabled = False
+    End If
+
+    For Each Round In Response("body")
+        RoundName = Strings.RoundName(Round("round"))
+        Side = Round("side")
+        SideName = Strings.DisplaySide(Side)
+        
+        Me.lboxDocs.AddItem
+        
+        Me.cboAutoName.List(Me.cboAutoName.ListCount - 1, 0) = Round("tournament") & " " & RoundName & " " & SideName & " vs " & Round("opponent")
+        Me.cboAutoName.List(Me.cboAutoName.ListCount - 1, 1) = Round("tournament") & " " & RoundName & " " & SideName & " vs " & Round("opponent")
+        
+    Next Round
     
     Exit Sub
 
@@ -41,32 +93,35 @@ Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
-Sub btnCombine_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
-    btnCombine.BackColor = Globals.SUBMIT_BUTTON_HOVER
+Sub btnCombine_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    btnCombine.BackColor = Globals.LIGHT_BLUE
 End Sub
-Sub Userform_MouseMove(ByVal BUtton As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
-    btnCombine.BackColor = Globals.SUBMIT_BUTTON_NORMAL
+
+Sub btnCancel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    btnCancel.BackColor = Globals.LIGHT_RED
+End Sub
+
+Sub btnManualAdd_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    btnCombine.BackColor = Globals.LIGHT_GREEN
+End Sub
+
+Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    btnCombine.BackColor = Globals.BLUE
+    btnCancel.BackColor = Globals.RED
+    btnManualAdd.BackColor = Globals.GREEN
 End Sub
 
 Private Sub btnManualAdd_Click()
-    
     Dim FilePath As String
     
     On Error Resume Next
     
-    'Show the built-in file picker, only allow picking 1 file at a time
-    Application.FileDialog(msoFileDialogFilePicker).AllowMultiSelect = False
-    If Application.FileDialog(msoFileDialogFilePicker).Show = 0 Then 'Error trap cancel button
-        Exit Sub
-    End If
+    FilePath = UI.GetFileFromDialog("Select document", "*.doc*", "Choose a document...", "Select")
     
-    'Add selected file to the box
-    FilePath = Application.FileDialog(msoFileDialogFilePicker).SelectedItems(1)
     Me.lboxDocs.AddItem , 0
     Me.lboxDocs.List(0, 0) = Right(FilePath, Len(FilePath) - InStrRev(FilePath, "\"))
     Me.lboxDocs.List(0, 1) = FilePath
     Me.lboxDocs.Selected(0) = True
-        
 End Sub
 
 Private Sub btnCombine_Click()
@@ -76,7 +131,7 @@ Private Sub btnCombine_Click()
     
     On Error GoTo Handler
     
-    'Make sure only docx, doc and rtf files are selected
+    ' Make sure only docx, doc and rtf files are selected
     For i = 0 To Me.lboxDocs.ListCount - 1
         If Me.lboxDocs.Selected(i) = True Then
             If Right(Me.lboxDocs.List(i, 1), Len(Me.lboxDocs.List(i, 1)) - InStrRev(Me.lboxDocs.List(i, 1), ".")) <> "docx" And _
@@ -89,16 +144,16 @@ Private Sub btnCombine_Click()
         End If
     Next i
     
-    'Make sure at least 2 files are selected
+    ' Make sure at least 2 files are selected
     If FileCount < 2 Then
         MsgBox "You must select at least 2 files to combine."
         Exit Sub
     End If
         
-    'Add a new blank document
+    ' Add a new blank document
     Paperless.NewDocument
   
-    'Insert selected files in new pockets
+    ' Insert selected files in new pockets
     For i = 0 To Me.lboxDocs.ListCount - 1
         If Me.lboxDocs.Selected(i) = True Then
             Selection.TypeText Left(Me.lboxDocs.List(i, 0), InStrRev(Me.lboxDocs.List(i, 0), ".") - 1)
@@ -108,16 +163,16 @@ Private Sub btnCombine_Click()
         End If
     Next i
    
-    'Save file
-    If GetSetting("Verbatim", "Paperless", "AutoSaveDir") <> "" And Me.cboAutoName.Value <> "" Then
-        If Right(GetSetting("Verbatim", "Paperless", "AutoSaveDir"), 1) = "\" Then
+    ' Save file
+    If GetSetting("Verbatim", "Paperless", "AutoSaveDir") <> vbNullString And Me.cboAutoName.Value <> vbNullString Then
+        If Right(GetSetting("Verbatim", "Paperless", "AutoSaveDir"), 1) = Application.PathSeparator Then
             ActiveDocument.SaveAs FileName:=GetSetting("Verbatim", "Paperless", "AutoSaveDir") & Me.cboAutoName.Value, FileFormat:=wdFormatXMLDocument
         Else
-            ActiveDocument.SaveAs FileName:=GetSetting("Verbatim", "Paperless", "AutoSaveDir") & "\" & Me.cboAutoName.Value, FileFormat:=wdFormatXMLDocument
+            ActiveDocument.SaveAs FileName:=GetSetting("Verbatim", "Paperless", "AutoSaveDir") & Application.PathSeparator & Me.cboAutoName.Value, FileFormat:=wdFormatXMLDocument
         End If
     Else
         With Application.Dialogs(wdDialogFileSaveAs)
-            If Me.cboAutoName.Value <> "" Then
+            If Me.cboAutoName.Value <> vbNullString Then
                 .Name = Me.cboAutoName.Value
             Else
                 .Name = "Combined Doc"
@@ -133,4 +188,8 @@ Private Sub btnCombine_Click()
 Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
 
+End Sub
+
+Private Sub btnCancel_Click()
+    Unload Me
 End Sub
