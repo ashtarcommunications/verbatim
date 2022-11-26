@@ -207,6 +207,7 @@ const start = async () => {
         await appWindow.setDecorations(false);
         document.querySelector('#smalltimers').style.display = 'none';
         document.querySelector('#controls').style.display = 'none';
+        document.querySelector('#active').style.display = 'block';
     }
 
     if (settings.window.transparent) {
@@ -229,6 +230,7 @@ const stop = async () => {
 
         document.querySelector('#smalltimers').style.display = 'flex';
         document.querySelector('#controls').style.display = 'flex';
+        document.querySelector('#active').style.display = 'flex';
     }
 
     // Remove transparency

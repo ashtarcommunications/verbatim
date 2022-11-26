@@ -66,6 +66,7 @@
         "decorations": true,
         "alwaysOnTop": true
       }
-    ]
+    ],
+    "macOSPrivateApi": true
   }
 }

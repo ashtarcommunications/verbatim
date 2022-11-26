@@ -137,7 +137,8 @@ body {
 }
 
 #affprep,
-#negprep {
+#negprep,
+#speech {
     display: flex;
 }
 
