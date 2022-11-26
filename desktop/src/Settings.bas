@@ -9,7 +9,9 @@ Sub UnverbatimizeNormal()
     Application.OrganizerDelete source:=Application.NormalTemplate.FullName, Name:="AttachVerbatim", Object:=wdOrganizerObjectProjectItems
 
     ' Delete CustomUI if it exists
-    #If Not Mac Then
+    #If Mac Then
+        ' Do Nothing
+    #Else
         Dim FSO As Scripting.FileSystemObject
         Set FSO = New Scripting.FileSystemObject
         On Error GoTo Handler
@@ -86,7 +88,9 @@ Sub ImportCustomCode(Optional Notify As Boolean)
 
     If Notify = True Then MsgBox "Custom code successfully imported!"
 
-    #If Not Mac Then
+    #If Mac Then
+        ' Do Nothing
+    #Else
         Set FSO = Nothing
     #End If
     Set p = Nothing
@@ -94,7 +98,9 @@ Sub ImportCustomCode(Optional Notify As Boolean)
     Exit Sub
 
 Handler:
-    #If Not Mac Then
+    #If Mac Then
+        ' Do Nothing
+    #Else
         Set FSO = Nothing
     #End If
     Set p = Nothing
@@ -328,7 +334,9 @@ Sub ResetKeyboardShortcuts()
     KeyBindings.Add wdKeyCategoryMacro, "Paperless.NewSpeech", BuildKeyCode(wdKeyControl, wdKeyShift, wdKeyN)
     KeyBindings.Add wdKeyCategoryMacro, "View.ToggleReadingView", BuildKeyCode(wdKeyControl, wdKeyAlt, wdKeyR)
     
-    #If Not Mac Then
+    #If Mac Then
+        ' Do Nothing
+    #Else
         Troubleshooting.FixTilde
     #End If
     

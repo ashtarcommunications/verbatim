@@ -5,7 +5,9 @@ Option Explicit
 ' * REGISTRY FUNCTIONS                                                                *
 ' *************************************************************************************
 
-#If Not Mac Then
+#If Mac Then
+    ' Do Nothing
+#Else
 Function RegKeyRead(RegKey As String) As String
     Dim WS As WshShell
     On Error Resume Next

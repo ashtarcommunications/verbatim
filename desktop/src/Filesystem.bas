@@ -24,7 +24,9 @@ Public Function FileExists(ByVal FilePath As String) As Boolean
     Exit Function
 
 Handler:
-    #If Not Mac Then
+    #If Mac Then
+        ' Do Nothing
+    #Else
         Set FSO = Nothing
     #End If
     Application.StatusBar = "Error checking for file " & FilePath & " - Error " & Err.Number & ": " & Err.Description
@@ -52,7 +54,9 @@ Public Function FolderExists(ByVal FolderPath As String) As Boolean
     Exit Function
 
 Handler:
-    #If Not Mac Then
+    #If Mac Then
+        ' Do nothing
+    #Else
         Set FSO = Nothing
     #End If
     Application.StatusBar = "Error checking for folder " & FolderPath & " - Error " & Err.Number & ": " & Err.Description
@@ -161,7 +165,9 @@ Public Sub CopyFile(Path As String, NewPath As String)
     Exit Sub
 
 Handler:
-    #If Not Mac Then
+    #If Mac Then
+        ' Do Nothing
+    #Else
         Set FSO = Nothing
     #End If
     MsgBox "Error " & Err.Number & ": " & Err.Description
@@ -210,7 +216,9 @@ Public Function GetFileAsBase64(Path As String) As String
     Exit Function
     
 Handler:
-    #If Not Mac Then
+    #If Mac Then
+        ' Do Nothing
+    #Else
         FileStream.Close
         Set FileStream = Nothing
         Set xmlDoc = Nothing

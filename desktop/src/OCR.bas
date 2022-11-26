@@ -69,7 +69,9 @@ Public Sub PasteOCR()
     
     Exit Sub
 Handler:
-    #If Not Mac Then
+    #If Mac Then
+        ' Do Nothing
+    #Else
         Set FSO = Nothing
     #End If
     MsgBox "Error " & Err.Number & ": " & Err.Description

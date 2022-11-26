@@ -55,7 +55,9 @@ Sub AutoOpenFolder(control As IRibbonControl, pressed As Boolean)
         
         Globals.AutoOpenFolderToggle = True
         
-        #If Not Mac Then
+        #If Mac Then
+            ' Do Nothing
+        #Else
             Set FSO = New Scripting.FileSystemObject
         #End If
         
@@ -90,7 +92,9 @@ Sub AutoOpenFolder(control As IRibbonControl, pressed As Boolean)
     End If
     
     Ribbon.RefreshRibbon
-    #If Not Mac Then
+    #If Mac Then
+        ' Do Nothing
+    #Else
         Set FSO = Nothing
         Set Files = Nothing
     #End If
@@ -98,7 +102,9 @@ Sub AutoOpenFolder(control As IRibbonControl, pressed As Boolean)
     Exit Sub
     
 Handler:
-    #If Not Mac Then
+    #If Mac Then
+        ' Do Nothing
+    #Else
         Set FSO = Nothing
         Set Files = Nothing
     #End If
@@ -769,7 +775,9 @@ Sub CopyToUSB()
     #End If
     
 Handler:
-    #If Not Mac Then
+    #If Mac Then
+        ' Do Nothing
+    #Else
         Set FSO = Nothing
         Set Drv = Nothing
     #End If

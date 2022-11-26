@@ -113,7 +113,9 @@ GetFileName:
     
 Handler:
     RecordAudioToggle = False
-    #If Not Mac Then
+    #If Mac Then
+        ' Do Nothing
+    #Else
         If Audio.RecordStatus = "recording" Then
             mciSendString "stop capture", retStr, 128, cBack
         End If
@@ -122,7 +124,9 @@ Handler:
     Ribbon.RefreshRibbon
 End Sub
 
-#If Not Mac Then
+#If Mac Then
+    ' Do Nothing
+#Else
 Public Function RecordStatus() As String
     Dim retStr As String
     Dim cBack As Long

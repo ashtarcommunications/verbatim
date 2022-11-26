@@ -48,7 +48,9 @@ Public Sub Init(Path As String)
     Exit Sub
 
 Handler:
-    #If Not Mac Then
+    #If Mac Then
+        ' Do Nothing
+    #Else
         Set FSO = Nothing
     #End If
     MsgBox "Error reading " & Path & " - Error " & Err.Number & ": " & Err.Description

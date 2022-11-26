@@ -29,23 +29,24 @@ Public Sub AutoClose()
         ' If current doc was active speech doc, clear it
         If Globals.ActiveSpeechDoc = ActiveDocument.Name Then Globals.ActiveSpeechDoc = vbNullString
         
-        ' Don't run if in Protected View in Windows
-        #If Not Mac Then
-        If Application.ActiveProtectedViewWindow Is Nothing Then
+        #If Mac Then
+            ' Do nothing
+        #Else
+            ' Don't run if in Protected View in Windows
+            If Not Application.ActiveProtectedViewWindow Is Nothing Then Exit Sub
         #End If
-            ' Check if current file is a .doc file instead of a .docx and default save settings
-            If GetSetting("Verbatim", "Admin", "SuppressDocCheck", False) = False Then
-                Troubleshooting.CheckDocx Notify:=True
-                Troubleshooting.CheckSaveFormat Notify:=True
-            End If
         
-            ' If last doc, check if audio recording is still on
-            If Application.Documents.Count = 1 And Globals.RecordAudioToggle = True Then
-                If MsgBox("Audio recording appears to be active. Stop and save recording now? If you answer ""No"", recording will be lost.", vbYesNo) = vbYes Then Audio.SaveRecord
-            End If
-        #If Not Mac Then
+        ' Check if current file is a .doc file instead of a .docx and default save settings
+        If GetSetting("Verbatim", "Admin", "SuppressDocCheck", False) = False Then
+            Troubleshooting.CheckDocx Notify:=True
+            Troubleshooting.CheckSaveFormat Notify:=True
         End If
-        #End If
+    
+        ' If last doc, check if audio recording is still on
+        If Application.Documents.Count = 1 And Globals.RecordAudioToggle = True Then
+            If MsgBox("Audio recording appears to be active. Stop and save recording now? If you answer ""No"", recording will be lost.", vbYesNo) = vbYes Then Audio.SaveRecord
+        End If
+        
     End If
     
     On Error GoTo 0
@@ -57,56 +58,56 @@ Public Sub Start()
     Globals.InitializeGlobals
     
     ' Don't run if in Protected View or file isn't visible on Windows
-    #If Not Mac Then
-    If Application.ActiveProtectedViewWindow Is Nothing And ActiveWindow.Visible = True Then
+    #If Mac Then
+        ' Do Nothing
+    #Else
+        If Not Application.ActiveProtectedViewWindow Is Nothing Or ActiveWindow.Visible = False Then Exit Sub
     #End If
-        ' Set default view and navigation pane
-        View.DefaultView
-        ActiveWindow.DocumentMap = True
-        
-        ' Refresh document styles from template if setting checked and not editing template itself
-        If GetSetting("Verbatim", "Format", "AutoUpdateStyles", True) = True And ActiveDocument.FullName <> ActiveDocument.AttachedTemplate.FullName Then ActiveDocument.UpdateStyles
-        ActiveDocument.Saved = True
-           
-        ' Check for NPCStartup setting and call NavPaneCycle if True
-        If GetSetting("Verbatim", "Admin", "NPCStartup", False) = True Then View.NavPaneCycle
-        
-        ' Refresh screen to solve blank screen bug
-        Application.ScreenRefresh
     
-        ' Check if it's the first run
-        If GetSetting("Verbatim", "Admin", "FirstRun", True) = True Then
-            Startup.FirstRun
-        Else
-            ' If first document opened and warnings not suppressed, check if template is incorrectly installed.
-            If GetSetting("Verbatim", "Admin", "SuppressInstallChecks", False) = False And Application.Documents.Count = 1 Then
-                If Troubleshooting.InstallCheckTemplateName = True Or Troubleshooting.InstallCheckTemplateLocation = True Then
-                    If MsgBox("Verbatim appears to be installed incorrectly. Would you like to open the Troubleshooter? This message can be suppressed in the Verbatim settings.", vbYesNo) = vbYes Then
-                        UI.ShowForm "Settings"
-                        Exit Sub
-                    End If
-                End If
-            End If
-            
-            ' Check for updates weekly on Wednesdays
-            If GetSetting("Verbatim", "Admin", "AutoUpdateCheck", True) = True Then
-                If DateDiff("d", GetSetting("Verbatim", "Main", "LastUpdateCheck"), Now) > 6 Then
-                    If DatePart("w", Now) = 4 Then
-                        Settings.UpdateCheck
-                        Exit Sub
-                    End If
-                End If
-            End If
-            
-        End If
+    ' Set default view and navigation pane
+    View.DefaultView
+    ActiveWindow.DocumentMap = True
+    
+    ' Refresh document styles from template if setting checked and not editing template itself
+    If GetSetting("Verbatim", "Format", "AutoUpdateStyles", True) = True And ActiveDocument.FullName <> ActiveDocument.AttachedTemplate.FullName Then ActiveDocument.UpdateStyles
+    ActiveDocument.Saved = True
+       
+    ' Check for NPCStartup setting and call NavPaneCycle if True
+    If GetSetting("Verbatim", "Admin", "NPCStartup", False) = True Then View.NavPaneCycle
+    
+    ' Refresh screen to solve blank screen bug
+    Application.ScreenRefresh
 
-        ' Check for custom code to import
-        If GetSetting("Verbatim", "Main", "ImportCustomCode", False) = True Then
-            Settings.ImportCustomCode Notify:=True
+    ' Check if it's the first run
+    If GetSetting("Verbatim", "Admin", "FirstRun", True) = True Then
+        Startup.FirstRun
+    Else
+        ' If first document opened and warnings not suppressed, check if template is incorrectly installed.
+        If GetSetting("Verbatim", "Admin", "SuppressInstallChecks", False) = False And Application.Documents.Count = 1 Then
+            If Troubleshooting.InstallCheckTemplateName = True Or Troubleshooting.InstallCheckTemplateLocation = True Then
+                If MsgBox("Verbatim appears to be installed incorrectly. Would you like to open the Troubleshooter? This message can be suppressed in the Verbatim settings.", vbYesNo) = vbYes Then
+                    UI.ShowForm "Settings"
+                    Exit Sub
+                End If
+            End If
         End If
-    #If Not Mac Then
+        
+        ' Check for updates weekly on Wednesdays
+        If GetSetting("Verbatim", "Admin", "AutoUpdateCheck", True) = True Then
+            If DateDiff("d", GetSetting("Verbatim", "Main", "LastUpdateCheck"), Now) > 6 Then
+                If DatePart("w", Now) = 4 Then
+                    Settings.UpdateCheck
+                    Exit Sub
+                End If
+            End If
+        End If
+        
     End If
-    #End If
+
+    ' Check for custom code to import
+    If GetSetting("Verbatim", "Main", "ImportCustomCode", False) = True Then
+        Settings.ImportCustomCode Notify:=True
+    End If
 
     On Error GoTo 0
 End Sub
