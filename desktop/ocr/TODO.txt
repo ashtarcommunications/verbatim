@@ -1,5 +1,2 @@
-Doesn't extract zip correctly
-Check exit code from zip process
 Doesn't kill process on uninstall correctly
-Doesn't clean up OCR directory on uninstall correctly
 Correct license text

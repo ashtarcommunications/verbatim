@@ -3,6 +3,8 @@
 ;v1.0
 ;2022-11-23
 
+Unicode False
+
 ; Includes
 !include "MUI2.nsh"
 !include "LogicLib.nsh"
@@ -51,7 +53,7 @@ Section "Capture2Text OCR (Required)" sec6
   
 	; Put files there
 	File "Capture2Text_v4.6.3_64bit.zip"
-	nsUnzip::Extract "Capture2Text_v4.6.3_64bit.zip" /u /d="$PROGRAMFILES64\Verbatim\OCR" /END
+	nsUnzip::Extract "Capture2Text_v4.6.3_64bit.zip" /u /END
 	
 	;Write Uninstall registry keys and file
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\VerbatimOCR" "DisplayName" "VerbatimOCR"
@@ -70,14 +72,12 @@ SectionEnd
 Section "Uninstall"
   
     ;Kill Capture2Text if it's running
-	;${nsProcess::KillProcess} "Capture2Text.exe" $RO
-	;${nsProcess::KillProcess} "Capture2Text_CLI.exe" $RO
-	;${nsProcess::Unload}
-	  
+	${nsProcess::KillProcess} "Capture2Text.exe" $RO
+	${nsProcess::KillProcess} "Capture2Text_CLI.exe" $RO
+	
 	; Remove files and uninstaller
-	Delete "$INSTDIR\Capture2Text_v4.6.3_64bit.zip"
-	Delete "$INSTDIR\UninstallVerbatimOCR.exe"
-	RMDir /r "$INSTDIR\OCR"
+	;Delete "$INSTDIR\UninstallVerbatimOCR.exe"
+	RMDir /r "$INSTDIR"
 
 	; Remove shortcuts, if any
 	Delete "$SMPROGRAMS\Verbatim\Capture2Text*"
@@ -85,4 +85,5 @@ Section "Uninstall"
 	; Remove installer registry keys
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\VerbatimOCR"
 	
+	${nsProcess::Unload}
 SectionEnd
