@@ -63,7 +63,7 @@
         "title": "Verbatim Timer",
         "fileDropEnabled": false,
         "transparent": true,
-        "decorations": true,
+        "decorations": false,
         "alwaysOnTop": true
       }
     ],

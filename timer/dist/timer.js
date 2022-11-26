@@ -102,6 +102,11 @@ const setupDefaultSettings = async () => {
     const savedSettings = await store.get('settings');
     settings = { ...defaultSettings, ...savedSettings };
 
+    // Workaround for Windows bug with transparency appearing white,
+    // decorations default to false and enable on app load to fix
+    // https://github.com/tauri-apps/tao/issues/72
+    await appWindow.setDecorations(true);
+
     // Restore window to saved size
     await appWindow.setAlwaysOnTop(settings.window.alwaysOnTop);
     await appWindow.setSize(new PhysicalSize(
@@ -133,6 +138,10 @@ const setupDefaultSettings = async () => {
     document.querySelector('#transparent').checked = settings.window.transparent;
     document.querySelector('#alwaysontop').checked = settings.window.alwaysOnTop;
     document.querySelector('#transparencycolor').value = settings.window.transparencyColor;
+
+    if (settings.window.autoshrink === false) {
+        document.querySelector('#transparent').disabled = true;
+    }
 
     // Make the timer UI match the settings
     document.querySelector('#presetconstructive').textContent = settings.speechTimes.constructive;
@@ -207,7 +216,7 @@ const start = async () => {
         await appWindow.setDecorations(false);
         document.querySelector('#smalltimers').style.display = 'none';
         document.querySelector('#controls').style.display = 'none';
-        document.querySelector('#active').style.display = 'block';
+        document.querySelector('#active').style.display = 'block'; // Moves time to top of window
     }
 
     if (settings.window.transparent) {
@@ -230,7 +239,7 @@ const stop = async () => {
 
         document.querySelector('#smalltimers').style.display = 'flex';
         document.querySelector('#controls').style.display = 'flex';
-        document.querySelector('#active').style.display = 'flex';
+        document.querySelector('#active').style.display = 'flex'; // Moves time to center of div
     }
 
     // Remove transparency
@@ -514,6 +523,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    document.querySelector('#autoshrink').addEventListener('change', (e) => {
+        if (e.target.checked === true) {
+            document.querySelector('#transparent').disabled = false;
+        } else {
+            document.querySelector('#transparent').checked = false;
+            document.querySelector('#transparent').disabled = true;
+        }
+    });
+    
     document.querySelector('#savesettings').addEventListener('click', async () => {
         // Update the global settings with the new values
         settings.alerts['6:00'] = document.querySelector('#alert6').checked;
