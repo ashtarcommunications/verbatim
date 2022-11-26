@@ -1,0 +1,343 @@
+/* Global setup */
+:root {
+    /* Harmonic 16 - janniks.github.io/harmonic16 */
+    --black: #0b1c2c;
+    --darkblue: #223b54;
+    --blue: #405c79;
+    --lightblue: #627e99;
+    --darkgray: #aabcce;
+    --gray: #cbd6e2;
+    --lightgray: #e5ebf1;
+    --white: #f7f9fb;
+    --orange: #bf8b56;
+    --yellow: #bfbf56;
+    --green: #8bbf56;
+    --lightgreen: #56bf8b;
+    --brightblue: #568bbf;
+    --purple: #8b56bf;
+    --magenta: #bf568b;
+    --red: #bf5656;
+}
+
+html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+}
+
+#app {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+/* Global timer colors */
+.aff {
+    background-color: var(--green);
+    color: var(--black);
+}
+
+.speech {
+    background-color: var(--blue);
+    color: white;
+}
+
+.neg {
+    background-color: var(--red);
+    color: var(--black);
+}
+
+.warn {
+    color: var(--orange);
+}
+
+.transparent {
+    background-color: transparent;
+}
+
+.black {
+    color: var(--black);
+}
+
+.white {
+    color: var(--white);
+}
+
+.yellow {
+    color: var(--yellow);
+}
+
+.green {
+    color: var(--green);
+}
+
+/* Active Timer */
+#active {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 2;
+}
+
+#activetimer {
+    width: 90%;
+    font-size: 20vw;
+    font-weight: bolder;
+    text-align: center;
+    background-color: transparent;
+    border: none;
+    margin: auto;
+}
+
+#activetimer:focus {
+    outline: none;
+    box-shadow: none;
+    border: none;
+}
+
+/* Small Timers */
+#smalltimers {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    justify-content: space-around;
+    text-align: center;
+    flex: 1;
+}
+
+.smalltimer {
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 10vw;
+    border: 1px solid var(--darkgray);
+    border-collapse: collapse;
+    cursor: pointer;
+    flex: 1;
+}
+
+.timerlabel {
+    font-size: 5vw;
+}
+
+#affprep,
+#negprep {
+    display: flex;
+}
+
+#affprepmenu,
+#negprepmenu {
+    display: none;
+    justify-content: space-evenly;
+}
+
+#affprepreset,
+#negprepreset {
+    display: inline;
+    width: 20%;
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    cursor: pointer;
+}
+
+#affprepreset svg,
+#negprepreset svg {
+    width: 80%;
+    vertical-align: middle;
+}
+
+/* Controls */
+#controls {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    align-content: center;
+    justify-content: space-around;
+    text-align: center;
+    flex: 2;
+}
+
+#controls div {
+    flex: 1;
+}
+
+/* Left controls */
+#leftcontrols {
+    display: flex;
+    flex-direction: column;
+}
+
+#reset,
+#showsettings {
+    border: 1px solid var(--darkgray);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+#reset {
+    background-color: var(--orange);
+}
+
+#showsettings {
+    background-color: var(--gray);
+}
+
+#reset svg,
+#showsettings svg {
+    width: 8vw;
+}
+
+#confirmreset {
+    display: none;
+    border: 1px solid var(--white);
+    background-color: var(--white);
+    color: var(--orange);
+    border-radius: 10px;
+    cursor: pointer;
+    width: 80%;
+    height: 80%;
+}
+
+#confirmreset:hover {
+    background-color: var(--orange);
+    color: var(--white);
+}
+
+/* Center controls */
+#centercontrols {
+    display: flex;
+    border: 1px solid var(--darkgray);
+    background-color: var(--darkblue);
+}
+
+#centercontrols div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#start,
+#pause {
+    background-color: var(--darkblue);
+    border: none;
+    width: 100%;
+    cursor: pointer;
+}
+
+#pause {
+    display: none;
+}
+
+#start svg,
+#pause svg {
+    width: 10vw;
+}
+
+/* Right controls */
+#rightcontrols {
+    background-color: var(--blue);
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.presettime {
+    font-size: 8vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px solid var(--darkgray);
+    border-collapse: collapse;
+    cursor: pointer;
+}
+
+/* Settings */
+#settings {
+    padding: 1em;
+    width: 100%;
+    height: 100%;
+    display: none;
+    font-size: 1em;
+    background-color: var(--lightgray);
+    flex: 1;
+}
+
+#settings p {
+    font-weight: bold;
+    margin: 1em 0 0.5em 0;
+}
+
+#times {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+#presettimes {
+    margin-bottom: 0.5em;
+}
+
+#times input {
+    width: 3em;
+}
+
+#times label {
+    font-size: 0.75em;
+}
+
+#timersettings label {
+    display: block;
+    font-size: 1em;
+    margin-top: 1em;
+}
+
+#buttons {
+    text-align: right;
+}
+
+#buttons button {
+    border: none;
+    color: var(--white);
+    border-radius: 10px;
+    font-size: 1.25em;
+    padding: 0.25em;
+    margin: 1em 0.25em;
+    cursor: pointer;
+}
+
+#savesettings {
+    background-color: var(--darkblue);
+}
+
+#savesettings:hover {
+    background-color: var(--lightblue);
+}
+
+#about {
+    font-size: 0.75em;
+}
+
+#about a {
+    color: var(--blue);
+}
