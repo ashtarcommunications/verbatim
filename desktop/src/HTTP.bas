@@ -31,7 +31,9 @@ Public Function GetReq(URL As String) As Dictionary
     Exit Function
     
 Handler:
-    If Not IsMac Then Set HttpReq = Nothing
+    #If Not Mac Then
+        Set HttpReq = Nothing
+    #End If
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Function
 

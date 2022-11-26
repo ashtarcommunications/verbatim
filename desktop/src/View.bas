@@ -109,23 +109,20 @@ Sub SwitchWindows()
 End Sub
 
 Sub NavPaneCycle()
-'Runs the NavPaneCycle program via Shell
-'To install, place NavPaneCycle.exe in the same folder as Debate.dotm, and name the executable "NavPaneCycle.exe"
+' Runs the NavPaneCycle program via Shell
+' To install, place NavPaneCycle.exe in the same folder as Debate.dotm, and name the executable "NavPaneCycle.exe"
 
     #If Mac Then
         MsgBox "NavPaneCycle is only supported on Windows"
     #Else
-        Dim FSO As Scripting.FileSystemObject
-    
         On Error Resume Next
     
         ' Check NPC exists
-        Set FSO = New Scripting.FileSystemObject
-        If FSO.FileExists(ActiveDocument.AttachedTemplate.Path & "\NavPaneCycle.exe") = False Then
+        If Filesystem.FileExists(ActiveDocument.AttachedTemplate.Path & "\NavPaneCycle.exe") = False Then
             Exit Sub
         End If
 
-        ' Make sure BavPane is showing
+        ' Make sure NavPane is showing
         If ActiveWindow.DocumentMap = False Then Exit Sub
     
         ' Don't run if window is invisible
@@ -134,7 +131,6 @@ Sub NavPaneCycle()
         ' Run NPC
         Shell ActiveDocument.AttachedTemplate.Path & "\NavPaneCycle.exe", vbMinimizedNoFocus
     
-        Set FSO = Nothing
         Exit Sub
     #End If
 End Sub
@@ -181,7 +177,6 @@ Sub InvisibilityMode(control As IRibbonControl, pressed As Boolean)
 End Sub
 
 Sub InvisibilityOn()
-
     Dim p
     Dim pCount As Long
  
@@ -210,7 +205,7 @@ Sub InvisibilityOn()
                 .Style = "Cite"
                 .Execute
                 
-                'Skip the paragraph if cite is found
+                ' Skip the paragraph if cite is found
                 If .Found = True Then GoTo Skip
             End With
             

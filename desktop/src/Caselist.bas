@@ -136,14 +136,10 @@ Public Sub CiteRequestAll()
 End Sub
 
 Sub CiteRequestDoc()
-    Dim FSO As Scripting.FileSystemObject
-    
     On Error GoTo Handler
     
-    Set FSO = New Scripting.FileSystemObject
-
     ' Make sure Debate.dotm exists in template folder
-    If FSO.FileExists(Application.NormalTemplate.Path & "\Debate.dotm") = False Then
+    If Filesystem.FileExists(Application.NormalTemplate.Path & Application.PathSeparator & "Debate.dotm") = False Then
         MsgBox "Debate.dotm not found in your templates folder - it must be installed to create a cite request doc."
         Exit Sub
     End If
@@ -153,7 +149,7 @@ Sub CiteRequestDoc()
     Selection.Copy
 
     ' Add new document based on debate template
-    Application.Documents.Add Template:=Application.NormalTemplate.Path & "\Debate.dotm"
+    Paperless.NewDocument
 
     ' Paste into new document
     Selection.Paste
@@ -163,19 +159,16 @@ Sub CiteRequestDoc()
     Selection.Collapse
 
     ' Convert all cites
-    Call Caselist.CiteRequestAll
+    Caselist.CiteRequestAll
     
     ' Remove highlighting
     ActiveDocument.Content.Select
-    Selection.Range.HighlightColorIndex = wdNoHighlight 'Remove highlighting
+    Selection.Range.HighlightColorIndex = wdNoHighlight
     Selection.Collapse
-    
-    Set FSO = Nothing
     
     Exit Sub
 
 Handler:
-    Set FSO = Nothing
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
@@ -184,10 +177,9 @@ End Sub
 '*************************************************************************************
 
 Sub Word2MarkdownCites()
-
     ' Cite request and wikify doc
-    Call Caselist.CiteRequestDoc
-    Call Caselist.Word2MarkdownMain
+    Caselist.CiteRequestDoc
+    Caselist.Word2MarkdownMain
     
     ' Clear all formatting
     ActiveDocument.Content.Select
@@ -197,7 +189,6 @@ Sub Word2MarkdownCites()
 
 Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
-
 End Sub
 
 Public Sub Word2MarkdownMain()
@@ -458,7 +449,6 @@ Private Sub WikifyConvertBold()
 End Sub
 
 Private Sub WikifyConvertUnderline()
-
     ActiveDocument.Select
     With Selection.Find
         .ClearFormatting

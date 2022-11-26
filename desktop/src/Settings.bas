@@ -35,19 +35,22 @@ End Sub
 Sub ImportCustomCode(Optional Notify As Boolean)
     Dim p As VBIDE.VBProject
 
-    'Turn on Error Handling
+    ' Turn on Error Handling
     On Error GoTo Handler
 
-    'Set registry setting to avoid repeatedly trying to import code
-    SaveSetting "Verbatim", "Main", "ImportCustomCode", False
+    ' Set registry setting to avoid repeatedly trying to import code
+    SaveSetting "Verbatim", "Admin", "ImportCustomCode", False
 
-    'Check if Access to VBOM allowed
-    If RegKeyRead("HKEY_CURRENT_USER\Software\Microsoft\Office\" & Application.Version & "\Word\Security\AccessVBOM") <> 1 Then
-        If Notify = True Then MsgBox "Importing custom code requires you to enable ""Trust Access to the VBA project object model"" in your Macro security settings. You can do this manually, or run the Verbatim troubleshooter."
-        Exit Sub
-    End If
+    ' Check if Access to VBOM allowed
+    #If Mac Then
+    #Else
+        If RegKeyRead("HKEY_CURRENT_USER\Software\Microsoft\Office\" & Application.Version & "\Word\Security\AccessVBOM") <> 1 Then
+            If Notify = True Then MsgBox "Importing custom code requires you to enable ""Trust Access to the VBA project object model"" in your Macro security settings. You can do this manually, or run the Verbatim troubleshooter."
+            Exit Sub
+        End If
+    #End If
 
-    'Make sure custom code file exists
+    ' Make sure custom code file exists
     #If Mac Then
         If AppleScriptTask("Verbatim.scpt", "FileExists", "Macintosh HD" & Replace(Application.NormalTemplate.Path & "/VerbatimCustomCode.bas", "/", ":")) = "false" Then
     #Else
@@ -59,17 +62,17 @@ Sub ImportCustomCode(Optional Notify As Boolean)
             Exit Sub
         End If
     
-    'Warn user
+    ' Warn user
     If MsgBox("Attemping to import custom code - this will overwrite your current custom code module. Proceed?", vbOKCancel) = vbCancel Then Exit Sub
     
-    'Delete current Custom code module - turn off error checking temporarily in case it doesn't exist
+    ' Delete current Custom code module - turn off error checking temporarily in case it doesn't exist
     On Error Resume Next
     Application.OrganizerDelete source:=ActiveDocument.AttachedTemplate.FullName, Name:="Custom", Object:=wdOrganizerObjectProjectItems
     On Error GoTo Handler
     
-    'Import the module and delete the file
+    ' Import the module and delete the file
     #If Mac Then
-        Set p = FindVBProject(ActiveDocument.AttachedTemplate.Path & "/" & ActiveDocument.AttachedTemplate)
+        Set p = FindVBProject(ActiveDocument.AttachedTemplate.Path & Application.PathSeparator & ActiveDocument.AttachedTemplate)
     #Else
         Set p = ActiveDocument.AttachedTemplate.VBProject
     #End If
@@ -77,12 +80,9 @@ Sub ImportCustomCode(Optional Notify As Boolean)
         MsgBox "Failed to import custom code."
         Exit Sub
     End If
-    p.VBComponents.Import (Application.NormalTemplate.Path & "\VerbatimCustomCode.bas")
-    #If Mac Then
-        Call Filesystem.KillFileOnMac(Application.NormalTemplate.Path & "/VerbatimCustomCode.bas")
-    #Else
-        Kill Application.NormalTemplate.Path & "\VerbatimCustomCode.bas"
-    #End If
+    p.VBComponents.Import (Application.NormalTemplate.Path & Application.PathSeparator & "VerbatimCustomCode.bas")
+    Filesystem.DeleteFile Application.NormalTemplate.Path & Application.PathSeparator & "VerbatimCustomCode.bas"
+    
 
     If Notify = True Then MsgBox "Custom code successfully imported!"
 
@@ -138,7 +138,7 @@ Sub ExportCustomCode(Optional Notify As Boolean)
     Module.Export Application.NormalTemplate.Path & Application.PathSeparator & "VerbatimCustomCode.bas"
      
     'Set registry for automatic import on startup
-    SaveSetting "Verbatim", "Main", "ImportCustomCode", True
+    SaveSetting "Verbatim", "Admin", "ImportCustomCode", True
     
     If Notify = True Then MsgBox "Custom code exported as VerbatimCustomCode.bas to your Templates folder."
    
@@ -183,7 +183,7 @@ Sub UpdateCheck(Optional Notify As Boolean)
 
     ' Create and send HttpReq
     Dim Response
-    Set Response = HTTP.GetReq("https://paperlessdebate.com/updates")
+    Set Response = HTTP.GetReq(Globals.PAPERLESSDEBATE_URL & "/updates")
     
     ' Exit if the request fails
     If Response("status") <> 200 Then
@@ -202,7 +202,7 @@ Sub UpdateCheck(Optional Notify As Boolean)
         ' Prompt to launch website - no longer download automatically because it tends to trip antivirus heuristics
         If MsgBox("There is a newer version of Verbatim available. Download now?", vbYesNo) = vbNo Then Exit Sub
             
-        Settings.LaunchWebsite "https://paperlessdebate.com"
+        Settings.LaunchWebsite Globals.PAPERLESSDEBATE_URL
     Else
         Application.StatusBar = "No Verbatim updates found."
         If Notify = True Then MsgBox "No Verbatim updates found."
@@ -264,7 +264,7 @@ Sub ResetKeyboardShortcuts()
     On Error Resume Next
     
     ' Clear old keybindings
-    Call Settings.RemoveKeyBindings
+    Settings.RemoveKeyBindings
     
     ' Save defaults to registry
     SaveSetting "Verbatim", "Keyboard", "F2Shortcut", "Paste"

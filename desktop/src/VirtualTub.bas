@@ -10,34 +10,34 @@ Sub GetVTubContent(control As IRibbonControl, ByRef returnedVal)
     Dim VTubFolder As Folder
     Dim FileNumber As Integer
     
-    'Skip Errors
+    ' Skip Errors
     On Error Resume Next
         
-    'Get VTubPath from Settings and make sure it exists
+    ' Get VTubPath from Settings and make sure it exists
     VTubPath = GetSetting("Verbatim", "VTub", "VTubPath", "")
     If VTubPath = "" Or VTubPath = "?" Then
         If MsgBox("You haven't configured a VTub location in the Verbatim settings. Open Settings?", vbYesNo) = vbYes Then
-            UI.ShowForm ("Settings")
+            UI.ShowForm "Settings"
             Exit Sub
         Else
             Exit Sub
         End If
     End If
     
-    'Append trailing \ if missing
+    ' Append trailing \ if missing
     If Right(VTubPath, 1) <> Application.PathSeparator Then VTubPath = VTubPath & Application.PathSeparator
     
-    'Check if VTubXMLFile exists
+    ' Check if VTubXMLFile exists
     If Filesystem.FileExists(VTubPath & "VTub.xml") = False Then
-        'If no XML file, return a button to create it
+        ' If no XML file, return a button to create it
         returnedVal = "<menu xmlns=""http://schemas.microsoft.com/office/2006/01/customui"">"
         returnedVal = returnedVal & "<button id=""CreateVTub"" label=""Create VTub"" onAction=""VirtualTub.VTubCreateButton"" imageMso=""_3DSurfaceMaterialClassic""" & " />"
         returnedVal = returnedVal & "</menu>"
         Exit Sub
     End If
 
-    'If VTubRefreshPrompt is turned on, check if Tub is out of date by comparing date modified of files to XML file
-    'Have to loop all files becuase Word changes folder modified date when opening docs
+    ' If VTubRefreshPrompt is turned on, check if Tub is out of date by comparing date modified of files to XML file
+    ' Have to loop all files becuase Word changes folder modified date when opening docs
     If GetSetting("Verbatim", "VTub", "VTubRefreshPrompt", True) = True Then
         Set VTubFolder = Filesystem.GetFolder(VTubPath)
         VTubDepth = 0
@@ -53,7 +53,7 @@ Sub GetVTubContent(control As IRibbonControl, ByRef returnedVal)
         End If
     End If
 
-    'Open and read the XML file
+    ' Open and read the XML file
     FileNumber = FreeFile
     Open VTubXMLFileName For Input As #FileNumber
     returnedVal = Input$(LOF(FileNumber), FileNumber)
@@ -77,11 +77,11 @@ Sub VTubCreateButton(control As IRibbonControl)
     VirtualTub.VTubCreate
 End Sub
 Sub VTubSettingsButton(control As IRibbonControl)
-    UI.ShowForm ("Settings")
+    UI.ShowForm "Settings"
 End Sub
 
 Sub VTubInsertBookmark(control As IRibbonControl)
-    'Insert bookmark - get the file path and bookmark name by splitting the tag attribute on the !#! delimiter
+    ' Insert bookmark - get the file path and bookmark name by splitting the tag attribute on the !#! delimiter
     Selection.InsertFile Split(control.Tag, "!#!", 2)(0), Split(control.Tag, "!#!", 2)(1)
 End Sub
 
@@ -167,7 +167,7 @@ Private Sub VTubCreate()
         ProgressForm.lblProgress.Width = ProgressPct * ProgressForm.fProgress.Width
         If ProgressForm.lblProgress.Width > 15 Then ProgressForm.lblProgress.Width = ProgressForm.lblProgress.Width - 15
         
-        DoEvents 'Necessary for Progress form to update
+        DoEvents ' Necessary for Progress form to update
     
         Set Subfolder = GetFolder(Folder.Subfolders(i))
         Set SubfolderMenu = New Dictionary
@@ -225,10 +225,10 @@ Private Sub VTubCreate()
     JSON = JSONTools.ConvertToJson(RootMenu)
     Debug.Print JSON
        
-    'Save file
+    ' Save file
     Dim VTubFilePath
     Dim OutputFile
-    VTubFilePath = "C:\Users\hardy\Desktop\Tub\VTub.json"
+    VTubFilePath = GetSetting("Verbatim", "VTub", "VTubPath", vbNullString) & Application.PathSeparator & "VTub.json"
     OutputFile = FreeFile
     Open VTubFilePath For Output As #OutputFile
     Print #OutputFile, JSON
@@ -296,7 +296,7 @@ Sub RefreshVTub()
         Exit Sub
     End If
     
-    'Show progress bar
+    ' Show progress bar
     Dim ProgressForm As frmProgress
     Set ProgressForm = New frmProgress
     ProgressForm.Caption = "Refreshing VTub..."
@@ -321,7 +321,7 @@ Sub RefreshVTub()
         ProgressForm.lblProgress.Width = ProgressPct * ProgressForm.fProgress.Width
         If ProgressForm.lblProgress.Width > 15 Then ProgressForm.lblProgress.Width = ProgressForm.lblProgress.Width - 15
         
-        DoEvents 'Necessary for Progress form to update
+        DoEvents ' Necessary for Progress form to update
 
         If key <> "FileCount" And key <> "FolderCount" And key <> "DateLastModified" Then
             Set Menu = RootMenu(key)
@@ -366,32 +366,31 @@ Sub RefreshVTub()
         End If
     Next key
     
-    Set Folder = GetFolder(GetSetting("Verbatim", "VTub", "VTubPath", ""))
+    Set Folder = GetFolder(GetSetting("Verbatim", "VTub", "VTubPath", vbNullString))
     RootMenu("DateLastModified") = Format(Folder.DateLastModified)
   
     JSON = JSONTools.ConvertToJson(RootMenu)
   
-    'Update progress form as complete
+    ' Update progress form as complete
     ProgressForm.lblCaption.Caption = "Processing complete."
     ProgressForm.lblFile.Caption = ""
     ProgressForm.lblProgress.Width = ProgressForm.fProgress.Width - 6
   
-    'Save file
+    ' Save file
     Dim VTubFilePath
     Dim OutputFile
-    VTubFilePath = "C:\Users\hardy\Desktop\Tub\VTub.json"
+    VTubFilePath = GetSetting("Verbatim", "VTub", "VTubPath", vbNullString) & Application.PathSeparator & "VTub.json"
     OutputFile = FreeFile
     Open VTubFilePath For Output As #OutputFile
     Print #OutputFile, JSON
     Close #OutputFile
     
-        Unload ProgressForm
+    Unload ProgressForm
     Set ProgressForm = Nothing
     
-    'Refresh ribbon and notify
-    Call Ribbon.RefreshRibbon
+    ' Refresh ribbon and notify
+    Ribbon.RefreshRibbon
     MsgBox "VTub successfully refreshed!" & vbCrLf & vbCrLf & "If you get an error when you click OK that ""The document is too large to save. Delete some text before saving."", you can ignore it - it's a bug in Word and won't affect the VTub."
-    
     
     Exit Sub
     
@@ -705,13 +704,8 @@ Public Function LargestHeading() As Integer
 End Function
 
 Sub RemoveBookmarks()
-
     Dim b As Bookmark
     For Each b In ActiveDocument.Bookmarks
         b.Delete
     Next b
-
 End Sub
-
-
-

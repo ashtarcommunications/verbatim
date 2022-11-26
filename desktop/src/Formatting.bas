@@ -501,7 +501,7 @@ End Sub
 
 Sub InsertHeader()
 ' Inserts a custom header based on team/user information in Verbatim settings
-    ActiveDocument.Sections(1).Headers(wdHeaderFooterPrimary).Range.Text = GetSetting("Verbatim", "Main", "TeamName") & vbCrLf & "File Title" & vbTab & vbTab & GetSetting("Verbatim", "Main", "UserName")
+    ActiveDocument.Sections(1).Headers(wdHeaderFooterPrimary).Range.Text = GetSetting("Verbatim", "Profile", "SchooLName") & vbCrLf & "File Title" & vbTab & vbTab & GetSetting("Verbatim", "Profile", "Name")
     ActiveDocument.Sections(1).Headers(wdHeaderFooterPrimary).PageNumbers.Add (wdAlignPageNumberRight)
 End Sub
 
@@ -617,7 +617,6 @@ Sub AutoFormatCite()
 End Sub
 
 Sub ReformatCiteDates()
-
     'Go to top of document
     Selection.HomeKey Unit:=wdStory
     Selection.Collapse
@@ -677,8 +676,8 @@ Sub AutoUnderline()
     
     Dim IntersectionCount
     
-    Dim dict As Scripting.Dictionary
-    Set dict = New Scripting.Dictionary
+    Dim dict As Dictionary
+    Set dict = New Dictionary
     
     On Error GoTo Handler
     
@@ -827,30 +826,23 @@ Sub GetFromCiteMaker()
         Formatting.PasteText
         Exit Sub
     #Else
-        Dim FSO As Scripting.FileSystemObject
-        Set FSO = New Scripting.FileSystemObject
         Dim retval As Double
          
         On Error GoTo Handler
         
         'Check GetFromCiteMaker script exists
-        If FSO.FileExists(Application.NormalTemplate.Path & "\GetFromCiteMaker.exe") = False Then
+        If Filesystem.FileExists(Application.NormalTemplate.Path & "\GetFromCiteMaker.exe") = False Then
             MsgBox "GetFromCiteMaker.exe must be installed in your Templates folder."
             Exit Sub
         End If
         
         'Run the script
         retval = Shell(Application.NormalTemplate.Path & "\GetFromCiteMaker.exe", vbMinimizedNoFocus)
-        
-        Set FSO = Nothing
-        
+                
         Exit Sub
     #End If
     
 Handler:
-    #If Not Mac Then
-        Set FSO = Nothing
-    #End If
     MsgBox "Getting from CiteMaker failed - ensure Google Chrome and the CiteMaker extension are installed and open." & vbCrLf & vbCrLf & "Error " & Err.Number & ": " & Err.Description
 End Sub
 
@@ -913,5 +905,3 @@ Sub FixFakeTags()
         End If
     Next p
 End Sub
-
-

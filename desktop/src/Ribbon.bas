@@ -5,7 +5,7 @@ Sub OnLoad(Ribbon As IRibbonUI)
     Dim SavedState As Boolean
     Set DebateRibbon = Ribbon
     
-    'Save a pointer to the Ribbon in case it gets lost
+    ' Save a pointer to the Ribbon in case it gets lost
     SavedState = ActiveDocument.Saved
     ActiveDocument.Variables("RibbonPointer") = ObjPtr(Ribbon)
     ActiveDocument.Saved = SavedState
@@ -29,12 +29,12 @@ Public Sub RefreshRibbon()
 End Sub
 
 Sub RibbonMain(ByVal control As IRibbonControl)
-    'Set Customization context so FindKey returns correct shortcuts
+    ' Set Customization context so FindKey returns correct shortcuts
     CustomizationContext = ActiveDocument.AttachedTemplate
 
     Select Case control.ID
    
-    'Paperless Group
+    ' Paperless Group
     Case Is = "SendToSpeech"
         Paperless.SendToSpeech
     Case Is = "ChooseSpeechDoc"
@@ -54,11 +54,11 @@ Sub RibbonMain(ByVal control As IRibbonControl)
     Case Is = "DeleteAllWarrants"
         Paperless.DeleteAllWarrants
          
-    'Share Group
+    ' Share Group
     Case Is = "CopyToUSB"
         Paperless.CopyToUSB
     
-    'Tools Group
+    ' Tools Group
     Case Is = "StartTimer"
         Paperless.StartTimer
     Case Is = "DocumentStats"
@@ -70,7 +70,7 @@ Sub RibbonMain(ByVal control As IRibbonControl)
     Case Is = "NavPaneCycle"
         View.NavPaneCycle
                 
-    'Format Group
+    ' Format Group
     Case Is = "F2Button"
         FindKey(wdKeyF2).Execute
     Case Is = "F3Button"
@@ -137,7 +137,7 @@ Sub RibbonMain(ByVal control As IRibbonControl)
     Case Is = "GetFromCiteMaker"
         Formatting.GetFromCiteMaker
         
-    'Caselist Group
+    ' Caselist Group
     Case Is = "CaselistWizard"
         UI.ShowForm "Caselist"
     Case Is = "ConvertToWiki"
@@ -147,9 +147,9 @@ Sub RibbonMain(ByVal control As IRibbonControl)
     Case Is = "CiteRequest"
         Caselist.CiteRequest
     
-    'Settings Group
+    ' Settings Group
     Case Is = "LaunchWebsite"
-        Settings.LaunchWebsite ("https://paperlessdebate.com")
+        Settings.LaunchWebsite Globals.PAPERLESSDEBATE_URL
     Case Is = "VerbatimHelp"
         UI.ShowForm "Help"
     Case Is = "CheatSheet"
@@ -158,17 +158,17 @@ Sub RibbonMain(ByVal control As IRibbonControl)
         UI.ShowForm "Settings"
         
     Case Else
-        'Do Nothing
+        ' Do Nothing
 
     End Select
 
-    'Reset Customization Context
+    ' Reset Customization Context
     CustomizationContext = ActiveDocument
 
 End Sub
 
 Sub GetRibbonLabels(control As IRibbonControl, ByRef label)
-'Assign labels to F key controls from registry
+' Assign labels to F key controls from registry
 
     Select Case control.ID
     
@@ -210,10 +210,8 @@ Sub GetRibbonLabels(control As IRibbonControl, ByRef label)
 End Sub
 
 Sub GetRibbonImages(control As IRibbonControl, ByRef returnedBitmap)
-'Get image for Default View
-
+' Get image for Default View
     Select Case control.ID
-    
         Case Is = "DefaultView"
             If GetSetting("Verbatim", "View", "DefaultView", Globals.DefaultView) = "Web" Then
                 returnedBitmap = "ViewWebLayoutView"
@@ -225,7 +223,6 @@ Sub GetRibbonImages(control As IRibbonControl, ByRef returnedBitmap)
             returnedBitmap = ""
     
     End Select
-
 End Sub
 
 Sub GetRibbonToggles(control As IRibbonControl, ByRef state)
@@ -255,5 +252,4 @@ Sub GetRibbonToggles(control As IRibbonControl, ByRef state)
         state = False
         
     End Select
-
 End Sub

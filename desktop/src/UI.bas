@@ -5,20 +5,36 @@ Public Sub ShowForm(FormName As String)
     Dim Form As Object
     
     Select Case FormName
-        Case "Login"
-            Set Form = New frmLogin
         Case "Caselist"
             Set Form = New frmCaselist
+        Case "CheatSheet"
+            Set Form = New frmCheatSheet
         Case "ChooseSpeechDoc"
-            'Set Form = New frmChooseSpeechDoc
+            Set Form = New frmChooseSpeechDoc
+        Case "CombineDocs"
+            Set Form = New frmCombineDocs
+        Case "Help"
+            Set Form = New frmHelp
+        Case "Login"
+            Set Form = New frmLogin
+        Case "Progress"
+            Set Form = New frmProgress
+        Case "Settings"
+            Set Form = New frmSettings
+        Case "Setup"
+            Set Form = New frmSetupWizard
+        Case "Share"
+            Set Form = New frmShare
         Case "Stats"
             If Globals.InvisibilityToggle = True Then
                 MsgBox "Stats form cannot be opened while in Invisibility Mode. Please turn off Invisibility Mode and try again."
                 Exit Sub
             End If
-            'Set Form = New frmStats
-        Case "Settings"
-            'Set Form = New frmSettings
+            Set Form = New frmStats
+        Case "Troubleshooter"
+            Set Form = New frmTroubleshooter
+        Case "Tutorial"
+            Set From = New frmTutorial
         Case Else
             ' Do nothing
             Exit Sub
@@ -121,7 +137,7 @@ End Function
 Public Function GetFolderFromDialog(Title As String, ButtonName As String)
     On Error GoTo Handler
     
-    'Show the built-in folder picker, only allow picking 1 folder at a time
+    ' Show the built-in folder picker, only allow picking 1 folder at a time
     Application.FileDialog(msoFileDialogFolderPicker).AllowMultiSelect = False
     Application.FileDialog(msoFileDialogFolderPicker).Title = Title
     Application.FileDialog(msoFileDialogFolderPicker).ButtonName = ButtonName
@@ -150,5 +166,3 @@ Sub ResetFileDialog(FD As Byte)
     Application.FileDialog(FD).ButtonName = ""
     Application.FileDialog(FD).InitialFileName = ""
 End Sub
-
-

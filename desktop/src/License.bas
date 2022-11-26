@@ -1,8 +1,7 @@
 Attribute VB_Name = "License"
 '@IgnoreModule EmptyModule
-'@Folder("License")
 ' Verbatim
-' Copyright © 2021 Aaron Hardy
+' Copyright © 2022 Aaron Hardy
 ' https://paperlessdebate.com
 ' ashtarcommunications@gmail.com
 '

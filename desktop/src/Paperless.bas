@@ -27,7 +27,7 @@ Sub AutoOpenFolder(control As IRibbonControl, pressed As Boolean)
     If pressed Then
     
         ' Check for auto open folder
-        AutoOpenDir = GetSetting("Verbatim", "Paperless", "AutoOpenDir", "")
+        AutoOpenDir = GetSetting("Verbatim", "Paperless", "AutoOpenDir", vbNullString)
         If AutoOpenDir = "" Or AutoOpenDir = "?" Then
             If MsgBox("You have not set an Auto Open folder. Open settings now?", vbYesNo) = vbYes Then
                 UI.ShowForm "Settings"
@@ -43,7 +43,7 @@ Sub AutoOpenFolder(control As IRibbonControl, pressed As Boolean)
         
         #If Mac Then
             ' Ensure a trailing :
-            If Right(AutoOpenDir, 1) <> ":" Then AutoOpenDir = AutoOpenDir & ":"
+            If Right(AutoOpenDir, 1) <> Application.PathSeparator Then AutoOpenDir = AutoOpenDir & Application.PathSeparator
         #End If
         
         ' Prompt that listener is on
@@ -119,7 +119,7 @@ Sub GetSpeeches(control As IRibbonControl, ByRef returnedVal)
     ' Initialize XML
     xml = "<menu xmlns=""http://schemas.microsoft.com/office/2006/01/customui"">"
 
-    If GetSetting("Verbatim", "Caselist", "DisableTabroomIntegration", False) = False Then
+    If GetSetting("Verbatim", "Profile", "DisableTabroom", False) = False Then
     
         Dim Response As Dictionary
         'Set Response = HTTP.GetReq(Globals.CASELIST_URL & "/tabroom/rounds?current=true")
@@ -219,8 +219,8 @@ Sub NewSpeechFromMenu(control As IRibbonControl)
     ' Autosave or open save dialog
     If GetSetting("Verbatim", "Paperless", "AutoSaveSpeech", False) = True Then
         AutoSaveDirectory = GetSetting("Verbatim", "Paperless", "AutoSaveDir", CurDir())
-        If Right(AutoSaveDirectory, 1) <> "\" Then AutoSaveDirectory = AutoSaveDirectory & "\"
-        FileName = AutoSaveDirectory & "\" & FileName
+        If Right(AutoSaveDirectory, 1) <> Application.PathSeparator Then AutoSaveDirectory = AutoSaveDirectory & Application.PathSeparator
+        FileName = AutoSaveDirectory & Application.PathSeparator & FileName
         ActiveDocument.SaveAs FileName:=FileName, FileFormat:=wdFormatXMLDocument
     Else
         With Application.Dialogs(wdDialogFileSaveAs)
@@ -288,7 +288,6 @@ Public Function SelectHeadingAndContentRange(p As Paragraph) As Range
     
     Set SelectHeadingAndContentRange = r
 End Function
-
 
 Sub MoveUp()
 ' Moves the current pocket, hat, block, or tag, up one level in the document outline
@@ -629,6 +628,7 @@ SpeechName:
     SpeechName = Trim(ScrubString(SpeechName))
     SpeechName = Replace(SpeechName, "/", "")
     SpeechName = Replace(SpeechName, "\", "")
+    SpeechName = Replace(SpeechName, Application.PathSeparator, "")
     
     ' Create filename
     If Hour(Now) > 12 Then h = Hour(Now) - 12 & "PM"
@@ -641,8 +641,8 @@ SpeechName:
     ' If AutoSave is set, save the doc - otherwise bring up Save As dialogue with default name set
     If GetSetting("Verbatim", "Paperless", "AutoSaveSpeech", False) = True Then
         AutoSaveDirectory = GetSetting("Verbatim", "Paperless", "AutoSaveDir", CurDir())
-        If Right(AutoSaveDirectory, 1) <> "\" Then AutoSaveDirectory = AutoSaveDirectory & "\"
-        FileName = AutoSaveDirectory & "\" & FileName
+        If Right(AutoSaveDirectory, 1) <> Application.PathSeparator Then AutoSaveDirectory = AutoSaveDirectory & Application.PathSeparator
+        FileName = AutoSaveDirectory & Application.PathSeparator & FileName
         ActiveDocument.SaveAs FileName:=FileName, FileFormat:=wdFormatXMLDocument
     Else
         With Application.Dialogs(wdDialogFileSaveAs)
@@ -750,7 +750,7 @@ Sub CopyToUSB()
         End If
         
         ' Check if file already exists on USB
-        If FSO.FileExists(USB & "\" & FileName) = True Then
+        If Filesystem.FileExists(USB & "\" & FileName) = True Then
             If MsgBox("File Exists.  Overwrite?", vbOKCancel) = vbCancel Then Exit Sub
         End If
         

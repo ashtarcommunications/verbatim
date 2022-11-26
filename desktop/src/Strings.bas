@@ -17,12 +17,11 @@ Public Function OnlyAlphaNumericChars(ByVal OrigString As String) As String
     Next
         
     OnlyAlphaNumericChars = sAns
-
 End Function
 
 Private Function IsAlphaNumeric(sChr As String) As Boolean
-        IsAlphaNumeric = sChr Like "[0-9A-Za-z ]"
-        'IsSafeChar = sChr Like "[,.!@$%^():;'""_+=0-9A-Za-z -]"
+    IsAlphaNumeric = sChr Like "[0-9A-Za-z ]"
+    'IsSafeChar = sChr Like "[,.!@$%^():;'""_+=0-9A-Za-z -]"
 End Function
 
 Public Function OnlySafeChars(ByVal OrigString As String) As String
@@ -41,15 +40,13 @@ Public Function OnlySafeChars(ByVal OrigString As String) As String
     Next
         
     OnlySafeChars = sAns
-
 End Function
 
 Private Function IsSafeChar(sChr As String) As Boolean
-        IsSafeChar = sChr Like "[*0-9A-Za-z -]"
+    IsSafeChar = sChr Like "[*0-9A-Za-z -]"
 End Function
 
 Public Function ScrubString(s As String) As String
-
     s = Replace(s, "&", "")
     s = Replace(s, "?", "")
     s = Replace(s, "%", "")
@@ -63,37 +60,35 @@ Public Function ScrubString(s As String) As String
     s = Replace(s, "(((", "~(~(~(")
     s = Replace(s, ")))", "~)~)~)")
     ScrubString = s
-
 End Function
 
 Public Function URLEncode(s As String, Optional SpaceAsPlus As Boolean = False) As String
+    Dim StringLen As Long
+    StringLen = Len(s)
 
-  Dim StringLen As Long
-  StringLen = Len(s)
+    If s > 0 Then
+        ReDim result(StringLen) As String
+        Dim i As Long, CharCode As Integer
+        Dim Char As String, Space As String
 
-  If s > 0 Then
-    ReDim result(StringLen) As String
-    Dim i As Long, CharCode As Integer
-    Dim Char As String, Space As String
+        If SpaceAsPlus Then Space = "+" Else Space = "%20"
 
-    If SpaceAsPlus Then Space = "+" Else Space = "%20"
-
-    For i = 1 To StringLen
-      Char = Mid$(s, i, 1)
-      CharCode = Asc(Char)
-      Select Case CharCode
-        Case 97 To 122, 65 To 90, 48 To 57, 45, 46, 95, 126
-          result(i) = Char
-        Case 32
-          result(i) = Space
-        Case 0 To 15
-          result(i) = "%0" & Hex(CharCode)
-        Case Else
-          result(i) = "%" & Hex(CharCode)
-      End Select
-    Next i
-    URLEncode = Join(result, "")
-  End If
+        For i = 1 To StringLen
+            Char = Mid$(s, i, 1)
+            CharCode = Asc(Char)
+            Select Case CharCode
+                Case 97 To 122, 65 To 90, 48 To 57, 45, 46, 95, 126
+                    result(i) = Char
+                Case 32
+                    result(i) = Space
+                Case 0 To 15
+                    result(i) = "%0" & Hex(CharCode)
+                Case Else
+                    result(i) = "%" & Hex(CharCode)
+            End Select
+        Next i
+        URLEncode = Join(result, "")
+    End If
 End Function
 
 Public Function NormalizeSide(Side As String) As String
@@ -140,4 +135,3 @@ Public Function RoundName(Round As Variant) As String
         RoundName = Round
     End If
 End Function
-

@@ -1,6 +1,4 @@
 Attribute VB_Name = "Startup"
-'@Folder("Startup")
-
 Option Explicit
 
 Public Sub AutoOpen()
@@ -11,8 +9,8 @@ Public Sub AutoNew()
     On Error Resume Next
     
     ' Add doc variables with name and version number
-    ThisDocument.Variables.Add Name:="Creator", Value:=GetSetting("Verbatim", "Main", "Name", vbNullString)
-    ThisDocument.Variables.Add Name:="Team", Value:=GetSetting("Verbatim", "Main", "TeamName", vbNullString)
+    ThisDocument.Variables.Add Name:="Creator", Value:=GetSetting("Verbatim", "Profile", "Name", vbNullString)
+    ThisDocument.Variables.Add Name:="Team", Value:=GetSetting("Verbatim", "Profile", "SchoolName", vbNullString)
     ThisDocument.Variables.Add Name:="VerbatimVersion", Value:=Settings.GetVersion
     ThisDocument.Variables.Add Name:="OS", Value:=Application.System.OperatingSystem
     ThisDocument.Variables.Add Name:="OSVersion", Value:=Application.System.Version
@@ -54,18 +52,9 @@ Public Sub AutoClose()
 End Sub
 
 Public Sub Start()
-
-    ' Set Mac global for easier conditionals
-    ' TODO - is this necessary?
-    #If Mac Then
-        IsMac = True
-    #Else
-        IsMac = False
-    #End If
+    On Error Resume Next
     
     Globals.InitializeGlobals
-    
-    On Error Resume Next
     
     ' Don't run if in Protected View or file isn't visible on Windows
     #If Not Mac Then
@@ -142,4 +131,3 @@ Public Sub FirstRun()
     ' Run setup wizard
     Settings.ShowSetupWizard
 End Sub
-

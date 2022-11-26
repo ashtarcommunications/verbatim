@@ -1,4 +1,6 @@
 Attribute VB_Name = "Globals"
+Option Explicit
+
 ' Windows API declarations
 #If Win64 Then
     ' For saving a pointer to the ribbon
@@ -13,8 +15,6 @@ Attribute VB_Name = "Globals"
     'ShellExecute needed to launch installer package after updates
     Public Declare PtrSafe Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hwnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
 #End If
-
-Public IsMac As Boolean
 
 ' UI globals
 Public DebateRibbon As IRibbonUI

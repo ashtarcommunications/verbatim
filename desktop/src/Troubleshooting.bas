@@ -75,7 +75,6 @@ Function InstallCheckTemplateLocation(Optional Notify As Boolean) As Boolean
     #If Mac Then
         NormalPath = LCase(Application.NormalTemplate.Path)
         MsgPath = "~/Library/Group Containers/UBF8T34G9.Office/User Content/Templates"
-        
     #Else
         ' Use LCase because Windows 8 Environ returns uppercase drive letters
         NormalPath = LCase(CStr(Environ("USERPROFILE")) & "\AppData\Roaming\Microsoft\Templates")
@@ -115,7 +114,6 @@ Function CheckSaveFormat(Optional Notify As Boolean) As Boolean
             msg = msg & "Change automatically?" & vbCrLf & "(This warning can be supressed in the Verbatim options)"
             If MsgBox(msg, vbYesNo) = vbYes Then Application.DefaultSaveFormat = "Docx"
         End If
-    
     Else
         CheckSaveFormat = False
     End If
@@ -138,7 +136,6 @@ Function CheckDocx(Optional Notify As Boolean) As Boolean
                 ActiveDocument.SaveAs FileName:=Left(ActiveDocument.FullName, InStrRev(ActiveDocument.FullName, ".") - 1), FileFormat:=wdFormatXMLDocument
             End If
         End If
-    
     Else
         CheckDocx = False
     End If
@@ -153,7 +150,6 @@ Public Function CheckDefaultSave() As Boolean
 End Function
 
 Public Function CheckDuplicateTemplates() As Boolean
-
     On Error Resume Next
     
     If Filesystem.FileExists(Environ("USERPROFILE") & "\Desktop\Debate.dotm") = False And _
@@ -162,7 +158,6 @@ Public Function CheckDuplicateTemplates() As Boolean
     Else
         CheckDuplicateTemplates = False
     End If
-    
 End Function
 
 Public Function CheckAddins() As Boolean
@@ -195,7 +190,7 @@ Sub DeleteDuplicateTemplates()
         FilePath = MacScript("return the path to the desktop folder as string") & "Debate.dotm"
         If AppleScriptTask("Verbatim.scpt", "FileExists", FilePath) = "true" Then
             If MsgBox("A duplicate copy of Debate.dotm was found on your Desktop - this can cause interoperability issues. Attempt to delete automatically?", vbYesNo) = vbYes Then
-                Filesystem.KillFileOnMac FilePath
+                Filesystem.DeleteFile FilePath
             End If
         End If
         
@@ -203,28 +198,23 @@ Sub DeleteDuplicateTemplates()
       
         If AppleScriptTask("Verbatim.scpt", "FileExists", FilePath) = "true" Then
             If MsgBox("A duplicate copy of Debate.dotm was found in your Downloads folder - this can cause interoperability issues. Attempt to delete automatically?", vbYesNo) = vbYes Then
-                Filesystem.KillFileOnMac FilePath
+                Filesystem.DeleteFile FilePath
             End If
         End If
     #Else
-        Dim FSO As Scripting.FileSystemObject
-        Set FSO = New Scripting.FileSystemObject
-
         FilePath = Environ("USERPROFILE") & "\Desktop\Debate.dotm"
-        If FSO.FileExists(FilePath) = True Then
+        If Filesystem.FileExists(FilePath) = True Then
             If MsgBox("A duplicate copy of Debate.dotm was found on your Desktop - this can cause interoperability issues. Attempt to delete automatically?", vbYesNo) = vbYes Then
-                Kill FilePath
+                Filesystem.DeleteFile FilePath
             End If
         End If
 
         FilePath = Environ("USERPROFILE") & "\Downloads\Debate.dotm"
-        If FSO.FileExists(FilePath) = True Then
+        If Filesystem.FileExists(FilePath) = True Then
             If MsgBox("A duplicate copy of Debate.dotm was found in your Downloads folder - this can cause interoperability issues. Attempt to delete automatically?", vbYesNo) = vbYes Then
-                Kill FilePath
+                Filesystem.DeleteFile FilePath
             End If
         End If
-        
-        Set FSO = Nothing
     #End If
 End Sub
 
