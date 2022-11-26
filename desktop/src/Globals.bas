@@ -2,7 +2,9 @@ Attribute VB_Name = "Globals"
 Option Explicit
 
 ' Windows API declarations
-#If Win64 Then
+#If Mac Then
+    ' Do Nothing
+#Else
     ' For saving a pointer to the ribbon
     Public Declare PtrSafe Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef destination As Any, ByRef source As Any, ByVal length As Long)
 
