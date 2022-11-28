@@ -23,12 +23,15 @@ Rename CiteMaker functions to Cite Creator
 Check all settings namespaces/names throughout
 Build UI for autotext functions
 Consider paragraph spacing adjustments
+Add getVisible callbacks
+Search plugin
 
 Flow TODO
 send selected or heading to excel in cell or column
 Send outline tag/cite from word to excel
 send excel cell/column to word at cursor or end of doc
 insert row(s) above/below current based on hotkey
+insert cells above/below in same column
 delete row
 delete empty sheets
 delete single sheet
@@ -42,9 +45,17 @@ Info tracking/scouting info
 auto-move columns to chosen speech
 macro to designate evidence for an argument
 auto-organize windows for flow/speech side-by-side
+paste special or expand by crlf
 vtub for analytics
 Add/remove numbers for args automatically
 Merge/group cells
 Move up/down like with blocks
 Configurable for different events
 Keyboard shortcuts cheat sheet
+Keep f2 shortcut for entering cell
+change row/column size
+add zoom functions to ribbon
+configurable font size
+automatically fill scouting info from subsheets
+Optional shorthand expansion
+shortcut to extend to next column of same side
