@@ -1,3 +1,3 @@
-"c:\Program Files\Inkscape\inkscape.exe" -z -w 16 icon.svg -e icon-16.png
-"c:\Program Files\Inkscape\inkscape.exe" -z -w 32 icon.svg -e icon-32.png
-magick convert icon-16.png icon-32.png icon.ico
+"c:\Program Files\Inkscape\inkscape.exe" -z -w 16 %1.svg -e %1-16.png
+"c:\Program Files\Inkscape\inkscape.exe" -z -w 32 %1.svg -e %1-32.png
+magick convert %1-16.png %1-32.png %1.ico
