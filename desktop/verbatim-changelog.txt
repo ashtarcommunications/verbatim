@@ -7,3 +7,4 @@ Restyled VBA userforms
 Custom mouse icons?
 Removed backfile converter because nobody uses old formats anymore
 Rebuilt VTub to be cross-platform
+Stripped out deprecated MacScript calls
