@@ -25,6 +25,7 @@ Build UI for autotext functions
 Consider paragraph spacing adjustments
 Add getVisible callbacks
 Search plugin
+Mac VTub icons
 
 Flow TODO
 send selected or heading to excel in cell or column

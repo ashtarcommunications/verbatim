@@ -27,3 +27,11 @@ BackStyle 1 Opaque
 ForeColor &H00FFFFFF&
 Height 30
 Font Calibri 14
+
+## Things that do not work in Mac VBA
+* CommandButton BackColor on UserForms (Use Forecolor as a replacement instead)
+* #WIN64 compiler constant returns true on Mac (Have to use #If Mac Then <do nothing> DElse <do PC only> #End If)
+* Many ribbon icons
+* Custom mouse pointers on forms
+* GetSetting doesn't accept vbNullString for the default parameter, use "" instead
+* Have to use replacements for most libraries, inc. XML, HTTP, Dictionary, ADODB, VBIDE
