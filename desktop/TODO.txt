@@ -27,6 +27,7 @@ Add getVisible callbacks
 Search plugin
 Mac VTub icons
 Fix mac forecolor buttons on all forms
+See if possible to check for internet before doing tabroom fetches
 
 Flow TODO
 send selected or heading to excel in cell or column
