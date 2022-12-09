@@ -32,14 +32,14 @@ Private Sub UserForm_Initialize()
         
         Select Case Response("status")
         Case Is = "200"
-            Me.lblError.Visible = False
+            Me.lblError.visible = False
         Case Is = "401"
-            Me.lblLogin1.Visible = True
-            Me.lblLogin2.Visible = True
+            Me.lblLogin1.visible = True
+            Me.lblLoginLink.visible = True
             Exit Sub
         Case Else
             Me.lblError.Caption = Response("body")("message")
-            Me.lblError.Visible = True
+            Me.lblError.visible = True
             Exit Sub
         End Select
                 
@@ -68,7 +68,6 @@ Private Sub UserForm_Initialize()
     Exit Sub
 
 Handler:
-    Set Request = Nothing
     MsgBox "Error " & Err.Number & ": " & Err.Description
     
 End Sub
@@ -84,21 +83,25 @@ Private Sub txtRoom_Change()
     ValidateForm
 End Sub
 
-Private Sub ValidateForm()
+Private Function ValidateForm() As Boolean
     If Me.txtRoom.Value = vbNullString And Me.lboxRounds.Value = vbNullString Then
         Me.btnShare.Enabled = False
         Me.btnBrowser.Enabled = False
+        ValidateForm = False
     ElseIf Me.lboxRounds.Value = vbNullString And Me.txtRoom.TextLength < 8 Then
         Me.btnShare.Enabled = False
         Me.btnBrowser.Enabled = False
+        ValidateForm = False
     ElseIf Me.lboxRounds.Value = vbNullString And Len(Strings.OnlyAlphaNumericChars(Me.txtRoom.Value)) < 8 Then
         Me.btnShare.Enabled = False
         Me.btnBrowser.Enabled = False
+        ValidateForm = False
     Else
         Me.btnShare.Enabled = True
         Me.btnBrowser.Enabled = True
+        ValidateForm = True
     End If
-End Sub
+End Function
 
 Sub btnShare_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnShare.BackColor = Globals.LIGHT_BLUE
@@ -134,7 +137,7 @@ Private Sub lblLoginLink_Click()
 End Sub
 
 Private Sub btnShare_Click()
-    UploadToShare lboxRounds.List(lboxRounds.ListIndex, 1)
+    UploadToShare
 End Sub
 
 Private Function RandomPhrase() As String
@@ -180,6 +183,8 @@ End Function
 Private Sub UploadToShare()
     On Error GoTo Handler
     
+    Dim FileName As String
+    
     Application.ScreenUpdating = False
     System.Cursor = wdCursorWait
     
@@ -187,13 +192,20 @@ Private Sub UploadToShare()
 
     If ActiveDocument.Saved = False Then ActiveDocument.Save
     
+    ' Strip "Speech" if option set
+    If GetSetting("Verbatim", "Paperless", "StripSpeech", True) = True And Len(ActiveDocument.Name) > 11 Then
+        FileName = Trim(Replace(ActiveDocument.Name, "speech", "", 1, -1, vbTextCompare))
+    Else
+        FileName = Trim(ActiveDocument.Name)
+    End If
+    
     Dim Body As Dictionary
     Set Body = New Dictionary
        
     Dim Base64
     Base64 = Filesystem.GetFileAsBase64(ActiveDocument.FullName)
     Body.Add "file", Base64
-    Body.Add "filename", ActiveDocument.Name
+    Body.Add "filename", FileName
            
     Dim Room As String
     If Me.lboxRounds.Value <> vbNullString Then Room = Me.lboxRounds.Value
@@ -210,15 +222,15 @@ Private Sub UploadToShare()
         
     Case Is = "400"                              ' Bad file
         Me.lblError.Caption = "Something appears to be wrong with your file, please try again"
-        Me.lblError.Visible = True
+        Me.lblError.visible = True
 
     Case Is = "500"                              ' Server error
         Me.lblError.Caption = "Failed to upload file, please try again"
-        Me.lblError.Visible = True
+        Me.lblError.visible = True
     
     Case Else
         Me.lblError.Caption = Request("body")("message")
-        Me.lblError.Visible = True
+        Me.lblError.visible = True
     End Select
     
     Set Body = Nothing

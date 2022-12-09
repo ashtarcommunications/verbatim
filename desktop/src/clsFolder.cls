@@ -36,32 +36,35 @@ Public Property Get Files() As Collection
 End Property
 
 Public Sub Init(Path As String)
-    Dim Subfolder
+    Dim SubFolder
     Dim File
     
     m_Path = Path
     
     #If Mac Then
         Dim PathSegments
+        Dim Script As String
+        Dim Subfolders
+        Dim Files
+        
         PathSegments = Split(Path, Application.PathSeparator)
         m_Name = PathSegments(UBound(PathSegments))
+                
+        Script = "stat -f '%m' '" & Path & "'"
+        m_DateLastModified = Strings.ConvertUnixTimestampToDate(AppleScriptTask("Verbatim.scpt", "RunShellScript", Script))
+
+        Script = "find '" & Path & "' -type d -depth 1"
+        Subfolders = Split(AppleScriptTask("Verbatim.scpt", "RunShellScript", Script), Chr(13))
         
-        m_DateLastModified = MacScript("do shell script ""stat -f '%m %N' " & Path & "| cut -d ' ' -f 1""")
-               
-        Dim GetSubfoldersInFolder
-        GetSubfoldersInFolder = AppleScriptTask("Verbatim.scpt", "GetSubfoldersInFolder", FolderPath)
-        If Right(GetSubfoldersInFolder, 1) = Chr(10) Or Right(GetSubfoldersInFolder, 1) = Chr(13) Then GetSubfoldersInFolder = Left(GetSubfoldersInFolder, Len(GetSubfoldersInFolder) - 1)
+        For Each SubFolder In Subfolders
+            m_Subfolders.Add Replace(SubFolder, "//", "/")
+        Next SubFolder
         
-        For Each Subfolder In GetSubfoldersInFolder
-            m_Subfolders.Add Subfolder
-        Next Subfolder
-           
-        POSIXPath = MacScript("tell text 1 thru -2 of " & Chr(34) & Path & Chr(34) & " to return quoted form of it's POSIX Path")
-        GetFilesInFolder = AppleScriptTask("Verbatim.scpt", "GetFilesInFolder", POSIXPath)
-        If Right(GetFilesInFolder, 1) = Chr(10) Or Right(GetFilesInFolder, 1) = Chr(13) Then GetFilesInFolder = Left(GetFilesInFolder, Len(GetFilesInFolder) - 1)
+        Script = "find '" & Path & "' -type f -depth 1"
+        Files = Split(AppleScriptTask("Verbatim.scpt", "RunShellScript", Script), Chr(13))
         
-        For Each File In GetFilesInFolder
-            m_Files.Add File
+        For Each File In Files
+            m_Files.Add Replace(File, "//", "/")
         Next File
         
     #Else
@@ -72,9 +75,9 @@ Public Sub Init(Path As String)
         m_Name = f.Name
         m_DateLastModified = f.DateLastModified
         
-        For Each Subfolder In f.Subfolders
-            m_Subfolders.Add Subfolder.Path
-        Next Subfolder
+        For Each SubFolder In f.Subfolders
+            m_Subfolders.Add SubFolder.Path
+        Next SubFolder
         
         For Each File In f.Files
             m_Files.Add File.Path

@@ -20,10 +20,13 @@ Private Sub UserForm_Initialize()
     
     On Error GoTo Handler
     
+    Globals.InitializeGlobals
+    
     #If Mac Then
         UI.ResizeUserForm Me
+        Me.btnChooseSpeechDoc.ForeColor = Globals.BLUE
     #End If
-    
+        
     ' Loop through open Windows - use Windows because Application.Documents collection gets corrupted
     For Each w In Application.Windows
         If InStr(LCase(w.Document.Name), "speech") Then
@@ -67,9 +70,14 @@ Private Sub btnChooseSpeechDoc_Click()
         Unload Me
     End If
 End Sub
+
+#If Mac Then
+    ' Ignore button colors
+#Else
 Sub btnChooseSpeechDoc_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnChooseSpeechDoc.BackColor = Globals.LIGHT_BLUE
 End Sub
 Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnChooseSpeechDoc.BackColor = Globals.BLUE
 End Sub
+#End If

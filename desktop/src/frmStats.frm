@@ -96,7 +96,7 @@ Private Sub chkAutoRefresh_Click()
     On Error GoTo Handler
     If Me.chkAutoRefresh.Value = True Then
         Start = Now
-        Do While Me.chkAutoRefresh.Value = True And Me.Visible = True
+        Do While Me.chkAutoRefresh.Value = True And Me.visible = True
             DoEvents
             If Now > Start + TimeValue("00:00:20") Then
                 Calculate
@@ -124,7 +124,7 @@ Public Sub Calculate()
     ComputingStats = True
     
     On Error GoTo Handler
-    If Me.Visible = False Then Exit Sub
+    If Me.visible = False Then Exit Sub
     ComputeHighlightedWords
     ComputeTagWords
     ComputeNumberOfCards
@@ -163,7 +163,7 @@ Private Sub ComputeHighlightedWords()
                 Unload Me
                 Exit Sub
             End If
-            If Me.Visible = False Then Exit Sub
+            If Me.visible = False Then Exit Sub
             HighlightCount = HighlightCount + r.ComputeStatistics(wdStatisticWords)
             Application.ScreenRefresh
         Loop
@@ -206,7 +206,7 @@ Private Sub ComputeTagWords()
                 Unload Me
                 Exit Sub
             End If
-            If Me.Visible = False Then Exit Sub
+            If Me.visible = False Then Exit Sub
             TagCount = TagCount + r.ComputeStatistics(wdStatisticWords)
             Application.ScreenRefresh
         Loop

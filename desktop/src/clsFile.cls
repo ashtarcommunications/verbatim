@@ -33,7 +33,9 @@ Public Sub Init(Path As String)
         PathSegments = Split(Path, Application.PathSeparator)
         m_Name = PathSegments(UBound(PathSegments))
         
-        m_DateLastModified = MacScript("do shell script ""stat -f '%m %N' " & Path & "| cut -d ' ' -f 1""")
+        Dim Script As String
+        Script = "stat -f '%m' '" & Path & "'"
+        m_DateLastModified = Strings.ConvertUnixTimestampToDate(AppleScriptTask("Verbatim.scpt", "RunShellScript", Script))
 
     #Else
         Dim FSO As Scripting.FileSystemObject

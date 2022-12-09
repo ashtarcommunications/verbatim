@@ -9,17 +9,17 @@ Option Explicit
     ' Do Nothing
 #Else
 Function RegKeyRead(RegKey As String) As String
-    Dim WS As WshShell
+    Dim WS As Object
     On Error Resume Next
-    Set WS = New WshShell
+    Set WS = CreateObject("WScript.Shell")
     RegKeyRead = WS.RegRead(RegKey)
     Set WS = Nothing
 End Function
 
 Function RegKeyExists(RegKey As String) As Boolean
-    Dim WS As WshShell
+    Dim WS As Object
     On Error GoTo Handler
-    Set WS = New WshShell
+    Set WS = CreateObject("WScript.Shell")
     WS.RegRead RegKey
     RegKeyExists = True
     Set WS = Nothing
@@ -32,9 +32,9 @@ Handler:
 End Function
 
 Sub RegKeySave(RegKey As String, Value As String, Optional ValueType As String = "REG_SZ")
-    Dim WS As WshShell
+    Dim WS As Object
     On Error Resume Next
-    Set WS = New WshShell
+    Set WS = CreateObject("WScript.Shell")
     WS.RegWrite RegKey, Value, ValueType
     Set WS = Nothing
 End Sub
@@ -101,6 +101,30 @@ Function InstallCheckTemplateLocation(Optional Notify As Boolean) As Boolean
     End If
 End Function
 
+#If Mac Then
+Function InstallCheckScptFileExists(Optional Notify As Boolean) As Boolean
+    Dim msg As String
+    
+    On Error Resume Next
+
+    ' Checks if Verbatim.scpt is installed at the correct location
+    If Filesystem.FileExists("~/Library/Application Scripts/com.Microsoft.Word/Verbatim.scpt") = False Then
+        InstallCheckScptFileExists = True
+        
+        If Notify = True Then
+            msg = "WARNING - You do not appear to have Verbatim.scpt installed at " _
+            & "~/Library/Application Scripts/com.Microsoft.Word/Verbatim.scpt - " _
+            & "Verbatim.scpt must be installed or many features will not work correctly. " _
+            & "It is strongly recommended you run the Verbatim installer again, or manually install the file. " _
+            & "This warning can be suppressed in the Verbatim settings."
+            MsgBox (msg)
+        End If
+
+    Else
+        InstallCheckScptFileExists = False
+    End If
+End Function
+#End If
 Function CheckSaveFormat(Optional Notify As Boolean) As Boolean
     Dim msg As String
     
@@ -155,7 +179,7 @@ Public Function CheckDuplicateTemplates() As Boolean
     On Error Resume Next
     
     If Filesystem.FileExists(Environ("USERPROFILE") & "\Desktop\Debate.dotm") = False And _
-    Filsystem.FileExists(Environ("USERPROFILE") & "\Downloads\Debate.dotm") = False Then
+    Filesystem.FileExists(Environ("USERPROFILE") & "\Downloads\Debate.dotm") = False Then
         CheckDuplicateTemplates = True
     Else
         CheckDuplicateTemplates = False
@@ -183,7 +207,7 @@ End Function
 ' * FIX FUNCTIONS                                                                     *
 ' *************************************************************************************
 Sub DeleteDuplicateTemplates()
-    Dim FilePath
+    Dim FilePath As String
     
     On Error Resume Next
     

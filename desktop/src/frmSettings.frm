@@ -132,15 +132,24 @@ Private Sub UserForm_Initialize()
     ' Turn on Error handling
     On Error GoTo Handler
     
+    Globals.InitializeGlobals
+    
     #If Mac Then
         UI.ResizeUserForm Me
+        Me.btnCancel.ForeColor = Globals.RED
+        Me.btnResetAllSettings.ForeColor = Globals.ORANGE
+        Me.btnSave.ForeColor = Globals.BLUE
+        Me.btnTabroomLogout.ForeColor = Globals.RED
+        Me.btnTabroomLogin.ForeColor = Globals.BLUE
+        Me.btnCreateVTub.ForeColor = Globals.BLUE
+        Me.btnUpdateCheck.ForeColor = Globals.BLUE
     #End If
     
     ' Get Settings from the registry to populate the settings boxes
     
     ' Profile Tab
-    Me.txtName.Value = GetSetting("Verbatim", "Profile", "Name", vbNullString)
-    Me.txtSchoolName.Value = GetSetting("Verbatim", "Profile", "SchoolName", vbNullString)
+    Me.txtName.Value = GetSetting("Verbatim", "Profile", "Name", "")
+    Me.txtSchoolName.Value = GetSetting("Verbatim", "Profile", "SchoolName", "")
     
     If GetSetting("Verbatim", "Profile", "CollegeHS", "K12") = "College" Then
         Me.optCollege.Value = True
@@ -180,13 +189,22 @@ Private Sub UserForm_Initialize()
     Me.spnDocs.Value = GetSetting("Verbatim", "View", "DocsPct", 50)
     Me.spnSpeech.Value = GetSetting("Verbatim", "View", "SpeechPct", 50)
     
+    Me.chkRibbonDisableSpeech.Value = GetSetting("Verbatim", "View", "RibbonDisableSpeech", False)
+    Me.chkRibbonDisableOrganize.Value = GetSetting("Verbatim", "View", "RibbonDisableOrganize", False)
+    Me.chkRibbonDisableFormat.Value = GetSetting("Verbatim", "View", "RibbonDisableFormat", False)
+    Me.chkRibbonDisablePaperless.Value = GetSetting("Verbatim", "View", "RibbonDisablePaperless", False)
+    Me.chkRibbonDisableTools.Value = GetSetting("Verbatim", "View", "RibbonDisableTools", False)
+    Me.chkRibbonDisableView.Value = GetSetting("Verbatim", "View", "RibbonDisableView", False)
+    Me.chkRibbonDisableCaselist.Value = GetSetting("Verbatim", "View", "RibbonDisableCaselist", False)
+    Me.chkRibbonDisableSettings.Value = GetSetting("Verbatim", "View", "RibbonDisableSettings", False)
+        
     ' Paperless Tab
     Me.chkAutoSaveSpeech.Value = GetSetting("Verbatim", "Paperless", "AutoSaveSpeech", False)
-    Me.cboAutoSaveDir.Value = GetSetting("Verbatim", "Paperless", "AutoSaveDir", vbNullString)
+    Me.cboAutoSaveDir.Value = GetSetting("Verbatim", "Paperless", "AutoSaveDir", "")
     Me.chkStripSpeech.Value = GetSetting("Verbatim", "Paperless", "StripSpeech", True)
-    Me.cboSearchDir.Value = GetSetting("Verbatim", "Paperless", "SearchDir", vbNullString)
-    Me.cboAutoOpenDir.Value = GetSetting("Verbatim", "Paperless", "AutoOpenDir", vbNullString)
-    Me.cboAudioDir.Value = GetSetting("Verbatim", "Paperless", "AudioDir", vbNullString)
+    Me.cboSearchDir.Value = GetSetting("Verbatim", "Paperless", "SearchDir", "")
+    Me.cboAutoOpenDir.Value = GetSetting("Verbatim", "Paperless", "AutoOpenDir", "")
+    Me.cboAudioDir.Value = GetSetting("Verbatim", "Paperless", "AudioDir", "")
       
     ' Populate Format Tab Comboboxes - Allow 8pt-32pt
     FontSize = 8
@@ -251,6 +269,27 @@ Private Sub UserForm_Initialize()
     
     Me.chkAutoUnderlineEmphasis.Value = GetSetting("Verbatim", "Format", "AutoUnderlineEmphasis", False)
             
+    ' Populate highlighting exception dropdown
+    Me.cboHighlightingException.AddItem "None"
+    Me.cboHighlightingException.AddItem "Black"
+    Me.cboHighlightingException.AddItem "Blue"
+    Me.cboHighlightingException.AddItem "Bright Green"
+    Me.cboHighlightingException.AddItem "Dark Blue"
+    Me.cboHighlightingException.AddItem "Dark Red"
+    Me.cboHighlightingException.AddItem "Dark Yellow"
+    Me.cboHighlightingException.AddItem "Light Gray"
+    Me.cboHighlightingException.AddItem "Dark Gray"
+    Me.cboHighlightingException.AddItem "Green"
+    Me.cboHighlightingException.AddItem "Pink"
+    Me.cboHighlightingException.AddItem "Red"
+    Me.cboHighlightingException.AddItem "Teal"
+    Me.cboHighlightingException.AddItem "Turquoise"
+    Me.cboHighlightingException.AddItem "Violet"
+    Me.cboHighlightingException.AddItem "White"
+    Me.cboHighlightingException.AddItem "Yellow"
+    
+    Me.cboHighlightingException.Value = GetSetting("Verbatim", "Format", "HighlightingException", "None")
+    
     ' Populate Keyboard Tab Comboboxes
     MacroArray = Array("Paste", "Condense", "Pocket", "Hat", "Block", "Tag", "Cite", "Underline", "Emphasis", "Highlight", "Clear", "Shrink Text", "Select Similar")
     
@@ -280,7 +319,7 @@ Private Sub UserForm_Initialize()
     Me.cboF12Shortcut.Value = GetSetting("Verbatim", "Keyboard", "F12Shortcut", "Clear")
     
     ' VTub Tab
-    Me.cboVTubPath.Value = GetSetting("Verbatim", "VTub", "VTubPath", vbNullString)
+    Me.cboVTubPath.Value = GetSetting("Verbatim", "VTub", "VTubPath", "")
     Me.chkVTubRefreshPrompt.Value = GetSetting("Verbatim", "VTub", "VTubRefreshPrompt", True)
        
     ' Caselist Tab
@@ -288,15 +327,15 @@ Private Sub UserForm_Initialize()
     Me.chkProcessCites.Value = GetSetting("Verbatim", "Caselist", "ProcessCites", True)
         
     ' Plugins Tab
-    Me.cboTimer.Value = GetSetting("Verbatim", "Plugins", "TimerPath", vbNullString)
-    Me.cboCapture2Text.Value = GetSetting("Verbatim", "Plugins", "Capture2TextPath", vbNullString)
-    Me.cboOCR.Value = GetSetting("Verbatim", "Plugins", "OCRPath", vbNullString)
+    Me.cboTimer.Value = GetSetting("Verbatim", "Plugins", "TimerPath", "")
+    Me.cboCapture2Text.Value = GetSetting("Verbatim", "Plugins", "Capture2TextPath", "")
+    Me.cboOCR.Value = GetSetting("Verbatim", "Plugins", "OCRPath", "")
     
     ' About Tab
     Me.lblVersion.Caption = "Verbatim v. " & Settings.GetVersion
     Me.chkAutomaticUpdates.Value = GetSetting("Verbatim", "Profile", "AutomaticUpdates", True)
     Me.lblLastUpdateCheck.Caption = "Last Update Check:" & vbCrLf & _
-        Format(GetSetting("Verbatim", "Profile", "LastUpdateCheck", vbNullString), "mm-dd-yy hh:mm")
+        Format(GetSetting("Verbatim", "Profile", "LastUpdateCheck", ""), "mm-dd-yy hh:mm")
     Exit Sub
         
 Handler:
@@ -308,14 +347,14 @@ Private Sub UserForm_Activate()
     Globals.InitializeGlobals
     
     ' Set Tabroom logged in state
-    If GetSetting("Verbatim", "Profile", "CaselistToken", vbNullString) <> vbNullString And Caselist.CheckCaselistToken = True Then
+    If GetSetting("Verbatim", "Profile", "CaselistToken", "") <> "" And Caselist.CheckCaselistToken = True Then
         Me.lblTabroomLoggedIn.Caption = "You are logged in to Tabroom"
-        Me.btnTabroomLogout.Visible = True
-        Me.btnTabroomLogin.Visible = False
+        Me.btnTabroomLogout.visible = True
+        Me.btnTabroomLogin.visible = False
     Else
         Me.lblTabroomLoggedIn.Caption = "You are logged out of Tabroom"
-        Me.btnTabroomLogout.Visible = False
-        Me.btnTabroomLogin.Visible = True
+        Me.btnTabroomLogout.visible = False
+        Me.btnTabroomLogin.visible = True
     End If
 End Sub
 
@@ -328,8 +367,8 @@ Private Sub btnResetAllSettings_Click()
     If MsgBox("This will reset all settings to their default values - changes will not be committed until you click Save. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
     
     ' Profile Tab
-    Me.txtName.Value = vbNullString
-    Me.txtSchoolName.Value = vbNullString
+    Me.txtName.Value = ""
+    Me.txtSchoolName.Value = ""
     Me.optK12.Value = True
     Me.optCX.Value = True
     Me.txtWPM.Value = 250
@@ -352,13 +391,22 @@ Private Sub btnResetAllSettings_Click()
     Me.spnDocs.Value = 50
     Me.spnSpeech.Value = 50
     
+    Me.chkRibbonDisableSpeech.Value = False
+    Me.chkRibbonDisableOrganize.Value = False
+    Me.chkRibbonDisableFormat.Value = False
+    Me.chkRibbonDisablePaperless.Value = False
+    Me.chkRibbonDisableTools.Value = False
+    Me.chkRibbonDisableView.Value = False
+    Me.chkRibbonDisableCaselist.Value = False
+    Me.chkRibbonDisableSettings.Value = False
+    
     ' Paperless Tab
     Me.chkAutoSaveSpeech.Value = False
-    Me.cboAutoSaveDir.Value = vbNullString
+    Me.cboAutoSaveDir.Value = ""
     Me.chkStripSpeech.Value = True
-    Me.cboSearchDir.Value = vbNullString
-    Me.cboAutoOpenDir.Value = vbNullString
-    Me.cboAudioDir.Value = vbNullString
+    Me.cboSearchDir.Value = ""
+    Me.cboAutoOpenDir.Value = ""
+    Me.cboAudioDir.Value = ""
     
     ' Format Tab
     Me.cboNormalSize.Value = 11
@@ -385,6 +433,8 @@ Private Sub btnResetAllSettings_Click()
     
     Me.optSpacingWide.Value = True
     
+    Me.cboHighlightingException.Value = "None"
+    
     ' Keyboard Tab
     Me.cboF2Shortcut.Value = "Paste"
     Me.cboF3Shortcut.Value = "Condense"
@@ -399,7 +449,7 @@ Private Sub btnResetAllSettings_Click()
     Me.cboF12Shortcut.Value = "Clear"
     
     ' VTub Tab
-    Me.cboVTubPath.Value = vbNullString
+    Me.cboVTubPath.Value = ""
     Me.chkVTubRefreshPrompt.Value = True
     
     ' Caselist Tab
@@ -407,9 +457,9 @@ Private Sub btnResetAllSettings_Click()
     Me.chkProcessCites.Value = True
        
     ' Plugins Tab
-    Me.cboTimer.Value = vbNullString
-    Me.cboCapture2Text.Value = vbNullString
-    Me.cboOCR.Value = vbNullString
+    Me.cboTimer.Value = ""
+    Me.cboCapture2Text.Value = ""
+    Me.cboOCR.Value = ""
     
     ' About Tab
     Me.chkAutomaticUpdates.Value = True
@@ -467,6 +517,15 @@ Private Sub btnSave_Click()
     SaveSetting "Verbatim", "View", "DocsPct", Me.spnDocs.Value
     SaveSetting "Verbatim", "View", "SpeechPct", Me.spnSpeech.Value
     
+    SaveSetting "Verbatim", "View", "RibbonDisableSpeech", Me.chkRibbonDisableSpeech.Value
+    SaveSetting "Verbatim", "View", "RibbonDisableOrganize", Me.chkRibbonDisableOrganize.Value
+    SaveSetting "Verbatim", "View", "RibbonDisableFormat", Me.chkRibbonDisableFormat.Value
+    SaveSetting "Verbatim", "View", "RibbonDisablePaperless", Me.chkRibbonDisablePaperless.Value
+    SaveSetting "Verbatim", "View", "RibbonDisableTools", Me.chkRibbonDisableTools.Value
+    SaveSetting "Verbatim", "View", "RibbonDisableView", Me.chkRibbonDisableView.Value
+    SaveSetting "Verbatim", "View", "RibbonDisableCaselist", Me.chkRibbonDisableCaselist.Value
+    SaveSetting "Verbatim", "View", "RibbonDisableSettings", Me.chkRibbonDisableSettings.Value
+    
     ' Paperless Tab
     SaveSetting "Verbatim", "Paperless", "AutoSaveSpeech", Me.chkAutoSaveSpeech.Value
     SaveSetting "Verbatim", "Paperless", "AutoSaveDir", Me.cboAutoSaveDir.Value
@@ -508,6 +567,8 @@ Private Sub btnSave_Click()
     Else
         SaveSetting "Verbatim", "Format", "Spacing", "Narrow"
     End If
+    
+    SaveSetting "Verbatim", "Format", "HighlightingException", Me.cboHighlightingException.Value
     
     ' Check if Template itself is open, or open it as a Document
     If ActiveDocument.FullName = ActiveDocument.AttachedTemplate.FullName Then
@@ -667,8 +728,8 @@ Private Sub btnTabroomLogin_Click()
 End Sub
 
 Private Sub btnTabroomLogout_Click()
-    SaveSetting "Verbatim", "Profile", "CaselistToken", vbNullString
-    SaveSetting "Verbatim", "Profile", "CaselistTokenExpires", vbNullString
+    SaveSetting "Verbatim", "Profile", "CaselistToken", ""
+    SaveSetting "Verbatim", "Profile", "CaselistTokenExpires", ""
     Me.lblTabroomLoggedIn.Caption = "You are logged out of Tabroom"
 End Sub
 
@@ -712,7 +773,7 @@ Private Sub btnImportSettings_Click()
     SettingsFileName = UI.GetFileFromDialog("Verbatim Settings", "*.ini", "Select Verbatim Settings file to import...", "Import")
 
     ' Exit if trying to import an old settings file
-    If System.PrivateProfileString(SettingsFileName, "Profile", "Version") = vbNullString Or System.PrivateProfileString(SettingsFileName, "Profile", "Version") < 6 Then
+    If System.PrivateProfileString(SettingsFileName, "Profile", "Version") = "" Or System.PrivateProfileString(SettingsFileName, "Profile", "Version") < 6 Then
         MsgBox "Outdated settings file. You must use a Verbatim settings file exported from v6.0 or newer."
         Exit Sub
     End If
@@ -748,7 +809,7 @@ Private Sub btnImportSettings_Click()
     Else
         Me.optDraftView.Value = True
     End If
-    
+       
     Me.chkNPCStartup.Value = System.PrivateProfileString(SettingsFileName, "View", "NPCStartup")
     Me.spnDocs.Value = System.PrivateProfileString(SettingsFileName, "View", "DocsPct")
     Me.spnSpeech.Value = System.PrivateProfileString(SettingsFileName, "View", "SpeechPct")
@@ -797,6 +858,8 @@ Private Sub btnImportSettings_Click()
         Me.optSpacingNarrow.Value = True
     End If
     
+    Me.cboHighlightingException.Value = System.PrivateProfileString(SettingsFileName, "Format", "HighlightingException")
+    
     ' Import settings - Keyboard
     Me.cboF2Shortcut.Value = System.PrivateProfileString(SettingsFileName, "Keyboard", "F2Shortcut")
     Me.cboF3Shortcut.Value = System.PrivateProfileString(SettingsFileName, "Keyboard", "F3Shortcut")
@@ -841,10 +904,10 @@ Private Sub btnExportSettings_Click()
 
     ' Create SettingsFile name
     SettingsFileName = "VerbatimSettings"
-    If Me.txtSchoolName.Value <> vbNullString Then
+    If Me.txtSchoolName.Value <> "" Then
         SettingsFileName = SettingsFileName & " - " & Me.txtSchoolName.Value
     End If
-    If Me.txtName.Value <> vbNullString Then
+    If Me.txtName.Value <> "" Then
         SettingsFileName = SettingsFileName & " - " & Me.txtName.Value
     End If
     SettingsFileName = SettingsFileName & ".ini"
@@ -935,6 +998,8 @@ Private Sub btnExportSettings_Click()
         System.PrivateProfileString(SettingsFileName, "Format", "Spacing") = "Narrow"
     End If
     
+    System.PrivateProfileString(SettingsFileName, "Format", "HighlightingException") = Me.cboHighlightingException.Value
+
     ' Export settings - Keyboard
     System.PrivateProfileString(SettingsFileName, "Keyboard", "F2Shortcut") = Me.cboF2Shortcut.Value
     System.PrivateProfileString(SettingsFileName, "Keyboard", "F3Shortcut") = Me.cboF3Shortcut.Value
@@ -1007,6 +1072,16 @@ Private Sub btnResetView_Click()
     Me.chkNPCStartup.Value = False
     Me.spnDocs.Value = 50
     Me.spnSpeech.Value = 50
+    
+    Me.chkRibbonDisableSpeech.Value = False
+    Me.chkRibbonDisableOrganize.Value = False
+    Me.chkRibbonDisableFormat.Value = False
+    Me.chkRibbonDisablePaperless.Value = False
+    Me.chkRibbonDisableTools.Value = False
+    Me.chkRibbonDisableView.Value = False
+    Me.chkRibbonDisableCaselist.Value = False
+    Me.chkRibbonDisableSettings.Value = False
+    
 End Sub
 
 '*************************************************************************************
@@ -1107,6 +1182,8 @@ Private Sub btnResetFormatting_Click()
     Me.chkUsePilcrows.Value = False
     Me.optSpacingWide.Value = True
     
+    Me.cboHighlightingException.Value = "None"
+    
     Exit Sub
         
 Handler:
@@ -1168,12 +1245,14 @@ Private Sub cboVTubPath_DropButtonClick()
 End Sub
 
 Private Sub btnCreateVTub_Click()
-    If Me.cboVTubPath.Value = vbNullString Then
+    If Me.cboVTubPath.Value = "" Then
         MsgBox "You must select a path for the VTub first."
         Exit Sub
     Else
         Me.Hide
-        VirtualTub.VTubCreate
+        If MsgBox("Are you sure you want to create the VTub now?", vbYesNo) = vbYes Then
+            VirtualTub.VTubCreate
+        End If
         Me.Show
     End If
 End Sub

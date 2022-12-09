@@ -31,10 +31,12 @@ Public Sub ShowForm(FormName As String)
                 Exit Sub
             End If
             Set Form = New frmStats
+        Case "QuickCards"
+            Set Form = New frmQuickCards
         Case "Troubleshooter"
             Set Form = New frmTroubleshooter
         Case "Tutorial"
-            Set From = New frmTutorial
+            Set Form = New frmTutorial
         Case Else
             ' Do nothing
             Exit Sub
@@ -45,7 +47,8 @@ End Sub
 
 Public Sub ResizeUserForm(frm As Object, Optional dResizeFactor As Double = 0#)
 ' From https://peltiertech.com/userforms-for-mac-and-windows/
-    Dim ctrl As control
+    ' TODO - change ctrl to a Control after moving to late binding
+    Dim ctrl As Object
     Dim sColWidths As String
     Dim vColWidths As Variant
     Dim iCol As Long
@@ -83,11 +86,12 @@ Public Sub ResizeUserForm(frm As Object, Optional dResizeFactor As Double = 0#)
     End With
 End Sub
 
-Public Sub PopulateComboBoxFromJSON(URL As String, DisplayKey As String, ValueKey As String, c As control)
+Public Sub PopulateComboBoxFromJSON(URL As String, DisplayKey As String, ValueKey As String, c As Object)
+    ' TODO - switch c parameter declaration back to Control after moving everything to late binding
     On Error GoTo Handler
-                
+
     System.Cursor = wdCursorWait
-       
+
     Dim Response As Dictionary
     Set Response = HTTP.GetReq(URL)
 
@@ -97,7 +101,7 @@ Public Sub PopulateComboBoxFromJSON(URL As String, DisplayKey As String, ValueKe
         c.List(c.ListCount - 1, 0) = Item(DisplayKey)
         c.List(c.ListCount - 1, 1) = Item(ValueKey)
     Next Item
-    
+
     System.Cursor = wdCursorNormal
     Set Response = Nothing
     Exit Sub
@@ -111,47 +115,54 @@ End Sub
 Public Function GetFileFromDialog(FilterName As String, FilterExtension As String, Title As String, ButtonText As String) As String
     On Error GoTo Handler
 
-    ' Show the built-in file picker, only allow picking 1 file at a time
-    Application.FileDialog(msoFileDialogOpen).AllowMultiSelect = False
-    Application.FileDialog(msoFileDialogOpen).Filters.Clear
-    Application.FileDialog(msoFileDialogOpen).Filters.Add FilterName, FilterExtension
-    Application.FileDialog(msoFileDialogOpen).Title = Title
-    Application.FileDialog(msoFileDialogOpen).ButtonName = ButtonText
-    If Application.FileDialog(msoFileDialogOpen).Show = 0 Then ' Error trap cancel button
+    #If Mac Then
+        GetFileFromDialog = AppleScriptTask("Verbatim.scpt", "GetFileFromDialog", "")
+    #Else
+        ' Show the built-in file picker, only allow picking 1 file at a time
+        Application.FileDialog(msoFileDialogOpen).AllowMultiSelect = False
+        Application.FileDialog(msoFileDialogOpen).Filters.Clear
+        Application.FileDialog(msoFileDialogOpen).Filters.Add FilterName, FilterExtension
+        Application.FileDialog(msoFileDialogOpen).Title = Title
+        Application.FileDialog(msoFileDialogOpen).ButtonName = ButtonText
+        If Application.FileDialog(msoFileDialogOpen).Show = 0 Then ' Error trap cancel button
+            UI.ResetFileDialog msoFileDialogOpen
+            Exit Function
+        End If
+        
+        ' Return the first selected filename
+        GetFileFromDialog = Application.FileDialog(msoFileDialogOpen).SelectedItems(1)
+        
+        ' Reset the dialog
         UI.ResetFileDialog msoFileDialogOpen
-        Exit Function
-    End If
-    
-    ' Return the first selected filename
-    GetFileFromDialog = Application.FileDialog(msoFileDialogOpen).SelectedItems(1)
-    
-    ' Reset the dialog
-    UI.ResetFileDialog msoFileDialogOpen
-    
+    #End If
     Exit Function
 
 Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Function
 
-Public Function GetFolderFromDialog(Title As String, ButtonName As String)
+Public Function GetFolderFromDialog(Title As String, ButtonName As String) As String
     On Error GoTo Handler
     
-    ' Show the built-in folder picker, only allow picking 1 folder at a time
-    Application.FileDialog(msoFileDialogFolderPicker).AllowMultiSelect = False
-    Application.FileDialog(msoFileDialogFolderPicker).Title = Title
-    Application.FileDialog(msoFileDialogFolderPicker).ButtonName = ButtonName
-    If Application.FileDialog(msoFileDialogFolderPicker).Show = 0 Then 'Error trap cancel button
+    #If Mac Then
+        GetFolderFromDialog = AppleScriptTask("Verbatim.scpt", "GetFolderFromDialog", "")
+    #Else
+        ' Show the built-in folder picker, only allow picking 1 folder at a time
+        Application.FileDialog(msoFileDialogFolderPicker).AllowMultiSelect = False
+        Application.FileDialog(msoFileDialogFolderPicker).Title = Title
+        Application.FileDialog(msoFileDialogFolderPicker).ButtonName = ButtonName
+        If Application.FileDialog(msoFileDialogFolderPicker).Show = 0 Then 'Error trap cancel button
+            UI.ResetFileDialog msoFileDialogFolderPicker
+            Exit Function
+        End If
+        
+        ' Return the first selected folder
+        GetFolderFromDialog = Application.FileDialog(msoFileDialogFolderPicker).SelectedItems(1)
+        
+        ' Reset the dialog
         UI.ResetFileDialog msoFileDialogFolderPicker
-        Exit Function
-    End If
+    #End If
     
-    ' Return the first selected folder
-    GetFolderFromDialog = Application.FileDialog(msoFileDialogFolderPicker).SelectedItems(1)
-    
-    ' Reset the dialog
-    UI.ResetFileDialog msoFileDialogFolderPicker
-
     Exit Function
 
 Handler:

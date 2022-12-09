@@ -135,3 +135,14 @@ Public Function RoundName(Round As Variant) As String
         RoundName = Round
     End If
 End Function
+
+Public Function HeadingToTitle(p As String) As String
+    ' Clean text and ensure a non-zero string
+    HeadingToTitle = Trim(OnlySafeChars(Replace(p, Chr(151), "-")))
+    If Len(HeadingToTitle) > 1000 Then HeadingToTitle = Left(HeadingToTitle, 1000) 'Limit length to 1000 characters to avoid breaking XML
+    If HeadingToTitle = "" Then HeadingToTitle = "-"
+End Function
+
+Public Function ConvertUnixTimestampToDate(ts As String) As Date
+    ConvertUnixTimestampToDate = DateAdd("s", CDbl(ts), "1/1/1970")
+End Function

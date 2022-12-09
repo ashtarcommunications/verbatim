@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmCaselist 
    Caption         =   "Upload to openCaselist.com"
-   ClientHeight    =   14130
+   ClientHeight    =   10515
    ClientLeft      =   120
    ClientTop       =   465
-   ClientWidth     =   7965
+   ClientWidth     =   14760
    OleObjectBlob   =   "frmCaselist.frx":0000
    ShowModal       =   0   'False
    StartUpPosition =   1  'CenterOwner
@@ -33,6 +33,7 @@ Private Sub UserForm_Initialize()
         UI.ResizeUserForm Me
     #End If
 
+    Application.StatusBar = "Checking whether logged into openCaselist..."
     If Caselist.CheckCaselistToken = False Then
         Me.Hide
         UI.ShowForm "Login"
@@ -40,10 +41,12 @@ Private Sub UserForm_Initialize()
         Exit Sub
     End If
     
+    Application.StatusBar = "Retrieving rounds from openCaselist..."
     Dim Response As Dictionary
     'Set Response = New Dictionary
     'Set Response = HTTP.GetReq(Globals.CASELIST_URL & "/tabroom/rounds")
     Set Response = HTTP.GetReq(Globals.MOCK_ROUNDS)
+    Application.StatusBar = "Retrieved rounds from openCaselist"
     
     If Response("status") = 401 Then
         Me.Hide
@@ -90,7 +93,7 @@ Private Sub UserForm_Initialize()
         Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 5) = Round("judge")
     Next Round
     
-    'Add Round and side options to dropdowns
+    ' Add Round and side options to dropdowns
     Me.cboRound.AddItem
     Me.cboRound.List(Me.cboRound.ListCount - 1, 0) = vbNullString
     Me.cboRound.List(Me.cboRound.ListCount - 1, 1) = vbNullString
@@ -372,7 +375,7 @@ End Sub
 
 Private Sub ProcessCiteEntries()
     Dim LargestHeading
-    LargestHeading = VirtualTub.LargestHeading
+    LargestHeading = Formatting.LargestHeading
        
     Dim CiteEntries As Dictionary
     Set CiteEntries = New Dictionary
@@ -386,7 +389,7 @@ Private Sub ProcessCiteEntries()
             Selection.Start = p.Range.Start
             Paperless.SelectHeadingAndContent
             
-            Entry.Add "Title", VirtualTub.HeadingTitle(p.Range.Text)
+            Entry.Add "Title", Strings.HeadingToTitle(p.Range.Text)
             Selection.MoveStart wdParagraph, 1
             Entry.Add "Content", WikifySelection
             CiteEntries.Add p.Range.Text, Entry
@@ -427,12 +430,12 @@ Private Sub cboTournament_Change()
 End Sub
 
 Private Sub AddCiteEntry(Title As String, Content As String)
-        
-    Dim TitleLabel As control
-    Dim TitleBox As control
-    Dim EntryLabel As control
-    Dim EntryText As control
-    Dim RuleLabel As control
+    ' TODO - move these to Control types after late binding
+    Dim TitleLabel As Object
+    Dim TitleBox As Object
+    Dim EntryLabel As Object
+    Dim EntryText As Object
+    Dim RuleLabel As Object
     
     Dim NumEntries As Long
     
@@ -497,7 +500,7 @@ Sub btnSubmit_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x
 End Sub
 
 Sub btnCancel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
-    btnCacncel.BackColor = Globals.LIGHT_RED
+    btnCancel.BackColor = Globals.LIGHT_RED
 End Sub
 
 Sub btnAddCite_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
@@ -521,14 +524,14 @@ Public Function ValidateForm() As Boolean
     Me.cboSide.BorderColor = Globals.DARK_GRAY
     Me.cboRound.BorderColor = Globals.DARK_GRAY
     
-    Me.lblError.Visible = False
+    Me.lblError.visible = False
     Me.lblError.Caption = "No Errors"
     ValidateForm = True
 
     If Trim(Me.cboTournament.Value) = vbNullString Then
         Me.cboTournament.BorderColor = Globals.RED
         Me.lblError.Caption = "Tournament, side, and round are required!"
-        Me.lblError.Visible = True
+        Me.lblError.visible = True
         ValidateForm = False
         Exit Function
     End If
@@ -536,7 +539,7 @@ Public Function ValidateForm() As Boolean
     If Me.cboSide.Value = vbNullString Then
         Me.cboSide.BorderColor = Globals.RED
         Me.lblError.Caption = "Tournament, side, and round are required!"
-        Me.lblError.Visible = True
+        Me.lblError.visible = True
         ValidateForm = False
         Exit Function
     End If
@@ -544,14 +547,14 @@ Public Function ValidateForm() As Boolean
     If Me.cboRound.Value = vbNullString Then
         Me.cboRound.BorderColor = Globals.RED
         Me.lblError.Caption = "Tournament, side, and round are required!"
-        Me.lblError.Visible = True
+        Me.lblError.visible = True
         ValidateForm = False
         Exit Function
     End If
     
     If Me.chkOpenSource.Value = False And Me.fCites.Controls.Count = 0 Then
         Me.lblError.Caption = "Nothing to upload! You must either include cites or upload as open source."
-        Me.lblError.Visible = True
+        Me.lblError.visible = True
         ValidateForm = False
         Exit Function
     End If
@@ -559,7 +562,7 @@ Public Function ValidateForm() As Boolean
     If Me.fCites.Controls.Count > 0 Then
         If Trim(Me.fCites.Controls("txtEntryTitle1").Value) = vbNullString Or Trim(Me.fCites.Controls("txtEntryContent1").Value) = vbNullString Then
             Me.lblError.Caption = "Cite entries require a title and content!"
-            Me.lblError.Visible = True
+            Me.lblError.visible = True
             ValidateForm = False
             Exit Function
         End If
@@ -573,7 +576,7 @@ Public Function ValidateForm() As Boolean
         Or IsNull(Me.cboCaselistTeamName.Value) = True _
     Then
         Me.lblError.Caption = "You must select a caselist, school, and team!"
-        Me.lblError.Visible = True
+        Me.lblError.visible = True
         ValidateForm = False
         Exit Function
     End If
@@ -611,6 +614,7 @@ Public Sub UploadToCaselist()
     End If
     
     If Me.chkOpenSource.Value = True Then
+        Application.StatusBar = "Preparing file for upload to openCaselist..."
         Dim Base64
         Base64 = Filesystem.GetFileAsBase64(ActiveDocument.FullName)
         Body.Add "opensource", Base64
@@ -639,27 +643,29 @@ Public Sub UploadToCaselist()
     URL = URL & "/teams/" & Me.cboCaselistTeamName.Value
     URL = URL & "/rounds"
     
+    Application.StatusBar = "Uploading to openCaselist..."
     Dim Request
     Set Request = HTTP.PostReq(URL, Body)
     
     Select Case Request("status")
         Case Is = "201" ' Created
-            MsgBox "Round successfully created"
+            MsgBox "Round successfully created on openCaselist"
+            Application.StatusBar = "Round successfully created on openCaselist"
             Me.Hide
             Unload Me
         
         Case Is = "401" ' Unauthorized
             Me.lblError.Caption = "Unauthorized, log in first and try again"
-            Me.lblError.Visible = True
+            Me.lblError.visible = True
             Me.Hide
             UI.ShowForm "Login"
             Me.Show
         Case Is = "404" ' Not Found
             Me.lblError.Caption = "Unauthorized, log in first"
-            Me.lblError.Visible = True
+            Me.lblError.visible = True
         Case Else
             Me.lblError.Caption = Request("body")("message")
-            Me.lblError.Visible = True
+            Me.lblError.visible = True
     End Select
     
     If Me.chkSaveDefault = True Then
@@ -697,7 +703,7 @@ Private Function WikifySelection() As String
     Selection.Copy
     
     ' Add new document based on debate template
-    Application.Documents.Add Template:=ActiveDocument.AttachedTemplate.FullName, Visible:=True
+    Application.Documents.Add Template:=ActiveDocument.AttachedTemplate.FullName, visible:=True
 
     ' Paste into new document
     Selection.Paste

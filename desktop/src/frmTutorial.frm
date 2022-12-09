@@ -209,8 +209,8 @@ Sub btnNext_Click()
             Selection.TypeText "Tip: You can configure the layout of the automatic windows arranger in the Verbatim Settings." & vbCrLf
             
             'Shift focus to document so SendKeys works
-            SetCursorPos 500, 500
-            Tutorial.SingleClick
+            'SetCursorPos 500, 500
+            'Tutorial.SingleClick
             WordBasic.SendKeys "%d%w"
             
         'VTub
@@ -455,7 +455,7 @@ Sub btnNext_Click()
             
         'Finish
         Case Is = 29
-            Me.lblRedBox.Visible = False
+            Me.lblRedBox.visible = False
             Me.btnNext.Caption = "Exit"
             Call ChangeMessage("That's it! For more information read the built-in help or the manual on paperlessdebate.com", 45, 332, 180, 40)
             
@@ -499,7 +499,7 @@ End Sub
 Sub ChangeRedBox(Top As Long, Left As Long, Width As Long, Height As Long)
 
     'Resize and position box
-    Me.lblRedBox.Visible = True
+    Me.lblRedBox.visible = True
     Me.lblRedBox.Top = Top
     Me.lblRedBox.Left = Left
     Me.lblRedBox.Width = Width
@@ -547,7 +547,7 @@ Private Sub LaunchTutorial()
     'Make sure debate tab is active on ribbon
     WordBasic.SendKeys "%d%"
     
-    Tutorial.ShowTutorial
+    UI.ShowForm "Tutorial"
     
 End Sub
 

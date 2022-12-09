@@ -3,7 +3,7 @@ Option Explicit
 
 Public SearchText As String
 
-Sub SearchChanged(control As IRibbonControl, strText As String)
+Sub SearchChanged(c As IRibbonControl, strText As String)
     ' Set the search text, the refresh ribbon
     SearchText = strText
     Ribbon.RefreshRibbon
@@ -13,7 +13,7 @@ Sub SearchChanged(control As IRibbonControl, strText As String)
     
 End Sub
 
-Sub GetSearchResultsContent(control As IRibbonControl, ByRef returnedVal)
+Sub GetSearchResultsContent(c As IRibbonControl, ByRef returnedVal)
     #If Mac Then
         ' TODO - figure out a Mac version
         MsgBox "Search is not supported on Mac."
@@ -102,26 +102,27 @@ Handler:
 
 End Sub
 
-Sub OpenSearchResult(control As IRibbonControl)
+Sub OpenSearchResult(c As IRibbonControl)
     #If Mac Then
         ' TODO - figure out a Mac version
         MsgBox "Search is not supported on Mac."
         Exit Sub
     #Else
-        Dim s As Shell
+        Dim s As Object
+        Set s = CreateObject("WScript.Shell")
         
         ' Test for file extension, only open doc, docx, rtf - otherwise call shell
-        If Right(control.Tag, 4) = "docx" Or Right(control.Tag, 3) = "doc" Or Right(control.Tag, 3) = "rtf" Then
-            Documents.Open control.Tag
+        If Right(c.Tag, 4) = "docx" Or Right(c.Tag, 3) = "doc" Or Right(c.Tag, 3) = "rtf" Then
+            Documents.Open c.Tag
         Else
-            Set s = New Shell
-            s.Open (control.Tag)
+            Set s = CreateObject("WScript.Shell")
+            s.Open (c.Tag)
             Set s = Nothing
         End If
     #End If
 End Sub
 
-Sub ExplorerSearch(control As IRibbonControl)
+Sub ExplorerSearch(c As IRibbonControl)
     #If Mac Then
         ' TODO - figure out a Mac version
         MsgBox "Search is not supported on Mac."

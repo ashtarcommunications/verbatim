@@ -25,7 +25,7 @@ End Sub
 Public Sub AutoClose()
     On Error Resume Next
     
-    If ActiveWindow.Visible = True Then
+    If ActiveWindow.visible = True Then
         ' If current doc was active speech doc, clear it
         If Globals.ActiveSpeechDoc = ActiveDocument.Name Then Globals.ActiveSpeechDoc = vbNullString
         
@@ -61,7 +61,7 @@ Public Sub Start()
     #If Mac Then
         ' Do Nothing
     #Else
-        If Not Application.ActiveProtectedViewWindow Is Nothing Or ActiveWindow.Visible = False Then Exit Sub
+        If Not Application.ActiveProtectedViewWindow Is Nothing Or ActiveWindow.visible = False Then Exit Sub
     #End If
     
     ' Set default view and navigation pane
@@ -90,11 +90,19 @@ Public Sub Start()
                     Exit Sub
                 End If
             End If
+            #If Mac Then
+                If Troubleshooting.InstallCheckScptFileExists = True Then
+                    If MsgBox("Your Verbatim.scpt file appears to be installed incorrectly. Would you like to open the Troubleshooter? This message can be suppressed in the Verbatim settings.", vbYesNo) = vbYes Then
+                        UI.ShowForm "Settings"
+                        Exit Sub
+                    End If
+                End If
+            #End If
         End If
         
         ' Check for updates weekly on Wednesdays
         If GetSetting("Verbatim", "Admin", "AutoUpdateCheck", True) = True Then
-            If DateDiff("d", GetSetting("Verbatim", "Main", "LastUpdateCheck"), Now) > 6 Then
+            If DateDiff("d", GetSetting("Verbatim", "Profile", "LastUpdateCheck"), Now) > 6 Then
                 If DatePart("w", Now) = 4 Then
                     Settings.UpdateCheck
                     Exit Sub
@@ -105,7 +113,7 @@ Public Sub Start()
     End If
 
     ' Check for custom code to import
-    If GetSetting("Verbatim", "Main", "ImportCustomCode", False) = True Then
+    If GetSetting("Verbatim", "Profile", "ImportCustomCode", False) = True Then
         Settings.ImportCustomCode Notify:=True
     End If
 
@@ -130,5 +138,5 @@ Public Sub FirstRun()
     Settings.ResetKeyboardShortcuts
 
     ' Run setup wizard
-    Settings.ShowSetupWizard
+    UI.ShowForm "Setup"
 End Sub

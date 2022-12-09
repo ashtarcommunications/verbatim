@@ -7,10 +7,11 @@ Public Function FileExists(ByVal FilePath As String) As Boolean
     FileExists = False
 
     #If Mac Then
-        If AppleScriptTask("Verbatim.scpt", "FileExists", Replace(FilePath, ".localized", vbNullString)) = "true" Then
+        Dim Script
+        Script = "if [ -f '" & Replace(FilePath, ".localized", "") & "' ]; then echo 1; else echo 0; fi;"
+        If AppleScriptTask("Verbatim.scpt", "RunShellScript", Script) = "1" Then
             FileExists = True
         End If
-        Set FSO = Nothing
     #Else
         Dim FSO As Object
         ' Use late binding to avoid needing an FSO reference
@@ -41,7 +42,6 @@ Public Function FolderExists(ByVal FolderPath As String) As Boolean
         If AppleScriptTask("Verbatim.scpt", "FolderExists", Replace(FolderExists, ".localized", vbNullString)) = "true" Then
             FolderExists = True
         End If
-        Set FSO = Nothing
     #Else
         Dim FSO As Object
         Set FSO = CreateObject("Scripting.FileSystemObject")
@@ -64,46 +64,22 @@ End Function
 
 Function GetSubfoldersInFolder(FolderPath) As String
     #If Mac Then
-        Dim Script As String
-        
-        Script = "tell application ""Finder""" & Chr(13)
-        Script = Script & "set r to """"" & Chr(13)
-        Script = Script & "set myFolders to folders of folder""" & FolderPath & """" & Chr(13)
-        Script = Script & "repeat with f in myFolders" & Chr(13)
-        Script = Script & "set r to (r & f as string) & ""\n""" & Chr(13)
-        Script = Script & "end repeat" & Chr(13)
-        Script = Script & "return r" & Chr(13)
-        Script = Script & "end tell"
-        
         GetSubfoldersInFolder = AppleScriptTask("Verbatim.scpt", "GetSubfoldersInFolder", FolderPath)
         
         ' Trim trailing newline
         If Right(GetSubfoldersInFolder, 1) = Chr(10) Or Right(GetSubfoldersInFolder, 1) = Chr(13) Then GetSubfoldersInFolder = Left(GetSubfoldersInFolder, Len(GetSubfoldersInFolder) - 1)
     #Else
-        Exit Sub
+        Exit Function
     #End If
 End Function
 Function GetFilesInFolder(FolderPath) As String
     #If Mac Then
-        Dim POSIXPath As String
-        Dim Script As String
-        
-        POSIXPath = MacScript("tell text 1 thru -2 of " & Chr(34) & FolderPath & Chr(34) & " to return quoted form of it's POSIX Path")
-        
-        Script = "set streamEditorCommand to " & Chr(34) & " |  tr  [/:] [:/] " & Chr(34) & Chr(13)
-        Script = Script & "set streamEditorCommand to streamEditorCommand & " & Chr(34)
-        Script = Script & " | sed -e " & Chr(34) & "  & quoted form of (" & Chr(34) & " s.:." & Chr(34)
-        Script = Script & "  & (POSIX file " & Chr(34) & "/" & Chr(34) & "  as string) & " & Chr(34) & "." & Chr(34) & " )" & Chr(13)
-        Script = Script & "do shell script """ & "find -E " & POSIXPath
-        Script = Script & " -iregex " & "'.*/[^~][^/]*\\." & "(docx|doc|docm|dot|dotm)" & "$' " & "-maxdepth 1"
-        Script = Script & """ & streamEditorCommand without altering line endings"
-    
-        GetFilesInFolder = AppleScriptTask("Verbatim.scpt", "GetFilesInFolder", POSIXPath)
+        GetFilesInFolder = AppleScriptTask("Verbatim.scpt", "GetFilesInFolder", FolderPath)
         
         ' Trim trailing newline
         If Right(GetFilesInFolder, 1) = Chr(10) Or Right(GetFilesInFolder, 1) = Chr(13) Then GetFilesInFolder = Left(GetFilesInFolder, Len(GetFilesInFolder) - 1)
     #Else
-        Exit Sub
+        Exit Function
     #End If
 End Function
 
@@ -228,3 +204,22 @@ Handler:
     Filesystem.DeleteFile Path & ".base64"
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Function
+
+#If Mac Then
+Function RequestFolderAccess(RootPath) As Boolean
+    Dim Script As String
+    Dim Files
+    Dim i As Long
+    
+    On Error Resume Next
+    
+    ' Get an array of all files in the root path or subfolders to request permission
+    Script = "find '" & RootPath & "' -type f"
+    Files = Split(AppleScriptTask("Verbatim.scpt", "RunShellScript", Script), Chr(13))
+    For i = 0 To UBound(Files)
+        Files(i) = Replace(Files(i), "//", "/")
+    Next i
+    
+    RequestFolderAccess = GrantAccessToMultipleFiles(Files)
+End Function
+#End If

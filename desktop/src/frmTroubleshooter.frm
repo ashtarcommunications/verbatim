@@ -49,21 +49,29 @@ Private Sub UserForm_Activate()
         Me.lblWarnings.Caption = "Verbatim appears to be installed correctly."
     End If
     
-    'Run rest of checks
+    ' Run rest of checks
+    #If Mac Then
+    If Troubleshooting.InstallCheckScptFileExists = True Then
+        Me.btnFix.visible = True
+        Me.lblWarnings.ForeColor = Globals.RED
+        Me.lblWarnings.Caption = Me.lblWarnings.Caption & vbCrLf & "Your Verbatim.scpt file is not found at ~/Library/Application Scripts/com.Microsoft.Word/Verbatim.scpt - this will cause many Verbatim features to break. You should rerun the Verbatim installer or install the file manually."
+    End If
+    #End If
+    
     If Troubleshooting.CheckDuplicateTemplates = False Then
-        Me.btnFix.Visible = True
+        Me.btnFix.visible = True
         Me.lblWarnings.ForeColor = Globals.RED
         Me.lblWarnings.Caption = Me.lblWarnings.Caption & vbCrLf & "Multiple versions of the Verbatim template detected on your computer (likely in your Downloads or Desktop folder). This can cause difficulties with file interoperability."
     End If
     
     If Troubleshooting.CheckAddins = False Then
-        Me.btnFix.Visible = True
+        Me.btnFix.visible = True
         Me.lblWarnings.ForeColor = Globals.RED
         Me.lblWarnings.Caption = Me.lblWarnings.Caption & vbCrLf & "A buggy non-Verbatim Word Add-in has been detected. This can cause annoying prompts to save changes to Debate.dotm. You can manually disable Word Add-Ins in Word Options - Add-Ins.."
     End If
     
     If Troubleshooting.CheckDefaultSave = False Then
-        Me.btnFix.Visible = True
+        Me.btnFix.visible = True
         Me.lblWarnings.ForeColor = Globals.RED
         Me.lblWarnings.Caption = Me.lblWarnings.Caption & vbCrLf & "Your default file format is not set to .docx - this will cause problems with interoperability and many Verbatim functions."
     End If

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Formatting"
 Option Explicit
 
-Sub UnderlineMode(control As IRibbonControl, pressed As Boolean)
+Sub UnderlineMode(c As IRibbonControl, pressed As Boolean)
 ' Ribbon callback for onAction of UnderlineMode togglebutton
     ' If ToggleButton is turned on
     If pressed Then
@@ -185,6 +185,41 @@ Sub ShrinkAll()
     SaveSetting "Verbatim", "Format", "ShrinkMode", ShrinkMode
 
 End Sub
+
+Sub ShrinkCard()
+    ' TODO - this isn't done
+
+    Paperless.SelectHeadingAndContent
+            
+    ' Move start of selection forward to only select card text
+    Do While True
+        If Selection.Paragraphs.First.outlineLevel < wdOutlineLevel5 And Selection.Paragraphs.First.Range.End <> ActiveDocument.Range.End Then
+            Selection.MoveStart Unit:=wdParagraph, Count:=1
+        Else
+            With Selection.Paragraphs.First.Range.Find
+                .ClearFormatting
+                .Replacement.ClearFormatting
+                .Text = ""
+                .Replacement.Text = ""
+                .Wrap = wdFindStop
+                .Format = True
+                .Style = "Cite"
+                .Execute
+                
+                .ClearFormatting
+                .Replacement.ClearFormatting
+            End With
+            
+            If Selection.Find.Found = True Then
+                Selection.MoveStart Unit:=wdParagraph, Count:=1
+            Else
+                Exit Do
+            End If
+        End If
+    Loop
+        
+End Sub
+
 
 Sub Condense()
 ' Removes white-space from selection and optionally retains paragraph integrity
@@ -469,8 +504,85 @@ Sub UniHighlight()
         .MatchSoundsLike = False
         .MatchAllWordForms = False
     End With
+    
     Selection.Find.Execute Replace:=wdReplaceAll
 End Sub
+
+Sub UniHighlightWithException()
+    Dim ExceptionColor As String
+    ExceptionColor = GetSetting("Verbatim", "Format", "HighlightingException", "None")
+    
+    If ExceptionColor = "" Or ExceptionColor = "None" Then
+        MsgBox "You don't have a highlighter exception color configured in the settings. Please set one and try again.", vbOKOnly
+        Exit Sub
+    End If
+    
+    Selection.Find.ClearFormatting
+    Selection.Find.Replacement.ClearFormatting
+    Selection.Find.Highlight = True
+    Selection.Find.Replacement.Highlight = True
+    With Selection.Find
+        .Text = ""
+        .Replacement.Text = ""
+        .Forward = True
+        .Wrap = wdFindContinue
+        .Format = True
+        .MatchCase = False
+        .MatchWholeWord = False
+        .MatchWildcards = False
+        .MatchSoundsLike = False
+        .MatchAllWordForms = False
+    End With
+   
+    Do While Selection.Find.Execute(Forward:=True) = True
+        If Selection.Range.HighlightColorIndex = Formatting.HighlightColorToEnum(ExceptionColor) Then
+            Selection.Collapse Direction:=wdCollapseEnd
+        Else
+            Selection.Range.HighlightColorIndex = Options.DefaultHighlightColorIndex
+        End If
+    Loop
+End Sub
+
+Public Function HighlightColorToEnum(Color As String) As Long
+    Select Case Color
+        Case Is = "None"
+            HighlightColorToEnum = wdNoHighlight
+        Case Is = "Black"
+            HighlightColorToEnum = wdBlack
+        Case Is = "Blue"
+            HighlightColorToEnum = wdBlue
+        Case Is = "Bright Green"
+            HighlightColorToEnum = wdBrightGreen
+        Case Is = "Dark Blue"
+            HighlightColorToEnum = wdDarkBlue
+        Case Is = "Dark Red"
+            HighlightColorToEnum = wdDarkRed
+        Case Is = "Dark Yellow"
+            HighlightColorToEnum = wdDarkYellow
+        Case Is = "Light Gray"
+            HighlightColorToEnum = wdGray25
+        Case Is = "Dark Gray"
+            HighlightColorToEnum = wdGray50
+        Case Is = "Green"
+            HighlightColorToEnum = wdGreen
+        Case Is = "Pink"
+            HighlightColorToEnum = wdPink
+        Case Is = "Red"
+            HighlightColorToEnum = wdRed
+        Case Is = "Teal"
+            HighlightColorToEnum = wdTeal
+        Case Is = "Turquoise"
+            HighlightColorToEnum = wdTurquoise
+        Case Is = "Violet"
+            HighlightColorToEnum = wdViolet
+        Case Is = "White"
+            HighlightColorToEnum = wdWhite
+        Case Is = "Yellow"
+            HighlightColorToEnum = wdYellow
+        Case Else
+            HighlightColorToEnum = wdNoHighlight
+    End Select
+End Function
 
 Sub RemoveBlanks()
 ' Removes blank lines from appearing in the Navigation Pane by setting them to Normal text
@@ -501,7 +613,7 @@ End Sub
 
 Sub InsertHeader()
 ' Inserts a custom header based on team/user information in Verbatim settings
-    ActiveDocument.Sections(1).Headers(wdHeaderFooterPrimary).Range.Text = GetSetting("Verbatim", "Profile", "SchooLName") & vbCrLf & "File Title" & vbTab & vbTab & GetSetting("Verbatim", "Profile", "Name")
+    ActiveDocument.Sections(1).Headers(wdHeaderFooterPrimary).Range.Text = GetSetting("Verbatim", "Profile", "SchoolName") & vbCrLf & "File Title" & vbTab & vbTab & GetSetting("Verbatim", "Profile", "Name")
     ActiveDocument.Sections(1).Headers(wdHeaderFooterPrimary).PageNumbers.Add (wdAlignPageNumberRight)
 End Sub
 
@@ -818,11 +930,11 @@ Sub RemoveEmphasis()
     End With
 End Sub
 
-Sub GetFromCiteMaker()
+Sub GetFromCiteCreator()
     On Error GoTo Handler
     
     #If Mac Then
-        AppleScriptTask "Verbatim.scpt", "GetFromCiteMaker", ""
+        AppleScriptTask "Verbatim.scpt", "GetFromCiteCreator", ""
         Formatting.PasteText
         Exit Sub
     #Else
@@ -830,20 +942,20 @@ Sub GetFromCiteMaker()
          
         On Error GoTo Handler
         
-        'Check GetFromCiteMaker script exists
-        If Filesystem.FileExists(Application.NormalTemplate.Path & "\GetFromCiteMaker.exe") = False Then
-            MsgBox "GetFromCiteMaker.exe must be installed in your Templates folder."
+        'Check GetFromCiteCreator script exists
+        If Filesystem.FileExists(Application.NormalTemplate.Path & "\GetFromCiteCreator.exe") = False Then
+            MsgBox "GetFromCiteCreator.exe must be installed in your Templates folder."
             Exit Sub
         End If
         
         'Run the script
-        retval = Shell(Application.NormalTemplate.Path & "\GetFromCiteMaker.exe", vbMinimizedNoFocus)
+        retval = Shell(Application.NormalTemplate.Path & "\GetFromCiteCreator.exe", vbMinimizedNoFocus)
                 
         Exit Sub
     #End If
     
 Handler:
-    MsgBox "Getting from CiteMaker failed - ensure Google Chrome and the CiteMaker extension are installed and open." & vbCrLf & vbCrLf & "Error " & Err.Number & ": " & Err.Description
+    MsgBox "Getting from CiteCreator failed - ensure Google Chrome and the CiteCreator extension are installed and open." & vbCrLf & vbCrLf & "Error " & Err.Number & ": " & Err.Description
 End Sub
 
 Sub AutoNumberTags()
@@ -905,3 +1017,89 @@ Sub FixFakeTags()
         End If
     Next p
 End Sub
+
+Sub RemoveExtraStyles()
+    Dim s As Style
+    
+    On Error Resume Next
+    
+    For Each s In ActiveDocument.Styles
+        If s.BuiltIn = False And s.Locked = False Then
+            s.Delete
+        End If
+    Next s
+       
+    ActiveDocument.UpdateStyles
+End Sub
+
+Public Function LargestHeading() As Integer
+    LargestHeading = 3
+      
+    With Selection.Find
+        .ClearFormatting
+        .Replacement.ClearFormatting
+        .Forward = True
+        .Wrap = wdFindContinue
+        .Format = True
+        .Style = "Hat"
+        .MatchCase = False
+        .MatchWholeWord = False
+        .MatchWildcards = False
+        .MatchSoundsLike = False
+        .MatchAllWordForms = False
+        .Execute
+        
+        .ClearFormatting
+        .Replacement.ClearFormatting
+        
+        If .Found Then LargestHeading = 2
+    End With
+    
+    With Selection.Find
+        .ClearFormatting
+        .Replacement.ClearFormatting
+        .Forward = True
+        .Wrap = wdFindContinue
+        .Format = True
+        .Style = "Pocket"
+        .MatchCase = False
+        .MatchWholeWord = False
+        .MatchWildcards = False
+        .MatchSoundsLike = False
+        .MatchAllWordForms = False
+        .Execute
+        
+        .ClearFormatting
+        .Replacement.ClearFormatting
+        
+        If .Found Then LargestHeading = 1
+    End With
+End Function
+
+Public Function RemoveExtraUnderlining() As Integer
+    ' TODO - this doesn't change the style to Normal correctly - try using ActiveDocument.Styles("Normal")
+    With Selection.Find
+        .ClearFormatting
+        .Replacement.ClearFormatting
+        .Text = ""
+        .Replacement.Text = ""
+        .Forward = True
+        .Wrap = wdFindContinue
+        .Format = True
+        .Highlight = False
+        .Style = "Underline"
+        .Replacement.Style = "Normal,Normal/Card"
+        .Replacement.Font.Underline = wdUnderlineNone
+        .MatchCase = False
+        .MatchWholeWord = False
+        .MatchWildcards = False
+        .MatchSoundsLike = False
+        .MatchAllWordForms = False
+        .Execute Replace:=wdReplaceAll
+        
+        .ClearFormatting
+        .Replacement.ClearFormatting
+    End With
+End Function
+
+

@@ -5,7 +5,7 @@ Option Explicit
 '* RIBBON FUNCTIONS                                                                  *
 '*************************************************************************************
 
-Sub AutoOpenFolder(control As IRibbonControl, pressed As Boolean)
+Sub AutoOpenFolder(c As IRibbonControl, pressed As Boolean)
 ' Runs in the background to automatically open all documents in the speech folder.
 
     Dim AutoOpenDir As String
@@ -113,7 +113,7 @@ Handler:
 
 End Sub
 
-Sub GetSpeeches(control As IRibbonControl, ByRef returnedVal)
+Sub GetSpeeches(c As IRibbonControl, ByRef returnedVal)
 
     Dim xml As String
     
@@ -127,6 +127,7 @@ Sub GetSpeeches(control As IRibbonControl, ByRef returnedVal)
 
     If GetSetting("Verbatim", "Profile", "DisableTabroom", False) = False Then
     
+        Application.StatusBar = "Retrieving rounds from openCaselist..."
         Dim Response As Dictionary
         'Set Response = HTTP.GetReq(Globals.CASELIST_URL & "/tabroom/rounds?current=true")
         Set Response = HTTP.GetReq(Globals.MOCK_ROUNDS & "?current=true")
@@ -146,6 +147,7 @@ Sub GetSpeeches(control As IRibbonControl, ByRef returnedVal)
         Dim i As Long
         i = 0
     
+        Application.StatusBar = "Retrieved rounds from openCaselist"
         For Each Round In Response("body")
             i = i + 1
             Tournament = Round("tournament")
@@ -201,7 +203,7 @@ Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
-Sub NewSpeechFromMenu(control As IRibbonControl)
+Sub NewSpeechFromMenu(c As IRibbonControl)
     Dim AutoSaveDirectory As String
     Dim FileName As String
     Dim h
@@ -210,12 +212,14 @@ Sub NewSpeechFromMenu(control As IRibbonControl)
     Paperless.NewDocument
 
     ' Get filename from control tag
-    FileName = control.Tag
+    FileName = c.Tag
     
     ' If Tag is just the speech name, add a date
     If Len(FileName) = 3 Then
+        If Hour(Now) = 12 Then h = "12PM"
         If Hour(Now) > 12 Then h = Hour(Now) - 12 & "PM"
-        If Hour(Now) <= 12 Then h = Hour(Now) & "AM"
+        If Hour(Now) < 12 Then h = Hour(Now) & "AM"
+        If Hour(Now) = 0 Then h = "12AM"
         FileName = FileName & " " & Month(Now) & "-" & Day(Now) & " " & h
     End If
     
@@ -637,8 +641,10 @@ SpeechName:
     SpeechName = Replace(SpeechName, Application.PathSeparator, "")
     
     ' Create filename
+    If Hour(Now) = 12 Then h = "12PM"
     If Hour(Now) > 12 Then h = Hour(Now) - 12 & "PM"
-    If Hour(Now) <= 12 Then h = Hour(Now) & "AM"
+    If Hour(Now) < 12 Then h = Hour(Now) & "AM"
+    If Hour(Now) = 0 Then h = "12AM"
     FileName = "Speech " & SpeechName & " " & Month(Now) & "-" & Day(Now) & " " & h
 
     ' Add new document based on template
@@ -648,7 +654,7 @@ SpeechName:
     If GetSetting("Verbatim", "Paperless", "AutoSaveSpeech", False) = True Then
         AutoSaveDirectory = GetSetting("Verbatim", "Paperless", "AutoSaveDir", CurDir())
         If Right(AutoSaveDirectory, 1) <> Application.PathSeparator Then AutoSaveDirectory = AutoSaveDirectory & Application.PathSeparator
-        FileName = AutoSaveDirectory & Application.PathSeparator & FileName
+        FileName = AutoSaveDirectory & FileName
         ActiveDocument.SaveAs FileName:=FileName, FileFormat:=wdFormatXMLDocument
     Else
         With Application.Dialogs(wdDialogFileSaveAs)
@@ -671,9 +677,20 @@ End Sub
 Sub CopyToUSB()
 ' Copies the current file to the root folder of the first found USB drive
 
+    Dim FileName As String
+    
+    ' Strip "Speech" if option set
+    If GetSetting("Verbatim", "Paperless", "StripSpeech", True) = True And Len(ActiveDocument.Name) > 11 Then
+        FileName = Trim(Replace(ActiveDocument.Name, "speech", "", 1, -1, vbTextCompare))
+    Else
+        FileName = Trim(ActiveDocument.Name)
+    End If
+    
+    ' Save File locally
+    ActiveDocument.Save
+            
     #If Mac Then
         Dim POSIXActive
-        Dim FileName As String
         
         Dim MountPoints As String
         Dim MountPointArray
@@ -700,25 +717,14 @@ Sub CopyToUSB()
         For Each m In MountPointArray
             m = Trim(Replace(m, "Mount Point: ", "")) & "/" ' Get just the mount path and add a trailing /
             
-            ' Strip "Speech" if option set
-            If GetSetting("Verbatim", "Paperless", "StripSpeech", True) = True And Len(ActiveDocument.Name) > 11 Then
-                FileName = Trim(Replace(ActiveDocument.Name, "speech", "", 1, -1, vbTextCompare))
-            Else
-                FileName = ActiveDocument.Name
-            End If
-            
             ' Check if file already exists on USB
             If AppleScriptTask("Verbatim.scpt", "RunShellScript", "test -e '" & m & FileName & "'; echo $?") = "0" Then
                 If MsgBox("File Exists.  Overwrite?", vbOKCancel) = vbCancel Then Exit Sub
             End If
             
-            ' Save File locally
-            ActiveDocument.Save
-            
             ' Copy To USB
             AppleScriptTask "Verbatim.scpt", "RunShellScript", "cp '" & POSIXActive & "' '" & m & FileName & "'"
             MsgBox "Sucessfully copied to USB!"
-            
         Next m
         
         Exit Sub
@@ -730,7 +736,6 @@ Sub CopyToUSB()
         Set Drv = FSO.Drives
         Dim d
         Dim USB
-        Dim FileName As String
         
         On Error GoTo Handler
         
@@ -747,24 +752,15 @@ Sub CopyToUSB()
             MsgBox "No USB Drive Found."
             Exit Sub
         End If
-        
-        ' Strip "Speech" if option set
-        If GetSetting("Verbatim", "Paperless", "StripSpeech", True) = True Then
-            FileName = Replace(ActiveDocument.Name, "speech", "", 1, -1, vbTextCompare)
-        Else
-            FileName = ActiveDocument.Name
-        End If
-        
+               
         ' Check if file already exists on USB
-        If Filesystem.FileExists(USB & "\" & FileName) = True Then
+        If Filesystem.FileExists(USB & Application.PathSeparator & FileName) = True Then
             If MsgBox("File Exists.  Overwrite?", vbOKCancel) = vbCancel Then Exit Sub
         End If
         
-        ' Save File locally
-        ActiveDocument.Save
         
         ' Copy To USB
-        FSO.CopyFile ActiveDocument.FullName, USB & "\" & FileName
+        FSO.CopyFile ActiveDocument.FullName, USB & Application.PathSeparator & FileName
     
         MsgBox "Sucessfully copied to USB!"
     
@@ -853,3 +849,180 @@ Sub DeleteAllWarrants()
     Next c
 End Sub
 
+'*************************************************************************************
+'* QUICK CARD FUNCTIONS                                                              *
+'*************************************************************************************
+Public Sub AddQuickCard()
+    Dim t As Template
+    Dim Name As String
+    Dim i As Long
+    Dim j As Long
+    Dim k As Long
+    
+    If Selection.Start = Selection.End Then
+        MsgBox "You must select some text to save a Quick Card", vbOKOnly
+        Exit Sub
+    End If
+    
+    Name = InputBox("What shortcut word/phrase do you want to use for your Quick Card? Usually this is the author's last name.", "Add Quick Card", "")
+    If Name = "" Then Exit Sub
+
+    Set t = ActiveDocument.AttachedTemplate
+          
+    For i = 1 To t.BuildingBlockTypes.Count
+        If t.BuildingBlockTypes(i).Name = "Custom 1" Then
+            For j = 1 To t.BuildingBlockTypes(i).Categories.Count
+                If t.BuildingBlockTypes(i).Categories(j).Name = "Verbatim" Then
+                    For k = 1 To t.BuildingBlockTypes(i).Categories(j).BuildingBlocks.Count
+                        If LCase(t.BuildingBlockTypes(i).Categories(j).BuildingBlocks(k).Name) = LCase(Name) Then
+                            MsgBox "There's already a Quick Card with that name, try again with a different name!", vbOKOnly, "Failed To Add Quick Card"
+                            Exit Sub
+                        End If
+                    Next k
+                End If
+            Next j
+        End If
+    Next i
+    
+    t.BuildingBlockEntries.Add Name, wdTypeCustom1, "Verbatim", Selection.Range
+    
+    't.Save
+    Ribbon.RefreshRibbon
+    
+    MsgBox "Successfully created Quick Card with the shortcut """ & Name & """"
+
+    Set t = Nothing
+    Exit Sub
+
+Handler:
+    Set t = Nothing
+    MsgBox "Error " & Err.Number & ": " & Err.Description
+End Sub
+
+Public Sub InsertCurrentQuickCard()
+    Selection.Range.InsertAutoText
+End Sub
+
+Public Sub InsertQuickCard(QuickCardName As String)
+    Dim t As Template
+    Dim i As Long
+    Dim j As Long
+    Dim k As Long
+    
+    Set t = ActiveDocument.AttachedTemplate
+    
+    For i = 1 To t.BuildingBlockTypes.Count
+        If t.BuildingBlockTypes(i).Name = "Custom 1" Then
+            For j = 1 To t.BuildingBlockTypes(i).Categories.Count
+                If t.BuildingBlockTypes(i).Categories(j).Name = "Verbatim" Then
+                    For k = 1 To t.BuildingBlockTypes(i).Categories(j).BuildingBlocks.Count
+                        If LCase(t.BuildingBlockTypes(i).Categories(j).BuildingBlocks(k).Name) = LCase(QuickCardName) Then
+                            t.BuildingBlockTypes(i).Categories(j).BuildingBlocks(k).Insert Selection.Range, True
+                        End If
+                    Next k
+                End If
+            Next j
+        End If
+    Next i
+    
+    Set t = Nothing
+    Exit Sub
+
+Handler:
+    Set t = Nothing
+    MsgBox "Error " & Err.Number & ": " & Err.Description
+End Sub
+
+Public Sub DeleteQuickCard(Optional QuickCardName As String)
+    Dim t As Template
+    Dim i As Long
+    Dim j As Long
+    Dim k As Long
+    
+    If QuickCardName <> "" Or IsNull(QuickCardName) Then
+        If MsgBox("Are you sure you want to delete the Quick Card """ & QuickCardName & """? This cannot be reversed.", vbYesNo, "Are you sure?") = vbNo Then Exit Sub
+    Else
+        If MsgBox("Are you sure you want to delete all saved Quick Cards? This cannot be reversed.", vbYesNo, "Are you sure?") = vbNo Then Exit Sub
+    End If
+    
+    
+    Set t = ActiveDocument.AttachedTemplate
+
+    ' Delete all building blocks in the Custom 1/Verbatim category
+    For i = 1 To t.BuildingBlockTypes.Count
+        If t.BuildingBlockTypes(i).Name = "Custom 1" Then
+            For j = 1 To t.BuildingBlockTypes(i).Categories.Count
+                If t.BuildingBlockTypes(i).Categories(j).Name = "Verbatim" Then
+                    For k = 1 To t.BuildingBlockTypes(i).Categories(j).BuildingBlocks.Count
+                        ' If name provided, delete just that building block, otherwise delete everything in the category
+                        If QuickCardName <> "" Or IsNull(QuickCardName) Then
+                            If t.BuildingBlockTypes(i).Categories(j).BuildingBlocks(k).Name = QuickCardName Then
+                                t.BuildingBlockTypes(i).Categories(j).BuildingBlocks(k).Delete
+                            End If
+                        Else
+                            t.BuildingBlockTypes(i).Categories(j).BuildingBlocks(k).Delete
+                        End If
+                    Next k
+                End If
+            Next j
+        End If
+    Next i
+
+    ' t.Save
+    Set t = Nothing
+        
+    Exit Sub
+Handler:
+    Set t = Nothing
+    MsgBox "Error " & Err.Number & ": " & Err.Description
+End Sub
+
+Public Sub GetQuickCardsContent(c As IRibbonControl, ByRef returnedVal)
+' Get content for dynamic menu for Quick Cards
+    Dim t As Template
+    Dim i As Long
+    Dim j As Long
+    Dim k As Long
+    Dim xml As String
+    Dim QuickCardName As String
+    Dim DisplayName As String
+    Dim Description As String
+       
+    On Error Resume Next
+        
+    Set t = ActiveDocument.AttachedTemplate
+
+    ' Start the menu
+    xml = "<menu xmlns=""http://schemas.microsoft.com/office/2006/01/customui"">"
+    
+    ' Populate the list of current Quick Cards in the Custom 1 / Verbatim gallery
+    For i = 1 To t.BuildingBlockTypes.Count
+        If t.BuildingBlockTypes(i).Name = "Custom 1" Then
+            For j = 1 To t.BuildingBlockTypes(i).Categories.Count
+                If t.BuildingBlockTypes(i).Categories(j).Name = "Verbatim" Then
+                    For k = 1 To t.BuildingBlockTypes(i).Categories(j).BuildingBlocks.Count
+                         QuickCardName = t.BuildingBlockTypes(i).Categories(j).BuildingBlocks(k).Name
+                         DisplayName = Strings.OnlySafeChars(QuickCardName)
+                        xml = xml & "<button id=""QuickCard" & Replace(DisplayName, " ", "") & """ label=""" & DisplayName & """ tag=""" & QuickCardName & """ onAction=""Paperless.InsertQuickCardFromRibbon"" imageMso=""AutoSummaryResummarize"" />"
+                    Next k
+                End If
+            Next j
+        End If
+    Next i
+    
+    ' Close the menu
+    xml = xml & "<button id=""QuickCardSettings"" label=""Quick Card Settings"" onAction=""Ribbon.RibbonMain"" imageMso=""AddInManager""" & " />"
+    xml = xml & "</menu>"
+    
+    Set t = Nothing
+    
+    returnedVal = xml
+        
+    Exit Sub
+
+Handler:
+    MsgBox "Error " & Err.Number & ": " & Err.Description
+End Sub
+Sub InsertQuickCardFromRibbon(c As IRibbonControl)
+    Paperless.InsertQuickCard c.Tag
+End Sub

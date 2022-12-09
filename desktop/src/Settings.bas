@@ -35,7 +35,7 @@ End Sub
 '*************************************************************************************
 
 Sub ImportCustomCode(Optional Notify As Boolean)
-    Dim p As VBIDE.VBProject
+    Dim p As Object
 
     ' Turn on Error Handling
     On Error GoTo Handler
@@ -54,7 +54,7 @@ Sub ImportCustomCode(Optional Notify As Boolean)
 
     ' Make sure custom code file exists
     #If Mac Then
-        If AppleScriptTask("Verbatim.scpt", "FileExists", "Macintosh HD" & Replace(Application.NormalTemplate.Path & "/VerbatimCustomCode.bas", "/", ":")) = "false" Then
+        If Filesystem.FileExists(Application.AttachedTemplate.Path & Application.PathSeparator & "VerbatimCustomCode.bas") = False Then
     #Else
         Dim FSO As Scripting.FileSystemObject
         Set FSO = New Scripting.FileSystemObject
@@ -109,8 +109,8 @@ Handler:
 End Sub
 
 Sub ExportCustomCode(Optional Notify As Boolean)
-    Dim p As VBIDE.VBProject
-    Dim Module As VBIDE.VBComponent
+    Dim p As Object
+    Dim Module As Object
     
     'Turn on Error Handling
     On Error GoTo Handler
@@ -161,9 +161,9 @@ Handler:
 End Sub
 
 #If Mac Then
-Private Function FindVBProject(d As String) As VBIDE.VBProject
+Private Function FindVBProject(d As String) As Object
     
-    Dim p As VBIDE.VBProject
+    Dim p As Object
     
     On Error Resume Next
     
@@ -192,18 +192,21 @@ Sub UpdateCheck(Optional Notify As Boolean)
     Set Response = HTTP.GetReq(Globals.PAPERLESSDEBATE_URL & "/updates")
     
     ' Exit if the request fails
-    If Response("status") <> 200 Then
+    If Response Is Nothing Or Response("status") <> 200 Then
         Application.StatusBar = "Update Check Failed"
-        SaveSetting "Verbatim", "Main", "LastUpdateCheck", Now
+        SaveSetting "Verbatim", "Profile", "LastUpdateCheck", Now
         If Notify = True Then MsgBox "Update Check Failed."
         Exit Sub
     End If
     
     ' Set LastUpdateCheck
-    SaveSetting "Verbatim", "Main", "LastUpdateCheck", Now
+    SaveSetting "Verbatim", "Profile", "LastUpdateCheck", Now
     
     ' If newer version is found
-    If Settings.NewerVersion(Response("body")("version"), Settings.GetVersion) Then
+    Dim UpdatedVersion As String
+    UpdatedVersion = Response("body")("version")
+    
+    If Settings.NewerVersion(UpdatedVersion, Settings.GetVersion) Then
     
         ' Prompt to launch website - no longer download automatically because it tends to trip antivirus heuristics
         If MsgBox("There is a newer version of Verbatim available. Download now?", vbYesNo) = vbNo Then Exit Sub

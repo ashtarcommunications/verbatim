@@ -56,7 +56,6 @@ Public Sub SaveRecord()
     AudioDir = GetSetting("Verbatim", "Paperless", "AudioDir", vbNullString)
     If Filesystem.FolderExists(AudioDir) = False Then
         #If Mac Then
-            'TODO - replace MacScript("return the path to the desktop folder as text")
             FilePath = AppleScriptTask("Verbatim.scpt", "DesktopPath")
         #Else
             FilePath = CStr(Environ("USERPROFILE")) & "\Desktop"
@@ -137,7 +136,7 @@ Public Function RecordStatus() As String
 End Function
 #End If
 
-Sub RecordAudio(control As IRibbonControl, pressed As Boolean)
+Sub RecordAudio(c As IRibbonControl, pressed As Boolean)
     On Error GoTo Handler
     
     If pressed Then

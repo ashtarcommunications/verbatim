@@ -3,7 +3,7 @@ Option Explicit
 
 Sub OnLoad(Ribbon As IRibbonUI)
     Dim SavedState As Boolean
-    Set DebateRibbon = Ribbon
+    Set Globals.DebateRibbon = Ribbon
     
     ' Save a pointer to the Ribbon in case it gets lost
     SavedState = ActiveDocument.Saved
@@ -20,19 +20,19 @@ Function GetRibbon(ByVal lRibbonPointer As LongPtr) As Object
 End Function
 
 Public Sub RefreshRibbon()
-    If DebateRibbon Is Nothing Then
-        Set DebateRibbon = GetRibbon(ActiveDocument.Variables("RibbonPointer"))
-        DebateRibbon.Invalidate
+    If Globals.DebateRibbon Is Nothing Then
+        Set Globals.DebateRibbon = GetRibbon(ActiveDocument.Variables("RibbonPointer"))
+        Globals.DebateRibbon.Invalidate
     Else
-        DebateRibbon.Invalidate
+        Globals.DebateRibbon.Invalidate
     End If
 End Sub
 
-Sub RibbonMain(ByVal control As IRibbonControl)
+Sub RibbonMain(ByVal c As IRibbonControl)
     ' Set Customization context so FindKey returns correct shortcuts
     CustomizationContext = ActiveDocument.AttachedTemplate
 
-    Select Case control.ID
+    Select Case c.ID
    
     ' Paperless Group
     Case Is = "SendToSpeech"
@@ -53,6 +53,9 @@ Sub RibbonMain(ByVal control As IRibbonControl)
         Paperless.NewWarrant
     Case Is = "DeleteAllWarrants"
         Paperless.DeleteAllWarrants
+    
+    Case Is = "QuickCardSettings"
+        UI.ShowForm "QuickCards"
          
     ' Share Group
     Case Is = "CopyToUSB"
@@ -67,6 +70,8 @@ Sub RibbonMain(ByVal control As IRibbonControl)
     'View Group
     Case Is = "DefaultView"
         View.DefaultView
+    Case Is = "ReadingView"
+        View.ReadingView
     Case Is = "NavPaneCycle"
         View.NavPaneCycle
                 
@@ -119,6 +124,8 @@ Sub RibbonMain(ByVal control As IRibbonControl)
         VirtualTub.RemoveBookmarks
     Case Is = "RemoveEmphasis"
         Formatting.RemoveEmphasis
+    Case Is = "AutoEmphasizeFirst"
+        Formatting.AutoEmphasizeFirst
     Case Is = "FixFakeTags"
         Formatting.FixFakeTags
     Case Is = "UniHighlight"
@@ -135,7 +142,7 @@ Sub RibbonMain(ByVal control As IRibbonControl)
     Case Is = "DeNumberTags"
         Formatting.DeNumberTags
     Case Is = "GetFromCiteMaker"
-        Formatting.GetFromCiteMaker
+        Formatting.GetFromCiteCreator
         
     ' Caselist Group
     Case Is = "CaselistWizard"
@@ -167,10 +174,10 @@ Sub RibbonMain(ByVal control As IRibbonControl)
 
 End Sub
 
-Sub GetRibbonLabels(control As IRibbonControl, ByRef label)
+Sub GetRibbonLabels(c As IRibbonControl, ByRef label)
 ' Assign labels to F key controls from registry
 
-    Select Case control.ID
+    Select Case c.ID
     
     Case Is = "F2Button"
         label = "F2 " & GetSetting("Verbatim", "Keyboard", "F2Shortcut", "Paste")
@@ -209,24 +216,29 @@ Sub GetRibbonLabels(control As IRibbonControl, ByRef label)
 
 End Sub
 
-Sub GetRibbonImages(control As IRibbonControl, ByRef returnedBitmap)
+Sub GetRibbonImages(c As IRibbonControl, ByRef returnedBitmap)
 ' Get image for Default View
-    Select Case control.ID
+    Select Case c.ID
         Case Is = "DefaultView"
             If GetSetting("Verbatim", "View", "DefaultView", Globals.DefaultView) = "Web" Then
                 returnedBitmap = "ViewWebLayoutView"
             Else
                 returnedBitmap = "ViewDraftView"
             End If
-            
+        Case Is = "ReadingView"
+            #If Mac Then
+                returnedBitmap = "ViewDraftView"
+            #Else
+                returnedBitmap = "ViewFullScreenReadingView"
+            #End If
         Case Else
             returnedBitmap = ""
     
     End Select
 End Sub
 
-Sub GetRibbonToggles(control As IRibbonControl, ByRef state)
-    Select Case control.ID
+Sub GetRibbonToggles(c As IRibbonControl, ByRef state)
+    Select Case c.ID
         
     Case Is = "AutoOpenFolder"
         state = Globals.AutoOpenFolderToggle
@@ -251,5 +263,19 @@ Sub GetRibbonToggles(control As IRibbonControl, ByRef state)
     Case Else
         state = False
         
+    End Select
+End Sub
+
+Sub GetRibbonVisibility(c As IRibbonControl, ByRef visible)
+' Get visibility of ribbon groups
+    
+    ' Default to true
+    visible = True
+    
+    Select Case c.ID
+        Case "Speech", "Organize", "Format", "Paperless", "Tools", "View", "Caselist", "Settings"
+            If GetSetting("Verbatim", "View", "RibbonDisable" & c.ID, False) = True Then visible = False
+        Case Else
+            visible = True
     End Select
 End Sub

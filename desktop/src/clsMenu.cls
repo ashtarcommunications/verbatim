@@ -34,7 +34,7 @@ Public Sub Init(MenuType As String, Name As String, Path As String, DateLastModi
     m_MenuType = MenuType
     m_Name = Name
     m_Path = Path
-    m_DateLastModified = m_DateLastModified
+    m_DateLastModified = DateLastModified
     
     Exit Sub
 

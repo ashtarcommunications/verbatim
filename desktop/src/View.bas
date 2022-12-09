@@ -126,7 +126,7 @@ Sub NavPaneCycle()
         If ActiveWindow.DocumentMap = False Then Exit Sub
     
         ' Don't run if window is invisible
-        If ActiveWindow.Visible = False Then Exit Sub
+        If ActiveWindow.visible = False Then Exit Sub
     
         ' Run NPC
         Shell ActiveDocument.AttachedTemplate.Path & "\NavPaneCycle.exe", vbMinimizedNoFocus
@@ -156,11 +156,19 @@ Sub DefaultView()
     End If
 End Sub
 
+Sub ReadingView()
+    #If Mac Then
+        ' TODO - applescript to focus mode maybe
+    #Else
+        ActiveWindow.ActivePane.View.Type = wdReadingView
+    #End If
+End Sub
+
 Sub SetZoom()
     ActiveWindow.ActivePane.View.Zoom.Percentage = GetSetting("Verbatim", "View", "ZoomPct", "100")
 End Sub
 
-Sub InvisibilityMode(control As IRibbonControl, pressed As Boolean)
+Sub InvisibilityMode(c As IRibbonControl, pressed As Boolean)
     On Error Resume Next
     
     If pressed Then

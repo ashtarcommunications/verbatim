@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmProgress 
    Caption         =   "Progress"
-   ClientHeight    =   1755
+   ClientHeight    =   2220
    ClientLeft      =   120
    ClientTop       =   465
-   ClientWidth     =   5340
+   ClientWidth     =   7755
    OleObjectBlob   =   "frmProgress.frx":0000
    ShowModal       =   0   'False
 End
@@ -18,6 +18,8 @@ Option Explicit
 Private Sub UserForm_Initialize()
     On Error GoTo Handler
 
+    Globals.InitializeGlobals
+    
     #If Mac Then
         UI.ResizeUserForm Me
     #End If
@@ -29,6 +31,7 @@ Handler:
 End Sub
 
 Private Sub btnCancel_Click()
+    ' Unloading happens in the instantiating function
     Me.Hide
 End Sub
 

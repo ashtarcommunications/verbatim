@@ -1,21 +1,22 @@
 Attribute VB_Name = "VirtualTub"
 Option Explicit
 
-Sub GetVTubContent(control As IRibbonControl, ByRef returnedVal)
-'Get content for dynamic menu from XML file
-
-    ' TODO - rewrite to use JSON -> XML
-
+Public Sub GetVTubContent(c As IRibbonControl, ByRef returnedVal)
+' Get content for dynamic menu from JSON file
     Dim VTubPath As String
-    Dim VTubFolder As Folder
-    Dim FileNumber As Integer
-    
-    ' Skip Errors
+    Dim VTubFolder As clsFolder
+    Dim Folder As clsFolder
+    Dim SubFolder As clsFolder
+    Dim File As clsFile
+    Dim MostRecent As Date
+    Dim i As Long
+    Dim j As Long
+       
     On Error Resume Next
         
     ' Get VTubPath from Settings and make sure it exists
     VTubPath = GetSetting("Verbatim", "VTub", "VTubPath", "")
-    If VTubPath = "" Or VTubPath = "?" Then
+    If VTubPath = vbNullString Or VTubPath = "?" Then
         If MsgBox("You haven't configured a VTub location in the Verbatim settings. Open Settings?", vbYesNo) = vbYes Then
             UI.ShowForm "Settings"
             Exit Sub
@@ -24,70 +25,229 @@ Sub GetVTubContent(control As IRibbonControl, ByRef returnedVal)
         End If
     End If
     
-    ' Append trailing \ if missing
+    ' Append trailing separator if missing
     If Right(VTubPath, 1) <> Application.PathSeparator Then VTubPath = VTubPath & Application.PathSeparator
     
-    ' Check if VTubXMLFile exists
-    If Filesystem.FileExists(VTubPath & "VTub.xml") = False Then
-        ' If no XML file, return a button to create it
+    ' Check if VTub file exists
+    If Filesystem.FileExists(VTubPath & "VTub.json") = False Then
+        ' If no file, return a button to create it
         returnedVal = "<menu xmlns=""http://schemas.microsoft.com/office/2006/01/customui"">"
-        returnedVal = returnedVal & "<button id=""CreateVTub"" label=""Create VTub"" onAction=""VirtualTub.VTubCreateButton"" imageMso=""_3DSurfaceMaterialClassic""" & " />"
+        returnedVal = returnedVal & "<button id=""CreateVTub"" label=""Create VTub"" onAction=""VirtualTub.VTubCreateButton"" image=""tub""" & " />"
         returnedVal = returnedVal & "</menu>"
         Exit Sub
     End If
 
-    ' If VTubRefreshPrompt is turned on, check if Tub is out of date by comparing date modified of files to XML file
+    ' If VTubRefreshPrompt is turned on, check if Tub is out of date by comparing date modified of files to JSON file
     ' Have to loop all files becuase Word changes folder modified date when opening docs
     If GetSetting("Verbatim", "VTub", "VTubRefreshPrompt", True) = True Then
-        Set VTubFolder = Filesystem.GetFolder(VTubPath)
-        VTubDepth = 0
-        VTubMaxDepth = 0
-        VTubLastModified = ""
-        Call VirtualTub.VTubFileCounterRecursion(VTubFolder)
-        If Filesystem.GetFile(VTubXMLFileName).DateLastModified < VTubLastModified Then
+        Set Folder = Filesystem.GetFolder(VTubPath)
+        MostRecent = Folder.DateLastModified
+
+        For i = 1 To Folder.Subfolders.Count
+            Set SubFolder = Filesystem.GetFolder(Folder.Subfolders(i))
+            For j = 1 To SubFolder.Files.Count
+                If Right(SubFolder.Files(j), 4) = "docx" And Left(SubFolder.Files(j), 1) <> "~" Then
+                    Set File = Filesystem.GetFile(SubFolder.Files(j))
+                    If File.DateLastModified > MostRecent Then MostRecent = File.DateLastModified
+                End If
+            Next j
+            
+        Next
+        
+        For i = 1 To Folder.Files.Count
+            If Right(Folder.Files(i), 4) = "docx" And Left(Folder.Files(i), 1) <> "~" Then
+                Set File = Filesystem.GetFile(Folder.Files(i))
+                If File.DateLastModified > MostRecent Then MostRecent = File.DateLastModified
+            End If
+        Next i
+        
+        If Filesystem.GetFile(VTubPath & "VTub.json").DateLastModified < MostRecent Then
             If MsgBox("The VTub has not been refreshed since you last changed files. Refresh Now?", vbYesNo) = vbYes Then
-                Call VirtualTub.VTubRefresh
-                Set VTubFolder = Nothing
+                VirtualTub.VTubRefresh
                 Exit Sub
             End If
         End If
     End If
 
-    ' Open and read the XML file
-    FileNumber = FreeFile
-    Open VTubXMLFileName For Input As #FileNumber
-    returnedVal = Input$(LOF(FileNumber), FileNumber)
-    Close #FileNumber
+    returnedVal = VirtualTub.VTubConvertToXML
     
-    
-    
-    Set VTubFolder = Nothing
     Exit Sub
 
 Handler:
-    Set VTubFolder = Nothing
     MsgBox "Error " & Err.Number & ": " & Err.Description
-
 End Sub
 
-Sub VTubRefreshButton(control As IRibbonControl)
+Private Function VTubConvertToXML() As String
+    Dim VTubPath As String
+    Dim JSON As String
+    Dim RootMenu As Object
+    Dim key As Variant
+    Dim Menu As Dictionary
+    Dim Children As Object
+    Dim xml As String
+    
+    On Error GoTo Handler
+    
+    ' Get VTubPath from Settings
+    VTubPath = GetSetting("Verbatim", "VTub", "VTubPath", "")
+    If Right(VTubPath, 1) <> Application.PathSeparator Then VTubPath = VTubPath & Application.PathSeparator
+    
+    ' Load and parse JSON from file
+    JSON = Filesystem.ReadFile(VTubPath & "VTub.json")
+    Set RootMenu = JSONTools.ParseJson(JSON)
+
+    ' Start the XML menu
+    xml = "<menu xmlns=""http://schemas.microsoft.com/office/2006/01/customui"">" & vbCrLf
+    
+    ' Convert each subkey Dictionary (file/folder) in the JSON into the XML equivalent
+    ' Not truly recursive because it can only go to 5 menu levels without breaking the ribbon menu
+    For Each key In RootMenu.Keys
+        If key <> "FileCount" And key <> "FolderCount" And key <> "DateLastModified" Then
+            Set Menu = RootMenu(key)
+            xml = xml & VirtualTub.ConvertDictionaryToXML(Menu)
+        End If
+    Next key
+  
+    ' Add default buttons
+    xml = xml & "<menuSeparator id=""VTubSeparator"" />"
+    xml = xml & "<button id=""RefreshVTub"" label=""Refresh VTub"" onAction=""VirtualTub.VTubRefreshButton"" imageMso=""AccessRefreshAllLists"" />"
+    xml = xml & "<button id=""RecreateVTub"" label=""Recreate VTub"" onAction=""VirtualTub.VTubCreateButton"" image=""tub"" />"
+    xml = xml & "<button id=""VTubSettings"" label=""VTub Settings"" onAction=""VirtualTub.VTubSettingsButton"" imageMso=""_3DLightingFlatClassic"" />"
+    
+    xml = xml & "</menu>"
+    
+    VTubConvertToXML = xml
+    
+    Exit Function
+    
+Handler:
+    MsgBox "Error " & Err.Number & ": " & Err.Description
+End Function
+
+Private Function ConvertDictionaryToXML(d As Dictionary) As String
+    Dim xml As String
+    Dim MenuID As String
+    Dim Children As Dictionary
+    Dim Child As Dictionary
+    Dim key As Variant
+    
+    ' Use a random menu ID to avoid collisions
+    MenuID = Format(Int(Rnd * 10 ^ 8), "00000000")
+     
+    ' Children means we have to recurse to the bottom of the tree
+    If d.Exists("Children") Then
+        Set Children = d("Children")
+        
+        ' Headings in files are a <splitbutton> to insert the whole heading or any children
+        If d("MenuType") = "Heading" Then
+            xml = xml & "<splitButton "
+            xml = xml & "id=""VTub" & MenuID & """>" & vbCrLf
+       
+            MenuID = MenuID & "1"
+            xml = xml & "<button "
+            xml = xml & "id=""VTub" & MenuID & """ "
+            xml = xml & "label=""" & d("Label") & """ "
+            xml = xml & "tag=""" & d("Path") & "!#!" & d("Name") & """ "
+            xml = xml & "onAction=""VirtualTub.VTubInsertBookmark"" "
+            xml = xml & "imageMso=""ExportTextFile"" "
+            xml = xml & "/>" & vbCrLf
+           
+            MenuID = MenuID & "1"
+            xml = xml & "<menu "
+            xml = xml & "id=""VTub" & MenuID & """ "
+            xml = xml & ">" & vbCrLf
+        
+        ' File or Folder node is a <menu>
+        Else
+            xml = xml & "<menu "
+            xml = xml & "id=""VTub" & MenuID & """ "
+            xml = xml & "label=""" & d("Name") & """ "
+            If d("MenuType") = "Folder" Then
+                xml = xml & "imageMso=""Folder"" "
+            Else
+                xml = xml & "imageMso=""FileSaveAsWordDocx"" "
+            End If
+            xml = xml & "tag=""" & d("Path") & "!#!" & d("DateLastModified") & """"
+            xml = xml & ">" & vbCrLf
+        End If
+        
+        ' Recurse any sub-menus in the dictionary
+        For Each key In Children.Keys
+            Set Child = Children(key)
+            ' Sub-children need to keep recursing
+            If Child.Exists("Children") Then
+                xml = xml & ConvertDictionaryToXML(Child)
+            
+            ' Add a leaf node button to the menu
+            Else
+                MenuID = MenuID & "1"
+                xml = xml & "<button "
+                xml = xml & "id=""VTub" & MenuID & """ "
+                xml = xml & "label=""" & Child("Label") & """ "
+                xml = xml & "tag=""" & Child("Path") & "!#!" & Child("Name") & """ "
+                xml = xml & "onAction=""VirtualTub.VTubInsertBookmark"" "
+                xml = xml & "imageMso=""ExportTextFile"" "
+                xml = xml & "/>" & vbCrLf
+            End If
+        Next key
+        
+        ' Close the menu/splitButton
+        xml = xml & "</menu>" & vbCrLf
+        If d("MenuType") = "Heading" Then
+            xml = xml & "</splitButton>" & vbCrLf
+        End If
+
+    ' No children means a terminal leaf node (e.g. a terminal heading or empty file), so just add a buttion or empty menu
+    Else
+        If d("MenuType") = "Heading" Then
+            xml = xml & "<button "
+            xml = xml & "id=""VTub" & MenuID & """ "
+            xml = xml & "label=""" & d("Label") & """ "
+            xml = xml & "tag=""" & d("Path") & "!#!" & d("Name") & """ "
+            xml = xml & "onAction=""VirtualTub.VTubInsertBookmark"" "
+            xml = xml & "imageMso=""ExportTextFile"" "
+            xml = xml & "/>" & vbCrLf
+        Else
+            xml = xml & "<menu "
+            xml = xml & "id=""VTub" & MenuID & """ "
+            xml = xml & "label=""" & d("Name") & """ "
+            If d("MenuType") = "Folder" Then
+                xml = xml & "imageMso=""Folder"" "
+            Else
+                xml = xml & "imageMso=""FileSaveAsWordDocx"" "
+            End If
+            xml = xml & "tag=""" & d("Path") & "!#!" & d("DateLastModified") & """"
+            xml = xml & ">" & vbCrLf
+            xml = xml & "</menu>" & vbCrLf
+        End If
+    End If
+    
+    ConvertDictionaryToXML = xml
+End Function
+
+Sub VTubRefreshButton(c As IRibbonControl)
+    If MsgBox("Are you sure you want to refresh the VTub?", vbOKCancel) = vbCancel Then Exit Sub
     VirtualTub.VTubRefresh
 End Sub
-Sub VTubCreateButton(control As IRibbonControl)
+
+Sub VTubCreateButton(c As IRibbonControl)
+    If MsgBox("Are you sure you want to create the VTub from scratch?", vbYesNo, "Create VTub?") = vbNo Then Exit Sub
     VirtualTub.VTubCreate
 End Sub
-Sub VTubSettingsButton(control As IRibbonControl)
+
+Sub VTubSettingsButton(c As IRibbonControl)
     UI.ShowForm "Settings"
 End Sub
 
-Sub VTubInsertBookmark(control As IRibbonControl)
+Sub VTubInsertBookmark(c As IRibbonControl)
     ' Insert bookmark - get the file path and bookmark name by splitting the tag attribute on the !#! delimiter
-    Selection.InsertFile Split(control.Tag, "!#!", 2)(0), Split(control.Tag, "!#!", 2)(1)
+    Selection.InsertFile Split(c.Tag, "!#!", 2)(0), Split(c.Tag, "!#!", 2)(1)
 End Sub
 
-Private Sub VTubCreate()
+Public Sub VTubCreate()
+    Dim VTubPath As String
     Dim Folder As clsFolder
-    Dim Subfolder As clsFolder
+    Dim SubFolder As clsFolder
     Dim File As clsFile
     
     Dim RootMenu As Dictionary
@@ -104,20 +264,23 @@ Private Sub VTubCreate()
     
     Dim i As Long
     Dim j As Long
+    Dim CurrentFileCount As Long
+    CurrentFileCount = 0
+    Dim ProgressPct
+    Dim ProgressForm As frmProgress
     
-    Dim JSON
+    Dim JSON As String
+    Dim OutputFile
     
     On Error GoTo Handler
     
+    ' Initialize the root JSON object
     Set RootMenu = New Dictionary
     
-    Dim VTubPath As String
-     
     ' Get VTubPath from settings
     VTubPath = GetSetting("Verbatim", "VTub", "VTubPath", "")
     
-    If VTubPath = vbNullString Then
-        MsgBox "You must configure a folder for the VTub first"
+    If VTubPath = vbNullString Or VTubPath = "?" Then
         If MsgBox("You haven't configured a folder for the VTub. Open Settings?", vbYesNo, "Open Settings?") = vbYes Then
             UI.ShowForm "Settings"
         End If
@@ -127,12 +290,18 @@ Private Sub VTubCreate()
     ' Append trailing \ if missing
     If Right(VTubPath, 1) <> Application.PathSeparator Then VTubPath = VTubPath & Application.PathSeparator
     
-    Set Folder = GetFolder(VTubPath)
+    #If Mac Then
+        ' Request permissions for all files in VTub at once so the user doesn't have to allow access to each file individually
+        Filesystem.RequestFolderAccess VTubPath
+    #End If
+    
+    Set Folder = Filesystem.GetFolder(VTubPath)
       
+    ' Check the VTub depth and file count
     For i = 1 To Folder.Subfolders.Count
-        Set Subfolder = GetFolder(Folder.Subfolders(i))
-        If Subfolder.Subfolders.Count > 0 Then DepthExceeded = True
-        FileCount = FileCount + Subfolder.Files.Count
+        Set SubFolder = Filesystem.GetFolder(Folder.Subfolders(i))
+        If SubFolder.Subfolders.Count > 0 Then DepthExceeded = True
+        FileCount = FileCount + SubFolder.Files.Count
     Next
     
     FileCount = FileCount + Folder.Files.Count
@@ -144,93 +313,113 @@ Private Sub VTubCreate()
     If DepthExceeded = True Then MsgBox "VTub can only handle one level of subfolders - files deeper than one subfolder will be ignored.", vbOKOnly
 
     ' Show progress bar
-    Dim ProgressForm As frmProgress
     Set ProgressForm = New frmProgress
     ProgressForm.Caption = "Creating VTub..."
     ProgressForm.lblProgress.Width = 0
-    ProgressForm.lblCaption.Caption = "File 0 of " & FileCount
+    ProgressForm.lblCaption.Caption = "File 0 of approximately " & FileCount
     ProgressForm.Show
 
+    ' Count numbers are approximate because they include non-docx and temp files
     RootMenu.Add "FileCount", FileCount
     RootMenu.Add "FolderCount", Folder.Subfolders.Count
 
    ' Iterate through each subfolder in first depth level - XML menu is limited to 5 levels and we need 3 for the file contents
     For i = 1 To Folder.Subfolders.Count
-       ' Trap for cancel button on Progress Form
-        If ProgressForm.Visible = False Then Exit Sub
-        
-        ' TODO - need to use a filecounter outside the loop to capture both outer and inner loop files
-        Dim ProgressPct
-        ProgressPct = i / FileCount
-        ProgressForm.lblCaption.Caption = Str(Round(ProgressPct * 100, 0)) & "% - " & "Processing File " & i & " of " & FileCount
-        ProgressForm.lblFile.Caption = "Processing " & f.Name
-        ProgressForm.lblProgress.Width = ProgressPct * ProgressForm.fProgress.Width
-        If ProgressForm.lblProgress.Width > 15 Then ProgressForm.lblProgress.Width = ProgressForm.lblProgress.Width - 15
-        
-        DoEvents ' Necessary for Progress form to update
-    
-        Set Subfolder = GetFolder(Folder.Subfolders(i))
+        Set SubFolder = Filesystem.GetFolder(Folder.Subfolders(i))
         Set SubfolderMenu = New Dictionary
         SubfolderMenu.Add "MenuType", "Folder"
-        SubfolderMenu.Add "Name", Subfolder.Name
-        SubfolderMenu.Add "Path", Subfolder.Path
+        SubfolderMenu.Add "Name", SubFolder.Name
+        SubfolderMenu.Add "Path", SubFolder.Path
         
         Set Children = New Dictionary
         
-        For j = 1 To Subfolder.Files.Count
-            If Right(Subfolder.Files(j), 4) = "docx" And Left(Subfolder.Files(j), 1) <> "~" Then
-                Set File = GetFile(Subfolder.Files(j))
+        For j = 1 To SubFolder.Files.Count
+            ' Trap for cancel button on Progress Form
+            If ProgressForm.visible = False Then Exit Sub
+            
+            If Right(SubFolder.Files(j), 4) = "docx" And Left(SubFolder.Files(j), 1) <> "~" Then
+                ' Increment the progress form
+                CurrentFileCount = CurrentFileCount + 1
+                ProgressPct = CurrentFileCount / FileCount
+                ProgressForm.lblCaption.Caption = Str(Round(ProgressPct * 100, 0)) & "% - " & "Processing File " & CurrentFileCount & " of " & FileCount
+                ProgressForm.lblFile.Caption = "Processing " & SubFolder.Files(j)
+                ProgressForm.lblProgress.Width = ProgressPct * ProgressForm.fProgress.Width
+                If ProgressForm.lblProgress.Width > 15 Then ProgressForm.lblProgress.Width = ProgressForm.lblProgress.Width - 15
+                
+                DoEvents ' Necessary for Progress form to update
+                           
+                ' Process each file
+                Set File = Filesystem.GetFile(SubFolder.Files(j))
                 Set FileMenu = New Dictionary
                 FileMenu.Add "MenuType", "File"
                 FileMenu.Add "Name", File.Name
                 FileMenu.Add "Path", File.Path
                 
-                Set Headings = VirtualTub.AddBookmarks(File.Path)
-                
+                ' Convert headings to bookmarks
+                Set Headings = VirtualTub.VTubProcessFile(File.Path)
                 FileMenu.Add "Children", Headings
-                Set File = GetFile(Subfolder.Files(j))
+                
+                ' Re-initialize the file to get the new modified timestamp
+                Set File = Filesystem.GetFile(SubFolder.Files(j))
                 FileMenu.Add "DateLastModified", Format(File.DateLastModified)
                 
+                ' Have to double escape \'s to not blow up the JSON parser
                 Children.Add Replace(File.Path, "\", "\\"), FileMenu
             End If
         Next
         
         SubfolderMenu.Add "Children", Children
-        SubfolderMenu.Add "DateLastModified", Format(Subfolder.DateLastModified)
+        SubfolderMenu.Add "DateLastModified", Format(SubFolder.DateLastModified)
 
-        RootMenu.Add Replace(Subfolder.Path, "\", "\\"), SubfolderMenu
+        RootMenu.Add Replace(SubFolder.Path, "\", "\\"), SubfolderMenu
     Next
     
+    ' Process top-level files
     For i = 1 To Folder.Files.Count
-        If Right(Folder.Files(i), 4) = "docx" Then
-            Set File = GetFile(Folder.Files(i))
+        ' Trap for cancel button on Progress Form
+        If ProgressForm.visible = False Then Exit Sub
+        
+        If Right(Folder.Files(i), 4) = "docx" And Left(Folder.Files(i), 1) <> "~" Then
+        
+            ' Increment the progress form
+            CurrentFileCount = CurrentFileCount + 1
+            ProgressPct = CurrentFileCount / FileCount
+            ProgressForm.lblCaption.Caption = Str(Round(ProgressPct * 100, 0)) & "% - " & "Processing File " & CurrentFileCount & " of " & FileCount
+            ProgressForm.lblFile.Caption = "Processing " & Folder.Files(i)
+            ProgressForm.lblProgress.Width = ProgressPct * ProgressForm.fProgress.Width
+            If ProgressForm.lblProgress.Width > 15 Then ProgressForm.lblProgress.Width = ProgressForm.lblProgress.Width - 15
+            
+            DoEvents ' Necessary for Progress form to update
+                
+            ' Process each file
+            Set File = Filesystem.GetFile(Folder.Files(i))
             Set FileMenu = New Dictionary
             FileMenu.Add "MenuType", "File"
             FileMenu.Add "Name", File.Name
             FileMenu.Add "Path", File.Path
             
-            Set Headings = VirtualTub.AddBookmarks(File.Path)
-            
+            ' Convert headings to bookmarks
+            Set Headings = VirtualTub.VTubProcessFile(File.Path)
             FileMenu.Add "Children", Headings
-            Set File = GetFile(Folder.Files(i))
+            
+            ' Re-initialize the file to get the new modified timestamp
+            Set File = Filesystem.GetFile(Folder.Files(i))
             FileMenu.Add "DateLastModified", Format(File.DateLastModified)
             
             RootMenu.Add Replace(File.Path, "\", "\\"), FileMenu
         End If
     Next
     
-    Set Folder = GetFolder(GetSetting("Verbatim", "VTub", "VTubPath", ""))
+    ' Re-initialize the top-level folder for the final modification date
+    Set Folder = Filesystem.GetFolder(GetSetting("Verbatim", "VTub", "VTubPath", vbNullString))
     RootMenu.Add "DateLastModified", Format(Folder.DateLastModified)
-        
+    
+    ' Convert the dictionary to JSON
     JSON = JSONTools.ConvertToJson(RootMenu)
-    Debug.Print JSON
        
     ' Save file
-    Dim VTubFilePath
-    Dim OutputFile
-    VTubFilePath = GetSetting("Verbatim", "VTub", "VTubPath", vbNullString) & Application.PathSeparator & "VTub.json"
     OutputFile = FreeFile
-    Open VTubFilePath For Output As #OutputFile
+    Open VTubPath & "VTub.json" For Output As #OutputFile
     Print #OutputFile, JSON
     Close #OutputFile
     
@@ -247,98 +436,111 @@ Private Sub VTubCreate()
     Exit Sub
     
 Handler:
-    Unload ProgressForm
+    If Not ProgressForm Is Nothing Then Unload ProgressForm
     Set ProgressForm = Nothing
     MsgBox "Error " & Err.Number & ": " & Err.Description
 
 End Sub
 
-Sub RefreshVTub()
-    Dim VTubPath
+Sub VTubRefresh()
+    Dim VTubPath As String
     Dim JSON As String
     Dim RootMenu As Object
+    Dim Folder As clsFolder
+    Dim SubFolder As clsFolder
+    Dim FileCount As Long
     Dim Menu As Object
     Dim Children As Object
+    Dim Child As Object
+    Dim key As Variant
+    Dim subkey As Variant
+    Dim File As clsFile
+    Dim Path As String
     Dim xml As String
+    Dim i As Long
+    Dim CurrentFileCount As Long
+    Dim ProgressPct
+    Dim ProgressForm As frmProgress
+    Dim OutputFile
     
     On Error GoTo Handler
     
-    ' Verify before proceeding
-    If MsgBox("Are you sure you want to refresh the VTub?", vbOKCancel) = vbCancel Then Exit Sub
-    
     ' Get VTubPath from Settings
-    VTubPath = GetSetting("Verbatim", "VTub", "VTubPath")
+    VTubPath = GetSetting("Verbatim", "VTub", "VTubPath", "")
+    
+    If VTubPath = vbNullString Or VTubPath = "?" Then
+        If MsgBox("You haven't configured a folder for the VTub. Open Settings?", vbYesNo, "Open Settings?") = vbYes Then
+            UI.ShowForm "Settings"
+        End If
+        Exit Sub
+    End If
+    
     If Right(VTubPath, 1) <> Application.PathSeparator Then VTubPath = VTubPath & Application.PathSeparator
     
-    ' Load JSON from file
+    ' Load and parse JSON from file
     JSON = Filesystem.ReadFile(VTubPath & "VTub.json")
-
     Set RootMenu = JSONTools.ParseJson(JSON)
     
-    Dim Folder As clsFolder
-    Dim FileCount As Long
+    ' Check file count is the same
     FileCount = 0
-       
-    Set Folder = GetFolder(GetSetting("Verbatim", "VTub", "VTubPath", ""))
+    Set Folder = Filesystem.GetFolder(VTubPath)
     
-    Dim i As Long
-    Dim Subfolder
     For i = 1 To Folder.Subfolders.Count
-        Set Subfolder = GetFolder(Folder.Subfolders(i))
-        FileCount = FileCount + Subfolder.Files.Count
+        Set SubFolder = GetFolder(Folder.Subfolders(i))
+        FileCount = FileCount + SubFolder.Files.Count
     Next
     
     FileCount = FileCount + Folder.Files.Count
     
     If (CInt(FileCount) <> CInt(RootMenu("FileCount")) Or CInt(Folder.Subfolders.Count) <> CInt(RootMenu("FolderCount"))) Then
         If MsgBox("The number of files or folders in your VTub appear to have changed and needs to be rebuilt from scratch. Rebuild now?", vbOKCancel) = vbCancel Then Exit Sub
-        VirtualTub.TestVTub
+        VirtualTub.VTubCreate
         Exit Sub
     End If
     
+    CurrentFileCount = 0
+    
     ' Show progress bar
-    Dim ProgressForm As frmProgress
     Set ProgressForm = New frmProgress
     ProgressForm.Caption = "Refreshing VTub..."
     ProgressForm.lblProgress.Width = 0
-    ProgressForm.lblCaption.Caption = "File 0 of " & FileCount
+    ProgressForm.lblCaption.Caption = "File 0 of approximately " & FileCount
     ProgressForm.Show
     
-    Dim key As Variant
-    Dim subkey As Variant
-    Dim Child
-    Dim File
+    ' Iterate each file/folder entry
     For Each key In RootMenu.Keys
-    
-       ' Trap for cancel button on Progress Form
-        If ProgressForm.Visible = False Then Exit Sub
-        
-        ' TODO - need to use a filecounter outside the loop to capture both outer and inner loop files
-        Dim ProgressPct
-        ProgressPct = i / FileCount
-        ProgressForm.lblCaption.Caption = Str(Round(ProgressPct * 100, 0)) & "% - " & "Processing File " & i & " of " & FileCount
-        ProgressForm.lblFile.Caption = "Processing " & f.Name
-        ProgressForm.lblProgress.Width = ProgressPct * ProgressForm.fProgress.Width
-        If ProgressForm.lblProgress.Width > 15 Then ProgressForm.lblProgress.Width = ProgressForm.lblProgress.Width - 15
-        
-        DoEvents ' Necessary for Progress form to update
-
+        ' Only process File/Folder top level menus
         If key <> "FileCount" And key <> "FolderCount" And key <> "DateLastModified" Then
             Set Menu = RootMenu(key)
+            ' Process files in subfolders
             If (Menu("MenuType") = "Folder" And Menu.Exists("Children")) Then
                 Set Children = Menu("Children")
-    
                 For Each subkey In Children.Keys
                     Set Child = Children(subkey)
                     If Child("MenuType") = "File" Then
-                        Dim Path As String
                         Path = Child("Path")
-                        Set File = GetFile(Path)
+                        Set File = Filesystem.GetFile(Path)
+                        
+                        ' Trap for cancel button on Progress Form
+                        If ProgressForm.visible = False Then Exit Sub
+                        
+                        ' Update progress form
+                        CurrentFileCount = CurrentFileCount + 1
+                        ProgressPct = CurrentFileCount / FileCount
+                        ProgressForm.lblCaption.Caption = Str(Round(ProgressPct * 100, 0)) & "% - " & "Processing File " & CurrentFileCount & " of " & FileCount
+                        ProgressForm.lblFile.Caption = "Processing " & File.Name
+                        ProgressForm.lblProgress.Width = ProgressPct * ProgressForm.fProgress.Width
+                        If ProgressForm.lblProgress.Width > 15 Then ProgressForm.lblProgress.Width = ProgressForm.lblProgress.Width - 15
+                        
+                        DoEvents ' Necessary for Progress form to update
+
+                        ' Update the file if the modified date has changed
                         If Child("DateLastModified") <> Format(File.DateLastModified) Then
-                            Set Child("Children") = VirtualTub.AddBookmarks(File.Path)
-                            Set File = GetFile(File.Path)
+                            Set Child("Children") = VirtualTub.VTubProcessFile(File.Path)
+                            
+                            ' Re-initialize file to get the new modified timestamp
+                            Set File = Filesystem.GetFile(File.Path)
                             Child("DateLastModified") = Format(File.DateLastModified)
-                            'Set Children(Replace(subkey, "\", "\\")) = Child
                         End If
                     End If
                     
@@ -346,18 +548,34 @@ Sub RefreshVTub()
                     Children.Add Replace(subkey, "\", "\\"), Child
                 Next subkey
                 
+                ' Update the subfolder modified date
                 Path = Menu("Path")
-                Set Folder = GetFolder(Path)
+                Set Folder = Filesystem.GetFolder(Path)
                 Menu("DateLastModified") = Format(Folder.DateLastModified)
-                'Set RootMenu(Replace(key, "\", "\\")) = Menu
+            
+            ' Process top-level files
             ElseIf Menu("MenuType") = "File" Then
                 Path = Menu("Path")
-                Set File = GetFile(Path)
+                Set File = Filesystem.GetFile(Path)
+                
+                ' Trap for cancel button on Progress Form
+                If ProgressForm.visible = False Then Exit Sub
+                
+                ' Update progress form
+                CurrentFileCount = CurrentFileCount + 1
+                ProgressPct = CurrentFileCount / FileCount
+                ProgressForm.lblCaption.Caption = Str(Round(ProgressPct * 100, 0)) & "% - " & "Processing File " & CurrentFileCount & " of " & FileCount
+                ProgressForm.lblFile.Caption = "Processing " & File.Name
+                ProgressForm.lblProgress.Width = ProgressPct * ProgressForm.fProgress.Width
+                If ProgressForm.lblProgress.Width > 15 Then ProgressForm.lblProgress.Width = ProgressForm.lblProgress.Width - 15
+                
+                DoEvents ' Necessary for Progress form to update
+            
+                ' Update the file if the modified date has changed
                 If Menu("DateLastModified") <> Format(File.DateLastModified) Then
-                    Set Menu("Children") = VirtualTub.AddBookmarks(File.Path)
-                    Set File = GetFile(File.Path)
+                    Set Menu("Children") = VirtualTub.VTubProcessFile(File.Path)
+                    Set File = Filesystem.GetFile(File.Path)
                     Menu("DateLastModified") = Format(File.DateLastModified)
-                    'Set RootMenu(Replace(key, "\", "\\")) = Menu
                 End If
             End If
             
@@ -366,25 +584,21 @@ Sub RefreshVTub()
         End If
     Next key
     
-    Set Folder = GetFolder(GetSetting("Verbatim", "VTub", "VTubPath", vbNullString))
+    ' Update the top-level modification timestamp
+    Set Folder = Filesystem.GetFolder(GetSetting("Verbatim", "VTub", "VTubPath", vbNullString))
     RootMenu("DateLastModified") = Format(Folder.DateLastModified)
   
+    ' Save new JSON
     JSON = JSONTools.ConvertToJson(RootMenu)
-  
+    OutputFile = FreeFile
+    Open VTubPath & "VTub.json" For Output As #OutputFile
+    Print #OutputFile, JSON
+    Close #OutputFile
+    
     ' Update progress form as complete
     ProgressForm.lblCaption.Caption = "Processing complete."
     ProgressForm.lblFile.Caption = ""
     ProgressForm.lblProgress.Width = ProgressForm.fProgress.Width - 6
-  
-    ' Save file
-    Dim VTubFilePath
-    Dim OutputFile
-    VTubFilePath = GetSetting("Verbatim", "VTub", "VTubPath", vbNullString) & Application.PathSeparator & "VTub.json"
-    OutputFile = FreeFile
-    Open VTubFilePath For Output As #OutputFile
-    Print #OutputFile, JSON
-    Close #OutputFile
-    
     Unload ProgressForm
     Set ProgressForm = Nothing
     
@@ -395,177 +609,18 @@ Sub RefreshVTub()
     Exit Sub
     
 Handler:
-    Unload ProgressForm
+    If Not ProgressForm Is Nothing Then Unload ProgressForm
     Set ProgressForm = Nothing
     
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
-Public Function ConvertDictionaryToXML(d) As String
-    Dim xml As String
-    Dim Children
-    Dim Child
-    Dim key As Variant
-    
-    VTubMenuIDNumber = VTubMenuIDNumber + 1
-     
-    If d.Exists("Children") Then
-        Set Children = d("Children")
-        
-        If d("MenuType") = "Heading" Then
-            xml = xml & "<splitButton "
-            xml = xml & "id=""VTub" & VTubMenuIDNumber & """>" & vbCrLf
-       
-            VTubMenuIDNumber = VTubMenuIDNumber + 1
-            xml = xml & "<button "
-            xml = xml & "id=""VTub" & VTubMenuIDNumber & """ "
-            xml = xml & "label=""" & d("Label") & """ "
-            xml = xml & "tag=""" & d("Path") & "!#!" & d("Name") & """ "
-            xml = xml & "onAction=""VirtualTub.VTubInsertBookmark"" "
-            xml = xml & "imageMso=""ExportTextFile"" "
-            xml = xml & "/>" & vbCrLf
-           
-            VTubMenuIDNumber = VTubMenuIDNumber + 1
-            xml = xml & "<menu "
-            xml = xml & "id=""VTub" & VTubMenuIDNumber & """ "
-            xml = xml & ">" & vbCrLf
-        Else
-            xml = xml & "<menu "
-            xml = xml & "id=""VTub" & VTubMenuIDNumber & """ "
-            xml = xml & "label=""" & d("Name") & """ "
-            If d("MenuType") = "Folder" Then
-                xml = xml & "imageMso=""Folder"" "
-            Else
-                xml = xml & "imageMso=""FileSaveAsWordDocx"" "
-            End If
-            xml = xml & "tag=""" & d("Path") & "!#!" & d("DateLastModified") & """"
-            xml = xml & ">" & vbCrLf
-        End If
-        
-        For Each key In Children.Keys
-            Set Child = Children(key)
-            If Child.Exists("Children") Then
-                xml = xml & ConvertDictionaryToXML(Child)
-            Else
-                VTubMenuIDNumber = VTubMenuIDNumber + 1
-                xml = xml & "<button "
-                xml = xml & "id=""VTub" & VTubMenuIDNumber & """ "
-                xml = xml & "label=""" & Child("Label") & """ "
-                xml = xml & "tag=""" & Child("Path") & "!#!" & Child("Name") & """ "
-                xml = xml & "onAction=""VirtualTub.VTubInsertBookmark"" "
-                xml = xml & "imageMso=""ExportTextFile"" "
-                xml = xml & "/>" & vbCrLf
-            End If
-        Next key
-        
-        xml = xml & "</menu>" & vbCrLf
-        If d("MenuType") = "Heading" Then
-            xml = xml & "</splitButton>" & vbCrLf
-        End If
-    Else
-        If d("MenuType") = "Heading" Then
-            xml = xml & "<button "
-            xml = xml & "id=""VTub" & VTubMenuIDNumber & """ "
-            xml = xml & "label=""" & d("Label") & """ "
-            xml = xml & "tag=""" & d("Path") & "!#!" & d("Name") & """ "
-            xml = xml & "onAction=""VirtualTub.VTubInsertBookmark"" "
-            xml = xml & "imageMso=""ExportTextFile"" "
-            xml = xml & "/>" & vbCrLf
-        Else
-            xml = xml & "<menu "
-            xml = xml & "id=""VTub" & VTubMenuIDNumber & """ "
-            xml = xml & "label=""" & d("Name") & """ "
-            If d("MenuType") = "Folder" Then
-                xml = xml & "imageMso=""Folder"" "
-            Else
-                xml = xml & "imageMso=""FileSaveAsWordDocx"" "
-            End If
-            xml = xml & "tag=""" & d("Path") & "!#!" & d("DateLastModified") & """"
-            xml = xml & ">" & vbCrLf
-            xml = xml & "</menu>" & vbCrLf
-        End If
-    End If
-    
-    ConvertDictionaryToXML = xml
-End Function
-
-Sub ConvertVTubToXML()
-    Dim VTubPath
-    Dim JSON As String
-    Dim RootMenu As Object
-    Dim Menu
-    Dim Children As Object
-    Dim xml As String
-    
-    On Error GoTo Handler
-    
-    ' Get VTubPath from Settings
-    VTubPath = GetSetting("Verbatim", "VTub", "VTubPath")
-    If Right(VTubPath, 1) <> Application.PathSeparator Then VTubPath = VTubPath & Application.PathSeparator
-    
-    ' Load JSON from file
-    JSON = Filesystem.ReadFile(VTubPath & "VTub.json")
-    ' Debug.Print JSON
-
-    Set RootMenu = JSONTools.ParseJson(JSON)
-
-    xml = "<menu xmlns=""http://schemas.microsoft.com/office/2006/01/customui"">" & vbCrLf
-    
-    Dim key As Variant
-    For Each key In RootMenu.Keys
-        If key <> "FileCount" And key <> "FolderCount" And key <> "DateLastModified" Then
-            Set Menu = RootMenu(key)
-            xml = xml & ConvertDictionaryToXML(Menu)
-        End If
-    Next key
-  
-    ' Add default buttons
-    xml = xml & "<menuSeparator id=""VTubSeparator"" />"
-    xml = xml * "<button id=""RefreshVTub"" label=""Refresh VTub"" onAction=""VirtualTub.VTubRefreshButton"" imageMSO=""AccessRefreshAllLists"" />"
-    xml = xml * "<button id=""RecreateVTub"" label=""Recreate VTub"" onAction=""VirtualTub.VTubCreateButton"" imageMSO=""_3DSurfaceMaterialClassic"" />"
-    xml = xml * "<button id=""VTubSettings"" label=""VTub Settings"" onAction=""VirtualTub.VTubSettingsButton"" imageMSO=""_3DLightingFlatClassic"" />"
-    
-    xml = xml & "</menu>"
-    
-    Debug.Print xml
-    
-    'Save file
-    Dim OutputFile
-    Dim VTubFilePath
-    VTubFilePath = "C:\Users\hardy\Desktop\Tub\VTub.xml"
-    OutputFile = FreeFile
-    Open VTubFilePath For Output As #OutputFile
-    Print #OutputFile, xml
-    Close #OutputFile
-    
-    Exit Sub
-    
-Handler:
-    MsgBox "Error " & Err.Number & ": " & Err.Description
-End Sub
-
-Public Function HeadingTitle(p As String) As String
-    ' Clean text and ensure a non-zero string
-    HeadingTitle = Trim(OnlySafeChars(Replace(p, Chr(151), "-")))
-    If Len(HeadingTitle) > 1000 Then HeadingTitle = Left(HeadingTitle, 1000) 'Limit length to 1000 characters to avoid breaking XML
-    If HeadingTitle = "" Then HeadingTitle = "-"
-End Function
-
-Function AddBookmarks(Path As String) As Dictionary
+Private Function VTubProcessFile(Path As String) As Dictionary
     Dim pCount As Long
     Dim p As Paragraph
     Dim pp As Paragraph
     Dim ppp As Paragraph
       
-    On Error GoTo Handler
-      
-    ' Open the file in the background and activate it
-    Documents.Open FileName:=Path, Visible:=False
-    Documents(Path).Activate
-    
-    ' Delete all bookmarks
-    VirtualTub.RemoveBookmarks
-    
     Dim Bookmarks As Dictionary
     Set Bookmarks = New Dictionary
     Dim Level1Menu As Dictionary
@@ -573,23 +628,32 @@ Function AddBookmarks(Path As String) As Dictionary
     Dim Level2Menu As Dictionary
     Dim Level2Children As Dictionary
     Dim Level3Menu As Dictionary
-    
-    pCount = 0
-    
-    Selection.HomeKey Unit:=wdStory
-    Selection.Collapse
-    
     Dim StartHeading As Integer
-    StartHeading = VirtualTub.LargestHeading
-    
-    Selection.HomeKey Unit:=wdStory
-    Selection.Collapse
-    
     Dim SubHeadingLevel As Integer
     Dim Level1Range As Range
     Dim Level2Range As Range
     Dim Level3Range As Range
     
+    Dim JSON As String
+    
+    On Error GoTo Handler
+      
+    ' Open the file in the background and activate it
+    Documents.Open FileName:=Path, visible:=False
+    Documents(Path).Activate
+    
+    ' Delete all bookmarks
+    VirtualTub.RemoveBookmarks
+    
+    ' Move to top of document and start with largest heading
+    pCount = 0
+    Selection.HomeKey Unit:=wdStory
+    Selection.Collapse
+    StartHeading = Formatting.LargestHeading
+    Selection.HomeKey Unit:=wdStory
+    Selection.Collapse
+    
+    ' Add a bookmark for every heading level and save it to the menu
     For Each p In Documents(Path).Paragraphs
         pCount = pCount + 1
         If p.outlineLevel = StartHeading Then
@@ -599,11 +663,12 @@ Function AddBookmarks(Path As String) As Dictionary
             Set Level1Children = New Dictionary
             Level1Menu.Add "Name", "Level_1_" & pCount
             Level1Menu.Add "Path", Path
-            Level1Menu.Add "Label", HeadingTitle(p.Range.Text)
+            Level1Menu.Add "Label", Strings.HeadingToTitle(p.Range.Text)
             Level1Menu.Add "MenuType", "Heading"
             Level1Menu.Add "Children", Level1Children
             Bookmarks.Add "Level_1_" & pCount, Level1Menu
             
+            ' Check for nested headings
             SubHeadingLevel = 3
             For Each pp In Level1Range.Paragraphs
                 If pp.outlineLevel = wdOutlineLevel2 Then SubHeadingLevel = 2
@@ -618,7 +683,7 @@ Function AddBookmarks(Path As String) As Dictionary
                     Set Level2Children = New Dictionary
                     Level2Menu.Add "Name", "Level_2_" & pCount
                     Level2Menu.Add "Path", Path
-                    Level2Menu.Add "Label", HeadingTitle(pp.Range.Text)
+                    Level2Menu.Add "Label", Strings.HeadingToTitle(pp.Range.Text)
                     Level2Menu.Add "MenuType", "Heading"
                     Level2Menu.Add "Children", Level2Children
                     Level1Children.Add "Level_2_" & pCount, Level2Menu
@@ -631,7 +696,7 @@ Function AddBookmarks(Path As String) As Dictionary
                                 Documents(Path).Bookmarks.Add "Level_3_" & pCount, Level3Range
                                 Set Level3Menu = New Dictionary
                                 Level3Menu.Add "Name", "Level_3_" & pCount
-                                Level3Menu.Add "Label", HeadingTitle(ppp.Range.Text)
+                                Level3Menu.Add "Label", Strings.HeadingToTitle(ppp.Range.Text)
                                 Level3Menu.Add "Path", Path
                                 Level3Menu.Add "MenuType", "Heading"
                                 Level2Children.Add "Level_3_" & pCount, Level3Menu
@@ -643,14 +708,12 @@ Function AddBookmarks(Path As String) As Dictionary
         End If
     Next p
     
-    Dim JSON
-    JSON = JSONTools.ConvertToJson(Bookmarks)
-    Debug.Print JSON
-                
     ' Close file and save changes
     Documents(Path).Close SaveChanges:=wdSaveChanges
-            
-    Set AddBookmarks = Bookmarks
+    
+    ' Return the bookmarks as JSON
+    JSON = JSONTools.ConvertToJson(Bookmarks)
+    Set VTubProcessFile = Bookmarks
     
     Exit Function
     
@@ -659,53 +722,10 @@ Handler:
 
 End Function
 
-Public Function LargestHeading() As Integer
-    LargestHeading = 3
-      
-    With Selection.Find
-        .ClearFormatting
-        .Replacement.ClearFormatting
-        .Forward = True
-        .Wrap = wdFindContinue
-        .Format = True
-        .Style = "Hat"
-        .MatchCase = False
-        .MatchWholeWord = False
-        .MatchWildcards = False
-        .MatchSoundsLike = False
-        .MatchAllWordForms = False
-        .Execute
-        
-        .ClearFormatting
-        .Replacement.ClearFormatting
-        
-        If .Found Then LargestHeading = 2
-    End With
-    
-    With Selection.Find
-        .ClearFormatting
-        .Replacement.ClearFormatting
-        .Forward = True
-        .Wrap = wdFindContinue
-        .Format = True
-        .Style = "Pocket"
-        .MatchCase = False
-        .MatchWholeWord = False
-        .MatchWildcards = False
-        .MatchSoundsLike = False
-        .MatchAllWordForms = False
-        .Execute
-        
-        .ClearFormatting
-        .Replacement.ClearFormatting
-        
-        If .Found Then LargestHeading = 1
-    End With
-End Function
-
 Sub RemoveBookmarks()
     Dim b As Bookmark
     For Each b In ActiveDocument.Bookmarks
         b.Delete
     Next b
 End Sub
+
