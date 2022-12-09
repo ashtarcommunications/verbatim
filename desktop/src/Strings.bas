@@ -19,7 +19,7 @@ Public Function OnlyAlphaNumericChars(ByVal OrigString As String) As String
     OnlyAlphaNumericChars = sAns
 End Function
 
-Private Function IsAlphaNumeric(sChr As String) As Boolean
+Public Function IsAlphaNumeric(sChr As String) As Boolean
     IsAlphaNumeric = sChr Like "[0-9A-Za-z ]"
     'IsSafeChar = sChr Like "[,.!@$%^():;'""_+=0-9A-Za-z -]"
 End Function

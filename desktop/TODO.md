@@ -66,6 +66,7 @@ Send selection/heading to end of file instead of cursor
 Remap or remove keyboard shortcut for Remove All Emphasis (Ctrl-Shift-F10)
 Fix F6 shortcut for Block on Mac (currently overridden by "Next Pane")
 Change mac keyboard movement shorcuts to Cmd+Option+arrow
+Adapt RepairCardFormatting to auto select a card or process all cards in file (plus test it more extensively)
 
 # Flow template
 send selected or heading to excel in cell or column
@@ -111,17 +112,6 @@ Invisibility mode that works for large documents – even if that comes at the c
     These invisibility modes should delete card notes/undertags but NOT analytics. 
 
 A button that saves two copies of the currently open file to the desktop – one in invisibility mode (and, if possible, a word count at the top) called “[name of document] Read”, and one with analytics and card notes/undertags removed called “[name of document] Send”.
-
-Hotkey to ‘repair underlining and highlighting’. This would undo a byproduct of cutting cards with my keyboard, which is that shift control arrow keys stops the selection at the end of words, leaving gaps between the formatting styles at the spaces. The fix would be:
-	Look for space characters surrounded by the underlining style and underline them.
-	Look for space characters with underlining on one side and emphasis on the other, and underline them.
-	Look for space characters surrounded by the emphasis style and emphasize them.
-	Look for space characters that are emphasized, with emphasis on one side and underlining on the other, and change them to underline
-	Look for space characters that are emphasized, with emphasis on one side and neither emphasis nor underlining on the other, and clear their formatting
-	Look for space characters that are underlined, with underlining or emphasis on one side and neither emphasis nor underlining on the other, and clear their formatting
-	Look for space characters surrounded by highlighting and highlight them.
-	Similar functions for punctuation---format comma space format, format period space format, format colon space format, format semicolon space format.
-	I want to fix the gaps between formatting styles that result in spaces getting shrunk because they are not formatted.
 
 Additional shrink text options:
     All shrink text options should go past 4 pt font.

@@ -1102,4 +1102,33 @@ Public Function RemoveExtraUnderlining() As Integer
     End With
 End Function
 
+Public Sub RepairCardFormatting()
+    Dim i As Long
+    
+    If Selection.Start = Selection.End Then Paperless.SelectHeadingAndContent
+    
+    If Selection.Characters.Count < 4 Then Exit Sub
+
+    For i = 2 To Selection.Characters.Count - 1
+        If Selection.Characters(i).Text = " " Or Strings.IsAlphaNumeric(Selection.Characters(i).Text) = False Then
+            ' Underline or emphasize based on surrounding styles
+            If Selection.Characters(i - 1).Style = "Underline,Style Underline" And Selection.Characters(i + 1).Style = "Underline,Style Underline" Then
+                Selection.Characters(i).Style = "Underline"
+            ElseIf Selection.Characters(i - 1).Style = "Emphasis" And Selection.Characters(i + 1).Style = "Emphasis" Then
+                Selection.Characters(i).Style = "Emphasis"
+            ElseIf Selection.Characters(i - 1).Style = "Underline" And Selection.Characters(i + 1).Style = "Emphasis" Then
+                Selection.Characters(i).Style = "Underline"
+            ElseIf Selection.Characters(i - 1).Style = "Emphasis" And Selection.Characters(i + 1).Style = "Underline,Style Underline" Then
+                Selection.Characters(i).Style = "Underline"
+            Else
+                Selection.Characters(i).Style = "Normal"
+            End If
+            
+            ' Extend highlighting to cover when surrounded
+            If Selection.Characters(i - 1).HighlightColorIndex > 0 And Selection.Characters(i + 1).HighlightColorIndex > 0 Then
+                Selection.Characters(i).HighlightColorIndex = Selection.Characters(i - 1).HighlightColorIndex
+            End If
+        End If
+    Next i
+End Sub
 

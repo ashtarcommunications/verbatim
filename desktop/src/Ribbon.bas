@@ -128,8 +128,12 @@ Sub RibbonMain(ByVal c As IRibbonControl)
         Formatting.AutoEmphasizeFirst
     Case Is = "FixFakeTags"
         Formatting.FixFakeTags
+    Case Is = "RepairCardFormatting"
+        Formatting.RepairCardFormatting
     Case Is = "UniHighlight"
         Formatting.UniHighlight
+    Case Is = "UniHighlightWithException"
+        Formatting.UniHighlightWithException
     Case Is = "InsertHeader"
         Formatting.InsertHeader
 
