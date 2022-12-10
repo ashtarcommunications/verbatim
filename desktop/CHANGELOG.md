@@ -18,6 +18,7 @@ Reordered ribbon to put important functions on the left to help with ribbon sect
 Restyled VBA userforms to a more modern look and feel
 Rebuilt the VTub to be cross-platform
 Update check is now semver compatible
+Streamlined setup wizard on first start
 
 ### Removed
 Removed Email feature, superceded by Tabroom sharing functionality
