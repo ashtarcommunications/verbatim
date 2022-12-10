@@ -29,7 +29,6 @@ Splash screen for first start
 Search functions
 Mac OCR option (probably tesseract)
 Rewrite update check
-Class documentation
 Add default event selection to settings and update stats form to pull from it
 Troubleshooting form
 Fix new speech dropdown
@@ -67,6 +66,9 @@ Remap or remove keyboard shortcut for Remove All Emphasis (Ctrl-Shift-F10)
 Fix F6 shortcut for Block on Mac (currently overridden by "Next Pane")
 Change mac keyboard movement shorcuts to Cmd+Option+arrow
 Adapt RepairCardFormatting to auto select a card or process all cards in file (plus test it more extensively)
+Consider a native analytics style and a native remove analytics function
+Consider a native undertags style – card notes that go under the tag
+Refactor out Styles page on settings
 
 # Flow template
 send selected or heading to excel in cell or column
@@ -103,9 +105,6 @@ Optional shorthand expansion
 shortcut to extend to next column of same side
 
 # Feature requests
-Consider a native analytics style and a native remove analytics function
-
-Consider a native undertags style – card notes that go under the tag
 
 Invisibility mode that works for large documents – even if that comes at the cost of deleting the unhighlighted, uncited, and untagged text, instead of hiding it (Teja’s code for this is below).
 	A button to perform this modified invisibility mode for just the selected text, or just the paragraph that contains the cursor.
@@ -114,7 +113,6 @@ Invisibility mode that works for large documents – even if that comes at the c
 A button that saves two copies of the currently open file to the desktop – one in invisibility mode (and, if possible, a word count at the top) called “[name of document] Read”, and one with analytics and card notes/undertags removed called “[name of document] Send”.
 
 Additional shrink text options:
-    All shrink text options should go past 4 pt font.
     Function to shrink selected paragraphs that do not contain underlining or emphasis. This is to make paragraphs that are skipped completely take up less space on the screen.
     Function to shrink text that is not the normal size. This is because when I make [CHART/TABLE/FIGURE/ETC OMITTED] notations, I want to keep them unformatted 11 pt, but shrink the text around them. Currently I emphasize them, shrink the text, and then change them back to normal formatting by hand.
 	            
