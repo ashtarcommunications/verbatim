@@ -25,7 +25,6 @@ Standalone install checker tool
 Plugin system for GetFromCitemaker, timer, OCR
 Bluetooth add-on disabler
 VTub refresh
-Splash screen for first start
 Search functions
 Mac OCR option (probably tesseract)
 Rewrite update check
@@ -69,6 +68,9 @@ Adapt RepairCardFormatting to auto select a card or process all cards in file (p
 Consider a native analytics style and a native remove analytics function
 Consider a native undertags style – card notes that go under the tag
 Refactor out Styles page on settings
+Convert all formatting to built-in styles macro
+Unshrink all macro
+Judge view mode macro (remove emphasis and shrinking)
 
 # Flow template
 send selected or heading to excel in cell or column
