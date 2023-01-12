@@ -1,18 +1,3 @@
-# Pre-release QA
-Double check all Mac-specific macro modifications made it into the combined version
-Test all functions on PC
-Test all functions on Mac
-Rubberduck everything
-Run template through the decompiler
-
-# New Tools
-PC setup tool
-	Fix template getting put into admin templates folder when run with UAC
-Mac setup tool
-PC Installer
-Mac Installer
-	Mac installer check/disbale Mac OS keyboard shortcuts
-
 # Bugs & New Features
 Verify all document styles setup
 Rebuild default keyboard shortcuts
@@ -42,7 +27,7 @@ Remove unused styles macro
 Search plugin
 Mac VTub icons
 Fix mac forecolor buttons on all forms
-See if possible to check for internet before doing tabroom fetches
+See if possible to check for internet before doing tabroom fetches or just better handle while disconnected
 Figure out what's triggering Normal.dotm prompts
 Tutorial Replacement
 Make sure unighighlight with exception works with None setting
@@ -50,14 +35,13 @@ Replace vbNullString usage
 Macro to auto switch cites from month/day to year for older files
 Incorporate status bar progress meter from mac for tabroom-related functions
 First line of VSCVerbatimSampleCard is test not text
-Updating overrides style preferences, since those aren't saved in registry
 Add ermo macro to remove underlining which is NOT highlighted.
 Add ermo macro to shrink all text in separate paragraphs when card not condensed
 Add ermo macro to reverse pilcrows to paragraphs
 Add option to quickly toggle between retain paragraphs/pilcrows setting during condense macro
 Dedicated hotkeys for paragraph integrity/pilcrows
 Stats form frequently freezes and doesn't compute, especially on Mac
-Add macro for Phillips to remove returns on paste
+Add macro for Phillips to remove returns on paste (and figure out Mac version)
 Try fixing the Condense macro when it doesn't find the first para break, because the search direction is set to "Up" - try changing it to down
 Fix tilde adding comment in read mode with Teja Luburu modification to add Text:="Marked" and remove ActivePane line
 Send selection/heading to end of file instead of cursor
@@ -117,7 +101,22 @@ A button that saves two copies of the currently open file to the desktop – one
 Additional shrink text options:
     Function to shrink selected paragraphs that do not contain underlining or emphasis. This is to make paragraphs that are skipped completely take up less space on the screen.
     Function to shrink text that is not the normal size. This is because when I make [CHART/TABLE/FIGURE/ETC OMITTED] notations, I want to keep them unformatted 11 pt, but shrink the text around them. Currently I emphasize them, shrink the text, and then change them back to normal formatting by hand.
-	            
+
+# New Tools
+PC setup tool
+Mac setup tool
+PC Installer
+	Fix template getting put into admin templates folder when run with UAC
+Mac Installer
+	Mac installer check/disbale Mac OS keyboard shortcuts
+
+# Pre-release QA
+Double check all Mac-specific macro modifications made it into the combined version
+Test all functions on PC
+Test all functions on Mac
+Rubberduck everything
+Run template through the decompiler
+	
 # Future ideas
 Window arranger for multiple screens
 Save all style customizations to settings to survive updates
