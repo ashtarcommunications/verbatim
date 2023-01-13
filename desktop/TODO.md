@@ -38,6 +38,7 @@ First line of VSCVerbatimSampleCard is test not text
 Add ermo macro to remove underlining which is NOT highlighted.
 Add ermo macro to shrink all text in separate paragraphs when card not condensed
 Add ermo macro to reverse pilcrows to paragraphs
+Rewrite Find blocks to use a range where possible
 Add option to quickly toggle between retain paragraphs/pilcrows setting during condense macro
 Dedicated hotkeys for paragraph integrity/pilcrows
 Stats form frequently freezes and doesn't compute, especially on Mac
