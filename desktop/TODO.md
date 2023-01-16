@@ -35,7 +35,6 @@ Replace vbNullString usage
 Macro to auto switch cites from month/day to year for older files
 Incorporate status bar progress meter from mac for tabroom-related functions
 First line of VSCVerbatimSampleCard is test not text
-Add ermo macro to remove underlining which is NOT highlighted.
 Add ermo macro to shrink all text in separate paragraphs when card not condensed
 Add ermo macro to reverse pilcrows to paragraphs
 Rewrite Find blocks to use a range where possible
@@ -95,7 +94,6 @@ Optional shorthand expansion
 shortcut to extend to next column of same side
 
 # Feature requests
-
 Invisibility mode that works for large documents – even if that comes at the cost of deleting the unhighlighted, uncited, and untagged text, instead of hiding it (Teja’s code for this is below).
 	A button to perform this modified invisibility mode for just the selected text, or just the paragraph that contains the cursor.
     These invisibility modes should delete card notes/undertags but NOT analytics. 

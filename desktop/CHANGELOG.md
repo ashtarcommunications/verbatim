@@ -10,6 +10,7 @@ Included a CONTRIBUTIONS.md detailing how to contribute to the prject
 Allow hiding individual ribbon sections in the settings
 Macro to emphasize first letter of each word of selection, like "United States"
 Ability to set an exception color while standardizing highlighting
+Function to remove non-highlighted underlined text
 
 ### Changed
 Combined Mac & PC code bases
