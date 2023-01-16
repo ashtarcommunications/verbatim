@@ -56,6 +56,10 @@ Refactor out Styles page on settings
 Convert all formatting to built-in styles macro
 Unshrink all macro
 Judge view mode macro (remove emphasis and shrinking)
+Unify card/doc selection modes
+Modify shrink find to ignore words w/ [ or < at beginning of range
+Modify select card to ignore [ or ( for 2-paragraph cites
+For Docs: Cursor selection philosophy, plead for 1-paragraph cite format
 
 # Flow template
 send selected or heading to excel in cell or column
