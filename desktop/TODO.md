@@ -52,7 +52,6 @@ Change mac keyboard movement shorcuts to Cmd+Option+arrow
 Adapt RepairCardFormatting to auto select a card or process all cards in file (plus test it more extensively)
 Consider a native analytics style and a native remove analytics function
 Consider a native undertags style – card notes that go under the tag
-Refactor out Styles page on settings
 Convert all formatting to built-in styles macro
 Unshrink all macro
 Judge view mode macro (remove emphasis and shrinking)
