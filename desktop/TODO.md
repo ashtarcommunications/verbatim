@@ -35,7 +35,6 @@ Replace vbNullString usage
 Macro to auto switch cites from month/day to year for older files
 Incorporate status bar progress meter from mac for tabroom-related functions
 First line of VSCVerbatimSampleCard is test not text
-Add ermo macro to shrink all text in separate paragraphs when card not condensed
 Add ermo macro to reverse pilcrows to paragraphs
 Rewrite Find blocks to use a range where possible
 Add option to quickly toggle between retain paragraphs/pilcrows setting during condense macro
@@ -55,8 +54,6 @@ Convert all formatting to built-in styles macro
 Unshrink all macro
 Judge view mode macro (remove emphasis and shrinking)
 Unify card/doc selection modes
-Modify shrink find to ignore words w/ [ or < at beginning of range
-Modify select card to ignore [ or ( for 2-paragraph cites
 For Docs: Cursor selection philosophy, plead for 1-paragraph cite format
 
 # Flow template
@@ -99,10 +96,6 @@ Invisibility mode that works for large documents – even if that comes at the c
     These invisibility modes should delete card notes/undertags but NOT analytics. 
 
 A button that saves two copies of the currently open file to the desktop – one in invisibility mode (and, if possible, a word count at the top) called “[name of document] Read”, and one with analytics and card notes/undertags removed called “[name of document] Send”.
-
-Additional shrink text options:
-    Function to shrink selected paragraphs that do not contain underlining or emphasis. This is to make paragraphs that are skipped completely take up less space on the screen.
-    Function to shrink text that is not the normal size. This is because when I make [CHART/TABLE/FIGURE/ETC OMITTED] notations, I want to keep them unformatted 11 pt, but shrink the text around them. Currently I emphasize them, shrink the text, and then change them back to normal formatting by hand.
 
 # New Tools
 PC setup tool
