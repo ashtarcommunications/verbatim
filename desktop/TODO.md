@@ -38,7 +38,6 @@ Stats form frequently freezes and doesn't compute, especially on Mac
 Add macro for Phillips to remove returns on paste (and figure out Mac version)
 Try fixing the Condense macro when it doesn't find the first para break, because the search direction is set to "Up" - try changing it to down
 Fix tilde adding comment in read mode with Teja Luburu modification to add Text:="Marked" and remove ActivePane line
-Send selection/heading to end of file instead of cursor
 Fix F6 shortcut for Block on Mac (currently overridden by "Next Pane")
 Adapt RepairCardFormatting to auto select a card or process all cards in file (plus test it more extensively)
 Consider a native analytics style and a native remove analytics function

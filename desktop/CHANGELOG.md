@@ -11,6 +11,7 @@ Allow hiding individual ribbon sections in the settings
 Macro to emphasize first letter of each word of selection, like "United States"
 Ability to set an exception color while standardizing highlighting
 Function to remove non-highlighted underlined text
+Option to send to end of speech document instead of cursor
 
 ### Changed
 Combined Mac & PC code bases
