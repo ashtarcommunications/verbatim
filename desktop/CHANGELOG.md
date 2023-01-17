@@ -12,6 +12,9 @@ Macro to emphasize first letter of each word of selection, like "United States"
 Ability to set an exception color while standardizing highlighting
 Function to remove non-highlighted underlined text
 Option to send to end of speech document instead of cursor
+Option to condense automatically on paste
+Options to override Pilcrows settings temporarily on condense
+Macro to unshrink all cards in the document
 
 ### Changed
 Combined Mac & PC code bases
@@ -23,6 +26,7 @@ Update check is now semver compatible
 Streamlined setup wizard on first start
 Shrink function now automatically handles multi-paragraph cards and includes options to ignore table/chart omissions
 Modified keyboard shortcuts on Mac to consistently use Command instead of Ctrl, and fixed some bad defaults
+Added choosing a default event to set e.g. default speech times
 
 ### Removed
 Removed Email feature, superceded by Tabroom sharing functionality

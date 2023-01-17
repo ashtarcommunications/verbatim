@@ -7,12 +7,10 @@ Reorganize settings form
 Normalize form styles
 Convert all MacScript calls to AppleScriptTask
 Plugin system for GetFromCiteCreator, timer, OCR
-Bluetooth add-on disabler
 VTub refresh
 Search functions
 Mac OCR option (probably tesseract)
 Rewrite update check
-Add default event selection to settings and update stats form to pull from it
 Troubleshooting form
 Fix new speech dropdown
 Rebuild ribbon and add new macros/features/shortcuts
@@ -33,20 +31,18 @@ Incorporate status bar progress meter from mac for tabroom-related functions
 First line of VSCVerbatimSampleCard is test not text
 Rewrite Find blocks to use a range where possible
 Add option to quickly toggle between retain paragraphs/pilcrows setting during condense macro
-Dedicated hotkeys for paragraph integrity/pilcrows
 Stats form frequently freezes and doesn't compute, especially on Mac
-Add macro for Phillips to remove returns on paste (and figure out Mac version)
 Try fixing the Condense macro when it doesn't find the first para break, because the search direction is set to "Up" - try changing it to down
-Fix tilde adding comment in read mode with Teja Luburu modification to add Text:="Marked" and remove ActivePane line
+Mark card feature for Mac
 Fix F6 shortcut for Block on Mac (currently overridden by "Next Pane")
 Adapt RepairCardFormatting to auto select a card or process all cards in file (plus test it more extensively)
 Consider a native analytics style and a native remove analytics function
 Consider a native undertags style – card notes that go under the tag
 Convert all formatting to built-in styles macro
-Unshrink all macro
 Judge view mode macro (remove emphasis and shrinking)
 Unify card/doc selection modes (shrink, condense, uncondense, shrink pilcrows, cite-ify, convert dates, etc.)
-For Docs: Cursor selection philosophy, plead for 1-paragraph cite format
+Save "share version" of current document with no analytics/notes
+Shortcut for select heading and content
 
 # Flow template
 send selected or heading to excel in cell or column
@@ -81,13 +77,6 @@ configurable font size
 automatically fill scouting info from subsheets
 Optional shorthand expansion
 shortcut to extend to next column of same side
-
-# Feature requests
-Invisibility mode that works for large documents – even if that comes at the cost of deleting the unhighlighted, uncited, and untagged text, instead of hiding it (Teja’s code for this is below).
-	A button to perform this modified invisibility mode for just the selected text, or just the paragraph that contains the cursor.
-    These invisibility modes should delete card notes/undertags but NOT analytics. 
-
-A button that saves two copies of the currently open file to the desktop – one in invisibility mode (and, if possible, a word count at the top) called “[name of document] Read”, and one with analytics and card notes/undertags removed called “[name of document] Send”.
 
 # New Tools
 PC setup tool

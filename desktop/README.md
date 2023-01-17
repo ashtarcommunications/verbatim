@@ -35,3 +35,10 @@ BackStyle 1 Opaque
 ForeColor &H00FFFFFF&
 Height 30
 Font Calibri 14
+
+## Features I won't add
+Shrink font below 4pt
+Invisibility modes that actually delete contento
+
+## Notes For Docs
+For Docs: Cursor selection philosophy, plead for 1-paragraph cite format
