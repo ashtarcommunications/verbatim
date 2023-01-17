@@ -6,8 +6,7 @@ Finish caselist upload functions
 Reorganize settings form
 Normalize form styles
 Convert all MacScript calls to AppleScriptTask
-Standalone install checker tool
-Plugin system for GetFromCitemaker, timer, OCR
+Plugin system for GetFromCiteCreator, timer, OCR
 Bluetooth add-on disabler
 VTub refresh
 Search functions
@@ -16,10 +15,8 @@ Rewrite update check
 Add default event selection to settings and update stats form to pull from it
 Troubleshooting form
 Fix new speech dropdown
-Rebuild ribbon
-Add new macros/features to ribbon
+Rebuild ribbon and add new macros/features/shortcuts
 Clean up Ribbon XML with proper IDs, keyboard shortcuts, descriptions
-Rename CiteMaker functions to Cite Creator
 Check all settings namespaces/names throughout
 Build UI for autotext functions
 Consider paragraph spacing adjustments
@@ -31,11 +28,9 @@ See if possible to check for internet before doing tabroom fetches or just bette
 Figure out what's triggering Normal.dotm prompts
 Tutorial Replacement
 Make sure unighighlight with exception works with None setting
-Replace vbNullString usage
 Macro to auto switch cites from month/day to year for older files
 Incorporate status bar progress meter from mac for tabroom-related functions
 First line of VSCVerbatimSampleCard is test not text
-Add ermo macro to reverse pilcrows to paragraphs
 Rewrite Find blocks to use a range where possible
 Add option to quickly toggle between retain paragraphs/pilcrows setting during condense macro
 Dedicated hotkeys for paragraph integrity/pilcrows
@@ -44,16 +39,14 @@ Add macro for Phillips to remove returns on paste (and figure out Mac version)
 Try fixing the Condense macro when it doesn't find the first para break, because the search direction is set to "Up" - try changing it to down
 Fix tilde adding comment in read mode with Teja Luburu modification to add Text:="Marked" and remove ActivePane line
 Send selection/heading to end of file instead of cursor
-Remap or remove keyboard shortcut for Remove All Emphasis (Ctrl-Shift-F10)
 Fix F6 shortcut for Block on Mac (currently overridden by "Next Pane")
-Change mac keyboard movement shorcuts to Cmd+Option+arrow
 Adapt RepairCardFormatting to auto select a card or process all cards in file (plus test it more extensively)
 Consider a native analytics style and a native remove analytics function
 Consider a native undertags style – card notes that go under the tag
 Convert all formatting to built-in styles macro
 Unshrink all macro
 Judge view mode macro (remove emphasis and shrinking)
-Unify card/doc selection modes
+Unify card/doc selection modes (shrink, condense, uncondense, shrink pilcrows, cite-ify, convert dates, etc.)
 For Docs: Cursor selection philosophy, plead for 1-paragraph cite format
 
 # Flow template

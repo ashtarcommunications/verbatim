@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [6.0.0] - 2022-12-15
 
 ### Added
-Included a CONTRIBUTIONS.md detailing how to contribute to the prject
+Included a CONTRIBUTIONS.md detailing how to contribute to the project
 Allow hiding individual ribbon sections in the settings
 Macro to emphasize first letter of each word of selection, like "United States"
 Ability to set an exception color while standardizing highlighting
@@ -20,6 +20,8 @@ Restyled VBA userforms to a more modern look and feel
 Rebuilt the VTub to be cross-platform
 Update check is now semver compatible
 Streamlined setup wizard on first start
+Shrink function now automatically handles multi-paragraph cards and includes options to ignore table/chart omissions
+Modified keyboard shortcuts on Mac to consistently use Command instead of Ctrl, and fixed some bad defaults
 
 ### Removed
 Removed Email feature, superceded by Tabroom sharing functionality
