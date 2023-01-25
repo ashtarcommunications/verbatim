@@ -23,7 +23,6 @@ Search plugin
 Mac VTub icons
 Fix mac forecolor buttons on all forms
 See if possible to check for internet before doing tabroom fetches or just better handle while disconnected
-Figure out what's triggering Normal.dotm prompts
 Tutorial Replacement
 Make sure unighighlight with exception works with None setting
 Macro to auto switch cites from month/day to year for older files
