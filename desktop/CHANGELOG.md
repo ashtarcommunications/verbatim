@@ -15,6 +15,7 @@ Option to send to end of speech document instead of cursor
 Option to condense automatically on paste
 Options to override Pilcrows settings temporarily on condense
 Macro to unshrink all cards in the document
+Shortcut to select current heading and content
 
 ### Changed
 Combined Mac & PC code bases
