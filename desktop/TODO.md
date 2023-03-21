@@ -22,13 +22,11 @@ Search plugin
 Mac VTub icons
 See if possible to check for internet before doing tabroom fetches or just better handle while disconnected
 Tutorial Replacement
-Make sure unighighlight with exception works with None setting
 Macro to auto switch cites from month/day to year for older files
 Incorporate status bar progress meter from mac for tabroom-related functions
 First line of VSCVerbatimSampleCard is test not text
 Rewrite Find blocks to use a range where possible
 Stats form frequently freezes and doesn't compute, especially on Mac
-Try fixing the Condense macro when it doesn't find the first para break, because the search direction is set to "Up" - try changing it to down
 Mark card feature for Mac
 Fix F6 shortcut for Block on Mac (currently overridden by "Next Pane")
 Adapt RepairCardFormatting to auto select a card or process all cards in file (plus test it more extensively)
