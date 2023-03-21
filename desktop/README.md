@@ -2,7 +2,7 @@
 
 ## Things that do not work in Mac VBA
 * CommandButton BackColor on UserForms (Use Forecolor as a replacement instead)
-* #WIN64 compiler constant returns true on Mac (Have to use #If Mac Then <do nothing> DElse <do PC only> #End If)
+* #WIN64 compiler constant returns true on Mac (Have to use #If Mac Then <do nothing> Else <do PC only> #End If)
 * Many ribbon icons
 * Custom mouse pointers on forms
 * GetSetting doesn't accept vbNullString for the default parameter, use "" instead

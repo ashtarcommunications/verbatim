@@ -21,7 +21,6 @@ Consider paragraph spacing adjustments
 Remove unused styles macro
 Search plugin
 Mac VTub icons
-Fix mac forecolor buttons on all forms
 See if possible to check for internet before doing tabroom fetches or just better handle while disconnected
 Tutorial Replacement
 Make sure unighighlight with exception works with None setting
