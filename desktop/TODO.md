@@ -9,7 +9,6 @@ Plugin system for GetFromCiteCreator, timer, OCR
 VTub refresh
 Search functions
 Mac OCR option (probably tesseract)
-Rewrite update check
 Troubleshooting form
 Fix new speech dropdown
 Rebuild ribbon and add new macros/features/shortcuts
