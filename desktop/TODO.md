@@ -1,7 +1,6 @@
 # Bugs & New Features
 Verify all document styles setup
 Rebuild default keyboard shortcuts
-Convert all library references to late binding
 Finish caselist upload functions
 Reorganize settings form
 Normalize form styles

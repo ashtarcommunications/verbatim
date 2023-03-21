@@ -29,6 +29,7 @@ Streamlined setup wizard on first start
 Shrink function now automatically handles multi-paragraph cards and includes options to ignore table/chart omissions
 Modified keyboard shortcuts on Mac to consistently use Command instead of Ctrl, and fixed some bad defaults
 Added choosing a default event to set e.g. default speech times
+Converted all library references to late binding for better backwards compatability
 
 ### Removed
 Removed Email feature, superceded by Tabroom sharing functionality
