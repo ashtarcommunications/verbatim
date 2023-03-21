@@ -22,6 +22,7 @@ Ribbon toggles and keyboard shortcuts for changing paragraph integrity and pilcr
 Combined Mac & PC code bases
 Updated window arranger to work on Mac and with different dock positions
 Reordered ribbon to put important functions on the left to help with ribbon sections collapsing on small screen
+Updated ribbon icons to work on both Mac and PC, with custom icons where necessary
 Restyled VBA userforms to a more modern look and feel
 Rebuilt the VTub to be cross-platform
 Update check is now semver compatible

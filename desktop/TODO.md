@@ -18,7 +18,6 @@ Build UI for autotext functions
 Consider paragraph spacing adjustments
 Remove unused styles macro
 Search plugin
-Mac VTub icons
 See if possible to check for internet before doing tabroom fetches or just better handle while disconnected
 Tutorial Replacement
 Macro to auto switch cites from month/day to year for older files
