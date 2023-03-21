@@ -28,7 +28,6 @@ Macro to auto switch cites from month/day to year for older files
 Incorporate status bar progress meter from mac for tabroom-related functions
 First line of VSCVerbatimSampleCard is test not text
 Rewrite Find blocks to use a range where possible
-Add option to quickly toggle between retain paragraphs/pilcrows setting during condense macro
 Stats form frequently freezes and doesn't compute, especially on Mac
 Try fixing the Condense macro when it doesn't find the first para break, because the search direction is set to "Up" - try changing it to down
 Mark card feature for Mac

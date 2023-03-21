@@ -16,6 +16,7 @@ Option to condense automatically on paste
 Options to override Pilcrows settings temporarily on condense
 Macro to unshrink all cards in the document
 Shortcut to select current heading and content
+Ribbon toggles and keyboard shortcuts for changing paragraph integrity and pilcrows settings
 
 ### Changed
 Combined Mac & PC code bases
