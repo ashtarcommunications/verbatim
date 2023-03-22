@@ -1,7 +1,7 @@
 # Bugs & New Features
 Verify all document styles setup
 Rebuild default keyboard shortcuts
-Finish caselist upload functions
+Finish caselist upload and sharing functions (inc. handling offline state)
 Reorganize settings form
 Normalize form styles
 Convert all MacScript calls to AppleScriptTask
@@ -19,7 +19,6 @@ Search plugin
 See if possible to check for internet before doing tabroom fetches or just better handle while disconnected
 Tutorial Replacement
 Macro to auto switch cites from month/day to year for older files
-Incorporate status bar progress meter from mac for tabroom-related functions
 First line of VSCVerbatimSampleCard is test not text
 Rewrite Find blocks to use a range where possible
 Stats form frequently freezes and doesn't compute, especially on Mac
