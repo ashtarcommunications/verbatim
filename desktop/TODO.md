@@ -4,7 +4,6 @@ Rebuild default keyboard shortcuts
 Finish caselist upload and sharing functions (inc. handling offline state)
 Reorganize settings form
 Normalize form styles
-Convert all MacScript calls to AppleScriptTask
 Plugin system for GetFromCiteCreator, timer, OCR
 VTub refresh
 Search functions
