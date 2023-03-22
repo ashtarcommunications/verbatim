@@ -14,7 +14,6 @@ Fix new speech dropdown
 Rebuild ribbon and add new macros/features/shortcuts
 Clean up Ribbon XML with proper IDs, keyboard shortcuts, descriptions
 Check all settings namespaces/names throughout
-Build UI for autotext functions
 Remove unused styles macro
 Search plugin
 See if possible to check for internet before doing tabroom fetches or just better handle while disconnected

@@ -18,6 +18,7 @@ Macro to unshrink all cards in the document
 Shortcut to select current heading and content
 Ribbon toggles and keyboard shortcuts for changing paragraph integrity and pilcrows settings
 Macro to normalize formatting across spaces/punctuation
+Quick Cards feature with user interface for creating/deleting/inserting small blocks of content
 
 ### Changed
 Combined Mac & PC code bases
