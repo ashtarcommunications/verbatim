@@ -10,13 +10,14 @@ Included a CONTRIBUTIONS.md detailing how to contribute to the project
 Allow hiding individual ribbon sections in the settings
 Macro to emphasize first letter of each word of selection, like "United States"
 Ability to set an exception color while standardizing highlighting
-Function to remove non-highlighted underlined text
+Macro to remove non-highlighted underlined text
 Option to send to end of speech document instead of cursor
 Option to condense automatically on paste
 Options to override Pilcrows settings temporarily on condense
 Macro to unshrink all cards in the document
 Shortcut to select current heading and content
 Ribbon toggles and keyboard shortcuts for changing paragraph integrity and pilcrows settings
+Macro to normalize formatting across spaces/punctuation
 
 ### Changed
 Combined Mac & PC code bases

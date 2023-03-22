@@ -27,7 +27,6 @@ Rewrite Find blocks to use a range where possible
 Stats form frequently freezes and doesn't compute, especially on Mac
 Mark card feature for Mac
 Fix F6 shortcut for Block on Mac (currently overridden by "Next Pane")
-Adapt RepairCardFormatting to auto select a card or process all cards in file (plus test it more extensively)
 Consider a native analytics style and a native remove analytics function
 Consider a native undertags style – card notes that go under the tag
 Replace all formatting with built-in styles macro
