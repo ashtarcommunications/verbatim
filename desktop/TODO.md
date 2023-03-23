@@ -5,8 +5,8 @@ Finish caselist upload and sharing functions (inc. handling offline state)
 Reorganize settings form
 Normalize form styles
 Plugin system for GetFromCiteCreator, timer, OCR
+Search plugin
 VTub refresh
-Search functions
 Mac OCR option (probably tesseract)
 Troubleshooting form
 Fix new speech dropdown
@@ -14,14 +14,11 @@ Rebuild ribbon and add new macros/features/shortcuts
 Clean up Ribbon XML with proper IDs, keyboard shortcuts, descriptions
 Check all settings namespaces/names throughout
 Remove unused styles macro
-Search plugin
-See if possible to check for internet before doing tabroom fetches or just better handle while disconnected
 Tutorial Replacement, consider a sample card in building blocks
 Macro to auto switch cites from month/day to year for older files
 Rewrite Find blocks to use a range where possible
 Stats form frequently freezes and doesn't compute, especially on Mac
 Mark card feature for Mac
-Fix F6 shortcut for Block on Mac (currently overridden by "Next Pane")
 Consider a native analytics style and a native remove analytics function
 Consider a native undertags style – card notes that go under the tag
 Replace all formatting with built-in styles macro
@@ -66,6 +63,9 @@ shortcut to extend to next column of same side
 # New Tools
 PC setup tool
 Mac setup tool
+	defaults read "Apple Global Domain" "com.apple.keyboard.fnState"
+	defaults write "Apple Global Domain" "com.apple.keyboard.fnState" "1" ## F1 F2 etc
+	defaults write "Apple Global Domain" "com.apple.keyboard.fnState" "0" ## Brightness/Media	https://apple.stackexchange.com/questions/344494/how-to-disable-default-mission-control-shortcuts-in-terminal?noredirect=1&lq=1
 PC Installer
 	Fix template getting put into admin templates folder when run with UAC
 Mac Installer
