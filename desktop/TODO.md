@@ -17,7 +17,6 @@ Remove unused styles macro
 Tutorial Replacement, consider a sample card in building blocks
 Macro to auto switch cites from month/day to year for older files
 Rewrite Find blocks to use a range where possible
-Stats form frequently freezes and doesn't compute, especially on Mac
 Mark card feature for Mac
 Consider a native analytics style and a native remove analytics function
 Consider a native undertags style – card notes that go under the tag
@@ -67,7 +66,7 @@ Mac setup tool
 	defaults write "Apple Global Domain" "com.apple.keyboard.fnState" "1" ## F1 F2 etc
 	defaults write "Apple Global Domain" "com.apple.keyboard.fnState" "0" ## Brightness/Media	https://apple.stackexchange.com/questions/344494/how-to-disable-default-mission-control-shortcuts-in-terminal?noredirect=1&lq=1
 PC Installer
-	Fix template getting put into admin templates folder when run with UAC
+	Fix template getting put into admin templates folder when run with UAC (look at not needing admin permissions)
 Mac Installer
 	Mac installer check/disbale Mac OS keyboard shortcuts
 
