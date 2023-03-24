@@ -13,14 +13,11 @@ Fix new speech dropdown
 Rebuild ribbon and add new macros/features/shortcuts
 Clean up Ribbon XML with proper IDs, keyboard shortcuts, descriptions
 Check all settings namespaces/names throughout
-Remove unused styles macro
 Tutorial Replacement, consider a sample card in building blocks
 Macro to auto switch cites from month/day to year for older files
 Rewrite Find blocks to use a range where possible
 Mark card feature for Mac
 Consider a native analytics style and a native remove analytics function
-Consider a native undertags style – card notes that go under the tag
-Replace all formatting with built-in styles macro
 Judge view mode macro (remove emphasis and shrinking)
 Unify card/doc selection modes (shrink, condense, uncondense, shrink pilcrows, cite-ify, convert dates, etc.)
 Save "share version" of current document with no analytics/notes

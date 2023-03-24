@@ -39,6 +39,7 @@ Font Calibri 14
 ## Features I won't add
 Shrink font below 4pt
 Invisibility modes that actually delete content
+Undertags style
 
 ## Notes For Docs
 For Docs: Cursor selection philosophy, plead for 1-paragraph cite format
