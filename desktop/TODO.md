@@ -14,7 +14,6 @@ Rebuild ribbon and add new macros/features/shortcuts
 Clean up Ribbon XML with proper IDs, keyboard shortcuts, descriptions
 Check all settings namespaces/names throughout
 Tutorial Replacement, consider a sample card in building blocks
-Macro to auto switch cites from month/day to year for older files
 Rewrite Find blocks to use a range where possible
 Mark card feature for Mac
 Consider a native analytics style and a native remove analytics function
