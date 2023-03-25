@@ -9,10 +9,10 @@ Public Sub StartRecord(ByVal BPS As BitsPerSec, ByVal SPS As SamplesPerSec, ByVa
     On Error GoTo Handler
         
     ' Save instead if already recording
-    If Audio.RecordStatus = "recording" Then Call Audio.SaveRecord
+    If Audio.RecordStatus = "recording" Then Audio.SaveRecord
     
     #If Mac Then
-        AppleScriptTask "Verbatim.scpt", "StartRecord", vbNullString
+        AppleScriptTask "Verbatim.scpt", "StartRecord", ""
     #Else
         ' mciSendString appears to be ignoring the parameters and always recording at 88kbps
         retStr = Space$(128)
@@ -48,12 +48,11 @@ Public Sub SaveRecord()
     Dim AudioDir As String
     Dim FileName As String
     Dim FilePath As String
-    Dim i
     
     On Error GoTo Handler
     
     ' Get Audio recording directory from settings or use desktop
-    AudioDir = GetSetting("Verbatim", "Paperless", "AudioDir", vbNullString)
+    AudioDir = GetSetting("Verbatim", "Paperless", "AudioDir", "")
     If Filesystem.FolderExists(AudioDir) = False Then
         #If Mac Then
             FilePath = AppleScriptTask("Verbatim.scpt", "DesktopPath")
@@ -74,7 +73,7 @@ GetFileName:
         "Recording " & Format(Now, "m d yyyy hmmAMPM"))
     
     ' Exit if no file name or user pressed Cancel, recording is still active
-    If FileName = vbNullString Then
+    If FileName = "" Then
         RecordAudioToggle = True
         Exit Sub
     End If

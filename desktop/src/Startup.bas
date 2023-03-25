@@ -9,8 +9,8 @@ Public Sub AutoNew()
     On Error Resume Next
     
     ' Add doc variables with name and version number
-    ThisDocument.Variables.Add Name:="Creator", Value:=GetSetting("Verbatim", "Profile", "Name", vbNullString)
-    ThisDocument.Variables.Add Name:="Team", Value:=GetSetting("Verbatim", "Profile", "SchoolName", vbNullString)
+    ThisDocument.Variables.Add Name:="Creator", Value:=GetSetting("Verbatim", "Profile", "Name", "")
+    ThisDocument.Variables.Add Name:="Team", Value:=GetSetting("Verbatim", "Profile", "SchoolName", "")
     ThisDocument.Variables.Add Name:="VerbatimVersion", Value:=Settings.GetVersion
     ThisDocument.Variables.Add Name:="OS", Value:=Application.System.OperatingSystem
     ThisDocument.Variables.Add Name:="OSVersion", Value:=Application.System.Version
@@ -27,7 +27,7 @@ Public Sub AutoClose()
     
     If ActiveWindow.visible = True Then
         ' If current doc was active speech doc, clear it
-        If Globals.ActiveSpeechDoc = ActiveDocument.Name Then Globals.ActiveSpeechDoc = vbNullString
+        If Globals.ActiveSpeechDoc = ActiveDocument.Name Then Globals.ActiveSpeechDoc = ""
         
         #If Mac Then
             ' Do nothing
@@ -71,6 +71,12 @@ Public Sub Start()
     ' Refresh document styles from template if setting checked and not editing template itself
     If GetSetting("Verbatim", "Format", "AutoUpdateStyles", True) = True And ActiveDocument.FullName <> ActiveDocument.AttachedTemplate.FullName Then ActiveDocument.UpdateStyles
     ActiveDocument.Saved = True
+       
+    ' Prevent Word making new styles
+    If GetSetting("Verbatim", "Admin", "SuppressStyleChecks", False) = False Then
+        Application.RestrictLinkedStyles = True
+        Options.AutoFormatAsYouTypeDefineStyles = False
+    End If
        
     ' Check for NPCStartup setting and call NavPaneCycle if True
     If GetSetting("Verbatim", "Admin", "NPCStartup", False) = True Then View.NavPaneCycle

@@ -22,7 +22,7 @@ Option Explicit
 
 Private Sub UserForm_Initialize()
     #If Mac Then
-        Password = vbNullString
+        Password = ""
     #End If
     
     Globals.InitializeGlobals
@@ -35,9 +35,13 @@ Private Sub UserForm_Initialize()
     
     #If Mac Then
         UI.ResizeUserForm Me
+        Me.btnCancel.ForeColor = Globals.RED
+        Me.btnLogin.ForeColor = Globals.BLUE
     #End If
 End Sub
 
+#If Mac Then
+#Else
 Sub btnLogin_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnLogin.BackColor = Globals.LIGHT_BLUE
 End Sub
@@ -50,6 +54,7 @@ Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x 
     btnLogin.BackColor = Globals.BLUE
     btnCancel.BackColor = Globals.RED
 End Sub
+#End If
 
 Private Sub btnLogin_Click()
     Dim Body As Dictionary
@@ -64,19 +69,21 @@ Private Sub btnLogin_Click()
     Dim Response
     Set Response = HTTP.PostReq(Globals.CASELIST_URL & "/login", Body)
     
+    Dim status
+    status = Response("status")
+    
     Dim b
-    Set b = Response("body")
     Dim token As String
     Dim expires As String
 
-    token = b("token")
-    expires = b("expires")
-    
-    Select Case Response("status")
+    Select Case status
         Case "401"
             MsgBox "Invalid username or password."
             Exit Sub
         Case "201"
+            Set b = Response("body")
+            token = b("token")
+            expires = b("expires")
             SaveSetting "Verbatim", "Caselist", "CaselistToken", token
             SaveSetting "Verbatim", "Caselist", "CaselistTokenExpires", JSONTools.ParseIso(expires)
             MsgBox "Successfully logged in, you can now use integrated caselist features!"
@@ -84,7 +91,11 @@ Private Sub btnLogin_Click()
             Unload Me
             Exit Sub
         Case Else
-            MsgBox Response("body")("message")
+            If InStr(status, "Error") > 0 Then
+                MsgBox status
+            Else
+                MsgBox Response("body")("message")
+            End If
     End Select
     
     Exit Sub
@@ -103,7 +114,7 @@ Private Sub txtPassword_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Sh
     Select Case KeyCode
         Case vbKeyBack
             If Len(Password) <= 1 Then
-                Password = vbNullString
+                Password = ""
             Else
                 Password = Left(Password, Len(Password) - 1)
             End If

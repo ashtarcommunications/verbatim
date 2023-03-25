@@ -16,7 +16,7 @@ Public Sub GetVTubContent(c As IRibbonControl, ByRef returnedVal)
         
     ' Get VTubPath from Settings and make sure it exists
     VTubPath = GetSetting("Verbatim", "VTub", "VTubPath", "")
-    If VTubPath = vbNullString Or VTubPath = "?" Then
+    If VTubPath = "" Or VTubPath = "?" Then
         If MsgBox("You haven't configured a VTub location in the Verbatim settings. Open Settings?", vbYesNo) = vbYes Then
             UI.ShowForm "Settings"
             Exit Sub
@@ -110,7 +110,11 @@ Private Function VTubConvertToXML() As String
   
     ' Add default buttons
     xml = xml & "<menuSeparator id=""VTubSeparator"" />"
-    xml = xml & "<button id=""RefreshVTub"" label=""Refresh VTub"" onAction=""VirtualTub.VTubRefreshButton"" imageMso=""AccessRefreshAllLists"" />"
+    #If Mac Then
+        xml = xml & "<button id=""RefreshVTub"" label=""Refresh VTub"" onAction=""VirtualTub.VTubRefreshButton"" imageMso=""Refresh"" />"
+    #Else
+        xml = xml & "<button id=""RefreshVTub"" label=""Refresh VTub"" onAction=""VirtualTub.VTubRefreshButton"" imageMso=""AccessRefreshAllLists"" />"
+    #End If
     xml = xml & "<button id=""RecreateVTub"" label=""Recreate VTub"" onAction=""VirtualTub.VTubCreateButton"" image=""tub"" />"
     xml = xml & "<button id=""VTubSettings"" label=""VTub Settings"" onAction=""VirtualTub.VTubSettingsButton"" imageMso=""_3DLightingFlatClassic"" />"
     
@@ -149,7 +153,11 @@ Private Function ConvertDictionaryToXML(d As Dictionary) As String
             xml = xml & "label=""" & d("Label") & """ "
             xml = xml & "tag=""" & d("Path") & "!#!" & d("Name") & """ "
             xml = xml & "onAction=""VirtualTub.VTubInsertBookmark"" "
-            xml = xml & "imageMso=""ExportTextFile"" "
+            #If Mac Then
+                xml = xml & "imageMso=""TextDirection"" "
+            #Else
+                xml = xml & "imageMso=""ExportTextFile"" "
+            #End If
             xml = xml & "/>" & vbCrLf
            
             MenuID = MenuID & "1"
@@ -186,7 +194,11 @@ Private Function ConvertDictionaryToXML(d As Dictionary) As String
                 xml = xml & "label=""" & Child("Label") & """ "
                 xml = xml & "tag=""" & Child("Path") & "!#!" & Child("Name") & """ "
                 xml = xml & "onAction=""VirtualTub.VTubInsertBookmark"" "
-                xml = xml & "imageMso=""ExportTextFile"" "
+                #If Mac Then
+                    xml = xml & "imageMso=""TextDirection"" "
+                #Else
+                    xml = xml & "imageMso=""ExportTextFile"" "
+                #End If
                 xml = xml & "/>" & vbCrLf
             End If
         Next key
@@ -205,7 +217,11 @@ Private Function ConvertDictionaryToXML(d As Dictionary) As String
             xml = xml & "label=""" & d("Label") & """ "
             xml = xml & "tag=""" & d("Path") & "!#!" & d("Name") & """ "
             xml = xml & "onAction=""VirtualTub.VTubInsertBookmark"" "
-            xml = xml & "imageMso=""ExportTextFile"" "
+            #If Mac Then
+                xml = xml & "imageMso=""TextDirection"" "
+            #Else
+                xml = xml & "imageMso=""ExportTextFile"" "
+            #End If
             xml = xml & "/>" & vbCrLf
         Else
             xml = xml & "<menu "
@@ -280,7 +296,7 @@ Public Sub VTubCreate()
     ' Get VTubPath from settings
     VTubPath = GetSetting("Verbatim", "VTub", "VTubPath", "")
     
-    If VTubPath = vbNullString Or VTubPath = "?" Then
+    If VTubPath = "" Or VTubPath = "?" Then
         If MsgBox("You haven't configured a folder for the VTub. Open Settings?", vbYesNo, "Open Settings?") = vbYes Then
             UI.ShowForm "Settings"
         End If
@@ -411,7 +427,7 @@ Public Sub VTubCreate()
     Next
     
     ' Re-initialize the top-level folder for the final modification date
-    Set Folder = Filesystem.GetFolder(GetSetting("Verbatim", "VTub", "VTubPath", vbNullString))
+    Set Folder = Filesystem.GetFolder(GetSetting("Verbatim", "VTub", "VTubPath", ""))
     RootMenu.Add "DateLastModified", Format(Folder.DateLastModified)
     
     ' Convert the dictionary to JSON
@@ -468,7 +484,7 @@ Sub VTubRefresh()
     ' Get VTubPath from Settings
     VTubPath = GetSetting("Verbatim", "VTub", "VTubPath", "")
     
-    If VTubPath = vbNullString Or VTubPath = "?" Then
+    If VTubPath = "" Or VTubPath = "?" Then
         If MsgBox("You haven't configured a folder for the VTub. Open Settings?", vbYesNo, "Open Settings?") = vbYes Then
             UI.ShowForm "Settings"
         End If
@@ -585,7 +601,7 @@ Sub VTubRefresh()
     Next key
     
     ' Update the top-level modification timestamp
-    Set Folder = Filesystem.GetFolder(GetSetting("Verbatim", "VTub", "VTubPath", vbNullString))
+    Set Folder = Filesystem.GetFolder(GetSetting("Verbatim", "VTub", "VTubPath", ""))
     RootMenu("DateLastModified") = Format(Folder.DateLastModified)
   
     ' Save new JSON

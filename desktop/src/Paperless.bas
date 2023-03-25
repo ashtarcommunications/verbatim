@@ -14,9 +14,9 @@ Sub AutoOpenFolder(c As IRibbonControl, pressed As Boolean)
         Dim Files
         Dim f
     #Else
-        Dim Files As Scripting.Files
-        Dim FSO As Scripting.FileSystemObject
-        Dim f As Scripting.File
+        Dim Files
+        Dim FSO As Object
+        Dim f
     #End If
     Dim d As Document
     Dim IsOpen As Boolean
@@ -27,7 +27,7 @@ Sub AutoOpenFolder(c As IRibbonControl, pressed As Boolean)
     If pressed Then
     
         ' Check for auto open folder
-        AutoOpenDir = GetSetting("Verbatim", "Paperless", "AutoOpenDir", vbNullString)
+        AutoOpenDir = GetSetting("Verbatim", "Paperless", "AutoOpenDir", "")
         If AutoOpenDir = "" Or AutoOpenDir = "?" Then
             If MsgBox("You have not set an Auto Open folder. Open settings now?", vbYesNo) = vbYes Then
                 UI.ShowForm "Settings"
@@ -58,7 +58,7 @@ Sub AutoOpenFolder(c As IRibbonControl, pressed As Boolean)
         #If Mac Then
             ' Do Nothing
         #Else
-            Set FSO = New Scripting.FileSystemObject
+            Set FSO = CreateObject("Scripting.FileSystemObject")
         #End If
         
         ' Loop until unpressed
@@ -299,6 +299,48 @@ Public Function SelectHeadingAndContentRange(p As Paragraph) As Range
     Set SelectHeadingAndContentRange = r
 End Function
 
+Public Sub SelectCardText()
+
+    Paperless.SelectHeadingAndContent
+    
+    Do While True
+        If Selection.Paragraphs.Count < 2 Then Exit Do
+
+        If Selection.Paragraphs(1).outlineLevel <> wdOutlineLevelBodyText Then
+            Selection.MoveStart Unit:=wdParagraph, Count:=1
+        ' Ignore paragraphs starting with [, (, or < as they're likely 2-line cites
+        ElseIf Left(Selection.Paragraphs(1).Range.Text, 1) Like "[\[(<]" Then
+            Selection.MoveStart Unit:=wdParagraph, Count:=1
+        Else
+            With Selection.Paragraphs(1).Range.Find
+                .ClearFormatting
+                .Replacement.ClearFormatting
+                .Text = ""
+                .Forward = True
+                .Wrap = wdFindStop
+                .Format = True
+                .Style = "Cite"
+                .MatchCase = False
+                .MatchWholeWord = False
+                .MatchWildcards = False
+                .MatchSoundsLike = False
+                .MatchAllWordForms = False
+                
+                .Execute
+                
+                If .Found Then
+                    Selection.MoveStart Unit:=wdParagraph, Count:=1
+                Else
+                    Exit Do
+                End If
+                
+                .ClearFormatting
+                .Replacement.ClearFormatting
+            End With
+        End If
+    Loop
+End Sub
+
 Sub MoveUp()
 ' Moves the current pocket, hat, block, or tag, up one level in the document outline
     Dim OLevel As Long
@@ -473,12 +515,19 @@ End Sub
 '*************************************************************************************
 '* SEND FUNCTIONS                                                                    *
 '*************************************************************************************
+Sub SendToSpeechCursor()
+    Paperless.SendToSpeech PasteAtEnd:=False
+End Sub
+Sub SendToSpeechEnd()
+    Paperless.SendToSpeech PasteAtEnd:=True
+End Sub
 
-Sub SendToSpeech()
+Sub SendToSpeech(Optional PasteAtEnd As Boolean)
 ' Sends content to the Speech doc.  Sends currently selected text,
 ' or if nothing is selected, the current tag, block, hat, or pocket
 ' If in reading view, enters a stopped reading marker at the current location
 
+    Dim CurrentPage As Long
     Dim CurrentDoc As String
     Dim SpeechDoc As Document
     Dim d As Document
@@ -488,27 +537,27 @@ Sub SendToSpeech()
 
     ' If in reading mode, enter a stopped reading marker
     If ActiveWindow.View.ReadingLayout Then
+        Application.ScreenUpdating = False
+        CurrentPage = ActiveWindow.ActivePane.Selection.Information(wdActiveEndPageNumber)
         
-        ' For Word 2013, use a comment
-        If Application.Version >= "15.0" Then
-            
-            Selection.Collapse
-            
-            ' Insert a comment and close reviewing pane
-            Selection.Comments.Add Range:=Selection.Range
-            ActiveWindow.ActivePane.Close
-            Exit Sub
+        ActiveWindow.View = wdWebView
+        Selection.Collapse Direction:=wdCollapseEnd
+        If Selection.Words(1).End <> Selection.End Then Selection.MoveRight wdWord
+        Selection.Font.Color = wdColorRed
+        Selection.Font.Size = 18
+        Selection.TypeText Chr(167) & " Marked " & FormatDateTime(Time, 4) & " " & Chr(167) & " "
+        ActiveWindow.View = wdReadingView
         
-        ' Previous versions, use a marker
-        Else
-            ActiveWindow.View.ReadingLayoutAllowEditing = True
-            Selection.Collapse
-            If Selection.Words(1).End <> Selection.End Then Selection.MoveRight wdWord
-            Selection.Font.Color = wdColorRed
-            Selection.Font.Size = 18
-            Selection.TypeText Chr(167) & " Marked " & FormatDateTime(Time, 4) & " " & Chr(167) & " "
-            Exit Sub
-        End If
+        With ActiveWindow.ActivePane
+            If CurrentPage > .Selection.Information(wdActiveEndPageNumber) Then
+                .PageScroll Down:=CurrentPage - .Selection.Information(wdActiveEndPageNumber)
+            ElseIf CurrentPage < .Selection.Information(wdActiveEndPageNumber) Then
+                .PageScroll Up:=CurrentPage - .Selection.Information(wdActiveEndPageNumber)
+            End If
+        End With
+        Application.ScreenUpdating = True
+        
+        Exit Sub
     End If
 
     ' Save active document name
@@ -556,47 +605,51 @@ SpeechDocCheck:
     
     ' Turn off screen updating for the heavy-lifting
     Application.ScreenUpdating = False
-    
-    ' If text is selected, copy and send it.  Add a return if not in the selection.
+       
+    ' Use selection or the current heading
     If Selection.End > Selection.Start Then
         Selection.Copy
-        
-        ' Trap for sending to middle of text
-        If SpeechDoc.ActiveWindow.Selection.Start <> SpeechDoc.ActiveWindow.Selection.Paragraphs(1).Range.Start Then
-            If MsgBox("Sending to the middle of text. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
-        End If
-        
-        SpeechDoc.ActiveWindow.Selection.Paste
-        If Selection.Characters.Last.Text <> Chr(13) Then
-            SpeechDoc.ActiveWindow.Selection.TypeParagraph
-        End If
-        Exit Sub
+    Else
+        Paperless.SelectHeadingAndContent
+        Selection.Copy
     End If
-    
-    ' If nothing is selected, select the current card, block, hat or pocket
-    Paperless.SelectHeadingAndContent
-        
+                
     ' If still nothing selected, exit
     If Selection.Start = Selection.End Then Exit Sub
+          
+    Dim SpeechDocStart
+    Dim SpeechDocEnd
+          
+    If PasteAtEnd = True Then
+        SpeechDocStart = SpeechDoc.ActiveWindow.Selection.Start
+        SpeechDocEnd = SpeechDoc.ActiveWindow.Selection.End
         
-    ' Copy the unit
-    Selection.Copy
-    
-    ' Trap for sending to middle of text or sending a card into a block/hat
-    If SpeechDoc.ActiveWindow.Selection.Start <> SpeechDoc.ActiveWindow.Selection.Paragraphs(1).Range.Start Then
-       If MsgBox("Sending to the middle of text. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
-    End If
-    If Selection.Paragraphs(1).outlineLevel = 4 Then
-        If SpeechDoc.ActiveWindow.Selection.Paragraphs.outlineLevel < wdOutlineLevel4 Then
-            If MsgBox("Sending a card into a block, hat, or pocket.  Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
+        SpeechDoc.ActiveWindow.Selection.EndKey Unit:=wdStory
+        SpeechDoc.ActiveWindow.Selection.InsertParagraph
+    Else
+        ' Trap for sending to middle of text or sending a card into a block/hat
+        If SpeechDoc.ActiveWindow.Selection.Start <> SpeechDoc.ActiveWindow.Selection.Paragraphs(1).Range.Start Then
+           If MsgBox("Sending to the middle of text. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
+        End If
+        If Selection.Paragraphs(1).outlineLevel = 4 Then
+            If SpeechDoc.ActiveWindow.Selection.Paragraphs.outlineLevel < wdOutlineLevel4 Then
+                If MsgBox("Sending a card into a block, hat, or pocket.  Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
+            End If
         End If
     End If
-    
-    ' Paste it
+   
+    ' Paste it and add a return if necessary
     SpeechDoc.ActiveWindow.Selection.Paste
+    If Selection.Characters.Last.Text <> Chr(13) Then
+        SpeechDoc.ActiveWindow.Selection.TypeParagraph
+    End If
         
     ' Reset Selection
     Selection.Collapse
+    If PasteAtEnd = True Then
+        SpeechDoc.ActiveWindow.Selection.Start = SpeechDocStart
+        SpeechDoc.ActiveWindow.Selection.End = SpeechDocEnd
+    End If
     
     Set SpeechDoc = Nothing
     
@@ -690,16 +743,11 @@ Sub CopyToUSB()
     ActiveDocument.Save
             
     #If Mac Then
-        Dim POSIXActive
-        
         Dim MountPoints As String
         Dim MountPointArray
         Dim m
     
         On Error GoTo Handler
-        
-        ' Get full POSIX path of current file
-        POSIXActive = MacScript("return POSIX path of """ & ActiveDocument.FullName & """")
         
         ' Get list of mounted USB drives - throws an error if none plugged in, so turn off error checking temporarily
         On Error Resume Next
@@ -723,16 +771,16 @@ Sub CopyToUSB()
             End If
             
             ' Copy To USB
-            AppleScriptTask "Verbatim.scpt", "RunShellScript", "cp '" & POSIXActive & "' '" & m & FileName & "'"
+            AppleScriptTask "Verbatim.scpt", "RunShellScript", "cp '" & ActiveDocument.FullName & "' '" & m & FileName & "'"
             MsgBox "Sucessfully copied to USB!"
         Next m
         
         Exit Sub
     
     #Else
-        Dim FSO As Scripting.FileSystemObject
-        Set FSO = New Scripting.FileSystemObject
-        Dim Drv As Drives
+        Dim FSO As Object
+        Set FSO = CreateObject("Scripting.FileSystemObject")
+        Dim Drv
         Set Drv = FSO.Drives
         Dim d
         Dim USB
@@ -795,7 +843,7 @@ Sub StartTimer()
         TimerPath = GetSetting("Verbatim", "Plugins", "TimerPath", "?")
         
         ' If not set, try default
-        If TimerPath = "?" Then TimerPath = MacScript("return path to applications folder as string") & "Debate Timer for Mac.app"
+        If TimerPath = "?" Then TimerPath = "/Applications/VerbatimTimer.app"
     
         ' Make sure timer app exists
         If AppleScriptTask("Verbatim.scpt", "FileExists", TimerPath) = "false" Then
@@ -804,8 +852,7 @@ Sub StartTimer()
         Else
             ' If java app selected, run it from the shell
             If Right(TimerPath, 5) = ".jar:" Or Right(TimerPath, 4) = ".jar" Then
-                TimerPathPOSIX = MacScript("return POSIX path of """ & TimerPath & """")
-                AppleScriptTask "Verbatim.scpt", "RunShellScript", "open '" & TimerPathPOSIX & "'"
+                AppleScriptTask "Verbatim.scpt", "RunShellScript", "open '" & TimerPath & "'"
             Else
                 AppleScriptTask "Verbatim.scpt", "ActivateTimer", TimerPath
             End If
@@ -813,8 +860,8 @@ Sub StartTimer()
     
         Exit Sub
     #Else
-        TimerPath = GetSetting("Verbatim", "Plugins", "TimerPath", vbNullString)
-        If TimerPath = vbNullString Then
+        TimerPath = GetSetting("Verbatim", "Plugins", "TimerPath", "")
+        If TimerPath = "" Then
             TimerPath = Environ("ProgramW6432" & Application.PathSeparator & "Verbatim\Plugins\Timer.exe")
         End If
         
@@ -953,7 +1000,7 @@ Public Sub DeleteQuickCard(Optional QuickCardName As String)
         If t.BuildingBlockTypes(i).Name = "Custom 1" Then
             For j = 1 To t.BuildingBlockTypes(i).Categories.Count
                 If t.BuildingBlockTypes(i).Categories(j).Name = "Verbatim" Then
-                    For k = 1 To t.BuildingBlockTypes(i).Categories(j).BuildingBlocks.Count
+                    For k = t.BuildingBlockTypes(i).Categories(j).BuildingBlocks.Count To 1 Step -1
                         ' If name provided, delete just that building block, otherwise delete everything in the category
                         If QuickCardName <> "" Or IsNull(QuickCardName) Then
                             If t.BuildingBlockTypes(i).Categories(j).BuildingBlocks(k).Name = QuickCardName Then

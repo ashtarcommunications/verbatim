@@ -23,6 +23,8 @@ Option Explicit
 Private Sub UserForm_Initialize()
     On Error GoTo Handler
     
+    Globals.InitializeGlobals
+    
     If GetSetting("Verbatim", "Profile", "DisableTabroom", False) = True Then
         MsgBox "Caselist functions are disabled in the Verbatim settings. Please enable to use this feature."
         Me.Hide
@@ -31,6 +33,10 @@ Private Sub UserForm_Initialize()
 
     #If Mac Then
         UI.ResizeUserForm Me
+        Me.btnCancel.ForeColor = Globals.RED
+        Me.btnSubmit.ForeColor = Globals.BLUE
+        Me.btnAddCite.ForeColor = Globals.GREEN
+        Me.btnDeleteCite.ForeColor = Globals.RED
     #End If
 
     Application.StatusBar = "Checking whether logged into openCaselist..."
@@ -57,11 +63,11 @@ Private Sub UserForm_Initialize()
     
     Me.cboSelectRound.AddItem
     Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 0) = "Select a Round"
-    Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 1) = vbNullString
-    Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 2) = vbNullString
-    Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 3) = vbNullString
-    Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 4) = vbNullString
-    Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 5) = vbNullString
+    Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 1) = ""
+    Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 2) = ""
+    Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 3) = ""
+    Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 4) = ""
+    Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 5) = ""
     Me.cboSelectRound.ListIndex = 0
     
     Me.cboTournament.AddItem ""
@@ -95,8 +101,8 @@ Private Sub UserForm_Initialize()
     
     ' Add Round and side options to dropdowns
     Me.cboRound.AddItem
-    Me.cboRound.List(Me.cboRound.ListCount - 1, 0) = vbNullString
-    Me.cboRound.List(Me.cboRound.ListCount - 1, 1) = vbNullString
+    Me.cboRound.List(Me.cboRound.ListCount - 1, 0) = ""
+    Me.cboRound.List(Me.cboRound.ListCount - 1, 1) = ""
     Me.cboRound.AddItem
     Me.cboRound.List(Me.cboRound.ListCount - 1, 0) = "All"
     Me.cboRound.List(Me.cboRound.ListCount - 1, 1) = "All"
@@ -150,8 +156,8 @@ Private Sub UserForm_Initialize()
     Me.cboRound.List(Me.cboRound.ListCount - 1, 1) = "Finals"
     
     Me.cboSide.AddItem
-    Me.cboSide.List(Me.cboSide.ListCount - 1, 0) = vbNullString
-    Me.cboSide.List(Me.cboSide.ListCount - 1, 1) = vbNullString
+    Me.cboSide.List(Me.cboSide.ListCount - 1, 0) = ""
+    Me.cboSide.List(Me.cboSide.ListCount - 1, 1) = ""
     Me.cboSide.AddItem
     Me.cboSide.List(Me.cboSide.ListCount - 1, 0) = "Aff"
     Me.cboSide.List(Me.cboSide.ListCount - 1, 1) = "A"
@@ -164,19 +170,19 @@ Private Sub UserForm_Initialize()
     End If
     
     Me.cboCaselists.AddItem
-    Me.cboCaselists.List(Me.cboCaselists.ListCount - 1, 0) = vbNullString
-    Me.cboCaselists.List(Me.cboCaselists.ListCount - 1, 1) = vbNullString
-    Me.cboCaselists.Value = vbNullString
+    Me.cboCaselists.List(Me.cboCaselists.ListCount - 1, 0) = ""
+    Me.cboCaselists.List(Me.cboCaselists.ListCount - 1, 1) = ""
+    Me.cboCaselists.Value = ""
     
     Me.cboCaselistSchoolName.AddItem
-    Me.cboCaselistSchoolName.List(Me.cboCaselistSchoolName.ListCount - 1, 0) = vbNullString
-    Me.cboCaselistSchoolName.List(Me.cboCaselistSchoolName.ListCount - 1, 1) = vbNullString
-    Me.cboCaselistSchoolName.Value = vbNullString
+    Me.cboCaselistSchoolName.List(Me.cboCaselistSchoolName.ListCount - 1, 0) = ""
+    Me.cboCaselistSchoolName.List(Me.cboCaselistSchoolName.ListCount - 1, 1) = ""
+    Me.cboCaselistSchoolName.Value = ""
     
     Me.cboCaselistTeamName.AddItem
-    Me.cboCaselistTeamName.List(Me.cboCaselistTeamName.ListCount - 1, 0) = vbNullString
-    Me.cboCaselistTeamName.List(Me.cboCaselistTeamName.ListCount - 1, 1) = vbNullString
-    Me.cboCaselistTeamName.Value = vbNullString
+    Me.cboCaselistTeamName.List(Me.cboCaselistTeamName.ListCount - 1, 0) = ""
+    Me.cboCaselistTeamName.List(Me.cboCaselistTeamName.ListCount - 1, 1) = ""
+    Me.cboCaselistTeamName.Value = ""
     
     Dim DefaultCaselist As String
     DefaultCaselist = GetSetting("Verbatim", "Caselist", "DefaultCaselist", "")
@@ -228,9 +234,9 @@ Private Sub cboCaselists_DropButtonClick()
     
     Me.cboCaselists.Clear
     Me.cboCaselists.AddItem
-    Me.cboCaselists.List(Me.cboCaselists.ListCount - 1, 0) = vbNullString
-    Me.cboCaselists.List(Me.cboCaselists.ListCount - 1, 1) = vbNullString
-    Me.cboCaselists.Value = vbNullString
+    Me.cboCaselists.List(Me.cboCaselists.ListCount - 1, 0) = ""
+    Me.cboCaselists.List(Me.cboCaselists.ListCount - 1, 1) = ""
+    Me.cboCaselists.Value = ""
             
     UI.PopulateComboBoxFromJSON Globals.CASELIST_URL & "/caselists", "display_name", "name", Me.cboCaselists
     
@@ -255,14 +261,14 @@ Private Sub cboCaselists_Change()
     Me.cboCaselistTeamName.Clear
     
     Me.cboCaselistSchoolName.AddItem
-    Me.cboCaselistSchoolName.List(Me.cboCaselistSchoolName.ListCount - 1, 0) = vbNullString
-    Me.cboCaselistSchoolName.List(Me.cboCaselistSchoolName.ListCount - 1, 1) = vbNullString
-    Me.cboCaselistSchoolName.Value = vbNullString
+    Me.cboCaselistSchoolName.List(Me.cboCaselistSchoolName.ListCount - 1, 0) = ""
+    Me.cboCaselistSchoolName.List(Me.cboCaselistSchoolName.ListCount - 1, 1) = ""
+    Me.cboCaselistSchoolName.Value = ""
     
     Me.cboCaselistTeamName.AddItem
-    Me.cboCaselistTeamName.List(Me.cboCaselistTeamName.ListCount - 1, 0) = vbNullString
-    Me.cboCaselistTeamName.List(Me.cboCaselistTeamName.ListCount - 1, 1) = vbNullString
-    Me.cboCaselistTeamName.Value = vbNullString
+    Me.cboCaselistTeamName.List(Me.cboCaselistTeamName.ListCount - 1, 0) = ""
+    Me.cboCaselistTeamName.List(Me.cboCaselistTeamName.ListCount - 1, 1) = ""
+    Me.cboCaselistTeamName.Value = ""
 End Sub
 
 Private Sub cboCaselistSchoolName_DropButtonClick()
@@ -276,9 +282,9 @@ Private Sub cboCaselistSchoolName_DropButtonClick()
                
     Me.cboCaselistSchoolName.Clear
     Me.cboCaselistSchoolName.AddItem
-    Me.cboCaselistSchoolName.List(Me.cboCaselistSchoolName.ListCount - 1, 0) = vbNullString
-    Me.cboCaselistSchoolName.List(Me.cboCaselistSchoolName.ListCount - 1, 1) = vbNullString
-    Me.cboCaselistSchoolName.Value = vbNullString
+    Me.cboCaselistSchoolName.List(Me.cboCaselistSchoolName.ListCount - 1, 0) = ""
+    Me.cboCaselistSchoolName.List(Me.cboCaselistSchoolName.ListCount - 1, 1) = ""
+    Me.cboCaselistSchoolName.Value = ""
                
     Dim URL As String
     URL = Globals.CASELIST_URL & "/caselists/" + Me.cboCaselists.Value & "/schools"
@@ -306,9 +312,9 @@ Private Sub cboCaselistSchoolName_Change()
     Me.cboCaselistTeamName.Clear
     
     Me.cboCaselistTeamName.AddItem
-    Me.cboCaselistTeamName.List(Me.cboCaselistTeamName.ListCount - 1, 0) = vbNullString
-    Me.cboCaselistTeamName.List(Me.cboCaselistTeamName.ListCount - 1, 1) = vbNullString
-    Me.cboCaselistTeamName.Value = vbNullString
+    Me.cboCaselistTeamName.List(Me.cboCaselistTeamName.ListCount - 1, 0) = ""
+    Me.cboCaselistTeamName.List(Me.cboCaselistTeamName.ListCount - 1, 1) = ""
+    Me.cboCaselistTeamName.Value = ""
 
 End Sub
 
@@ -323,9 +329,9 @@ Private Sub cboCaselistTeamName_DropButtonClick()
                
     Me.cboCaselistTeamName.Clear
     Me.cboCaselistTeamName.AddItem
-    Me.cboCaselistTeamName.List(Me.cboCaselistTeamName.ListCount - 1, 0) = vbNullString
-    Me.cboCaselistTeamName.List(Me.cboCaselistTeamName.ListCount - 1, 1) = vbNullString
-    Me.cboCaselistTeamName.Value = vbNullString
+    Me.cboCaselistTeamName.List(Me.cboCaselistTeamName.ListCount - 1, 0) = ""
+    Me.cboCaselistTeamName.List(Me.cboCaselistTeamName.ListCount - 1, 1) = ""
+    Me.cboCaselistTeamName.Value = ""
     
     Dim URL As String
     URL = Globals.CASELIST_URL & "/caselists/" + Me.cboCaselists.Value & "/schools/" & Me.cboCaselistSchoolName.Value & "/teams"
@@ -350,7 +356,7 @@ End Sub
 Private Sub cboSelectRound_Change()
     If Me.cboSelectRound.ListIndex > -1 Then
         If Not IsNull(Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 1)) _
-            And Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 1) <> vbNullString _
+            And Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 1) <> "" _
         Then
             Me.cboTournament.AddItem Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 1)
             Me.cboTournament.Value = Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 1)
@@ -365,11 +371,11 @@ Private Sub cboSelectRound_Change()
         Me.txtJudge.Enabled = True
         Me.txtRoundReport.Enabled = True
         
-        Me.cboTournament.Value = vbNullString
-        Me.cboSide.Value = vbNullString
-        Me.cboRound.Value = vbNullString
-        Me.txtOpponent.Value = vbNullString
-        Me.txtJudge.Value = vbNullString
+        Me.cboTournament.Value = ""
+        Me.cboSide.Value = ""
+        Me.cboRound.Value = ""
+        Me.txtOpponent.Value = ""
+        Me.txtJudge.Value = ""
     End If
 End Sub
 
@@ -415,11 +421,11 @@ Private Sub cboTournament_Change()
     If Me.cboTournament.Value = "All Tournaments / General Disclosure" Then
         Me.cboRound.Value = "All"
         Me.cboRound.Enabled = False
-        Me.txtOpponent.Value = vbNullString
+        Me.txtOpponent.Value = ""
         Me.txtOpponent.Enabled = False
-        Me.txtJudge.Value = vbNullString
+        Me.txtJudge.Value = ""
         Me.txtJudge.Enabled = False
-        Me.txtRoundReport.Value = vbNullString
+        Me.txtRoundReport.Value = ""
         Me.txtRoundReport.Enabled = False
     Else
         Me.cboRound.Enabled = True
@@ -430,7 +436,6 @@ Private Sub cboTournament_Change()
 End Sub
 
 Private Sub AddCiteEntry(Title As String, Content As String)
-    ' TODO - move these to Control types after late binding
     Dim TitleLabel As Object
     Dim TitleBox As Object
     Dim EntryLabel As Object
@@ -495,6 +500,8 @@ Private Sub AddCiteEntry(Title As String, Content As String)
     Me.fCites.ScrollTop = Me.fCites.ScrollHeight
 End Sub
 
+#If Mac Then
+#Else
 Sub btnSubmit_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnSubmit.BackColor = Globals.LIGHT_BLUE
 End Sub
@@ -517,6 +524,7 @@ Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x 
     btnAddCite.BackColor = Globals.GREEN
     btnDeleteCite.BackColor = Globals.RED
 End Sub
+#End If
 
 Public Function ValidateForm() As Boolean
 
@@ -528,7 +536,7 @@ Public Function ValidateForm() As Boolean
     Me.lblError.Caption = "No Errors"
     ValidateForm = True
 
-    If Trim(Me.cboTournament.Value) = vbNullString Then
+    If Trim(Me.cboTournament.Value) = "" Then
         Me.cboTournament.BorderColor = Globals.RED
         Me.lblError.Caption = "Tournament, side, and round are required!"
         Me.lblError.visible = True
@@ -536,7 +544,7 @@ Public Function ValidateForm() As Boolean
         Exit Function
     End If
     
-    If Me.cboSide.Value = vbNullString Then
+    If Me.cboSide.Value = "" Then
         Me.cboSide.BorderColor = Globals.RED
         Me.lblError.Caption = "Tournament, side, and round are required!"
         Me.lblError.visible = True
@@ -544,7 +552,7 @@ Public Function ValidateForm() As Boolean
         Exit Function
     End If
     
-    If Me.cboRound.Value = vbNullString Then
+    If Me.cboRound.Value = "" Then
         Me.cboRound.BorderColor = Globals.RED
         Me.lblError.Caption = "Tournament, side, and round are required!"
         Me.lblError.visible = True
@@ -560,7 +568,7 @@ Public Function ValidateForm() As Boolean
     End If
     
     If Me.fCites.Controls.Count > 0 Then
-        If Trim(Me.fCites.Controls("txtEntryTitle1").Value) = vbNullString Or Trim(Me.fCites.Controls("txtEntryContent1").Value) = vbNullString Then
+        If Trim(Me.fCites.Controls("txtEntryTitle1").Value) = "" Or Trim(Me.fCites.Controls("txtEntryContent1").Value) = "" Then
             Me.lblError.Caption = "Cite entries require a title and content!"
             Me.lblError.visible = True
             ValidateForm = False
@@ -568,9 +576,9 @@ Public Function ValidateForm() As Boolean
         End If
     End If
     
-    If Me.cboCaselists.Value = vbNullString _
-        Or Me.cboCaselistSchoolName.Value = vbNullString _
-        Or Me.cboCaselistTeamName.Value = vbNullString _
+    If Me.cboCaselists.Value = "" _
+        Or Me.cboCaselistSchoolName.Value = "" _
+        Or Me.cboCaselistTeamName.Value = "" _
         Or IsNull(Me.cboCaselists.Value) = True _
         Or IsNull(Me.cboCaselistSchoolName.Value) = True _
         Or IsNull(Me.cboCaselistTeamName.Value) = True _

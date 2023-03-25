@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmSetupWizard 
    Caption         =   "Verbatim Setup Wizard"
-   ClientHeight    =   6210
+   ClientHeight    =   5820
    ClientLeft      =   120
    ClientTop       =   450
    ClientWidth     =   7515
@@ -16,11 +16,16 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub UserForm_Initialize()
-
     On Error GoTo Handler
+    
+    Dim TemplateFolder As String
+    
+    Globals.InitializeGlobals
     
     #If Mac Then
         UI.ResizeUserForm Me
+        Me.btnCancel.ForeColor = Globals.RED
+        Me.btnOK.ForeColor = Globals.BLUE
     #End If
     
     ' Run install checks
@@ -28,12 +33,15 @@ Private Sub UserForm_Initialize()
         If Troubleshooting.InstallCheckTemplateName = True Then
             MsgBox "WARNING - Verbatim appears to be installed incorrectly as " & ActiveDocument.AttachedTemplate.Name & " - Verbatim should always be named ""Debate.dotm"" or many features will not work correctly. It is strongly recommended you change the file name back." & vbCrLf & vbCrLf & "Please close Verbatim and install correctly before proceeding."
             Unload Me
-            'ActiveDocument.Close
             Exit Sub
         ElseIf Troubleshooting.InstallCheckTemplateLocation = True Then
-            MsgBox "WARNING - Verbatim appears to be installed in the wrong location. The Verbatim template file (Debate.dotm) should be located in your Word Templates folder, usually located at: c:\Users\<yourname>\AppData\Roaming\Microsoft\Templates. Using it from a different location will break many features." & vbCrLf & vbCrLf & "Please close Verbatim and install correctly before proceeding."
+            #If Mac Then
+                TemplateFolder = "~/Library/Group Containers/UBF8T34G9.Office/User Content/Templates"
+            #Else
+                TemplateFolder = "c:\Users\<yourname>\AppData\Roaming\Microsoft\Templates"
+            #End If
+            MsgBox "WARNING - Verbatim appears to be installed in the wrong location. The Verbatim template file (Debate.dotm) should be located in your Word Templates folder, usually located at: " & TemplateFolder & ". Using it from a different location will break many features." & vbCrLf & vbCrLf & "Please close Verbatim and install correctly before proceeding."
             Unload Me
-            'ActiveDocument.Close
             Exit Sub
         End If
     End If
@@ -62,8 +70,7 @@ Handler:
 End Sub
 
 Private Sub btnOK_Click()
-
-    On Error Resume Next
+    On Error GoTo Handler
     
     SaveSetting "Verbatim", "Admin", "AlwaysOn", Me.chkAlwaysOn.Value
         
@@ -91,13 +98,15 @@ Private Sub btnOK_Click()
 
 Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
-    
 End Sub
 
 Private Sub btnCancel_Click()
     If MsgBox("Are you sure you want to exit without completing the Setup Wizard?", vbYesNo) = vbYes Then Unload Me
 End Sub
 
+#If Mac Then
+    ' Do Nothing
+#Else
 Sub btnOK_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnOK.BackColor = Globals.LIGHT_BLUE
 End Sub
@@ -110,3 +119,4 @@ Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x 
     btnOK.BackColor = Globals.BLUE
     btnCancel.BackColor = Globals.RED
 End Sub
+#End If

@@ -39,7 +39,7 @@ Public Function FolderExists(ByVal FolderPath As String) As Boolean
     FolderExists = False
 
     #If Mac Then
-        If AppleScriptTask("Verbatim.scpt", "FolderExists", Replace(FolderExists, ".localized", vbNullString)) = "true" Then
+        If AppleScriptTask("Verbatim.scpt", "FolderExists", Replace(FolderExists, ".localized", "")) = "true" Then
             FolderExists = True
         End If
     #Else
@@ -100,8 +100,8 @@ Sub DeleteFolder(Path As String)
     #If Mac Then
         AppleScriptTask "Verbatim.scpt", "KillFolderOnMac", Path
     #Else
-        Dim FSO As FileSystemObject
-        Set FSO = New FileSystemObject
+        Dim FSO As Object
+        Set FSO = CreateObject("Scripting.FileSystemObject")
         FSO.DeleteFolder Path
         Set FSO = Nothing
     #End If
@@ -133,8 +133,8 @@ Public Sub CopyFile(Path As String, NewPath As String)
         Script = "cp " & Path & " " & NewPath
         AppleScriptTask "Verbatim.scpt", "DoShellScript", Script
     #Else
-        Dim FSO As FileSystemObject
-        Set FSO = New FileSystemObject
+        Dim FSO As Object
+        Set FSO = CreateObject("Scripting.FileSystemObject")
         FSO.CopyFile Path, NewPath
     #End If
 
@@ -157,7 +157,10 @@ Public Function GetFileAsBase64(Path As String) As String
         Script = "base64 " & Path
         GetFileAsBase64 = AppleScriptTask("Verbatim.scpt", "DoShellScript", Script)
     #Else
-        Dim FileStream As ADODB.Stream
+        Dim FileStream As Object
+        
+        Dim FSO
+        Set FSO = CreateObject("Scripting.FileSystemObject")
         Dim TempFileName As String
         
         Dim xmlDoc
@@ -170,9 +173,9 @@ Public Function GetFileAsBase64(Path As String) As String
         Filesystem.CopyFile Path, Path & ".base64"
         
         ' Create FileStream
-        Set FileStream = New ADODB.Stream
+        Set FileStream = CreateObject("ADODB.Stream")
         FileStream.Open
-        FileStream.Type = adTypeBinary
+        FileStream.Type = 1 'adTypeBinary
         FileStream.LoadFromFile FileName:=Path & ".base64"
            
         ' Convert to Base64

@@ -4,7 +4,7 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmSettings
    ClientHeight    =   7815
    ClientLeft      =   45
    ClientTop       =   375
-   ClientWidth     =   9705.001
+   ClientWidth     =   9705
    OleObjectBlob   =   "frmSettings.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -28,6 +28,8 @@ Private Sub SetPage(MenuTab As String)
     Me.lblTabView.ForeColor = Globals.BLACK
     Me.lblTabPaperless.BackColor = Globals.WHITE
     Me.lblTabPaperless.ForeColor = Globals.BLACK
+    Me.lblTabStyles.BackColor = Globals.WHITE
+    Me.lblTabStyles.ForeColor = Globals.BLACK
     Me.lblTabFormat.BackColor = Globals.WHITE
     Me.lblTabFormat.ForeColor = Globals.BLACK
     Me.lblTabKeyboard.BackColor = Globals.WHITE
@@ -58,28 +60,32 @@ Private Sub SetPage(MenuTab As String)
             Me.mpgSettings.Value = 3
             Me.lblTabPaperless.BackColor = Globals.BLUE
             Me.lblTabPaperless.ForeColor = Globals.WHITE
-        Case "Format"
+        Case "Styles"
             Me.mpgSettings.Value = 4
+            Me.lblTabStyles.BackColor = Globals.BLUE
+            Me.lblTabStyles.ForeColor = Globals.WHITE
+        Case "Format"
+            Me.mpgSettings.Value = 5
             Me.lblTabFormat.BackColor = Globals.BLUE
             Me.lblTabFormat.ForeColor = Globals.WHITE
         Case "Keyboard"
-            Me.mpgSettings.Value = 5
+            Me.mpgSettings.Value = 6
             Me.lblTabKeyboard.BackColor = Globals.BLUE
             Me.lblTabKeyboard.ForeColor = Globals.WHITE
         Case "VTub"
-            Me.mpgSettings.Value = 6
+            Me.mpgSettings.Value = 7
             Me.lblTabVTub.BackColor = Globals.BLUE
             Me.lblTabVTub.ForeColor = Globals.WHITE
         Case "Caselist"
-            Me.mpgSettings.Value = 7
+            Me.mpgSettings.Value = 8
             Me.lblTabCaselist.BackColor = Globals.BLUE
             Me.lblTabCaselist.ForeColor = Globals.WHITE
         Case "Plugins"
-            Me.mpgSettings.Value = 8
+            Me.mpgSettings.Value = 9
             Me.lblTabPlugins.BackColor = Globals.BLUE
             Me.lblTabPlugins.ForeColor = Globals.WHITE
         Case "About"
-            Me.mpgSettings.Value = 9
+            Me.mpgSettings.Value = 10
             Me.lblTabAbout.BackColor = Globals.BLUE
             Me.lblTabAbout.ForeColor = Globals.WHITE
         Case Else
@@ -100,6 +106,9 @@ Private Sub lblTabView_Click()
 End Sub
 Private Sub lblTabPaperless_Click()
     SetPage "Paperless"
+End Sub
+Private Sub lblTabStyles_Click()
+    SetPage "Styles"
 End Sub
 Private Sub lblTabFormat_Click()
     SetPage "Format"
@@ -173,6 +182,7 @@ Private Sub UserForm_Initialize()
     ' Admin Tab
     Me.chkAlwaysOn.Value = GetSetting("Verbatim", "Admin", "AlwaysOn", True)
     Me.chkAutoUpdateStyles.Value = GetSetting("Verbatim", "Admin", "AutoUpdateStyles", True)
+    Me.chkSuppressStyleChecks.Value = GetSetting("Verbatim", "Admin", "SuppressStyleChecks", True)
     Me.chkSuppressInstallChecks.Value = GetSetting("Verbatim", "Admin", "SuppressInstallChecks", False)
     Me.chkSuppressDocCheck.Value = GetSetting("Verbatim", "Admin", "SuppressDocCheck", False)
     Me.chkFirstRun = GetSetting("Verbatim", "Admin", "FirstRun", False)
@@ -206,7 +216,7 @@ Private Sub UserForm_Initialize()
     Me.cboAutoOpenDir.Value = GetSetting("Verbatim", "Paperless", "AutoOpenDir", "")
     Me.cboAudioDir.Value = GetSetting("Verbatim", "Paperless", "AudioDir", "")
       
-    ' Populate Format Tab Comboboxes - Allow 8pt-32pt
+    ' Populate Styles Tab Comboboxes - Allow 8pt-32pt
     FontSize = 8
     Do While FontSize < 33
         Me.cboNormalSize.AddItem FontSize
@@ -220,52 +230,57 @@ Private Sub UserForm_Initialize()
         FontSize = FontSize + 1
     Loop
     
-    ' Populate Format Tab Normal Font Combobox
+    ' Populate Styles Tab Normal Font Combobox
     For Each f In Application.FontNames
         Me.cboNormalFont.AddItem f
     Next f
     
-    ' Populate Format Tab Emphasis box size combobox
+    ' Populate Styles Tab Emphasis box size combobox
     Me.cboEmphasisBoxSize.AddItem "1pt"
     Me.cboEmphasisBoxSize.AddItem "1.5pt"
     Me.cboEmphasisBoxSize.AddItem "2.25pt"
     Me.cboEmphasisBoxSize.AddItem "3pt"
     
-    ' Format Tab
-    Me.cboNormalSize.Value = GetSetting("Verbatim", "Format", "NormalSize", 11)
-    Me.cboNormalFont.Value = GetSetting("Verbatim", "Format", "NormalFont", "Calibri")
+    ' Styles Tab
+    Me.cboNormalSize.Value = GetSetting("Verbatim", "Styles", "NormalSize", 11)
+    Me.cboNormalFont.Value = GetSetting("Verbatim", "Styles", "NormalFont", "Calibri")
     
+    Me.cboPocketSize.Value = GetSetting("Verbatim", "Styles", "PocketSize", 26)
+    Me.cboHatSize.Value = GetSetting("Verbatim", "Styles", "HatSize", 22)
+    Me.cboBlockSize.Value = GetSetting("Verbatim", "Styles", "BlockSize", 16)
+    Me.cboTagSize.Value = GetSetting("Verbatim", "Styles", "TagSize", 13)
+    Me.cboAnalyticSize.Value = GetSetting("Verbatim", "Styles", "AnalyticSize", 13)
+    Me.chkAnalyticItalic.Value = GetSetting("Verbatim", "Styles", "AnalyticItalic", False)
+    
+    Me.cboCiteSize.Value = GetSetting("Verbatim", "Styles", "CiteSize", 13)
+    Me.chkUnderlineCite.Value = GetSetting("Verbatim", "Styles", "UnderlineCite", False)
+    
+    Me.cboUnderlineSize.Value = GetSetting("Verbatim", "Styles", "UnderlineSize", 11)
+    Me.chkBoldUnderline.Value = GetSetting("Verbatim", "Styles", "BoldUnderline", False)
+    
+    Me.cboEmphasisSize.Value = GetSetting("Verbatim", "Styles", "EmphasisSize", 11)
+    Me.chkEmphasisBold.Value = GetSetting("Verbatim", "Styles", "EmphasisBold", True)
+    Me.chkEmphasisItalic.Value = GetSetting("Verbatim", "Styles", "EmphasisItalic", False)
+    Me.chkEmphasisBox.Value = GetSetting("Verbatim", "Styles", "EmphasisBox", False)
+    Me.cboEmphasisBoxSize.Value = GetSetting("Verbatim", "Styles", "EmphasisBoxSize", "1pt")
+    
+    ' Format Tab
     If GetSetting("Verbatim", "Format", "Spacing", "Wide") = "Wide" Then
         Me.optSpacingWide.Value = True
     Else
         Me.optSpacingNarrow.Value = True
     End If
-    
-    Me.cboPocketSize.Value = GetSetting("Verbatim", "Format", "PocketSize", 26)
-    Me.cboHatSize.Value = GetSetting("Verbatim", "Format", "HatSize", 22)
-    Me.cboBlockSize.Value = GetSetting("Verbatim", "Format", "BlockSize", 16)
-    Me.cboTagSize.Value = GetSetting("Verbatim", "Format", "TagSize", 13)
-    
-    Me.cboCiteSize.Value = GetSetting("Verbatim", "Format", "CiteSize", 13)
-    Me.chkUnderlineCite.Value = GetSetting("Verbatim", "Format", "UnderlineCite", False)
-    
-    Me.cboUnderlineSize.Value = GetSetting("Verbatim", "Format", "UnderlineSize", 11)
-    Me.chkBoldUnderline.Value = GetSetting("Verbatim", "Format", "BoldUnderline", False)
-    
-    Me.cboEmphasisSize.Value = GetSetting("Verbatim", "Format", "EmphasisSize", 11)
-    Me.chkEmphasisBold.Value = GetSetting("Verbatim", "Format", "EmphasisBold", True)
-    Me.chkEmphasisItalic.Value = GetSetting("Verbatim", "Format", "EmphasisItalic", False)
-    Me.chkEmphasisBox.Value = GetSetting("Verbatim", "Format", "EmphasisBox", False)
-    Me.cboEmphasisBoxSize.Value = GetSetting("Verbatim", "Format", "EmphasisBoxSize", "1pt")
-    
+        
     If GetSetting("Verbatim", "Format", "ShrinkMode", "Paragraph") = "Paragraph" Then
         Me.optParagraph.Value = True
     Else
         Me.optSelected.Value = True
     End If
+    Me.chkShrinkOmissions = GetSetting("Verbatim", "Format", "ShrinkOmissions", False)
     
     Me.chkParagraphIntegrity.Value = GetSetting("Verbatim", "Format", "ParagraphIntegrity", False)
     Me.chkUsePilcrows.Value = GetSetting("Verbatim", "Format", "UsePilcrows", False)
+    Me.chkCondenseOnPaste.Value = GetSetting("Verbatim", "Format", "CondenseOnPaste", False)
     
     Me.chkAutoUnderlineEmphasis.Value = GetSetting("Verbatim", "Format", "AutoUnderlineEmphasis", False)
             
@@ -291,7 +306,7 @@ Private Sub UserForm_Initialize()
     Me.cboHighlightingException.Value = GetSetting("Verbatim", "Format", "HighlightingException", "None")
     
     ' Populate Keyboard Tab Comboboxes
-    MacroArray = Array("Paste", "Condense", "Pocket", "Hat", "Block", "Tag", "Cite", "Underline", "Emphasis", "Highlight", "Clear", "Shrink Text", "Select Similar")
+    MacroArray = Array("Paste", "Condense", "Pocket", "Hat", "Block", "Tag", "Analytic", "Cite", "Underline", "Emphasis", "Highlight", "Clear", "Shrink Text", "Select Similar")
     
     Me.cboF2Shortcut.List = MacroArray
     Me.cboF3Shortcut.List = MacroArray
@@ -317,7 +332,7 @@ Private Sub UserForm_Initialize()
     Me.cboF10Shortcut.Value = GetSetting("Verbatim", "Keyboard", "F10Shortcut", "Emphasis")
     Me.cboF11Shortcut.Value = GetSetting("Verbatim", "Keyboard", "F11Shortcut", "Highlight")
     Me.cboF12Shortcut.Value = GetSetting("Verbatim", "Keyboard", "F12Shortcut", "Clear")
-    
+        
     ' VTub Tab
     Me.cboVTubPath.Value = GetSetting("Verbatim", "VTub", "VTubPath", "")
     Me.chkVTubRefreshPrompt.Value = GetSetting("Verbatim", "VTub", "VTubRefreshPrompt", True)
@@ -330,6 +345,7 @@ Private Sub UserForm_Initialize()
     Me.cboTimer.Value = GetSetting("Verbatim", "Plugins", "TimerPath", "")
     Me.cboCapture2Text.Value = GetSetting("Verbatim", "Plugins", "Capture2TextPath", "")
     Me.cboOCR.Value = GetSetting("Verbatim", "Plugins", "OCRPath", "")
+    Me.cboSearch.Value = GetSetting("Verbatim", "Plugins", "SearchPath", "")
     
     ' About Tab
     Me.lblVersion.Caption = "Verbatim v. " & Settings.GetVersion
@@ -377,6 +393,7 @@ Private Sub btnResetAllSettings_Click()
     ' Admin Tab
     Me.chkAlwaysOn.Value = True
     Me.chkAutoUpdateStyles.Value = True
+    Me.chkSuppressStyleChecks.Value = False
     Me.chkSuppressInstallChecks.Value = False
     Me.chkSuppressDocCheck.Value = False
     Me.chkFirstRun.Value = False
@@ -408,13 +425,15 @@ Private Sub btnResetAllSettings_Click()
     Me.cboAutoOpenDir.Value = ""
     Me.cboAudioDir.Value = ""
     
-    ' Format Tab
+    ' Styles Tab
     Me.cboNormalSize.Value = 11
     Me.cboNormalFont.Value = "Calibri"
     Me.cboPocketSize.Value = 26
     Me.cboHatSize.Value = 22
     Me.cboBlockSize.Value = 16
     Me.cboTagSize.Value = 13
+    Me.choAnalyticSize.Value = 13
+    Me.chkAnalyticItalic.Value = False
     Me.cboCiteSize.Value = 13
     Me.chkUnderlineCite.Value = False
     Me.cboUnderlineSize.Value = 11
@@ -425,13 +444,16 @@ Private Sub btnResetAllSettings_Click()
     Me.chkEmphasisBox.Value = False
     Me.cboEmphasisBoxSize.Value = "1pt"
     
+    ' Format Tab
+    Me.optSpacingWide.Value = True
     Me.optParagraph.Value = True
-    Me.chkAutoUnderlineEmphasis.Value = False
+    Me.chkShrinkOmissions.Value = False
     
     Me.chkParagraphIntegrity.Value = False
     Me.chkUsePilcrows.Value = False
+    Me.chkCondenseOnPaste.Value = False
     
-    Me.optSpacingWide.Value = True
+    Me.chkAutoUnderlineEmphasis.Value = False
     
     Me.cboHighlightingException.Value = "None"
     
@@ -460,6 +482,7 @@ Private Sub btnResetAllSettings_Click()
     Me.cboTimer.Value = ""
     Me.cboCapture2Text.Value = ""
     Me.cboOCR.Value = ""
+    Me.cboSearch.Value = ""
     
     ' About Tab
     Me.chkAutomaticUpdates.Value = True
@@ -502,6 +525,7 @@ Private Sub btnSave_Click()
     ' Admin Tab
     SaveSetting "Verbatim", "Admin", "AlwaysOn", Me.chkAlwaysOn.Value
     SaveSetting "Verbatim", "Admin", "AutoUpdateStyles", Me.chkAutoUpdateStyles.Value
+    SaveSetting "Verbatim", "Admin", "SuppressStyleChecks", Me.chkSuppressStyleChecks.Value
     SaveSetting "Verbatim", "Admin", "SuppressInstallChecks", Me.chkSuppressInstallChecks.Value
     SaveSetting "Verbatim", "Admin", "SuppressDocCheck", Me.chkSuppressDocCheck.Value
     SaveSetting "Verbatim", "Admin", "FirstRun", Me.chkFirstRun.Value
@@ -534,22 +558,31 @@ Private Sub btnSave_Click()
     SaveSetting "Verbatim", "Paperless", "AutoOpenDir", Me.cboAutoOpenDir.Value
     SaveSetting "Verbatim", "Paperless", "AudioDir", Me.cboAudioDir.Value
     
+    ' Styles Tab
+    SaveSetting "Verbatim", "Styles", "NormalSize", Me.cboNormalSize.Value
+    SaveSetting "Verbatim", "Styles", "NormalFont", Me.cboNormalFont.Value
+    SaveSetting "Verbatim", "Styles", "PocketSize", Me.cboPocketSize.Value
+    SaveSetting "Verbatim", "Styles", "HatSize", Me.cboHatSize.Value
+    SaveSetting "Verbatim", "Styles", "BlockSize", Me.cboBlockSize.Value
+    SaveSetting "Verbatim", "Styles", "TagSize", Me.cboTagSize.Value
+    SaveSetting "Verbatim", "Styles", "AnalyticSize", Me.cboAnalyticSize.Value
+    SaveSetting "Verbatim", "Styles", "AnalyticItalic", Me.chkAnalyticItalic.Value
+    SaveSetting "Verbatim", "Styles", "CiteSize", Me.cboCiteSize.Value
+    SaveSetting "Verbatim", "Styles", "UnderlineCite", Me.chkUnderlineCite.Value
+    SaveSetting "Verbatim", "Styles", "UnderlineSize", Me.cboUnderlineSize.Value
+    SaveSetting "Verbatim", "Styles", "BoldUnderline", Me.chkBoldUnderline.Value
+    SaveSetting "Verbatim", "Styles", "EmphasisSize", Me.cboEmphasisSize.Value
+    SaveSetting "Verbatim", "Styles", "EmphasisBold", Me.chkEmphasisBold.Value
+    SaveSetting "Verbatim", "Styles", "EmphasisItalic", Me.chkEmphasisItalic.Value
+    SaveSetting "Verbatim", "Styles", "EmphasisBox", Me.chkEmphasisBox.Value
+    SaveSetting "Verbatim", "Styles", "EmphasisBoxSize", Me.cboEmphasisBoxSize.Value
+    
     ' Format Tab
-    SaveSetting "Verbatim", "Format", "NormalSize", Me.cboNormalSize.Value
-    SaveSetting "Verbatim", "Format", "NormalFont", Me.cboNormalFont.Value
-    SaveSetting "Verbatim", "Format", "PocketSize", Me.cboPocketSize.Value
-    SaveSetting "Verbatim", "Format", "HatSize", Me.cboHatSize.Value
-    SaveSetting "Verbatim", "Format", "BlockSize", Me.cboBlockSize.Value
-    SaveSetting "Verbatim", "Format", "TagSize", Me.cboTagSize.Value
-    SaveSetting "Verbatim", "Format", "CiteSize", Me.cboCiteSize.Value
-    SaveSetting "Verbatim", "Format", "UnderlineCite", Me.chkUnderlineCite.Value
-    SaveSetting "Verbatim", "Format", "UnderlineSize", Me.cboUnderlineSize.Value
-    SaveSetting "Verbatim", "Format", "BoldUnderline", Me.chkBoldUnderline.Value
-    SaveSetting "Verbatim", "Format", "EmphasisSize", Me.cboEmphasisSize.Value
-    SaveSetting "Verbatim", "Format", "EmphasisBold", Me.chkEmphasisBold.Value
-    SaveSetting "Verbatim", "Format", "EmphasisItalic", Me.chkEmphasisItalic.Value
-    SaveSetting "Verbatim", "Format", "EmphasisBox", Me.chkEmphasisBox.Value
-    SaveSetting "Verbatim", "Format", "EmphasisBoxSize", Me.cboEmphasisBoxSize.Value
+    If Me.optSpacingWide.Value = True Then
+        SaveSetting "Verbatim", "Format", "Spacing", "Wide"
+    Else
+        SaveSetting "Verbatim", "Format", "Spacing", "Narrow"
+    End If
     
     If Me.optParagraph.Value = True Then
         SaveSetting "Verbatim", "Format", "ShrinkMode", "Paragraph"
@@ -557,16 +590,13 @@ Private Sub btnSave_Click()
         SaveSetting "Verbatim", "Format", "ShrinkMode", "Selected"
     End If
     
-    SaveSetting "Verbatim", "Format", "AutoUnderlineEmphasis", Me.chkAutoUnderlineEmphasis.Value
+    SaveSetting "Verbatim", "Format", "ShrinkOmissions", Me.chkShrinkOmissions.Value
     
     SaveSetting "Verbatim", "Format", "ParagraphIntegrity", Me.chkParagraphIntegrity.Value
     SaveSetting "Verbatim", "Format", "UsePilcrows", Me.chkUsePilcrows.Value
+    SaveSetting "Verbatim", "Format", "CondenseOnPaste", Me.chkCondenseOnPaste.Value
     
-    If Me.optSpacingWide.Value = True Then
-        SaveSetting "Verbatim", "Format", "Spacing", "Wide"
-    Else
-        SaveSetting "Verbatim", "Format", "Spacing", "Narrow"
-    End If
+    SaveSetting "Verbatim", "Format", "AutoUnderlineEmphasis", Me.chkAutoUnderlineEmphasis.Value
     
     SaveSetting "Verbatim", "Format", "HighlightingException", Me.cboHighlightingException.Value
     
@@ -579,13 +609,15 @@ Private Sub btnSave_Click()
         CloseDebateTemplate = True
     End If
     
-    ' Update template styles based on Format settings
+    ' Update template styles based on Styles settings
     DebateTemplate.Styles("Normal").Font.Size = Me.cboNormalSize.Value
     DebateTemplate.Styles("Normal").Font.Name = Me.cboNormalFont.Value
     DebateTemplate.Styles("Pocket").Font.Size = Me.cboPocketSize.Value
     DebateTemplate.Styles("Hat").Font.Size = Me.cboHatSize.Value
     DebateTemplate.Styles("Block").Font.Size = Me.cboBlockSize.Value
     DebateTemplate.Styles("Tag").Font.Size = Me.cboTagSize.Value
+    DebateTemplate.Styles("Analytic").Font.Size = Me.cboAnalyticSize.Value
+    DebateTemplate.Styles("Analytic").Font.Italic = Me.chkAnalyticItalic.Value
     DebateTemplate.Styles("Cite").Font.Size = Me.cboCiteSize.Value
     If Me.chkUnderlineCite.Value = True Then
         DebateTemplate.Styles("Cite").Font.Underline = wdUnderlineSingle
@@ -694,6 +726,7 @@ Private Sub btnSave_Click()
     SaveSetting "Verbatim", "Plugins", "TimerPath", Me.cboTimer.Value
     SaveSetting "Verbatim", "Plugins", "Capture2TextPath", Me.cboCapture2Text.Value
     SaveSetting "Verbatim", "Plugins", "OCRPath", Me.cboOCR.Value
+    SaveSetting "Verbatim", "Plugins", "SearchPath", Me.cboSearch.Value
     
     ' About Tab
     SaveSetting "Verbatim", "Profile", "Version", Settings.GetVersion
@@ -800,6 +833,7 @@ Private Sub btnImportSettings_Click()
     ' Import settings - Admin
     Me.chkAlwaysOn.Value = System.PrivateProfileString(SettingsFileName, "Admin", "AlwaysOn")
     Me.chkAutoUpdateStyles.Value = System.PrivateProfileString(SettingsFileName, "Admin", "AutoUpdateStyles")
+    Me.chkSuppressStyleChecks.Value = System.PrivateProfileString(SettingsFileName, "Admin", "SuppressStyleChecks")
     Me.chkSuppressInstallChecks.Value = System.PrivateProfileString(SettingsFileName, "Admin", "SuppressInstallChecks")
     Me.chkSuppressDocCheck.Value = System.PrivateProfileString(SettingsFileName, "Admin", "SuppressDocCheck")
     
@@ -822,41 +856,44 @@ Private Sub btnImportSettings_Click()
     Me.cboAutoOpenDir.Value = System.PrivateProfileString(SettingsFileName, "Paperless", "AutoOpenDir")
     Me.cboAudioDir.Value = System.PrivateProfileString(SettingsFileName, "Paperless", "AudioDir")
     
+    ' Import settings - Styles
+    Me.cboNormalSize.Value = System.PrivateProfileString(SettingsFileName, "Styles", "NormalSize")
+    Me.cboNormalFont.Value = System.PrivateProfileString(SettingsFileName, "Styles", "NormalFont")
+    Me.cboPocketSize.Value = System.PrivateProfileString(SettingsFileName, "Styles", "PocketSize")
+    Me.cboHatSize.Value = System.PrivateProfileString(SettingsFileName, "Styles", "HatSize")
+    Me.cboBlockSize.Value = System.PrivateProfileString(SettingsFileName, "Styles", "BlockSize")
+    Me.cboTagSize.Value = System.PrivateProfileString(SettingsFileName, "Styles", "TagSize")
+    Me.cboAnalyticSize.Value = System.PrivateProfileString(SettingsFileName, "Styles", "AnalyticSize")
+    Me.chkAnalyticItalic.Value = System.PrivateProfileString(SettingsFileName, "Styles", "AnalyticItalic")
+    Me.cboCiteSize.Value = System.PrivateProfileString(SettingsFileName, "Styles", "CiteSize")
+    Me.chkUnderlineCite.Value = System.PrivateProfileString(SettingsFileName, "Styles", "UnderlineCite")
+    Me.cboUnderlineSize.Value = System.PrivateProfileString(SettingsFileName, "Styles", "UnderlineSize")
+    Me.chkBoldUnderline.Value = System.PrivateProfileString(SettingsFileName, "Styles", "BoldUnderline")
+    Me.cboEmphasisSize.Value = System.PrivateProfileString(SettingsFileName, "Styles", "EmphasisSize")
+    Me.chkEmphasisBold.Value = System.PrivateProfileString(SettingsFileName, "Styles", "EmphasisBold")
+    Me.chkEmphasisItalic.Value = System.PrivateProfileString(SettingsFileName, "Styles", "EmphasisItalic")
+    Me.chkEmphasisBox.Value = System.PrivateProfileString(SettingsFileName, "Styles", "EmphasisBox")
+    Me.cboEmphasisBoxSize.Value = System.PrivateProfileString(SettingsFileName, "Styles", "EmphasisBoxSize")
+    
     ' Import settings - Format
-    Me.cboNormalSize.Value = System.PrivateProfileString(SettingsFileName, "Format", "NormalSize")
-    Me.cboNormalFont.Value = System.PrivateProfileString(SettingsFileName, "Format", "NormalFont")
-    Me.cboPocketSize.Value = System.PrivateProfileString(SettingsFileName, "Format", "PocketSize")
-    Me.cboHatSize.Value = System.PrivateProfileString(SettingsFileName, "Format", "HatSize")
-    Me.cboBlockSize.Value = System.PrivateProfileString(SettingsFileName, "Format", "BlockSize")
-    Me.cboTagSize.Value = System.PrivateProfileString(SettingsFileName, "Format", "TagSize")
-    Me.cboCiteSize.Value = System.PrivateProfileString(SettingsFileName, "Format", "CiteSize")
-    Me.chkUnderlineCite.Value = System.PrivateProfileString(SettingsFileName, "Format", "UnderlineCite")
-    Me.cboUnderlineSize.Value = System.PrivateProfileString(SettingsFileName, "Format", "UnderlineSize")
-    Me.chkBoldUnderline.Value = System.PrivateProfileString(SettingsFileName, "Format", "BoldUnderline")
-    Me.cboEmphasisSize.Value = System.PrivateProfileString(SettingsFileName, "Format", "EmphasisSize")
-    Me.chkEmphasisBold.Value = System.PrivateProfileString(SettingsFileName, "Format", "EmphasisBold")
-    Me.chkEmphasisItalic.Value = System.PrivateProfileString(SettingsFileName, "Format", "EmphasisItalic")
-    Me.chkEmphasisBox.Value = System.PrivateProfileString(SettingsFileName, "Format", "EmphasisBox")
-    Me.cboEmphasisBoxSize.Value = System.PrivateProfileString(SettingsFileName, "Format", "EmphasisBoxSize")
-    Me.chkParagraphIntegrity.Value = System.PrivateProfileString(SettingsFileName, "Format", "ParagraphIntegrity")
-    Me.chkUsePilcrows.Value = System.PrivateProfileString(SettingsFileName, "Format", "UsePilcrows")
-
-    If System.PrivateProfileString(SettingsFileName, "Format", "ShrinkMode") = "Paragraph" Then
-        Me.optParagraph.Value = True
-    Else
-        Me.optSelected.Value = True
-    End If
-
-    Me.chkAutoUnderlineEmphasis.Value = System.PrivateProfileString(SettingsFileName, "Format", "AutoUnderlineEmphasis")
-
-    Me.chkParagraphIntegrity.Value = System.PrivateProfileString(SettingsFileName, "Format", "ParagraphIntegrity")
-    Me.chkUsePilcrows.Value = System.PrivateProfileString(SettingsFileName, "Format", "UsePilcrows")
-
     If System.PrivateProfileString(SettingsFileName, "Format", "Spacing") = "Wide" Then
         Me.optSpacingWide.Value = True
     Else
         Me.optSpacingNarrow.Value = True
     End If
+    
+    If System.PrivateProfileString(SettingsFileName, "Format", "ShrinkMode") = "Paragraph" Then
+        Me.optParagraph.Value = True
+    Else
+        Me.optSelected.Value = True
+    End If
+    Me.chkShrinkOmissions.Value = System.PrivateProfileString(SettingsFileName, "Format", "ShrinkOmissions")
+
+    Me.chkParagraphIntegrity.Value = System.PrivateProfileString(SettingsFileName, "Format", "ParagraphIntegrity")
+    Me.chkUsePilcrows.Value = System.PrivateProfileString(SettingsFileName, "Format", "UsePilcrows")
+    Me.chkCondenseOnPaste.Value = System.PrivateProfileString(SettingsFileName, "Format", "CondenseOnPaste")
+
+    Me.chkAutoUnderlineEmphasis.Value = System.PrivateProfileString(SettingsFileName, "Format", "AutoUnderlineEmphasis")
     
     Me.cboHighlightingException.Value = System.PrivateProfileString(SettingsFileName, "Format", "HighlightingException")
     
@@ -885,6 +922,7 @@ Private Sub btnImportSettings_Click()
     Me.cboTimer.Value = System.PrivateProfileString(SettingsFileName, "Plugins", "TimerPath")
     Me.cboCapture2Text.Value = System.PrivateProfileString(SettingsFileName, "Plugins", "Capture2TextPath")
     Me.cboOCR.Value = System.PrivateProfileString(SettingsFileName, "Plugins", "OCRPath")
+    Me.cboSearch.Value = System.PrivateProfileString(SettingsFileName, "Plugins", "SearchPath")
     
     ' Report success
     MsgBox "Settings successfully imported. They will not be committed until you click Save."
@@ -896,7 +934,6 @@ Handler:
 End Sub
 
 Private Sub btnExportSettings_Click()
-
     Dim SettingsFileName As String
     Dim ExportPath As String
 
@@ -940,6 +977,7 @@ Private Sub btnExportSettings_Click()
     ' Export settings - Admin
     System.PrivateProfileString(SettingsFileName, "Admin", "AlwaysOn") = Me.chkAlwaysOn.Value
     System.PrivateProfileString(SettingsFileName, "Admin", "AutoUpdateStyles") = Me.chkAutoUpdateStyles.Value
+    System.PrivateProfileString(SettingsFileName, "Admin", "SuppressStyleChecks") = Me.chkSuppressStyleChecks.Value
     System.PrivateProfileString(SettingsFileName, "Admin", "SuppressInstallChecks") = Me.chkSuppressInstallChecks.Value
     System.PrivateProfileString(SettingsFileName, "Admin", "SuppressDocCheck") = Me.chkSuppressDocCheck.Value
     
@@ -962,42 +1000,45 @@ Private Sub btnExportSettings_Click()
     System.PrivateProfileString(SettingsFileName, "Paperless", "AutoOpenDir") = Me.cboAutoOpenDir.Value
     System.PrivateProfileString(SettingsFileName, "Paperless", "AudioDir") = Me.cboAudioDir.Value
 
+    ' Export settings - Styles
+    System.PrivateProfileString(SettingsFileName, "Styles", "NormalSize") = Me.cboNormalSize.Value
+    System.PrivateProfileString(SettingsFileName, "Styles", "NormalFont") = Me.cboNormalFont.Value
+    System.PrivateProfileString(SettingsFileName, "Styles", "PocketSize") = Me.cboPocketSize.Value
+    System.PrivateProfileString(SettingsFileName, "Styles", "HatSize") = Me.cboHatSize.Value
+    System.PrivateProfileString(SettingsFileName, "Styles", "BlockSize") = Me.cboBlockSize.Value
+    System.PrivateProfileString(SettingsFileName, "Styles", "TagSize") = Me.cboTagSize.Value
+    System.PrivateProfileString(SettingsFileName, "Styles", "AnalyticSize") = Me.cboAnalyticSize.Value
+    System.PrivateProfileString(SettingsFileName, "Styles", "AnalyticItalic") = Me.chkAnalyticItalic.Value
+    System.PrivateProfileString(SettingsFileName, "Styles", "CiteSize") = Me.cboCiteSize.Value
+    System.PrivateProfileString(SettingsFileName, "Styles", "UnderlineCite") = Me.chkUnderlineCite.Value
+    System.PrivateProfileString(SettingsFileName, "Styles", "UnderlineSize") = Me.cboUnderlineSize.Value
+    System.PrivateProfileString(SettingsFileName, "Styles", "BoldUnderline") = Me.chkBoldUnderline.Value
+    System.PrivateProfileString(SettingsFileName, "Styles", "EmphasisSize") = Me.cboEmphasisSize.Value
+    System.PrivateProfileString(SettingsFileName, "Styles", "EmphasisBold") = Me.chkEmphasisBold.Value
+    System.PrivateProfileString(SettingsFileName, "Styles", "EmphasisItalic") = Me.chkEmphasisItalic.Value
+    System.PrivateProfileString(SettingsFileName, "Styles", "EmphasisBox") = Me.chkEmphasisBox.Value
+    System.PrivateProfileString(SettingsFileName, "Styles", "EmphasisBoxSize") = Me.cboEmphasisBoxSize.Value
+    
     ' Export settings - Format
-    System.PrivateProfileString(SettingsFileName, "Format", "NormalSize") = Me.cboNormalSize.Value
-    System.PrivateProfileString(SettingsFileName, "Format", "NormalFont") = Me.cboNormalFont.Value
-    System.PrivateProfileString(SettingsFileName, "Format", "PocketSize") = Me.cboPocketSize.Value
-    System.PrivateProfileString(SettingsFileName, "Format", "HatSize") = Me.cboHatSize.Value
-    System.PrivateProfileString(SettingsFileName, "Format", "BlockSize") = Me.cboBlockSize.Value
-    System.PrivateProfileString(SettingsFileName, "Format", "TagSize") = Me.cboTagSize.Value
-    System.PrivateProfileString(SettingsFileName, "Format", "CiteSize") = Me.cboCiteSize.Value
-    System.PrivateProfileString(SettingsFileName, "Format", "UnderlineCite") = Me.chkUnderlineCite.Value
-    System.PrivateProfileString(SettingsFileName, "Format", "UnderlineSize") = Me.cboUnderlineSize.Value
-    System.PrivateProfileString(SettingsFileName, "Format", "BoldUnderline") = Me.chkBoldUnderline.Value
-    System.PrivateProfileString(SettingsFileName, "Format", "EmphasisSize") = Me.cboEmphasisSize.Value
-    System.PrivateProfileString(SettingsFileName, "Format", "EmphasisBold") = Me.chkEmphasisBold.Value
-    System.PrivateProfileString(SettingsFileName, "Format", "EmphasisItalic") = Me.chkEmphasisItalic.Value
-    System.PrivateProfileString(SettingsFileName, "Format", "EmphasisBox") = Me.chkEmphasisBox.Value
-    System.PrivateProfileString(SettingsFileName, "Format", "EmphasisBoxSize") = Me.cboEmphasisBoxSize.Value
-    System.PrivateProfileString(SettingsFileName, "Format", "ParagraphIntegrity") = Me.chkParagraphIntegrity.Value
-    System.PrivateProfileString(SettingsFileName, "Format", "UsePilcrows") = Me.chkUsePilcrows.Value
-    
-    If Me.optParagraph.Value = True Then
-        System.PrivateProfileString(SettingsFileName, "Format", "ShrinkMode") = "Paragraph"
-    Else
-        System.PrivateProfileString(SettingsFileName, "Format", "ShrinkMode") = "Selected"
-    End If
-
-    System.PrivateProfileString(SettingsFileName, "Format", "AutoUnderlineEmphasis") = Me.chkAutoUnderlineEmphasis.Value
-    
-    System.PrivateProfileString(SettingsFileName, "Format", "ParagraphIntegrity") = Me.chkParagraphIntegrity.Value
-    System.PrivateProfileString(SettingsFileName, "Format", "UsePilcrows") = Me.chkUsePilcrows.Value
-    
     If Me.optSpacingWide.Value = True Then
         System.PrivateProfileString(SettingsFileName, "Format", "Spacing") = "Wide"
     Else
         System.PrivateProfileString(SettingsFileName, "Format", "Spacing") = "Narrow"
     End If
     
+    If Me.optParagraph.Value = True Then
+        System.PrivateProfileString(SettingsFileName, "Format", "ShrinkMode") = "Paragraph"
+    Else
+        System.PrivateProfileString(SettingsFileName, "Format", "ShrinkMode") = "Selected"
+    End If
+    System.PrivateProfileString(SettingsFileName, "Format", "ShrinkOmissions") = Me.chkShrinkOmissions.Value
+
+    System.PrivateProfileString(SettingsFileName, "Format", "ParagraphIntegrity") = Me.chkParagraphIntegrity.Value
+    System.PrivateProfileString(SettingsFileName, "Format", "UsePilcrows") = Me.chkUsePilcrows.Value
+    System.PrivateProfileString(SettingsFileName, "Format", "CondenseOnPaste") = Me.chkCondenseOnPaste.Value
+
+    System.PrivateProfileString(SettingsFileName, "Format", "AutoUnderlineEmphasis") = Me.chkAutoUnderlineEmphasis.Value
+        
     System.PrivateProfileString(SettingsFileName, "Format", "HighlightingException") = Me.cboHighlightingException.Value
 
     ' Export settings - Keyboard
@@ -1025,6 +1066,7 @@ Private Sub btnExportSettings_Click()
     System.PrivateProfileString(SettingsFileName, "Plugins", "TimerPath") = Me.cboTimer.Value
     System.PrivateProfileString(SettingsFileName, "Plugins", "Capture2TextPath") = Me.cboCapture2Text.Value
     System.PrivateProfileString(SettingsFileName, "Plugins", "OCRPath") = Me.cboOCR.Value
+    System.PrivateProfileString(SettingsFileName, "Plugins", "SearchPath") = Me.cboSearch.Value
 
     ' Report success
     MsgBox "Settings successfully exported as:" & vbCrLf & SettingsFileName
@@ -1127,7 +1169,7 @@ Private Sub cboAudioDir_DropButtonClick()
 End Sub
 
 '*************************************************************************************
-'* FORMAT TAB                                                                        *
+'* STYLES TAB                                                                        *
 '*************************************************************************************
 
 Private Sub cboNormalFont_Change()
@@ -1142,6 +1184,43 @@ Private Sub chkEmphasisBox_Change()
         Me.cboEmphasisBoxSize.Enabled = False
     End If
 End Sub
+
+Private Sub btnResetStyles_Click()
+' Resets style settings to the default
+    
+    On Error GoTo Handler
+    
+    ' Prompt for confirmation
+    If MsgBox("This will reset styles settings to their default values. Changes will not be committed until you click Save. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
+    
+    Me.cboNormalSize.Value = 11
+    Me.cboNormalFont.Value = "Calibri"
+    Me.cboPocketSize.Value = 26
+    Me.cboHatSize.Value = 22
+    Me.cboBlockSize.Value = 16
+    Me.cboTagSize.Value = 13
+    Me.cboAnalyticSize.Value = 13
+    Me.chkAnalyticItalic.Value = False
+    Me.cboCiteSize.Value = 13
+    Me.chkUnderlineCite.Value = False
+    Me.cboUnderlineSize.Value = 11
+    Me.chkBoldUnderline.Value = False
+    Me.cboEmphasisSize.Value = 11
+    Me.chkEmphasisBold.Value = True
+    Me.chkEmphasisItalic.Value = False
+    Me.chkEmphasisBox.Value = False
+    Me.cboEmphasisBoxSize.Value = "1pt"
+    
+    Exit Sub
+        
+Handler:
+    MsgBox "Error " & Err.Number & ": " & Err.Description
+End Sub
+
+
+'*************************************************************************************
+'* FORMAT TAB                                                                        *
+'*************************************************************************************
 
 Private Sub chkParagraphIntegrity_Change()
     ' Disable Pilcrows button if unchecked
@@ -1160,26 +1239,11 @@ Private Sub btnResetFormatting_Click()
     ' Prompt for confirmation
     If MsgBox("This will reset formatting settings to their default values. Changes will not be committed until you click Save. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
     
-    Me.cboNormalSize.Value = 11
-    Me.cboNormalFont.Value = "Calibri"
-    Me.cboPocketSize.Value = 26
-    Me.cboHatSize.Value = 22
-    Me.cboBlockSize.Value = 16
-    Me.cboTagSize.Value = 13
-    Me.cboCiteSize.Value = 13
-    Me.chkUnderlineCite.Value = False
-    Me.cboUnderlineSize.Value = 11
-    Me.chkBoldUnderline.Value = False
-    Me.cboEmphasisSize.Value = 11
-    Me.chkEmphasisBold.Value = True
-    Me.chkEmphasisItalic.Value = False
-    Me.chkEmphasisBox.Value = False
-    Me.cboEmphasisBoxSize.Value = "1pt"
-    
     Me.optParagraph.Value = True
     Me.chkAutoUnderlineEmphasis.Value = False
     Me.chkParagraphIntegrity.Value = False
     Me.chkUsePilcrows.Value = False
+    Me.chkCondenseOnPaste.Value = False
     Me.optSpacingWide.Value = True
     
     Me.cboHighlightingException.Value = "None"
@@ -1273,10 +1337,18 @@ Private Sub cboCapture2Text_DropButtonClick()
     Me.cboCapture2Text.Value = UI.GetFileFromDialog("Capture2Text", "*.exe", "Choose the location for Capture2Text_CLI.exe", "Select")
     Me.btnCancel.SetFocus 'Have to switch focus to avoid dropdown getting stuck
 End Sub
+
 Private Sub cboOCR_DropButtonClick()
     On Error Resume Next
     
     Me.cboOCR.Value = UI.GetFileFromDialog("OCR Program", "*.*", "Choose an OCR application...", "Select")
+    Me.btnCancel.SetFocus 'Have to switch focus to avoid dropdown getting stuck
+End Sub
+
+Private Sub cboSearch_DropButtonClick()
+    On Error Resume Next
+    
+    Me.cboSearch.Value = UI.GetFileFromDialog("Search Program", "*.*", "Choose a Search application...", "Select")
     Me.btnCancel.SetFocus 'Have to switch focus to avoid dropdown getting stuck
 End Sub
 

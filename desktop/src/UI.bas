@@ -47,7 +47,6 @@ End Sub
 
 Public Sub ResizeUserForm(frm As Object, Optional dResizeFactor As Double = 0#)
 ' From https://peltiertech.com/userforms-for-mac-and-windows/
-    ' TODO - change ctrl to a Control after moving to late binding
     Dim ctrl As Object
     Dim sColWidths As String
     Dim vColWidths As Variant

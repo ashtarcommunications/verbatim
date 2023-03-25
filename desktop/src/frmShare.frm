@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmShare 
    Caption         =   "Share on share.tabroom.com"
-   ClientHeight    =   6975
+   ClientHeight    =   7425
    ClientLeft      =   120
    ClientTop       =   465
-   ClientWidth     =   8955.001
+   ClientWidth     =   8955
    OleObjectBlob   =   "frmShare.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -18,8 +18,13 @@ Option Explicit
 Private Sub UserForm_Initialize()
     On Error GoTo Handler
     
+    Globals.InitializeGlobals
+    
     #If Mac Then
         UI.ResizeUserForm Me
+        Me.btnCancel.ForeColor = Globals.RED
+        Me.btnShare.ForeColor = Globals.BLUE
+        Me.btnBrowser.ForeColor = Globals.BLUE
     #End If
     
     Dim Phrase
@@ -36,11 +41,9 @@ Private Sub UserForm_Initialize()
         Case Is = "401"
             Me.lblLogin1.visible = True
             Me.lblLoginLink.visible = True
-            Exit Sub
         Case Else
-            Me.lblError.Caption = Response("body")("message")
-            Me.lblError.visible = True
-            Exit Sub
+            Me.lblLogin1.visible = True
+            Me.lblLoginLink.visible = True
         End Select
                 
         Dim Round
@@ -49,7 +52,7 @@ Private Sub UserForm_Initialize()
         Dim SideName
         
         For Each Round In Response("body")
-            If (Round("share") <> vbNullString) Then
+            If (Round("share") <> "") Then
                 RoundName = Strings.RoundName(Round("round"))
                 Side = Round("side")
                 SideName = Strings.DisplaySide(Side)
@@ -78,21 +81,21 @@ Private Sub lboxRounds_Change()
 End Sub
 
 Private Sub txtRoom_Change()
-    Me.lboxRounds.Value = vbNullString
+    Me.lboxRounds.Value = ""
     Me.txtRoom.Value = Strings.OnlyAlphaNumericChars(Me.txtRoom.Value)
     ValidateForm
 End Sub
 
 Private Function ValidateForm() As Boolean
-    If Me.txtRoom.Value = vbNullString And Me.lboxRounds.Value = vbNullString Then
+    If Me.txtRoom.Value = "" And Me.lboxRounds.Value = "" Then
         Me.btnShare.Enabled = False
         Me.btnBrowser.Enabled = False
         ValidateForm = False
-    ElseIf Me.lboxRounds.Value = vbNullString And Me.txtRoom.TextLength < 8 Then
+    ElseIf Me.lboxRounds.Value = "" And Me.txtRoom.TextLength < 8 Then
         Me.btnShare.Enabled = False
         Me.btnBrowser.Enabled = False
         ValidateForm = False
-    ElseIf Me.lboxRounds.Value = vbNullString And Len(Strings.OnlyAlphaNumericChars(Me.txtRoom.Value)) < 8 Then
+    ElseIf Me.lboxRounds.Value = "" And Len(Strings.OnlyAlphaNumericChars(Me.txtRoom.Value)) < 8 Then
         Me.btnShare.Enabled = False
         Me.btnBrowser.Enabled = False
         ValidateForm = False
@@ -103,6 +106,8 @@ Private Function ValidateForm() As Boolean
     End If
 End Function
 
+#If Mac Then
+#Else
 Sub btnShare_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnShare.BackColor = Globals.LIGHT_BLUE
 End Sub
@@ -120,6 +125,7 @@ Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x 
     Me.btnBrowser.BackColor = Globals.BLUE
     Me.btnCancel.BackColor = Globals.RED
 End Sub
+#End If
 
 Private Sub lblURL_Click()
     Settings.LaunchWebsite Globals.SHARE_URL
@@ -208,8 +214,8 @@ Private Sub UploadToShare()
     Body.Add "filename", FileName
            
     Dim Room As String
-    If Me.lboxRounds.Value <> vbNullString Then Room = Me.lboxRounds.Value
-    If Me.txtRoom.Value <> vbNullString Then Room = Strings.OnlyAlphaNumericChars(Me.txtRoom.Value)
+    If Me.lboxRounds.Value <> "" Then Room = Me.lboxRounds.Value
+    If Me.txtRoom.Value <> "" Then Room = Strings.OnlyAlphaNumericChars(Me.txtRoom.Value)
     
     Dim Request
     Set Request = HTTP.PostReq(Globals.SHARE_URL & "/" & Room, Body)
@@ -229,7 +235,7 @@ Private Sub UploadToShare()
         Me.lblError.visible = True
     
     Case Else
-        Me.lblError.Caption = Request("body")("message")
+        Me.lblError.Caption = Request("status")
         Me.lblError.visible = True
     End Select
     

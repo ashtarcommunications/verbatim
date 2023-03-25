@@ -4,11 +4,11 @@ Option Explicit
 Public SearchText As String
 
 Sub SearchChanged(c As IRibbonControl, strText As String)
-    ' Set the search text, the refresh ribbon
+    ' Set the search text, then refresh ribbon
     SearchText = strText
     Ribbon.RefreshRibbon
     
-    ' Active the search box
+    ' Activate the search box
     WordBasic.SendKeys "%d%s%r"
     
 End Sub
@@ -19,8 +19,8 @@ Sub GetSearchResultsContent(c As IRibbonControl, ByRef returnedVal)
         MsgBox "Search is not supported on Mac."
         Exit Sub
     #Else
-        Dim objConnection As ADODB.Connection
-        Dim objRecordset As ADODB.Recordset
+        Dim objConnection As Object
+        Dim objRecordset As Object
         
         Dim x As Long
         Dim xml As String
@@ -91,6 +91,7 @@ Sub GetSearchResultsContent(c As IRibbonControl, ByRef returnedVal)
         ' Close XML
         xml = xml & "</menu>"
         
+        Debug.Print xml
         returnedVal = xml
     #End If
     Exit Sub
@@ -132,7 +133,7 @@ Sub ExplorerSearch(c As IRibbonControl)
         
         ' Construct SearchDir, then pass it to the shell
         SearchDir = GetSetting("Verbatim", "Paperless", "SearchDir", CStr(Environ("USERPROFILE")))
-        If SearchDir = vbNullString Then SearchDir = CStr(Environ("USERPROFILE"))
+        If SearchDir = "" Then SearchDir = CStr(Environ("USERPROFILE"))
         If Right(SearchDir, 1) <> Application.PathSeparator Then SearchDir = SearchDir & Application.PathSeparator
         
         Shell "explorer ""search-ms://query=" & SearchText & "&crumb=location:" & SearchDir & """", vbNormalFocus

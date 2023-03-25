@@ -23,6 +23,10 @@ Private Sub UserForm_Initialize()
         UI.ResizeUserForm Me
     #End If
 
+    Dim SpeechType As String
+    Dim e As String
+    Dim CollegeHS As String
+
     ComputingStats = False
 
     ' Save parent doc
@@ -34,37 +38,34 @@ Private Sub UserForm_Initialize()
     Else
         Me.Caption = "Stats - " & ActiveDocument.Name
     End If
+    
+    SpeechType = "Constructive"
+    
+    If InStr(ActiveDocument.Name, "NR") > 0 Or _
+        InStr(ActiveDocument.Name, "AR") > 0 Or _
+        InStr(ActiveDocument.Name, "Final Focus") > 0 Then
+        SpeechType = "Rebuttal"
+    End If
+    
+    e = GetSetting("Verbatim", "Profile", "Event", "CX")
+    CollegeHS = GetSetting("Verbatim", "Profile", "CollegeHS", "College")
+    
+    Me.spnSpeechLength = 9
+    If SpeechType = "Constructive" And e = "CX" And CollegeHS = "College" Then Me.spnSpeechLength = 9
+    If SpeechType = "Rebuttal" And e = "CX" And CollegeHS = "College" Then Me.spnSpeechLength = 6
+    If SpeechType = "Constructive" And e = "CX" And CollegeHS = "K12" Then Me.spnSpeechLength = 8
+    If SpeechType = "Rebuttal" And e = "CX" And CollegeHS = "K12" Then Me.spnSpeechLength = 5
+    
+    If SpeechType = "Constructive" And e = "LD" And CollegeHS = "College" Then Me.spnSpeechLength = 6
+    If SpeechType = "Rebuttal" And e = "LD" And CollegeHS = "College" Then Me.spnSpeechLength = 4
+    If SpeechType = "Constructive" And e = "LD" And CollegeHS = "K12" Then Me.spnSpeechLength = 6
+    If SpeechType = "Rebuttal" And e = "LD" And CollegeHS = "K12" Then Me.spnSpeechLength = 4
 
-    Select Case GetSetting("Verbatim", "Profile", "CollegeHS", "College")
-        Case Is = "College"
-            If InStr(ActiveDocument.Name, "1AC") > 0 Or _
-            InStr(ActiveDocument.Name, "1NC") > 0 Or _
-            InStr(ActiveDocument.Name, "2AC") > 0 Or _
-            InStr(ActiveDocument.Name, "2NC") > 0 Then
-                Me.spnSpeechLength.Value = 9
-            ElseIf InStr(ActiveDocument.Name, "1NR") > 0 Or _
-            InStr(ActiveDocument.Name, "1AR") > 0 Or _
-            InStr(ActiveDocument.Name, "2NR") > 0 Or _
-            InStr(ActiveDocument.Name, "2AR") > 0 Then
-                Me.spnSpeechLength.Value = 6
-            Else
-                Me.spnSpeechLength.Value = 9
-            End If
-        Case Is = "HS"
-            If InStr(ActiveDocument.Name, "1AC") > 0 Or _
-            InStr(ActiveDocument.Name, "1NC") > 0 Or _
-            InStr(ActiveDocument.Name, "2AC") > 0 Or _
-            InStr(ActiveDocument.Name, "2NC") > 0 Then
-                Me.spnSpeechLength.Value = 8
-            ElseIf InStr(ActiveDocument.Name, "1NR") > 0 Or _
-            InStr(ActiveDocument.Name, "1AR") > 0 Or _
-            InStr(ActiveDocument.Name, "2NR") > 0 Or _
-            InStr(ActiveDocument.Name, "2AR") > 0 Then
-                Me.spnSpeechLength.Value = 5
-            Else
-                Me.spnSpeechLength.Value = 8
-            End If
-    End Select
+    If SpeechType = "Constructive" And e = "PF" And CollegeHS = "College" Then Me.spnSpeechLength = 4
+    If SpeechType = "Rebuttal" And e = "PF" And CollegeHS = "College" Then Me.spnSpeechLength = 3
+    If SpeechType = "Constructive" And e = "PF" And CollegeHS = "K12" Then Me.spnSpeechLength = 4
+    If SpeechType = "Rebuttal" And e = "PF" And CollegeHS = "K12" Then Me.spnSpeechLength = 3
+    
 End Sub
 
 Private Sub UserForm_Activate()
@@ -92,15 +93,15 @@ Private Sub btnRefreshStats_Click()
 End Sub
 
 Private Sub chkAutoRefresh_Click()
-    Dim Start
+    Dim StartTime
     On Error GoTo Handler
     If Me.chkAutoRefresh.Value = True Then
-        Start = Now
+        StartTime = Now
         Do While Me.chkAutoRefresh.Value = True And Me.visible = True
             DoEvents
-            If Now > Start + TimeValue("00:00:20") Then
+            If Now > StartTime + TimeValue("00:02:00") Then
                 Calculate
-                Start = Now
+                StartTime = Now
             End If
         Loop
     End If
@@ -256,7 +257,7 @@ Private Sub ComputeTotal()
     Dim WPM As Integer
     Dim Remain
     
-    WPM = Int(GetSetting("Verbatim", "Profile", "WPM", "350"))
+    WPM = Int(GetSetting("Verbatim", "Profile", "WPM", "250"))
     
     Me.lblTotal.Caption = Int(Me.lblHighlightCount.Caption) + Int(Me.lblTagCount.Caption)
     Remain = Round(((Int(Me.lblTotal.Caption) Mod WPM) / WPM) * 60, 0)

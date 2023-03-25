@@ -29,16 +29,16 @@ Public Function GetReq(URL As String) As Dictionary
         
         Set Response = Nothing
     #Else
-        Dim HttpReq As MSXML2.ServerXMLHTTP60
-        Set HttpReq = New ServerXMLHTTP60
-        HttpReq.setTimeouts 10000, 10000, 30000, 30000
+        Dim HttpReq As Object
+        Set HttpReq = CreateObject("MSXML2.ServerXMLHTTP")
+        HttpReq.setTimeouts 2000, 10000, 30000, 30000
         HttpReq.Open "GET", URL, False
         HttpReq.setRequestHeader "Accept", "application/json"
         HttpReq.setRequestHeader "Cookie", "caselist_token=" & GetSetting("Verbatim", "Caselist", "CaselistToken", "")
       
         HttpReq.send
         
-        Response.Add "status", HttpReq.Status
+        Response.Add "status", HttpReq.status
         Response.Add "body", JSONTools.ParseJson(HttpReq.responseText)
              
         Set GetReq = Response
@@ -51,8 +51,12 @@ Public Function GetReq(URL As String) As Dictionary
     
 Handler:
     ' Return an empty response if there was a network error
-    Response.Add "status", "Error " & Err.Number & ": " & Err.Description
-    Response.Add "body", JSONTools.ParseJson("[]")
+    If Not Response.Exists("status") Then
+        Response.Add "status", "Error " & Err.Number & ": " & Err.Description
+    End If
+    If Not Response.Exists("body") Then
+        Response.Add "body", JSONTools.ParseJson("[]")
+    End If
     Set GetReq = Response
     
     #If Mac Then
@@ -79,7 +83,7 @@ Public Function PostReq(URL As String, Body As Dictionary) As Dictionary
         Dim StatusCode As String
         Dim ResponseBody As String
         
-        Cookie = GetSetting("Verbatim", "Caselist", "CaselistToken", vbNullString)
+        Cookie = GetSetting("Verbatim", "Caselist", "CaselistToken", "")
         
         ' Uses same output redirection as GET to retrieve status code and response body
         Script = "curl -X POST "
@@ -101,9 +105,9 @@ Public Function PostReq(URL As String, Body As Dictionary) As Dictionary
         
         Set Response = Nothing
     #Else
-        Dim HttpReq As MSXML2.ServerXMLHTTP60
-        Set HttpReq = New ServerXMLHTTP60
-        HttpReq.setTimeouts 10000, 10000, 30000, 30000
+        Dim HttpReq As Object
+        Set HttpReq = CreateObject("MSXML2.ServerXMLHTTP")
+        HttpReq.setTimeouts 2000, 10000, 30000, 30000
         HttpReq.Open "POST", URL, False
         HttpReq.setRequestHeader "Accept", "application/json"
         HttpReq.setRequestHeader "Content-Type", "application/json"
@@ -111,7 +115,7 @@ Public Function PostReq(URL As String, Body As Dictionary) As Dictionary
       
         HttpReq.send JSON
         
-        Response.Add "status", HttpReq.Status
+        Response.Add "status", HttpReq.status
         Dim ResponseBody As Object
         Set ResponseBody = JSONTools.ParseJson(HttpReq.responseText)
         
@@ -128,8 +132,13 @@ Public Function PostReq(URL As String, Body As Dictionary) As Dictionary
     
 Handler:
     ' Return an empty response if there was a network error
-    Response.Add "status", "Error " & Err.Number & ": " & Err.Description
-    Response.Add "body", JSONTools.ParseJson("[]")
+    If Not Response.Exists("status") Then
+        Response.Add "status", "Error " & Err.Number & ": " & Err.Description
+    End If
+    If Not Response.Exists("body") Then
+        Response.Add "body", JSONTools.ParseJson("[]")
+    End If
+    
     Set PostReq = Response
     
     #If Mac Then
@@ -141,15 +150,14 @@ Handler:
     #End If
 End Function
 
-
 'Public Sub DownloadFile(URL As String, FilePath As Variant)
 '    #If Mac Then
 '        Dim Script As String
 '        Script = "curl - o '" & URL & "'" & " " & FilePath & """"
 '        AppleScriptTask "Verbatim.scpt", "RunShellScript", Script
 '    #Else
-'        Dim HttpReq As MSXML2.ServerXMLHTTP60
-'        Set HttpReq = New ServerXMLHTTP60
+'        Dim HttpReq As Object
+'        Set HttpReq = CreateObject("MSXML2.ServerXMLHTTP60")
 '        HttpReq.Open "GET", URL, False
 '        HttpReq.send
 '        Dim FileStream

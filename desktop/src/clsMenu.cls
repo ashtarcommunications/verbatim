@@ -7,6 +7,11 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+' Menu class for building a nested dynamic VTub Menu in JSON
+' MenuType is either a File or a Folder, each menu will have nested children
+'
+' The ToJSON method serializes the class for storage in VTub.json
+
 Option Explicit
 
 Private m_MenuType As String

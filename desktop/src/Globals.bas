@@ -14,7 +14,7 @@ Option Explicit
     ' VkKeyScan needed to fix the tilde key bug on Macs running Boot Camp
     Public Declare PtrSafe Function VkKeyScan Lib "user32" Alias "VkKeyScanA" (ByVal cChar As Byte) As Integer
     
-    'ShellExecute needed to launch installer package after updates
+    ' ShellExecute needed to launch installer package after updates
     Public Declare PtrSafe Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hwnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
 #End If
 
@@ -35,12 +35,15 @@ Public AutoCoauthoringToggle As Boolean
 Public RecordAudioToggle As Boolean
 Public InvisibilityToggle As Boolean
 Public UnderlineModeToggle As Boolean
+Public ParagraphIntegrityToggle As Boolean
+Public UsePilcrowsToggle As Boolean
 
 ' Caselist globals
 Public Const CASELIST_URL As String = "https://api.opencaselist.com/v1"
 Public Const SHARE_URL As String = "https://share.tabroom.com"
 Public Const MOCK_ROUNDS As String = "https://run.mocky.io/v3/be382c53-e49c-4de4-99b6-44ba5e6a3e7c"
 Public Const PAPERLESSDEBATE_URL As String = "https://paperlessdebate.com"
+Public Const UPDATES_URL As String = "https://update.paperlessdebate.com"
 Public Const TABROOM_REGISTER_URL As String = "https://www.tabroom.com/user/login/new_user.mhtml"
 Public Const WPM_URL As String = "http://www.readingsoft.com/"
 
@@ -99,6 +102,18 @@ Sub InitializeGlobals()
     ORANGE = RGB(191, 139, 86) ' 5671871, &H00568BBF&
     LIGHT_ORANGE = RGB(223, 197, 170) ' 11191775, &H00AAC5DF&
     DARK_GRAY = RGB(169, 169, 169) ' 11119017, &H00A9A9A9&
+    
+    If GetSetting("Verbatim", "Format", "ParagraphIntegrity", True) = True Then
+        Globals.ParagraphIntegrityToggle = True
+    Else
+        Globals.ParagraphIntegrityToggle = False
+    End If
+    
+    If GetSetting("Verbatim", "Format", "UsePilcrows", True) = True Then
+        Globals.UsePilcrowsToggle = True
+    Else
+        Globals.UsePilcrowsToggle = False
+    End If
 End Sub
 
 

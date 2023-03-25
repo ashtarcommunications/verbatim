@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmCheatSheet 
    Caption         =   "Cheat Sheet"
-   ClientHeight    =   8985.001
+   ClientHeight    =   8985
    ClientLeft      =   120
    ClientTop       =   450
    ClientWidth     =   4020
@@ -45,8 +45,8 @@ Private Sub UserForm_Activate()
                 Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Cycle Windows"
             Case Is = "Verbatim.Settings.ShowSettingsForm"
                 Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Verbatim Settings"
-            Case Is = "Verbatim.Formatting.GetFromCiteMaker"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Get From CiteMaker"
+            Case Is = "Verbatim.Formatting.GetFromCiteCreator"
+                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Get From Cite Creator"
             Case Is = "Verbatim.Formatting.SelectSimilar"
                 Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Select Similar"
             Case Is = "Verbatim.Formatting.CondenseNoPilcrows"

@@ -40,6 +40,36 @@ Sub ToggleUnderline()
     End If
 End Sub
 
+Public Sub ToggleParagraphIntegrity(c As IRibbonControl, pressed As Boolean)
+' Toggle setting for Paragraph Integrity
+    If GetSetting("Verbatim", "Format", "ParagraphIntegrity", True) = True Then
+        SaveSetting "Verbatim", "Format", "ParagraphIntegrity", False
+        SaveSetting "Verbatim", "Format", "UsePilcrows", False
+        Globals.ParagraphIntegrityToggle = False
+        Globals.UsePilcrowsToggle = False
+    Else
+        SaveSetting "Verbatim", "Format", "ParagraphIntegrity", True
+        Globals.ParagraphIntegrityToggle = True
+    End If
+
+    Ribbon.RefreshRibbon
+
+End Sub
+
+Public Sub ToggleUsePilcrows(c As IRibbonControl, pressed As Boolean)
+' Toggle setting for Use Pilcrows
+    If GetSetting("Verbatim", "Format", "UsePilcrows", True) = True Then
+        SaveSetting "Verbatim", "Format", "UsePilcrows", False
+        Globals.UsePilcrowsToggle = False
+    Else
+        SaveSetting "Verbatim", "Format", "UsePilcrows", True
+        Globals.UsePilcrowsToggle = True
+    End If
+
+    Ribbon.RefreshRibbon
+
+End Sub
+
 Sub PasteText()
 ' Pastes unformatted text
     #If Mac Then
@@ -57,7 +87,7 @@ Sub PasteText()
             
         Selection = PasteText
         
-        If (GetSetting("Verbatim", "Formatting", "CondenseOnPaste", False) = True) Then
+        If GetSetting("Verbatim", "Formatting", "CondenseOnPaste", False) = True Then
             Formatting.Condense
         End If
     
@@ -73,93 +103,135 @@ Sub ShrinkText()
 ' Cycles non-underlined text in the current paragraph down a size at a time from 11-4pt
 ' Differences in un-underlined font size will be normalized automatically
 
+    Dim r As Range
     Dim SelectionStart As Long
     Dim SelectionEnd As Long
-    Dim FoundFontSize As Long
+    Dim NewFontSize As Long
     
     ' Turn off screen updating
     Application.ScreenUpdating = False
-    
-    ' If in "Paragraph" mode, select current paragraph
-    If GetSetting("Verbatim", "Format", "ShrinkMode", "Paragraph") = "Paragraph" Then
-        ' Move selection to start and end of paragraph
-        If Selection.Start <> Selection.Paragraphs(1).Range.Start Then Selection.Paragraphs(1).Range.Select
-        If Selection.End <> Selection.Paragraphs(1).Range.End Then Selection.Paragraphs(1).Range.Select
-    End If
-    
-    ' If not text, exit
-    If Selection.Type < 2 Then Exit Sub
     
     ' Save selection
     SelectionStart = Selection.Start
     SelectionEnd = Selection.End
     
-    ' Make sure at least some text is underlined - solves the "shrink rest of document" bug
-    With Selection.Find
-        .ClearFormatting
-        .Replacement.ClearFormatting
-        .Text = ""
-        .Replacement.Text = ""
-        .Wrap = wdFindStop
-        .Format = True
-        .Font.Underline = 1
-        .Execute
-    End With
+    ' Select the card text if nothing is selected
+    If Selection.Start = Selection.End Then Paperless.SelectCardText
     
-    If Selection.Find.Found = False Then
-        Application.StatusBar = "At least some text must be underlined to shrink."
+    ' If not text, exit
+    If Selection.Type < 2 Then
+        Application.StatusBar = "Can only shrink text, not other document elements"
         Exit Sub
     End If
+    
+    ' If in "Paragraph" mode, extend selection to include current paragraph
+    If GetSetting("Verbatim", "Format", "ShrinkMode", "Paragraph") = "Paragraph" Then
+        ' Move selection to start and end of paragraph
+        If Selection.Start <> Selection.Paragraphs(1).Range.Start Then Selection.Start = Selection.Paragraphs(1).Range.Start
+        If Selection.End <> Selection.Paragraphs(Selection.Paragraphs.Count).Range.End Then Selection.End = Selection.Paragraphs(Selection.Paragraphs.Count).Range.End
+    End If
         
-    ' Reset Selection
-    Selection.Start = SelectionStart
-    Selection.End = SelectionEnd
-        
+    ' Use a separate range to avoid the Find continuing to rest of document
+    Set r = Selection.Range
+
     ' Find first un-underlined part of card and test font size
-    With Selection.Find
+    With r.Find
         .ClearFormatting
         .Replacement.ClearFormatting
-        .Text = ""
+        .Text = "*[ ]"
         .Replacement.Text = ""
+        .MatchWildcards = True
         .Wrap = wdFindStop
         .Format = True
         .Font.Underline = 0
         .Execute
+        
+        .Text = ""
+        .MatchWildcards = False
     End With
     
-    FoundFontSize = Selection.Font.Size
-    
-    ' Reset selection
-    Selection.Start = SelectionStart
-    Selection.End = SelectionEnd
-    
     ' Depending on font size, shrink or reset to normal text size
-    Select Case FoundFontSize
+    Select Case r.Font.Size
         Case Is = wdUndefined   ' Multiple font sizes, shrink to 8
-            Selection.Find.Replacement.Font.Size = 8
+            NewFontSize = 8
         Case Is > 8
-            Selection.Find.Replacement.Font.Size = 8
+            NewFontSize = 8
         Case Is = 8
-            Selection.Find.Replacement.Font.Size = 7
+            NewFontSize = 7
         Case Is = 7
-            Selection.Find.Replacement.Font.Size = 6
+            NewFontSize = 6
         Case Is = 6
-            Selection.Find.Replacement.Font.Size = 5
+            NewFontSize = 5
         Case Is = 5
-            Selection.Find.Replacement.Font.Size = 4
+            NewFontSize = 4
         Case Is = 4
-            Selection.Find.Replacement.Font.Size = ActiveDocument.Styles("Normal").Font.Size
+            NewFontSize = ActiveDocument.Styles("Normal").Font.Size
         Case Else   ' Anything weird, go back to normal text size
-            Selection.Find.Replacement.Font.Size = ActiveDocument.Styles("Normal").Font.Size
+            NewFontSize = ActiveDocument.Styles("Normal").Font.Size
     End Select
     
+    ' Restore original search range - have to collapse range to allow shrinking non-underlined paragraphs
+    ' that match the selection range exactly
+    Set r = Selection.Range
+    r.Collapse wdCollapseStart
+    
     ' Replace the text and reset Find dialogue
-    Selection.Find.Execute Replace:=wdReplaceAll
-    Selection.Find.ClearFormatting
-    Selection.Find.Replacement.ClearFormatting
-        
+    With r.Find
+        .ClearFormatting
+        .Replacement.ClearFormatting
+        .Text = ""
+        .Replacement.Text = ""
+        .MatchWildcards = False
+        .Wrap = wdFindStop
+        .Format = True
+        .Font.Underline = 0
+    End With
+    
+    Do While r.Find.Execute(Forward:=True) And r.InRange(Selection.Range)
+        r.Font.Size = NewFontSize
+    Loop
+    
+    r.Find.ClearFormatting
+    r.Find.Replacement.ClearFormatting
+   
+    ' Reset range
+    Set r = Selection.Range
+    
+    ' Optionally restore bracketed ommissions
+    If GetSetting("Verbatim", "Format", "ShrinkOmissions", False) = False Then
+        With r.Find
+            .ClearFormatting
+            .Replacement.ClearFormatting
+            .Text = "\[*(Omitted)*\]"
+            .Replacement.Text = ""
+            .Replacement.Font.Size = ActiveDocument.Styles("Normal").Font.Size
+            .MatchWildcards = True
+            .MatchCase = False
+            .MatchWholeWord = False
+            .MatchSoundsLike = False
+            .MatchAllWordForms = False
+            .Wrap = wdFindStop
+            .Format = True
+            .Execute Replace:=wdReplaceAll
+            
+            .Text = "\[\[*(Omitted)*\]\]"
+            .Execute Replace:=wdReplaceAll
+            
+            .Text = "\<*(Omitted)*\>"
+            .Execute Replace:=wdReplaceAll
+            
+            .ClearFormatting
+            .Replacement.ClearFormatting
+            .MatchWildcards = False
+        End With
+    End If
+    
     ' Shrink pilcrows too, just in case they've been underlined
     Formatting.ShrinkPilcrows
+    
+    ' Restore selection
+    Selection.Start = SelectionStart
+    Selection.End = SelectionEnd
     
     ' Turn on Screen Updating
     Application.ScreenUpdating = True
@@ -186,40 +258,24 @@ Sub ShrinkAll()
 
 End Sub
 
-Sub ShrinkCard()
-    ' TODO - this isn't done
-
-    Paperless.SelectHeadingAndContent
-            
-    ' Move start of selection forward to only select card text
-    Do While True
-        If Selection.Paragraphs.First.outlineLevel < wdOutlineLevel5 And Selection.Paragraphs.First.Range.End <> ActiveDocument.Range.End Then
-            Selection.MoveStart Unit:=wdParagraph, Count:=1
-        Else
-            With Selection.Paragraphs.First.Range.Find
-                .ClearFormatting
-                .Replacement.ClearFormatting
-                .Text = ""
-                .Replacement.Text = ""
-                .Wrap = wdFindStop
-                .Format = True
-                .Style = "Cite"
-                .Execute
-                
-                .ClearFormatting
-                .Replacement.ClearFormatting
-            End With
-            
-            If Selection.Find.Found = True Then
-                Selection.MoveStart Unit:=wdParagraph, Count:=1
-            Else
-                Exit Do
-            End If
-        End If
-    Loop
+Sub UnshrinkAll()
+    With ActiveDocument.Range.Find
+        .ClearFormatting
+        .Replacement.ClearFormatting
+        .Text = ""
+        .Replacement.Text = ""
+        .ParagraphFormat.outlineLevel = wdOutlineLevelBodyText
+        .Font.Underline = wdUnderlineNone
+        .Font.Bold = False
+        .Replacement.Font.Size = ActiveDocument.Styles("Normal").Font.Size
+        .Format = True
+        .Wrap = wdFindContinue
+        .Execute Replace:=wdReplaceAll
         
+        .ClearFormatting
+        .Replacement.ClearFormatting
+    End With
 End Sub
-
 
 Sub Condense()
 ' Removes white-space from selection and optionally retains paragraph integrity
@@ -367,12 +423,18 @@ Sub Uncondense()
 
     ' Turn off Screen Updating
     Application.ScreenUpdating = False
-    Paperless.SelectHeadingAndContent
+    
+    If Selection.Start = Selection.End Then Paperless.SelectCardText
     
     With Selection.Find
-        .Text = "¶"
+        .ClearFormatting
+        .Replacement.ClearFormatting
+        .Text = Chr(182)
         .Replacement.Text = "^p"
         .Execute Replace:=wdReplaceAll
+        
+        .Text = ""
+        .Replacement.Text = ""
     End With
     
     ' Turn on Screen Updating
@@ -488,11 +550,15 @@ End Sub
 
 Sub UniHighlight()
 ' Replaces all highlighting in the document with the selected color
-    Selection.Find.ClearFormatting
-    Selection.Find.Highlight = True
-    Selection.Find.Replacement.ClearFormatting
-    Selection.Find.Replacement.Highlight = True
-    With Selection.Find
+
+    Dim r As Range
+    Set r = ActiveDocument.Range
+    
+    With r.Find
+        .ClearFormatting
+        .Highlight = True
+        .Replacement.ClearFormatting
+        .Replacement.Highlight = True
         .Text = ""
         .Replacement.Text = ""
         .Forward = True
@@ -503,12 +569,22 @@ Sub UniHighlight()
         .MatchWildcards = False
         .MatchSoundsLike = False
         .MatchAllWordForms = False
+        
+        .Execute Replace:=wdReplaceAll
+        
+        .ClearFormatting
+        .Replacement.ClearFormatting
     End With
     
-    Selection.Find.Execute Replace:=wdReplaceAll
+    Set r = Nothing
 End Sub
 
 Sub UniHighlightWithException()
+    Dim SelectionStart
+    Dim SelectionEnd
+    SelectionStart = Selection.Start
+    SelectionEnd = Selection.End
+    
     Dim ExceptionColor As String
     ExceptionColor = GetSetting("Verbatim", "Format", "HighlightingException", "None")
     
@@ -517,11 +593,11 @@ Sub UniHighlightWithException()
         Exit Sub
     End If
     
-    Selection.Find.ClearFormatting
-    Selection.Find.Replacement.ClearFormatting
-    Selection.Find.Highlight = True
-    Selection.Find.Replacement.Highlight = True
     With Selection.Find
+        .ClearFormatting
+        .Replacement.ClearFormatting
+        .Highlight = True
+        .Replacement.Highlight = True
         .Text = ""
         .Replacement.Text = ""
         .Forward = True
@@ -541,6 +617,13 @@ Sub UniHighlightWithException()
             Selection.Range.HighlightColorIndex = Options.DefaultHighlightColorIndex
         End If
     Loop
+    
+    Selection.Find.ClearFormatting
+    Selection.Find.Replacement.ClearFormatting
+    
+    Selection.Start = SelectionStart
+    Selection.End = SelectionEnd
+
 End Sub
 
 Public Function HighlightColorToEnum(Color As String) As Long
@@ -586,7 +669,7 @@ End Function
 
 Sub RemoveBlanks()
 ' Removes blank lines from appearing in the Navigation Pane by setting them to Normal text
-    Dim p
+    Dim p As Paragraph
 
     ' Prompt user to confirm
     If MsgBox("Removing blank lines from the Nav Pane is irreversible. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
@@ -597,6 +680,22 @@ Sub RemoveBlanks()
         End If
     Next p
 
+End Sub
+
+Sub RemoveAnalytics()
+' Removes analytics from the document
+    Dim p As Paragraph
+    Dim r As Range
+
+    ' Prompt user to confirm
+    If MsgBox("Removing analytics from the document is irreversible. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
+
+    For Each p In ActiveDocument.Paragraphs
+        If LCase(Left(p.Style, 8)) = "analytic" Then
+            Set r = Paperless.SelectHeadingAndContentRange(p)
+            r.Delete
+        End If
+    Next p
 End Sub
 
 Sub ShowComments()
@@ -728,12 +827,17 @@ Sub AutoFormatCite()
     Set r = Nothing
 End Sub
 
-Sub ReformatCiteDates()
-    'Go to top of document
+Sub ReformatAllCites()
+    Dim SelectionStart As Long
+    Dim SelectionEnd As Long
+    SelectionStart = Selection.Start
+    SelectionEnd = Selection.End
+    
+    ' Go to top of document
     Selection.HomeKey Unit:=wdStory
     Selection.Collapse
     
-    'Find each occurrence of the Cite style
+    ' Find each occurrence of the Cite style
     With Selection.Find
         .ClearFormatting
         .Replacement.ClearFormatting
@@ -750,16 +854,16 @@ Sub ReformatCiteDates()
         .MatchAllWordForms = False
         .Execute
         
-        'Find all matches
+        ' Find all matches
         Do Until .Found = False
-            'Select existing cite and clear formatting, then re-format
+            ' Select existing cite and clear formatting, then re-format
             Selection.Collapse
             Selection.StartOf Unit:=wdParagraph
             Selection.MoveEnd Unit:=wdParagraph, Count:=1
             Selection.ClearFormatting
             Formatting.AutoFormatCite
             
-            'Move down to avoid getting stuck
+            ' Move down to avoid getting stuck
             Selection.MoveDown Unit:=wdParagraph, Count:=1
             .Execute
         Loop
@@ -767,7 +871,9 @@ Sub ReformatCiteDates()
         .ClearFormatting
         .Replacement.ClearFormatting
     End With
-
+    
+    Selection.Start = SelectionStart
+    Selection.End = SelectionEnd
 End Sub
 
 Sub AutoUnderline()
@@ -895,15 +1001,42 @@ Sub AutoEmphasizeFirst()
 End Sub
 
 Sub CondenseNoPilcrows()
+' Easier to override saved settings temporarily because of poor VBA handling of optional boolean parameters
     Dim ParagraphIntegrity As Boolean
+    Dim UsePilcrows As Boolean
     
     ParagraphIntegrity = GetSetting("Verbatim", "Format", "ParagraphIntegrity", False)
+    UsePilcrows = GetSetting("Verbatim", "Format", "UsePilcrows", False)
+    
     SaveSetting "Verbatim", "Format", "ParagraphIntegrity", False
+    SaveSetting "Verbatim", "Format", "UsePilcrows", False
+    
     Formatting.Condense
+    
     SaveSetting "Verbatim", "Format", "ParagraphIntegrity", ParagraphIntegrity
+    SaveSetting "Verbatim", "Format", "UsePilcrows", UsePilcrows
+End Sub
+
+Sub CondenseWithPilcrows()
+    Dim ParagraphIntegrity As Boolean
+    Dim UsePilcrows As Boolean
+    
+    ParagraphIntegrity = GetSetting("Verbatim", "Format", "ParagraphIntegrity", False)
+    UsePilcrows = GetSetting("Verbatim", "Format", "UsePilcrows", False)
+    
+    SaveSetting "Verbatim", "Format", "ParagraphIntegrity", True
+    SaveSetting "Verbatim", "Format", "UsePilcrows", True
+    
+    Formatting.Condense
+    
+    SaveSetting "Verbatim", "Format", "ParagraphIntegrity", ParagraphIntegrity
+    SaveSetting "Verbatim", "Format", "UsePilcrows", UsePilcrows
 End Sub
 
 Sub RemoveEmphasis()
+
+    If MsgBox("Are you sure you want to convert all emphasized text to underlined?", vbYesNo) = vbNo Then Exit Sub
+        
     ' Go to top of document
     Selection.HomeKey Unit:=wdStory
     Selection.Collapse
@@ -942,20 +1075,20 @@ Sub GetFromCiteCreator()
          
         On Error GoTo Handler
         
-        'Check GetFromCiteCreator script exists
+        ' Check GetFromCiteCreator script exists
         If Filesystem.FileExists(Application.NormalTemplate.Path & "\GetFromCiteCreator.exe") = False Then
             MsgBox "GetFromCiteCreator.exe must be installed in your Templates folder."
             Exit Sub
         End If
         
-        'Run the script
+        ' Run the script
         retval = Shell(Application.NormalTemplate.Path & "\GetFromCiteCreator.exe", vbMinimizedNoFocus)
                 
         Exit Sub
     #End If
     
 Handler:
-    MsgBox "Getting from CiteCreator failed - ensure Google Chrome and the CiteCreator extension are installed and open." & vbCrLf & vbCrLf & "Error " & Err.Number & ": " & Err.Description
+    MsgBox "Getting from Cite Creator failed - ensure Google Chrome and the Cite Creator extension are installed and open." & vbCrLf & vbCrLf & "Error " & Err.Number & ": " & Err.Description
 End Sub
 
 Sub AutoNumberTags()
@@ -1018,18 +1151,352 @@ Sub FixFakeTags()
     Next p
 End Sub
 
+Sub ConvertAnalyticsToTags()
+    Dim p As Paragraph
+    
+    For Each p In ActiveDocument.Paragraphs
+        If LCase(Left(p.Style, 8)) = "analytic" Then p.Style = "Tag"
+    Next p
+End Sub
+
 Sub RemoveExtraStyles()
     Dim s As Style
+    Dim t As WdStyleType
+       
+    Dim i As Long
+    i = 0
+    Dim StyleCount As Long
+    StyleCount = ActiveDocument.Styles.Count
+    Dim ProgressForm As frmProgress
+    
+    On Error GoTo Handler
+    
+    If MsgBox("WARNING: Removing extra styles can result in lost formatting, especially without running 'Convert To Default Styles' first, and can take a long time. Proceed?", vbYesNo, "Remove extra styles?") = vbNo Then Exit Sub
+    
+    Application.ScreenUpdating = False
+    
+    ' Show progress bar
+    Set ProgressForm = New frmProgress
+    ProgressForm.Caption = "Fixing style names..."
+    ProgressForm.lblCaption.Caption = ActiveDocument.Styles.Count & " Remaining Styles..."
+    ProgressForm.lblProgress.Width = 0
+    ProgressForm.Show
+    
+    ' Visibility = True actually hides the style in the style pane
+    ' Have to change the name before deleting to avoid Word crashing on long style names
+    For Each s In ActiveDocument.Styles
+        If ProgressForm.visible = False Then Exit Sub
+        
+        i = i + 1
+        ProgressForm.lblCaption.Caption = ActiveDocument.Styles.Count & " Remaining Styles..."
+        ProgressForm.lblFile.Caption = "Processing " & s.NameLocal
+        ProgressForm.lblProgress.Width = (i / StyleCount) * ProgressForm.fProgress.Width
+        If ProgressForm.lblProgress.Width > 15 Then ProgressForm.lblProgress.Width = ProgressForm.lblProgress.Width - 15
+    
+        DoEvents ' Necessary for Progress form to update
+    
+        If s.Type = wdStyleTypeParagraph Or s.Type = wdStyleTypeLinked Then
+            If Left(s.NameLocal, 16) = "Heading 1,Pocket" And s.ParagraphFormat.outlineLevel = wdOutlineLevel1 Then
+                s.NameLocal = "Heading 1,Pocket"
+                s.Visibility = False
+            ElseIf Left(s.NameLocal, 13) = "Heading 2,Hat" And s.ParagraphFormat.outlineLevel = wdOutlineLevel2 Then
+                s.NameLocal = "Heading 2,Hat"
+                s.Visibility = False
+            ElseIf Left(s.NameLocal, 15) = "Heading 3,Block" And s.ParagraphFormat.outlineLevel = wdOutlineLevel3 Then
+                s.NameLocal = "Heading 3,Block"
+                s.Visibility = False
+            ElseIf Left(s.NameLocal, 13) = "Heading 4,Tag" And s.ParagraphFormat.outlineLevel = wdOutlineLevel4 Then
+                s.NameLocal = "Heading 4,Tag"
+                s.Visibility = False
+            ElseIf Left(s.NameLocal, 8) = "Analytic" And s.ParagraphFormat.outlineLevel = wdOutlineLevel4 Then
+                s.NameLocal = "Analytic"
+                s.Visibility = False
+            ElseIf Left(s.NameLocal, 18) = "Normal,Normal/Card" And s.ParagraphFormat.outlineLevel = wdOutlineLevelBodyText Then
+                s.NameLocal = "Normal,Normal/Card"
+                s.Visibility = False
+            Else
+                s.Visibility = True
+                s.UnhideWhenUsed = False
+                If s.BuiltIn = False Then
+                    s.NameLocal = "DeleteMe"
+                    s.Delete
+                    ActiveDocument.UndoClear
+                End If
+            End If
+        ElseIf s.Type = wdStyleTypeCharacter Then
+            If Left(s.NameLocal, 21) = "Style 13 pt Bold,Cite" Then
+                s.NameLocal = "Style 13 pt Bold,Cite"
+                s.Visibility = False
+            ElseIf Left(s.NameLocal, 25) = "Style Underline,Underline" Then
+                s.NameLocal = "Style Underline,Underline"
+                s.Visibility = False
+            ElseIf s.NameLocal = "Emphasis" Or Left(s.NameLocal, 9) = "Emphasis," Then
+                s.NameLocal = "Emphasis"
+                s.Visibility = False
+            Else
+                s.Visibility = True
+                s.UnhideWhenUsed = False
+                If s.BuiltIn = False Then
+                    s.NameLocal = "DeleteMe"
+                    s.Delete
+                    ' The undo stack will crash Word when there's too many styles
+                    ActiveDocument.UndoClear
+                End If
+            End If
+        Else
+            s.Visibility = True
+            s.UnhideWhenUsed = False
+            
+            If s.BuiltIn = False Then
+                s.NameLocal = "DeleteMe"
+                s.Delete
+                ActiveDocument.UndoClear
+            End If
+        End If
+    Next s
+
+    Application.ScreenUpdating = True
+    
+    ' Update progress form as complete
+    ProgressForm.lblCaption.Caption = "Processing complete."
+    ProgressForm.lblFile.Caption = ""
+    ProgressForm.lblProgress.Width = ProgressForm.fProgress.Width - 6
+    Unload ProgressForm
+    Set ProgressForm = Nothing
+    Exit Sub
+    
+Handler:
+    If Not ProgressForm Is Nothing Then Unload ProgressForm
+    Set ProgressForm = Nothing
+    MsgBox "Error " & Err.Number & ": " & Err.Description
+End Sub
+
+Public Sub ConvertToDefaultStyles()
+    Dim p As Paragraph
+    Dim s As Style
+    Dim r As Range
+
+    Dim i
+    i = 0
+    Dim StyleCount
+    StyleCount = ActiveDocument.Styles.Count * 2
+    Dim ProgressForm As frmProgress
     
     On Error Resume Next
     
+    If MsgBox("WARNING: Converting to default styles can take a long time, and sometimes loses formatting. Proceed?", vbYesNo, "Convert to Default Styles?") = vbNo Then Exit Sub
+    
+    Application.ScreenUpdating = False
+    
+    ' Show progress bar
+    Set ProgressForm = New frmProgress
+    ProgressForm.Caption = "Converting to default styles..."
+    ProgressForm.lblProgress.Width = 0
+    ProgressForm.lblCaption.Caption = "Converting headings..."
+    ProgressForm.Show
+
+    ' Convert all headings to built-in styles
+    For Each p In ActiveDocument.Paragraphs
+        ' Trap for cancel button on Progress Form
+        If ProgressForm.visible = False Then Exit Sub
+        If p.outlineLevel = wdOutlineLevel1 Then
+            p.Style = wdStyleHeading1
+        ElseIf p.outlineLevel = wdOutlineLevel2 Then
+            p.Style = wdStyleHeading2
+        ElseIf p.outlineLevel = wdOutlineLevel3 Then
+            p.Style = wdStyleHeading3
+        ElseIf p.outlineLevel = wdOutlineLevel4 Then
+            If LCase(Left(p.Style, 8)) = "analytic" Then
+                p.Style = "Analytic"
+            Else
+                p.Style = wdStyleHeading4
+            End If
+        End If
+    Next p
+    
+    ProgressForm.lblCaption.Caption = "Fixing style names..."
+    
+    ' Fix style names for built-in styles to prevent other styles overwriting the name
     For Each s In ActiveDocument.Styles
-        If s.BuiltIn = False And s.Locked = False Then
-            s.Delete
+        If ProgressForm.visible = False Then Exit Sub
+        
+        i = i + 1
+        ProgressForm.lblFile.Caption = "Processing " & s.NameLocal & " (" & i & " of " & StyleCount & ")"
+        ProgressForm.lblProgress.Width = (i / StyleCount) * ProgressForm.fProgress.Width
+        If ProgressForm.lblProgress.Width > 15 Then ProgressForm.lblProgress.Width = ProgressForm.lblProgress.Width - 15
+    
+        DoEvents ' Necessary for Progress form to update
+    
+        If Left(s.NameLocal, 21) = "Style 13 pt Bold,Cite" Then
+            s.NameLocal = "Style 13 pt Bold,Cite"
+        ElseIf Left(s.NameLocal, 25) = "Style Underline,Underline" Then
+            s.NameLocal = "Style Underline,Underline"
+        ElseIf Left(s.NameLocal, 9) = "Emphasis," Then
+            s.NameLocal = "Emphasis"
+        ElseIf Left(s.NameLocal, 9) = "Analytic," Then
+            s.NameLocal = "Analytic,"
         End If
     Next s
-       
-    ActiveDocument.UpdateStyles
+
+    ProgressForm.lblCaption.Caption = "Converting styles..."
+
+    For Each s In ActiveDocument.Styles
+        If ProgressForm.visible = False Then Exit Sub
+        
+        i = i + 1
+        ProgressForm.lblFile.Caption = "Processing " & s.NameLocal & " (" & i & " of " & StyleCount & ")"
+        ProgressForm.lblProgress.Width = (i / StyleCount) * ProgressForm.fProgress.Width
+        If ProgressForm.lblProgress.Width > 15 Then ProgressForm.lblProgress.Width = ProgressForm.lblProgress.Width - 15
+    
+        DoEvents ' Necessary for Progress form to update
+  
+        ' Ignore headings converted above
+        If s.BuiltIn = False _
+            And Left(LCase(s.NameLocal), 6) <> "pocket" _
+            And Left(LCase(s.NameLocal), 3) <> "hat" _
+            And Left(LCase(s.NameLocal), 5) <> "block" _
+            And Left(LCase(s.NameLocal), 3) <> "tag" _
+            And Left(LCase(s.NameLocal), 8) <> "analytic" _
+        Then
+            ' Convert cite styles
+            If InStr(LCase(s.NameLocal), "cite") > 0 _
+                And Left(s.NameLocal, 25) <> "Style Underline,Underline" _
+                And Left(LCase(s.NameLocal), 9) <> "underline" _
+                And Left(LCase(s.NameLocal), 8) <> "emphasis" _
+                And Left(LCase(s.NameLocal), 6) <> "normal" _
+                And Left(LCase(s.NameLocal), 4) <> "card" _
+                And Left(LCase(s.NameLocal), 8) <> "analytic" _
+                And Left(LCase(s.NameLocal), 4) <> "body" _
+            Then
+                With ActiveDocument.Range.Find
+                    .ClearFormatting
+                    .Replacement.ClearFormatting
+                    .Text = ""
+                    .Replacement.Text = ""
+                    .Format = True
+                    .Wrap = wdFindContinue
+                    .Style = s.NameLocal
+                    .Replacement.Style = "Cite"
+                    
+                    .Execute Replace:=wdReplaceAll
+                    
+                    .ClearFormatting
+                    .Replacement.ClearFormatting
+                End With
+            
+            ' Convert emphasis styles
+            ElseIf InStr(LCase(s.NameLocal), "emphasi") > 0 And Left(s.NameLocal, 25) <> "Style Underline,Underline" Then
+                
+                ' Fixes weird linked emphasis styles that don't show up in Find
+                If s.Linked Then s.LinkStyle = "Normal"
+                
+                ' Emphasis with highlighting
+                Set r = ActiveDocument.Range
+                With r.Find
+                    .ClearFormatting
+                    .Replacement.ClearFormatting
+                    .Text = ""
+                    .Replacement.Text = ""
+                    .Format = True
+                    .Wrap = wdFindStop
+                    .Style = s.NameLocal
+                    .Replacement.Style = "Emphasis"
+                    .Highlight = True
+                    .Replacement.Highlight = True
+                    .Execute
+                    
+                    Do While .Found = True
+                        r.Style = "Emphasis"
+                        r.HighlightColorIndex = wdYellow
+                        .Execute
+                    Loop
+                    
+                    .ClearFormatting
+                    .Replacement.ClearFormatting
+                End With
+                
+                ' Emphasis without highlighting
+                Set r = ActiveDocument.Range
+                With r.Find
+                    .ClearFormatting
+                    .Replacement.ClearFormatting
+                    .Text = ""
+                    .Replacement.Text = ""
+                    .Format = True
+                    .Wrap = wdFindStop
+                    .Style = s.NameLocal
+                    .Replacement.Style = "Emphasis"
+                    .Highlight = False
+                    .Replacement.Highlight = False
+                    
+                    .Execute Replace:=wdReplaceAll
+                    
+                    .ClearFormatting
+                    .Replacement.ClearFormatting
+                End With
+            
+            ' Convert underline styles
+            ElseIf InStr(LCase(s.NameLocal), "underline") > 0 _
+                And InStr(LCase(s.NameLocal), "no underline") = 0 _
+                And InStr(LCase(s.NameLocal), "not underline") = 0 _
+                And InStr(LCase(s.NameLocal), "ununderline") = 0 _
+                And InStr(LCase(s.NameLocal), "un-underline") = 0 _
+                And InStr(LCase(s.NameLocal), "non underline") = 0 _
+                And InStr(LCase(s.NameLocal), "non-underline") = 0 _
+            Then
+                Set r = ActiveDocument.Range
+                With r.Find
+                    .ClearFormatting
+                    .Replacement.ClearFormatting
+                    .Text = ""
+                    .Replacement.Text = ""
+                    .Format = True
+                    .Wrap = wdFindStop
+                    .Style = s.NameLocal
+                    .Replacement.Style = "Style Underline,Underline"
+                    .Highlight = True
+                    .Replacement.Highlight = True
+                    .Execute
+
+                    Do While .Found = True
+                        r.Style = "Style Underline,Underline"
+                        r.HighlightColorIndex = wdYellow
+                        .Execute
+                    Loop
+                    
+                    .ClearFormatting
+                    .Replacement.ClearFormatting
+                End With
+                
+                With ActiveDocument.Range.Find
+                    .ClearFormatting
+                    .Replacement.ClearFormatting
+                    .Text = ""
+                    .Replacement.Text = ""
+                    .Format = True
+                    .Wrap = wdFindContinue
+                    .Style = s.NameLocal
+                    .Replacement.Style = "Style Underline,Underline"
+                    .Highlight = False
+                    .Replacement.Highlight = False
+                    
+                    .Execute Replace:=wdReplaceAll
+                    
+                    .ClearFormatting
+                    .Replacement.ClearFormatting
+                End With
+            End If
+        End If
+    Next s
+    
+    Application.ScreenUpdating = True
+    
+    ' Update progress form as complete
+    ProgressForm.lblCaption.Caption = "Processing complete."
+    ProgressForm.lblFile.Caption = ""
+    ProgressForm.lblProgress.Width = ProgressForm.fProgress.Width - 6
+    Unload ProgressForm
+    Set ProgressForm = Nothing
 End Sub
 
 Public Function LargestHeading() As Integer
@@ -1076,8 +1543,14 @@ Public Function LargestHeading() As Integer
     End With
 End Function
 
-Public Function RemoveExtraUnderlining() As Integer
-    ' TODO - this doesn't change the style to Normal correctly - try using ActiveDocument.Styles("Normal")
+Public Function RemoveNonHighlightedUnderlining() As Integer
+    Dim r As Range
+    
+    If Selection.Start = Selection.End Then Paperless.SelectCardText
+    
+    ' Save a duplicate range to limit the Find to the current selection
+    Set r = Selection.Range
+    
     With Selection.Find
         .ClearFormatting
         .Replacement.ClearFormatting
@@ -1088,47 +1561,86 @@ Public Function RemoveExtraUnderlining() As Integer
         .Format = True
         .Highlight = False
         .Style = "Underline"
-        .Replacement.Style = "Normal,Normal/Card"
-        .Replacement.Font.Underline = wdUnderlineNone
         .MatchCase = False
         .MatchWholeWord = False
         .MatchWildcards = False
         .MatchSoundsLike = False
         .MatchAllWordForms = False
-        .Execute Replace:=wdReplaceAll
         
+        Do While .Execute(Forward:=True) = True And Selection.Range.InRange(r)
+            ' Directly setting the style to Normal doesn't work, so ClearFormatting instead
+            Selection.ClearFormatting
+        Loop
+                        
         .ClearFormatting
         .Replacement.ClearFormatting
     End With
+    
+    ' Restore the selection
+    Selection.Start = r.Start
+    Selection.End = r.End
 End Function
 
-Public Sub RepairCardFormatting()
+Public Sub FixFormattingGaps()
+    Dim SelectionStart As Long
+    Dim SelectionEnd As Long
+    Dim r As Range
+    Dim c As Characters
     Dim i As Long
-    
-    If Selection.Start = Selection.End Then Paperless.SelectHeadingAndContent
-    
-    If Selection.Characters.Count < 4 Then Exit Sub
 
-    For i = 2 To Selection.Characters.Count - 1
-        If Selection.Characters(i).Text = " " Or Strings.IsAlphaNumeric(Selection.Characters(i).Text) = False Then
+    SelectionStart = Selection.Start
+    SelectionEnd = Selection.End
+
+    If Selection.Start = Selection.End Then Paperless.SelectCardText
+    
+    If Selection.End - Selection.Start > 5000 Then
+        If MsgBox("Repairing card formatting for a long card can take a few minutes. Proceed?", vbYesNo) = vbNo Then Exit Sub
+    End If
+    
+    ' Save a duplicate range to limit the Find to the current selection
+    Set r = Selection.Range
+    
+    ' Find ranges in-between words with spaces/punctuation
+    With Selection.Find
+        .ClearFormatting
+        .Replacement.ClearFormatting
+        .Text = "[0-9A-z][\.\,\;\:\?\(\)\-\! ]{1,}[0-9A-z]"
+        .Forward = True
+        .Wrap = wdFindContinue
+        .MatchCase = False
+        .MatchWholeWord = False
+        .MatchWildcards = True
+        .MatchSoundsLike = False
+        .MatchAllWordForms = False
+        
+        Do While .Execute(Forward:=True) = True And Selection.Range.InRange(r)
+            Set c = Selection.Range.Characters
+            
             ' Underline or emphasize based on surrounding styles
-            If Selection.Characters(i - 1).Style = "Underline,Style Underline" And Selection.Characters(i + 1).Style = "Underline,Style Underline" Then
-                Selection.Characters(i).Style = "Underline"
-            ElseIf Selection.Characters(i - 1).Style = "Emphasis" And Selection.Characters(i + 1).Style = "Emphasis" Then
-                Selection.Characters(i).Style = "Emphasis"
-            ElseIf Selection.Characters(i - 1).Style = "Underline" And Selection.Characters(i + 1).Style = "Emphasis" Then
-                Selection.Characters(i).Style = "Underline"
-            ElseIf Selection.Characters(i - 1).Style = "Emphasis" And Selection.Characters(i + 1).Style = "Underline,Style Underline" Then
-                Selection.Characters(i).Style = "Underline"
-            Else
-                Selection.Characters(i).Style = "Normal"
+            If Left(c(1).Style, 9) = "Underline" And Left(c(c.Count).Style, 9) = "Underline" Then
+                Selection.Style = "Underline"
+            ElseIf Left(c(1).Style, 8) = "Emphasis" And Left(c(c.Count).Style, 8) = "Emphasis" Then
+                Selection.Style = "Emphasis"
+            ElseIf Left(c(1).Style, 9) = "Underline" And Left(c(c.Count).Style, 8) = "Emphasis" Then
+                Selection.Style = "Underline"
+            ElseIf Left(c(1).Style, 8) = "Emphasis" And Left(c(c.Count).Style, 9) = "Underline" Then
+                Selection.Style = "Underline"
             End If
             
-            ' Extend highlighting to cover when surrounded
-            If Selection.Characters(i - 1).HighlightColorIndex > 0 And Selection.Characters(i + 1).HighlightColorIndex > 0 Then
-                Selection.Characters(i).HighlightColorIndex = Selection.Characters(i - 1).HighlightColorIndex
+            ' Extend highlighting to cover when surrounded, have to apply to each character for Word to display it
+            If c(1).HighlightColorIndex > 0 And c(c.Count).HighlightColorIndex > 0 Then
+                For i = 2 To c.Count - 1
+                    c(i).HighlightColorIndex = c(1).HighlightColorIndex
+                Next i
             End If
-        End If
-    Next i
+        Loop
+                        
+        .ClearFormatting
+        .Replacement.ClearFormatting
+    End With
+    
+    ' Restore the selection
+    Selection.Start = SelectionStart
+    Selection.End = SelectionEnd
+    Set r = Nothing
 End Sub
-

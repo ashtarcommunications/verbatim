@@ -4,7 +4,7 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmTroubleshooter
    ClientHeight    =   5775
    ClientLeft      =   120
    ClientTop       =   450
-   ClientWidth     =   9045.001
+   ClientWidth     =   9045
    OleObjectBlob   =   "frmTroubleshooter.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -19,13 +19,17 @@ Private Sub UserForm_Activate()
 
     On Error GoTo Handler
 
+    Globals.InitializeGlobals
+
     #If Mac Then
         UI.ResizeUserForm Me
+        Me.btnFix.ForeColor = Globals.BLUE
+        Me.btnCancel.ForeColor = Globals.RED
     #End If
 
     Dim TemplateLocation As String
 
-    Me.lblWarnings.Caption = vbNullString
+    Me.lblWarnings.Caption = ""
 
     ' Run install checks and exit early if installed incorrectly
     If Troubleshooting.InstallCheckTemplateName = True Then
@@ -94,6 +98,8 @@ Private Sub btnFix_Click()
     Me.Show
 End Sub
 
+#If Mac Then
+#Else
 Sub btnFix_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnFix.BackColor = Globals.LIGHT_BLUE
 End Sub
@@ -106,5 +112,5 @@ Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x 
     btnFix.BackColor = Globals.BLUE
     btnCancel.BackColor = Globals.RED
 End Sub
-
+#End If
 

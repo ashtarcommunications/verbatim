@@ -4,7 +4,7 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmCombineDocs
    ClientHeight    =   5505
    ClientLeft      =   120
    ClientTop       =   465
-   ClientWidth     =   8220.001
+   ClientWidth     =   8220
    OleObjectBlob   =   "frmCombineDocs.frx":0000
 End
 Attribute VB_Name = "frmCombineDocs"
@@ -20,8 +20,13 @@ Private Sub UserForm_Initialize()
     ' Turn on error checking
     On Error GoTo Handler
     
+    Globals.InitializeGlobals
+    
     #If Mac Then
         UI.ResizeUserForm Me
+        Me.btnCancel.ForeColor = Globals.RED
+        Me.btnCombine.ForeColor = Globals.BLUE
+        Me.btnManualAdd.ForeColor = Globals.GREEN
     #End If
     
     ' Add all recent files to the box
@@ -61,7 +66,7 @@ Private Sub UserForm_Initialize()
     
     Me.cboAutoName.AddItem
     Me.cboAutoName.List(Me.cboAutoName.ListCount - 1, 0) = "Select a Round"
-    Me.cboAutoName.List(Me.cboAutoName.ListCount - 1, 1) = vbNullString
+    Me.cboAutoName.List(Me.cboAutoName.ListCount - 1, 1) = ""
     Me.cboAutoName.ListIndex = 0
        
     Dim Round
@@ -93,6 +98,8 @@ Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
+#If Mac Then
+#Else
 Sub btnCombine_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnCombine.BackColor = Globals.LIGHT_BLUE
 End Sub
@@ -110,6 +117,7 @@ Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x 
     btnCancel.BackColor = Globals.RED
     btnManualAdd.BackColor = Globals.GREEN
 End Sub
+#End If
 
 Private Sub btnManualAdd_Click()
     Dim FilePath As String
@@ -164,7 +172,7 @@ Private Sub btnCombine_Click()
     Next i
    
     ' Save file
-    If GetSetting("Verbatim", "Paperless", "AutoSaveDir") <> vbNullString And Me.cboAutoName.Value <> vbNullString Then
+    If GetSetting("Verbatim", "Paperless", "AutoSaveDir") <> "" And Me.cboAutoName.Value <> "" Then
         If Right(GetSetting("Verbatim", "Paperless", "AutoSaveDir"), 1) = Application.PathSeparator Then
             ActiveDocument.SaveAs FileName:=GetSetting("Verbatim", "Paperless", "AutoSaveDir") & Me.cboAutoName.Value, FileFormat:=wdFormatXMLDocument
         Else
@@ -172,7 +180,7 @@ Private Sub btnCombine_Click()
         End If
     Else
         With Application.Dialogs(wdDialogFileSaveAs)
-            If Me.cboAutoName.Value <> vbNullString Then
+            If Me.cboAutoName.Value <> "" Then
                 .Name = Me.cboAutoName.Value
             Else
                 .Name = "Combined Doc"

@@ -213,16 +213,16 @@ Sub DeleteDuplicateTemplates()
     
     ' Check for "Debate.dotm" in the Desktop and Downloads folders, prompt to delete if found
     #If Mac Then
-        FilePath = MacScript("return the path to the desktop folder as string") & "Debate.dotm"
-        If AppleScriptTask("Verbatim.scpt", "FileExists", FilePath) = "true" Then
+        FilePath = "/Users/" & Environ("USER") & "/Desktop/Debate.dotm"
+        If Filesystem.FileExists(FilePath) = True Then
             If MsgBox("A duplicate copy of Debate.dotm was found on your Desktop - this can cause interoperability issues. Attempt to delete automatically?", vbYesNo) = vbYes Then
                 Filesystem.DeleteFile FilePath
             End If
         End If
         
-        FilePath = MacScript("return the path to the downloads folder as string") & "Debate.dotm"
+        FilePath = "/Users/" & Environ("USER") & "/Downloads/Debate.dotm"
       
-        If AppleScriptTask("Verbatim.scpt", "FileExists", FilePath) = "true" Then
+        If Filesystem.FileExists(FilePath) = True Then
             If MsgBox("A duplicate copy of Debate.dotm was found in your Downloads folder - this can cause interoperability issues. Attempt to delete automatically?", vbYesNo) = vbYes Then
                 Filesystem.DeleteFile FilePath
             End If
@@ -262,15 +262,26 @@ Sub DisableAddins()
 End Sub
 
 Sub FixTilde()
+
+    Dim ModifierKey
+    
+    #If Mac Then
+        ModifierKey = wdKeyCommand
+    #Else
+        ModifierKey = wdKeyControl
+    #End If
+    
     ' VkKeyScan should usually return 192 - on models where it incorrectly returns 223, use 96 instead
     ' Keycodes: 96 = `, 192 = A`, 223 = Beta
     If VkKeyScan(Asc("`")) = 192 Then
-        KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeech", VkKeyScan(Asc("`"))
-        KeyBindings.Add wdKeyCategoryMacro, "Paperless.ShowChooseSpeechDoc", BuildKeyCode(wdKeyAlt, VkKeyScan(Asc("`")))
-        KeyBindings.Add wdKeyCategoryMacro, "View.NavPaneCycle", BuildKeyCode(wdKeyControl, VkKeyScan(Asc("`")))
+        KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechCursor", VkKeyScan(Asc("`"))
+        KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechEnd", BuildKeyCode(wdKeyAlt, VkKeyScan(Asc("`")))
+        KeyBindings.Add wdKeyCategoryMacro, "Flow.SendToFlow", BuildKeyCode(ModifierKey, VkKeyScan(Asc("`")))
+        KeyBindings.Add wdKeyCategoryMacro, "Paperless.SelectHeadingAndContent", BuildKeyCode(ModifierKey, wdKeyShift, VkKeyScan(Asc("`")))
     Else
-        KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeech", VkKeyScan(96)
-        KeyBindings.Add wdKeyCategoryMacro, "Paperless.ShowChooseSpeechDoc", BuildKeyCode(wdKeyAlt, VkKeyScan(96))
-        KeyBindings.Add wdKeyCategoryMacro, "View.NavPaneCycle", BuildKeyCode(wdKeyControl, VkKeyScan(96))
+        KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechCursor", VkKeyScan(96)
+        KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechEnd", BuildKeyCode(wdKeyAlt, VkKeyScan(96))
+        KeyBindings.Add wdKeyCategoryMacro, "Flow.SendToFlow", BuildKeyCode(ModifierKey, VkKeyScan(96))
+        KeyBindings.Add wdKeyCategoryMacro, "Paperless.SelectHeadingAndContent", BuildKeyCode(ModifierKey, wdKeyShift, VkKeyScan(("`")))
     End If
 End Sub

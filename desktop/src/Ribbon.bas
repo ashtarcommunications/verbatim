@@ -37,6 +37,13 @@ Sub RibbonMain(ByVal c As IRibbonControl)
     ' Paperless Group
     Case Is = "SendToSpeech"
         Paperless.SendToSpeech
+    Case Is = "SendToSpeech2"
+        Paperless.SendToSpeech
+    Case Is = "SendToSpeechEnd"
+        Paperless.SendToSpeechEnd
+    Case Is = "SendToFlow"
+        Flow.SendToFlow
+    
     Case Is = "ChooseSpeechDoc"
         UI.ShowForm "ChooseSpeechDoc"
     Case Is = "WindowArranger"
@@ -56,6 +63,9 @@ Sub RibbonMain(ByVal c As IRibbonControl)
     
     Case Is = "QuickCardSettings"
         UI.ShowForm "QuickCards"
+        
+    Case Is = "TabroomShare"
+        UI.ShowForm "Share"
          
     ' Share Group
     Case Is = "CopyToUSB"
@@ -124,12 +134,20 @@ Sub RibbonMain(ByVal c As IRibbonControl)
         VirtualTub.RemoveBookmarks
     Case Is = "RemoveEmphasis"
         Formatting.RemoveEmphasis
+    Case Is = "RemoveAnalytics"
+        Formatting.RemoveAnalytics
+    Case Is = "ConvertAnalyticsToTags"
+        Formatting.ConvertAnalyticsToTags
+    Case Is = "ConvertToDefaultStyles"
+        Formatting.ConvertToDefaultStyles
+    Case Is = "RemoveExtraStyles"
+        Formatting.RemoveExtraStyles
     Case Is = "AutoEmphasizeFirst"
         Formatting.AutoEmphasizeFirst
     Case Is = "FixFakeTags"
         Formatting.FixFakeTags
-    Case Is = "RepairCardFormatting"
-        Formatting.RepairCardFormatting
+    Case Is = "FixFormattingGaps"
+        Formatting.FixFormattingGaps
     Case Is = "UniHighlight"
         Formatting.UniHighlight
     Case Is = "UniHighlightWithException"
@@ -141,11 +159,13 @@ Sub RibbonMain(ByVal c As IRibbonControl)
         Formatting.CopyPreviousCite
     Case Is = "AutoFormatCite"
         Formatting.AutoFormatCite
+    Case Is = "ReformatAllCites"
+        Formatting.ReformatAllCites
     Case Is = "AutoNumberTags"
         Formatting.AutoNumberTags
     Case Is = "DeNumberTags"
         Formatting.DeNumberTags
-    Case Is = "GetFromCiteMaker"
+    Case Is = "GetFromCiteCreator"
         Formatting.GetFromCiteCreator
         
     ' Caselist Group
@@ -235,6 +255,20 @@ Sub GetRibbonImages(c As IRibbonControl, ByRef returnedBitmap)
             #Else
                 returnedBitmap = "ViewFullScreenReadingView"
             #End If
+        
+        Case Is = "SendToFlow"
+            #If Mac Then
+                returnedBitmap = "ChartShowDataContextualMenu"
+            #Else
+                returnedBitmap = "ExportExcel"
+            #End If
+            
+        Case Is = "CaselistWizard"
+            #If Mac Then
+                returnedBitmap = "WebPagePreview"
+            #Else
+                returnedBitmap = "UpgradeDocument"
+            #End If
         Case Else
             returnedBitmap = ""
     
@@ -258,11 +292,12 @@ Sub GetRibbonToggles(c As IRibbonControl, ByRef state)
         
     Case Is = "AutoUnderline"
         state = Globals.UnderlineModeToggle
-        
-    Case Is = "Pilcrows"
-        Dim PilcrowsMode
-        PilcrowsMode = GetSetting("Verbatim", "Format", "PilcrowsMode", True)
-        state = PilcrowsMode
+    
+    Case Is = "ParagraphIntegrity"
+        state = Globals.ParagraphIntegrityToggle
+    
+    Case Is = "UsePilcrows"
+        state = Globals.UsePilcrowsToggle
         
     Case Else
         state = False

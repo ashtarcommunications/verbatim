@@ -12,10 +12,8 @@ Sub UnverbatimizeNormal()
     #If Mac Then
         ' Do Nothing
     #Else
-        Dim FSO As Scripting.FileSystemObject
-        Set FSO = New Scripting.FileSystemObject
         On Error GoTo Handler
-        If FSO.FileExists(CStr(Environ("USERPROFILE")) & "\AppData\Local\Microsoft\Office\Word.officeUI") = True Then
+        If Filesystem.FileExists(CStr(Environ("USERPROFILE")) & "\AppData\Local\Microsoft\Office\Word.officeUI") = True Then
             Kill CStr(Environ("USERPROFILE")) & "\AppData\Local\Microsoft\Office\Word.officeUI"
         End If
     
@@ -56,9 +54,7 @@ Sub ImportCustomCode(Optional Notify As Boolean)
     #If Mac Then
         If Filesystem.FileExists(Application.AttachedTemplate.Path & Application.PathSeparator & "VerbatimCustomCode.bas") = False Then
     #Else
-        Dim FSO As Scripting.FileSystemObject
-        Set FSO = New Scripting.FileSystemObject
-        If FSO.FileExists(Application.NormalTemplate.Path & "\VerbatimCustomCode.bas") = False Then
+        If Filesystem.FileExists(Application.NormalTemplate.Path & Application.PathSeparator & "VerbatimCustomCode.bas") = False Then
     #End If
             If Notify = True Then MsgBox "No custom code module found in your Templates folder. It must be named ""VerbatimCustomCode.bas"" to import."
             Exit Sub
@@ -88,21 +84,11 @@ Sub ImportCustomCode(Optional Notify As Boolean)
 
     If Notify = True Then MsgBox "Custom code successfully imported!"
 
-    #If Mac Then
-        ' Do Nothing
-    #Else
-        Set FSO = Nothing
-    #End If
     Set p = Nothing
 
     Exit Sub
 
 Handler:
-    #If Mac Then
-        ' Do Nothing
-    #Else
-        Set FSO = Nothing
-    #End If
     Set p = Nothing
     MsgBox "Error " & Err.Number & ": " & Err.Description
 
@@ -189,10 +175,10 @@ Sub UpdateCheck(Optional Notify As Boolean)
 
     ' Create and send HttpReq
     Dim Response
-    Set Response = HTTP.GetReq(Globals.PAPERLESSDEBATE_URL & "/updates")
+    Set Response = HTTP.GetReq(Globals.UPDATES_URL)
     
     ' Exit if the request fails
-    If Response Is Nothing Or Response("status") <> 200 Then
+    If Response("status") <> 200 Then
         Application.StatusBar = "Update Check Failed"
         SaveSetting "Verbatim", "Profile", "LastUpdateCheck", Now
         If Notify = True Then MsgBox "Update Check Failed."
@@ -204,7 +190,7 @@ Sub UpdateCheck(Optional Notify As Boolean)
     
     ' If newer version is found
     Dim UpdatedVersion As String
-    UpdatedVersion = Response("body")("version")
+    UpdatedVersion = Response("body")("verbatim")("latest")("desktop")
     
     If Settings.NewerVersion(UpdatedVersion, Settings.GetVersion) Then
     
@@ -217,13 +203,47 @@ Sub UpdateCheck(Optional Notify As Boolean)
         If Notify = True Then MsgBox "No Verbatim updates found."
     End If
          
+    Set Response = Nothing
     Exit Sub
 
 Handler:
+    Set Response = Nothing
     Application.StatusBar = "Update Check Failed. Error " & Err.Number & ": " & Err.Description
     If Notify = True Then MsgBox "Update Check Failed. Error " & Err.Number & ": " & Err.Description
 
 End Sub
+
+Public Function NewerVersion(Version1 As String, Version2 As String) As Boolean
+' Adapted from https://forum.ozgrid.com/forum/index.php?thread%2F52830-compare-version-number-strings%2F=
+' Returns true if Version1 is newer
+    Dim i As Integer
+    Dim Version1Array() As String
+    Dim Version2Array() As String
+    Version1Array = Split(Version1, ".")
+    Version2Array = Split(Version2, ".")
+    Dim k As Integer
+    
+    k = UBound(Version1Array)
+    If UBound(Version2Array) < k Then k = UBound(Version2Array)
+    
+    For i = 0 To k
+        If Version1Array(i) > Version2Array(i) Then
+            NewerVersion = True
+            Exit For
+        ElseIf Version1Array(i) < Version2Array(i) Then
+            NewerVersion = False
+            Exit For
+        Else
+            If UBound(Version1Array) = UBound(Version2Array) Then
+                NewerVersion = False
+            ElseIf UBound(Version1Array) > UBound(Version2Array) Then
+                NewerVersion = True
+            Else
+                NewerVersion = False
+            End If
+        End If
+    Next i
+End Function
 
 ' *************************************************************************************
 ' * KEYBOARD FUNCTIONS                                                                  *
@@ -246,6 +266,8 @@ Sub ChangeKeyboardShortcut(KeyName As WdKey, MacroName As String)
             KeyBindings.Add wdKeyCategoryStyle, "Block", BuildKeyCode(KeyName)
         Case Is = "Tag"
             KeyBindings.Add wdKeyCategoryStyle, "Tag", BuildKeyCode(KeyName)
+        Case Is = "Analytic"
+            KeyBindings.Add wdKeyCategoryStyle, "Analytic", BuildKeyCode(KeyName)
         Case Is = "Cite"
             KeyBindings.Add wdKeyCategoryStyle, "Cite", BuildKeyCode(KeyName)
         Case Is = "Underline"
@@ -271,6 +293,13 @@ End Sub
 Sub ResetKeyboardShortcuts()
       
     On Error Resume Next
+    
+    Dim ModifierKey
+    #If Mac Then
+        ModifierKey = wdKeyCommand
+    #Else
+        ModifierKey = wdKeyControl
+    #End If
     
     ' Clear old keybindings
     Settings.RemoveKeyBindings
@@ -299,43 +328,66 @@ Sub ResetKeyboardShortcuts()
     KeyBindings.Add wdKeyCategoryStyle, "Hat", BuildKeyCode(wdKeyF5)
     KeyBindings.Add wdKeyCategoryStyle, "Block", BuildKeyCode(wdKeyF6)
     KeyBindings.Add wdKeyCategoryStyle, "Tag", BuildKeyCode(wdKeyF7)
+    KeyBindings.Add wdKeyCategoryStyle, "Analytic", BuildKeyCode(wdKeyAlt, wdKeyF7)
     KeyBindings.Add wdKeyCategoryStyle, "Cite", BuildKeyCode(wdKeyF8)
     KeyBindings.Add wdKeyCategoryMacro, "Formatting.ToggleUnderline", BuildKeyCode(wdKeyF9)
     KeyBindings.Add wdKeyCategoryStyle, "Emphasis", BuildKeyCode(wdKeyF10)
     KeyBindings.Add wdKeyCategoryMacro, "Formatting.Highlight", BuildKeyCode(wdKeyF11)
     KeyBindings.Add wdKeyCategoryMacro, "Formatting.ClearToNormal", BuildKeyCode(wdKeyF12)
     
-    KeyBindings.Add wdKeyCategoryMacro, "View.SwitchWindows", BuildKeyCode(wdKeyControl, wdKeyTab)
-    KeyBindings.Add wdKeyCategoryMacro, "Settings.ShowSettingsForm", BuildKeyCode(wdKeyAlt, wdKeyF1)
-    KeyBindings.Add wdKeyCategoryMacro, "Formatting.GetFromCiteMaker", BuildKeyCode(wdKeyAlt, wdKeyF2)
-    KeyBindings.Add wdKeyCategoryMacro, "Formatting.SelectSimilar", BuildKeyCode(wdKeyControl, wdKeyF2)
-    KeyBindings.Add wdKeyCategoryMacro, "Formatting.CondenseNoPilcrows", BuildKeyCode(wdKeyControl, wdKeyF3)
+    ' Alternate shortcuts for systems with F-key problems, e.g. Mac Word hijacks F6
+    
+    KeyBindings.Add wdKeyCategoryMacro, "Settings.ShowVerbatimHelp", BuildKeyCode(ModifierKey, wdKey1)
+    KeyBindings.Add wdKeyCategoryMacro, "Formatting.PasteText", BuildKeyCode(ModifierKey, wdKey2)
+    KeyBindings.Add wdKeyCategoryMacro, "Formatting.Condense", BuildKeyCode(ModifierKey, wdKey3)
+    KeyBindings.Add wdKeyCategoryStyle, "Pocket", BuildKeyCode(ModifierKey, wdKey4)
+    KeyBindings.Add wdKeyCategoryStyle, "Hat", BuildKeyCode(ModifierKey, wdKey5)
+    KeyBindings.Add wdKeyCategoryStyle, "Block", BuildKeyCode(ModifierKey, wdKey6)
+    KeyBindings.Add wdKeyCategoryStyle, "Tag", BuildKeyCode(ModifierKey, wdKey7)
+    KeyBindings.Add wdKeyCategoryStyle, "Analytic", BuildKeyCode(ModifierKey, wdKeyAlt, wdKey7)
+    KeyBindings.Add wdKeyCategoryStyle, "Cite", BuildKeyCode(ModifierKey, wdKey8)
+    KeyBindings.Add wdKeyCategoryMacro, "Formatting.ToggleUnderline", BuildKeyCode(ModifierKey, wdKey9)
+    KeyBindings.Add wdKeyCategoryStyle, "Emphasis", BuildKeyCode(ModifierKey, wdKey0)
+    KeyBindings.Add wdKeyCategoryMacro, "Formatting.Highlight", BuildKeyCode(ModifierKey, wdKeyHyphen)
+    KeyBindings.Add wdKeyCategoryMacro, "Formatting.ClearToNormal", BuildKeyCode(ModifierKey, wdKeyEquals)
+       
+    KeyBindings.Add wdKeyCategoryMacro, "Formatting.GetFromCiteCreator", BuildKeyCode(wdKeyAlt, wdKeyF2)
+    KeyBindings.Add wdKeyCategoryMacro, "Formatting.SelectSimilar", BuildKeyCode(ModifierKey, wdKeyF2)
+    KeyBindings.Add wdKeyCategoryMacro, "Formatting.CondenseNoPilcrows", BuildKeyCode(ModifierKey, wdKeyF3)
+    KeyBindings.Add wdKeyCategoryMacro, "Formatting.CondenseWithPilcrows", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyF3)
     KeyBindings.Add wdKeyCategoryMacro, "Formatting.ShrinkText", BuildKeyCode(wdKeyAlt, wdKeyF3)
-    KeyBindings.Add wdKeyCategoryMacro, "Formatting.ShrinkText", BuildKeyCode(wdKeyControl, wdKey8)
-    KeyBindings.Add wdKeyCategoryMacro, "Formatting.AutoFormatCite", BuildKeyCode(wdKeyControl, wdKeyF8)
+    
+    ' Old shortcut for Shrink Text, uncomment to restore
+    ' KeyBindings.Add wdKeyCategoryMacro, "Formatting.ShrinkText", BuildKeyCode(ModifierKey, wdKey8)
+    
+    KeyBindings.Add wdKeyCategoryMacro, "Formatting.AutoFormatCite", BuildKeyCode(ModifierKey, wdKeyF8)
     KeyBindings.Add wdKeyCategoryMacro, "Formatting.CopyPreviousCite", BuildKeyCode(wdKeyAlt, wdKeyF8)
     KeyBindings.Add wdKeyCategoryMacro, "Formatting.AutoUnderline", BuildKeyCode(wdKeyAlt, wdKeyF9)
-    KeyBindings.Add wdKeyCategoryMacro, "Formatting.RemoveEmphasis", BuildKeyCode(wdKeyControl, wdKeyShift, wdKeyF10)
-    KeyBindings.Add wdKeyCategoryMacro, "Formatting.UpdateStyles", BuildKeyCode(wdKeyControl, wdKeyF12)
-    KeyBindings.Add wdKeyCategoryMacro, "Formatting.AutoNumberTags", BuildKeyCode(wdKeyControl, wdKeyShift, wdKey3)
+    KeyBindings.Add wdKeyCategoryMacro, "Formatting.RemoveEmphasis", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyF10)
+    KeyBindings.Add wdKeyCategoryMacro, "Formatting.UpdateStyles", BuildKeyCode(ModifierKey, wdKeyF12)
+    KeyBindings.Add wdKeyCategoryMacro, "Formatting.AutoNumberTags", BuildKeyCode(ModifierKey, wdKeyShift, wdKey3)
     
-    KeyBindings.Add wdKeyCategoryMacro, "Paperless.MoveUp", BuildKeyCode(wdKeyAlt, vbKeyUp)
-    KeyBindings.Add wdKeyCategoryMacro, "Paperless.MoveDown", BuildKeyCode(wdKeyAlt, vbKeyDown)
-    KeyBindings.Add wdKeyCategoryMacro, "Paperless.DeleteHeading", BuildKeyCode(wdKeyAlt, vbKeyLeft)
-    KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeech", BuildKeyCode(wdKeyAlt, vbKeyRight)
+    KeyBindings.Add wdKeyCategoryMacro, "Paperless.MoveUp", BuildKeyCode(ModifierKey, wdKeyAlt, vbKeyUp)
+    KeyBindings.Add wdKeyCategoryMacro, "Paperless.MoveDown", BuildKeyCode(ModifierKey, wdKeyAlt, vbKeyDown)
+    KeyBindings.Add wdKeyCategoryMacro, "Paperless.DeleteHeading", BuildKeyCode(ModifierKey, wdKeyAlt, vbKeyLeft)
+    KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeech", BuildKeyCode(ModifierKey, wdKeyAlt, vbKeyRight)
     
-    KeyBindings.Add wdKeyCategoryMacro, "Email.ShowEmailForm", BuildKeyCode(wdKeyControl, wdKeyShift, wdKeyE)
-    KeyBindings.Add wdKeyCategoryMacro, "Paperless.CopyToUSB", BuildKeyCode(wdKeyControl, wdKeyShift, wdKeyS)
-    KeyBindings.Add wdKeyCategoryMacro, "PaDS.PaDSPublic", BuildKeyCode(wdKeyControl, wdKeyShift, wdKeyW)
-    KeyBindings.Add wdKeyCategoryMacro, "PaDS.UploadToPaDSDummy", BuildKeyCode(wdKeyControl, wdKeyAlt, wdKeyS)
-    KeyBindings.Add wdKeyCategoryMacro, "PaDS.OpenFromPaDSDummy", BuildKeyCode(wdKeyControl, wdKeyAlt, wdKeyO)
-    KeyBindings.Add wdKeyCategoryMacro, "View.ArrangeWindows", BuildKeyCode(wdKeyControl, wdKeyShift, wdKeyTab)
-    KeyBindings.Add wdKeyCategoryMacro, "Paperless.StartTimer", BuildKeyCode(wdKeyControl, wdKeyShift, wdKeyT)
-    KeyBindings.Add wdKeyCategoryMacro, "Caselist.CiteRequest", BuildKeyCode(wdKeyControl, wdKeyShift, wdKeyQ)
-    KeyBindings.Add wdKeyCategoryMacro, "Stats.ShowStatsForm", BuildKeyCode(wdKeyControl, wdKeyShift, wdKeyI)
-    KeyBindings.Add wdKeyCategoryMacro, "View.InvisibilityOff", BuildKeyCode(wdKeyControl, wdKeyShift, wdKeyV)
-    KeyBindings.Add wdKeyCategoryMacro, "Paperless.NewSpeech", BuildKeyCode(wdKeyControl, wdKeyShift, wdKeyN)
-    KeyBindings.Add wdKeyCategoryMacro, "View.ToggleReadingView", BuildKeyCode(wdKeyControl, wdKeyAlt, wdKeyR)
+    KeyBindings.Add wdKeyCategoryMacro, "Paperless.CopyToUSB", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyS)
+    KeyBindings.Add wdKeyCategoryMacro, "Paperless.StartTimer", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyT)
+    KeyBindings.Add wdKeyCategoryMacro, "Paperless.NewSpeech", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyN)
+    
+    KeyBindings.Add wdKeyCategoryCommand, "InsertAutoText", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyShift, wdKeyV)
+    
+    KeyBindings.Add wdKeyCategoryMacro, "View.SwitchWindows", BuildKeyCode(ModifierKey, wdKeyTab)
+    KeyBindings.Add wdKeyCategoryMacro, "View.ArrangeWindows", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyTab)
+    KeyBindings.Add wdKeyCategoryMacro, "View.InvisibilityOff", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyV)
+    KeyBindings.Add wdKeyCategoryMacro, "View.ToggleReadingView", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyR)
+    
+    KeyBindings.Add wdKeyCategoryMacro, "Caselist.CiteRequest", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyQ)
+    
+    KeyBindings.Add wdKeyCategoryMacro, "Stats.ShowStatsForm", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyI)
+        
+    KeyBindings.Add wdKeyCategoryMacro, "Settings.ShowSettingsForm", BuildKeyCode(wdKeyAlt, wdKeyF1)
     
     #If Mac Then
         ' Do Nothing
@@ -392,9 +444,6 @@ End Sub
 
 Sub OpenTemplatesFolder()
     #If Mac Then
-        Dim FolderPath As String
-        FolderPath = MacScript("return POSIX path of (path to library folder from user domain) as string")
-        FolderPath = FolderPath & "Application Support/Microsoft/Office/User Templates/My Templates"
     
         AppleScriptTask "Verbatim.scpt", "OpenFolder", Application.NormalTemplate.Path
     #Else
@@ -434,34 +483,6 @@ Sub EditStyle(StyleToEdit As String)
     Selection.End = SelEnd
 End Sub
 
-Public Function NewerVersion(Version1 As String, Version2 As String) As Boolean
-' Adapted from https://forum.ozgrid.com/forum/index.php?thread%2F52830-compare-version-number-strings%2F=
-' Returns true if Version1 is newer
-    Dim i As Integer
-    Dim Version1Array() As String
-    Dim Version2Array() As String
-    Version1Array = Split(Version1, ".")
-    Version2Array = Split(Version2, ".")
-    Dim k As Integer
-    
-    k = UBound(Version1Array)
-    If UBound(Version2Array) < k Then k = UBound(Version2Array)
-    
-    For i = 0 To k
-        If Version1Array(i) > Version2Array(i) Then
-            NewerVersion = True
-            Exit For
-        ElseIf Version1Array(i) < Version2Array(i) Then
-            NewerVersion = False
-            Exit For
-        Else
-            If UBound(Version1Array) = UBound(Version2Array) Then
-                NewerVersion = False
-            ElseIf UBound(Version1Array) > UBound(Version2Array) Then
-                NewerVersion = True
-            Else
-                NewerVersion = False
-            End If
-        End If
-    Next i
-End Function
+Sub ShowVerbatimHelp()
+    UI.ShowForm "Settings"
+End Sub

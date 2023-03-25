@@ -22,6 +22,7 @@ Private Sub UserForm_Initialize()
     
     #If Mac Then
         UI.ResizeUserForm Me
+        Me.btnCancel.ForeColor = Globals.RED
     #End If
     
     Exit Sub
@@ -35,6 +36,8 @@ Private Sub btnCancel_Click()
     Me.Hide
 End Sub
 
+#If Mac Then
+#Else
 Sub btnCancel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnCancel.BackColor = Globals.LIGHT_RED
 End Sub
@@ -42,4 +45,4 @@ End Sub
 Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnCancel.BackColor = Globals.RED
 End Sub
-
+#End If

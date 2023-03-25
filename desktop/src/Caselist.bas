@@ -135,7 +135,7 @@ Public Sub CiteRequestAll()
     Next p
 End Sub
 
-Sub CiteRequestDoc()
+Sub CiteRequestDoc(Optional Wikify As Boolean)
     On Error GoTo Handler
     
     ' Make sure Debate.dotm exists in template folder
@@ -161,6 +161,9 @@ Sub CiteRequestDoc()
     ' Convert all cites
     Caselist.CiteRequestAll
     
+    ' Optionally wikify
+    If (Wikify = True) Then Caselist.Word2MarkdownMain
+    
     ' Remove highlighting
     ActiveDocument.Content.Select
     Selection.Range.HighlightColorIndex = wdNoHighlight
@@ -178,8 +181,7 @@ End Sub
 
 Sub Word2MarkdownCites()
     ' Cite request and wikify doc
-    Caselist.CiteRequestDoc
-    Caselist.Word2MarkdownMain
+    Caselist.CiteRequestDoc Wikify:=True
     
     ' Clear all formatting
     ActiveDocument.Content.Select
@@ -579,10 +581,10 @@ Public Function CheckCaselistToken() As Boolean
     
     CheckCaselistToken = False
     
-    CaselistToken = GetSetting("Verbatim", "Caselist", "CaselistToken", vbNullString)
-    CaselistTokenExpires = GetSetting("Verbatim", "Caselist", "CaselistTokenExpires", vbNullString)
+    CaselistToken = GetSetting("Verbatim", "Caselist", "CaselistToken", "")
+    CaselistTokenExpires = GetSetting("Verbatim", "Caselist", "CaselistTokenExpires", "")
     
-    If CaselistToken <> vbNullString And CaselistTokenExpires <> vbNullString Then
+    If CaselistToken <> "" And CaselistTokenExpires <> "" Then
         If CDate(Now()) < CDate(CaselistTokenExpires) Then
             CheckCaselistToken = True
         End If

@@ -1,9 +1,9 @@
 Attribute VB_Name = "License"
 '@IgnoreModule EmptyModule
 ' Verbatim
-' Copyright © 2022 Aaron Hardy
+' Copyright © 2023 Aaron Hardy
 ' https://paperlessdebate.com
-' ashtarcommunications@gmail.com
+' support@paperlessdebate.com
 '
 ' Verbatim is free software: you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License 3.0 as published by

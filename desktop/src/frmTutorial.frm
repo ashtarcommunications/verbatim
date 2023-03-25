@@ -39,7 +39,21 @@ Private Sub UserForm_Initialize()
     
     'Reset tutorial step counter
     TutorialStep = 0
+    
+    Globals.InitializeGlobals
+    
+    #If Mac Then
+        UI.ResizeUserForm Me
+        Me.btnCancel.ForeColor = Globals.RED
+        Me.btnNext.ForeColor = Globals.BLUE
+    #End If
       
+    Me.btnTest.Width = 32
+    Me.btnTest.Height = 32
+    Me.btnTest.Caption = ""
+    Me.btnTest.Picture = Application.CommandBars.GetImageMso("RightArrow2", 16, 16)
+    Me.btnTest.PicturePosition = fmPicturePositionCenter
+    
 End Sub
  
 Private Sub GoTransparent()
@@ -48,7 +62,7 @@ Private Sub GoTransparent()
     Dim Menu As Long
 
     'Find Form window handle and make it transparent
-    formhandle = FindWindow(vbNullString, Me.Caption)
+    formhandle = FindWindow("", Me.Caption)
     SetWindowLong formhandle, GWL_EXSTYLE, GetWindowLong(formhandle, GWL_EXSTYLE) Or WS_EX_LAYERED
     SetLayeredWindowAttributes formhandle, vbCyan, 0&, LWA_COLORKEY
     Me.BackColor = vbCyan

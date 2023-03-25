@@ -3,35 +3,55 @@ Option Explicit
 
 Public Sub PasteOCR()
     On Error GoTo Handler
-    #If Mac Then
-        ' TODO - Mac version
-        MsgBox "OCR not supported on Mac"
-        
-        ' Check tesseract is installed first, then applescript:
-        
-        'set outPath to "/tmp"
-        'set tesseractCmd to (do shell script "zsh -l -c 'which tesseract'")
-        'do shell script "screencapture -i " & outPath & "/untitled.png"
-        'do shell script tesseractCmd & " " & outPath & "/untitled.png " & outPath & "/output -l jpn"
-        'set the_text to (do shell script "cat " & outPath & "/output.txt")
-        'set the clipboard to the_text
-        'do shell script "rm " & outPath & "/untitled.png " & outPath & "/output.txt"
 
+    #If Mac Then
+        Filesystem.RequestFolderAccess "/tmp"
+
+        Dim TesseractPath As String
         
+        If Filesystem.FileExists("/opt/local/bin/tesseract") Then
+            TesseractPath = "/opt/local/bin/tesseract" ' Macports default
+        ElseIf Filesystem.FileExists("/usr/local/opt/tesseract") Then
+            TesseractPath = "/usr/local/opt/tesseract"
+        ElseIf Filesystem.FileExists("/opt/homebrew/bin/tesseract") Then
+            TesseractPath = "/opt/homebrew/bin/tesseract"
+        ElseIf Filesystem.FileExists("/usr/local/bin/tesseract") Then
+            TesseractPath = "/usr/local/bin/tesseract" ' Homebrew default
+        ElseIf Filesystem.FileExists("/usr/bin/tesseract") Then
+            TesseractPath = "/usr/bin/tesseract"
+        Else
+            ' Have to use || true to always get a 0 return code
+            TesseractPath = AppleScriptTask("Verbatim.scpt", "RunShellScript", "which tesseract || true")
+        End If
+        
+        If TesseractPath = "" Then
+            MsgBox "Tesseract is required for OCR functions, and does not appear to be installed. You can install it with MacPorts or Homebrew. For more information, see the Verbatim documentation."
+            Exit Sub
+        End If
+        
+        AppleScriptTask "Verbatim.scpt", "RunShellScript", "screencapture -i /tmp/ocrtemp.png"
+        If Filesystem.FileExists("/tmp/ocrtemp.png") = False Then
+            MsgBox "Something went wrong taking a screenshot. Make sure you have granted Word permissions for Screen Recording in System Preferences -> Security & Privacy."
+            Exit Sub
+        End If
+        
+        AppleScriptTask "Verbatim.scpt", "RunShellScript", TesseractPath & " /tmp/ocrtemp.png /tmp/ocrtemp -l ENG"
+        If Filesystem.FileExists("/tmp/ocrtemp.txt") = False Then
+            MsgBox "Something went wrong with the OCR. Ensure you have Tesseract installed correctly."
+            Exit Sub
+        End If
+        
+        Selection.TypeText Filesystem.ReadFile("/tmp/ocrtemp.txt")
+        Filesystem.DeleteFile "/tmp/ocrtemp.png"
+        Filesystem.DeleteFile "/tmp/ocrtemp.txt"
     #Else
         Dim SnippingToolPath As String
-    
-        Dim FSO As FileSystemObject
-        Set FSO = New FileSystemObject
-        
+        Dim C2TPath As String
         Dim cmd As String
-        
         Dim TempImagePath As String
         
-        Dim C2TPath As String
-        
         Dim ExternalOCR As String
-        ExternalOCR = GetSetting("Verbatim", "Plugins", "ExternalOCR", vbNullString)
+        ExternalOCR = GetSetting("Verbatim", "Plugins", "ExternalOCR", "")
         If ExternalOCR <> "" Then
             If Filesystem.FileExists(ExternalOCR) = False Then
                 MsgBox "External OCR program not found. Please check the path to the application in your Verbatim settings, or remove it to use the built-in Windows Snipping Tool."
@@ -49,8 +69,8 @@ Public Sub PasteOCR()
             Exit Sub
         End If
         
-        C2TPath = GetSetting("Verbatim", "Plugins", "Capture2Text", vbNullString)
-        If C2TPath = vbNullString Then
+        C2TPath = GetSetting("Verbatim", "Plugins", "Capture2Text", "")
+        If C2TPath = "" Then
             C2TPath = Environ("ProgramW6432") & Application.PathSeparator & "Capture2Text" & Application.PathSeparator & "Capture2Text_CLI.exe"
         End If
         If Filesystem.FileExists(C2TPath) = False Then
@@ -74,18 +94,10 @@ Public Sub PasteOCR()
         
         ' Paste OCR from clipboard
         Selection.Paste
-        
-        ' Clean up
-        Set FSO = Nothing
     #End If
     
     Exit Sub
 Handler:
-    #If Mac Then
-        ' Do Nothing
-    #Else
-        Set FSO = Nothing
-    #End If
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 

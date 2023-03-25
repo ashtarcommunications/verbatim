@@ -1,7 +1,7 @@
 Attribute VB_Name = "Flow"
-Sub SendToExcel()
-    Dim ExcelApp As Excel.Application
-    Dim Flow As Excel.Workbook
+Sub SendToFlow()
+    Dim ExcelApp As Object
+    Dim Flow As Object
     Dim w
     
     Set ExcelApp = GetObject(, "Excel.Application")
