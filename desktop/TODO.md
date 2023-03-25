@@ -1,5 +1,4 @@
 # Bugs & New Features
-Verify all document styles setup
 Rebuild default keyboard shortcuts
 Finish caselist upload and sharing functions (inc. handling offline state)
 Reorganize settings form
@@ -14,7 +13,6 @@ Check all settings namespaces/names throughout
 Tutorial Replacement, consider a sample card in building blocks
 Rewrite Find blocks to use a range where possible
 Mark card feature for Mac
-Consider a native analytics style and a native remove analytics function
 Judge view mode macro (remove emphasis and shrinking)
 Unify card/doc selection modes (shrink, condense, uncondense, shrink pilcrows, cite-ify, convert dates, etc.)
 Save "share version" of current document with no analytics/notes
@@ -66,6 +64,7 @@ Mac Installer
 
 # Pre-release QA
 Double check all Mac-specific macro modifications made it into the combined version
+Check for extraneous styles
 Test all functions on PC
 Test all functions on Mac
 Rubberduck everything
