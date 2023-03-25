@@ -6,7 +6,6 @@ Reorganize settings form
 Normalize form styles
 Plugin system for GetFromCiteCreator, timer, OCR
 Search plugin
-VTub refresh
 Troubleshooting form
 Fix new speech dropdown
 Rebuild ribbon and add new macros/features/shortcuts
