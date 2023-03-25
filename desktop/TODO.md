@@ -7,7 +7,6 @@ Normalize form styles
 Plugin system for GetFromCiteCreator, timer, OCR
 Search plugin
 VTub refresh
-Mac OCR option (probably tesseract)
 Troubleshooting form
 Fix new speech dropdown
 Rebuild ribbon and add new macros/features/shortcuts

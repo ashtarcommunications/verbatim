@@ -21,6 +21,7 @@ Macro to normalize formatting across spaces/punctuation
 Quick Cards feature with user interface for creating/deleting/inserting small blocks of content
 Macros to convert all formatting to built-in styles and remove extraneous styles
 Macro to reformat existing cites to switch from year to month/day for older cites
+New OCR integrations, including a Mac option
 
 ### Changed
 Combined Mac & PC code bases
