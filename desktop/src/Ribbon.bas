@@ -134,8 +134,6 @@ Sub RibbonMain(ByVal c As IRibbonControl)
         VirtualTub.RemoveBookmarks
     Case Is = "RemoveEmphasis"
         Formatting.RemoveEmphasis
-    Case Is = "RemoveAnalytics"
-        Formatting.RemoveAnalytics
     Case Is = "ConvertAnalyticsToTags"
         Formatting.ConvertAnalyticsToTags
     Case Is = "ConvertToDefaultStyles"

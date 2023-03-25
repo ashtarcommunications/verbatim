@@ -22,7 +22,7 @@ Quick Cards feature with user interface for creating/deleting/inserting small bl
 Macros to convert all formatting to built-in styles and remove extraneous styles
 Macro to reformat existing cites to switch from year to month/day for older cites
 New OCR integrations, including a Mac option
-Native analytics style and macros to remove all analytics or convert analytics to tags
+Macro to convert custom analytics styles into tags
 
 ### Changed
 Combined Mac & PC code bases

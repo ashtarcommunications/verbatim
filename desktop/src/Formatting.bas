@@ -682,22 +682,6 @@ Sub RemoveBlanks()
 
 End Sub
 
-Sub RemoveAnalytics()
-' Removes analytics from the document
-    Dim p As Paragraph
-    Dim r As Range
-
-    ' Prompt user to confirm
-    If MsgBox("Removing analytics from the document is irreversible. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
-
-    For Each p In ActiveDocument.Paragraphs
-        If LCase(Left(p.Style, 8)) = "analytic" Then
-            Set r = Paperless.SelectHeadingAndContentRange(p)
-            r.Delete
-        End If
-    Next p
-End Sub
-
 Sub ShowComments()
 ' Toggles showing comments
     With ActiveWindow.View
@@ -1208,9 +1192,6 @@ Sub RemoveExtraStyles()
             ElseIf Left(s.NameLocal, 13) = "Heading 4,Tag" And s.ParagraphFormat.outlineLevel = wdOutlineLevel4 Then
                 s.NameLocal = "Heading 4,Tag"
                 s.Visibility = False
-            ElseIf Left(s.NameLocal, 8) = "Analytic" And s.ParagraphFormat.outlineLevel = wdOutlineLevel4 Then
-                s.NameLocal = "Analytic"
-                s.Visibility = False
             ElseIf Left(s.NameLocal, 18) = "Normal,Normal/Card" And s.ParagraphFormat.outlineLevel = wdOutlineLevelBodyText Then
                 s.NameLocal = "Normal,Normal/Card"
                 s.Visibility = False
@@ -1306,11 +1287,7 @@ Public Sub ConvertToDefaultStyles()
         ElseIf p.outlineLevel = wdOutlineLevel3 Then
             p.Style = wdStyleHeading3
         ElseIf p.outlineLevel = wdOutlineLevel4 Then
-            If LCase(Left(p.Style, 8)) = "analytic" Then
-                p.Style = "Analytic"
-            Else
-                p.Style = wdStyleHeading4
-            End If
+            p.Style = wdStyleHeading4
         End If
     Next p
     
@@ -1333,8 +1310,6 @@ Public Sub ConvertToDefaultStyles()
             s.NameLocal = "Style Underline,Underline"
         ElseIf Left(s.NameLocal, 9) = "Emphasis," Then
             s.NameLocal = "Emphasis"
-        ElseIf Left(s.NameLocal, 9) = "Analytic," Then
-            s.NameLocal = "Analytic,"
         End If
     Next s
 
@@ -1356,7 +1331,6 @@ Public Sub ConvertToDefaultStyles()
             And Left(LCase(s.NameLocal), 3) <> "hat" _
             And Left(LCase(s.NameLocal), 5) <> "block" _
             And Left(LCase(s.NameLocal), 3) <> "tag" _
-            And Left(LCase(s.NameLocal), 8) <> "analytic" _
         Then
             ' Convert cite styles
             If InStr(LCase(s.NameLocal), "cite") > 0 _

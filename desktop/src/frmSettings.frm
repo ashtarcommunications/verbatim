@@ -249,8 +249,6 @@ Private Sub UserForm_Initialize()
     Me.cboHatSize.Value = GetSetting("Verbatim", "Styles", "HatSize", 22)
     Me.cboBlockSize.Value = GetSetting("Verbatim", "Styles", "BlockSize", 16)
     Me.cboTagSize.Value = GetSetting("Verbatim", "Styles", "TagSize", 13)
-    Me.cboAnalyticSize.Value = GetSetting("Verbatim", "Styles", "AnalyticSize", 13)
-    Me.chkAnalyticItalic.Value = GetSetting("Verbatim", "Styles", "AnalyticItalic", False)
     
     Me.cboCiteSize.Value = GetSetting("Verbatim", "Styles", "CiteSize", 13)
     Me.chkUnderlineCite.Value = GetSetting("Verbatim", "Styles", "UnderlineCite", False)
@@ -306,7 +304,7 @@ Private Sub UserForm_Initialize()
     Me.cboHighlightingException.Value = GetSetting("Verbatim", "Format", "HighlightingException", "None")
     
     ' Populate Keyboard Tab Comboboxes
-    MacroArray = Array("Paste", "Condense", "Pocket", "Hat", "Block", "Tag", "Analytic", "Cite", "Underline", "Emphasis", "Highlight", "Clear", "Shrink Text", "Select Similar")
+    MacroArray = Array("Paste", "Condense", "Pocket", "Hat", "Block", "Tag", "Cite", "Underline", "Emphasis", "Highlight", "Clear", "Shrink Text", "Select Similar")
     
     Me.cboF2Shortcut.List = MacroArray
     Me.cboF3Shortcut.List = MacroArray
@@ -432,8 +430,6 @@ Private Sub btnResetAllSettings_Click()
     Me.cboHatSize.Value = 22
     Me.cboBlockSize.Value = 16
     Me.cboTagSize.Value = 13
-    Me.choAnalyticSize.Value = 13
-    Me.chkAnalyticItalic.Value = False
     Me.cboCiteSize.Value = 13
     Me.chkUnderlineCite.Value = False
     Me.cboUnderlineSize.Value = 11
@@ -565,8 +561,6 @@ Private Sub btnSave_Click()
     SaveSetting "Verbatim", "Styles", "HatSize", Me.cboHatSize.Value
     SaveSetting "Verbatim", "Styles", "BlockSize", Me.cboBlockSize.Value
     SaveSetting "Verbatim", "Styles", "TagSize", Me.cboTagSize.Value
-    SaveSetting "Verbatim", "Styles", "AnalyticSize", Me.cboAnalyticSize.Value
-    SaveSetting "Verbatim", "Styles", "AnalyticItalic", Me.chkAnalyticItalic.Value
     SaveSetting "Verbatim", "Styles", "CiteSize", Me.cboCiteSize.Value
     SaveSetting "Verbatim", "Styles", "UnderlineCite", Me.chkUnderlineCite.Value
     SaveSetting "Verbatim", "Styles", "UnderlineSize", Me.cboUnderlineSize.Value
@@ -616,8 +610,6 @@ Private Sub btnSave_Click()
     DebateTemplate.Styles("Hat").Font.Size = Me.cboHatSize.Value
     DebateTemplate.Styles("Block").Font.Size = Me.cboBlockSize.Value
     DebateTemplate.Styles("Tag").Font.Size = Me.cboTagSize.Value
-    DebateTemplate.Styles("Analytic").Font.Size = Me.cboAnalyticSize.Value
-    DebateTemplate.Styles("Analytic").Font.Italic = Me.chkAnalyticItalic.Value
     DebateTemplate.Styles("Cite").Font.Size = Me.cboCiteSize.Value
     If Me.chkUnderlineCite.Value = True Then
         DebateTemplate.Styles("Cite").Font.Underline = wdUnderlineSingle
@@ -863,8 +855,6 @@ Private Sub btnImportSettings_Click()
     Me.cboHatSize.Value = System.PrivateProfileString(SettingsFileName, "Styles", "HatSize")
     Me.cboBlockSize.Value = System.PrivateProfileString(SettingsFileName, "Styles", "BlockSize")
     Me.cboTagSize.Value = System.PrivateProfileString(SettingsFileName, "Styles", "TagSize")
-    Me.cboAnalyticSize.Value = System.PrivateProfileString(SettingsFileName, "Styles", "AnalyticSize")
-    Me.chkAnalyticItalic.Value = System.PrivateProfileString(SettingsFileName, "Styles", "AnalyticItalic")
     Me.cboCiteSize.Value = System.PrivateProfileString(SettingsFileName, "Styles", "CiteSize")
     Me.chkUnderlineCite.Value = System.PrivateProfileString(SettingsFileName, "Styles", "UnderlineCite")
     Me.cboUnderlineSize.Value = System.PrivateProfileString(SettingsFileName, "Styles", "UnderlineSize")
@@ -1007,8 +997,6 @@ Private Sub btnExportSettings_Click()
     System.PrivateProfileString(SettingsFileName, "Styles", "HatSize") = Me.cboHatSize.Value
     System.PrivateProfileString(SettingsFileName, "Styles", "BlockSize") = Me.cboBlockSize.Value
     System.PrivateProfileString(SettingsFileName, "Styles", "TagSize") = Me.cboTagSize.Value
-    System.PrivateProfileString(SettingsFileName, "Styles", "AnalyticSize") = Me.cboAnalyticSize.Value
-    System.PrivateProfileString(SettingsFileName, "Styles", "AnalyticItalic") = Me.chkAnalyticItalic.Value
     System.PrivateProfileString(SettingsFileName, "Styles", "CiteSize") = Me.cboCiteSize.Value
     System.PrivateProfileString(SettingsFileName, "Styles", "UnderlineCite") = Me.chkUnderlineCite.Value
     System.PrivateProfileString(SettingsFileName, "Styles", "UnderlineSize") = Me.cboUnderlineSize.Value
@@ -1199,8 +1187,6 @@ Private Sub btnResetStyles_Click()
     Me.cboHatSize.Value = 22
     Me.cboBlockSize.Value = 16
     Me.cboTagSize.Value = 13
-    Me.cboAnalyticSize.Value = 13
-    Me.chkAnalyticItalic.Value = False
     Me.cboCiteSize.Value = 13
     Me.chkUnderlineCite.Value = False
     Me.cboUnderlineSize.Value = 11

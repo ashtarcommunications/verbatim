@@ -15,7 +15,6 @@ Rewrite Find blocks to use a range where possible
 Mark card feature for Mac
 Judge view mode macro (remove emphasis and shrinking)
 Unify card/doc selection modes (shrink, condense, uncondense, shrink pilcrows, cite-ify, convert dates, etc.)
-Save "share version" of current document with no analytics/notes
 
 # Flow template
 send selected or heading to excel in cell or column
