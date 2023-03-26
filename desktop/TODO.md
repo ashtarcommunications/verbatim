@@ -6,7 +6,6 @@ Normalize form styles
 Plugin system for GetFromCiteCreator, timer, OCR
 Search plugin
 Troubleshooting form
-Fix new speech dropdown
 Rebuild ribbon and add new macros/features/shortcuts
 Clean up Ribbon XML with proper IDs, keyboard shortcuts, descriptions
 Check all settings namespaces/names throughout
@@ -16,38 +15,38 @@ Mark card feature for Mac
 Unify card/doc selection modes (shrink, condense, uncondense, shrink pilcrows, cite-ify, convert dates, etc.)
 
 # Flow template
-send selected or heading to excel in cell or column
+Send selected or heading from Word to excel in cell or column
 Send outline tag/cite from word to excel
-send excel selection/cell/column to word at cursor or end of doc
-insert row(s) above/below current based on hotkey (make sure it doesn't screw up clipboard/undo)
-insert cells above/below in same column
-delete row
-delete empty sheets
-delete single sheet
-easy move between sheets
-add sheets quickly (aff/neg/etc), both hot key and ribbon menu
-toggle enter/alt-enter mode
-highlight argument/cell
+Send excel selection/cell/column to word at cursor or end of doc
+Insert row(s) above/below current based on hotkey (make sure it doesn't screw up clipboard/undo)
+Insert cells above/below in same column
+Delete row
+Delete empty sheets
+Delete single sheet
+Easy move between sheets
+Add sheets quickly (aff/neg/etc), both hot key and ribbon menu
+Toggle enter/alt-enter mode
+Highlight argument/cell
 Create flow for tabroom round/Speech from Verbatim
 Label flows based on title in A1 (optionally disable)
 Info tracking/scouting info
-auto-move cursor to columns of chosen speech on all sheets
-macro to designate evidence for an argument/cell
-auto-organize windows for flow/speech side-by-side
-paste special or expand by crlf
-vtub for analytics
+Auto-move cursor to columns of chosen speech on all sheets
+Macro to designate evidence for an argument/cell
+Auto-organize windows for flow/speech side-by-side
+Paste special or expand by crlf
+Vtub for analytics
 Add/remove numbers for args automatically
 Merge/group cells
 Move up/down like with blocks
 Configurable for different events
 Keyboard shortcuts cheat sheet
 Keep f2 shortcut for entering cell
-change row/column size
-add zoom functions to ribbon
-configurable font size
-automatically fill scouting info from subsheets
+Change row/column size
+Add zoom functions to ribbon
+Configurable font size
+Automatically fill scouting info from subsheets
 Optional shorthand expansion
-shortcut to extend to next column of same side
+Shortcut to extend to next column of same side
 
 # New Tools
 PC setup tool
@@ -62,6 +61,7 @@ Mac Installer
 
 # Pre-release QA
 Double check all Mac-specific macro modifications made it into the combined version
+Switch URL endpoints to production
 Check for extraneous styles
 Test all functions on PC
 Test all functions on Mac
