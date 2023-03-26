@@ -38,6 +38,8 @@ Modified keyboard shortcuts on Mac to consistently use Command instead of Ctrl, 
 Added choosing a default event to set e.g. default speech times
 Converted all library references to late binding for better backwards compatability
 Rewrote update check to work with new update server and not download new versions automatically to avoid tripping virus scanners
+Integrated the new speech dropdown with openCaselist for easier speech creation
+Reorganized settings form and added lots of new settings
 
 ### Removed
 Removed Email feature, superceded by Tabroom sharing functionality

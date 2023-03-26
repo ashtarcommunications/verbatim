@@ -1,8 +1,6 @@
 # Bugs & New Features
 Rebuild default keyboard shortcuts
 Finish caselist upload and sharing functions (inc. handling offline state)
-Reorganize settings form
-Normalize form styles
 Plugin system for GetFromCiteCreator, timer, OCR
 Search plugin
 Troubleshooting form
