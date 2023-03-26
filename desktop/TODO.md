@@ -1,12 +1,10 @@
 # Bugs & New Features
-Rebuild default keyboard shortcuts
 Finish caselist upload and sharing functions (inc. handling offline state)
 Plugin system for GetFromCiteCreator, timer, OCR
 Search plugin
 Troubleshooting form
 Rebuild ribbon and add new macros/features/shortcuts
 Clean up Ribbon XML with proper IDs, keyboard shortcuts, descriptions
-Check all settings namespaces/names throughout
 Tutorial Replacement, consider a sample card in building blocks
 Rewrite Find blocks to use a range where possible
 Mark card feature for Mac
