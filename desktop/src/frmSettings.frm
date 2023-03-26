@@ -341,7 +341,6 @@ Private Sub UserForm_Initialize()
         
     ' Plugins Tab
     Me.cboTimer.Value = GetSetting("Verbatim", "Plugins", "TimerPath", "")
-    Me.cboCapture2Text.Value = GetSetting("Verbatim", "Plugins", "Capture2TextPath", "")
     Me.cboOCR.Value = GetSetting("Verbatim", "Plugins", "OCRPath", "")
     Me.cboSearch.Value = GetSetting("Verbatim", "Plugins", "SearchPath", "")
     
@@ -361,7 +360,7 @@ Private Sub UserForm_Activate()
     Globals.InitializeGlobals
     
     ' Set Tabroom logged in state
-    If GetSetting("Verbatim", "Profile", "CaselistToken", "") <> "" And Caselist.CheckCaselistToken = True Then
+    If GetSetting("Verbatim", "Caselist", "CaselistToken", "") <> "" And Caselist.CheckCaselistToken = True Then
         Me.lblTabroomLoggedIn.Caption = "You are logged in to Tabroom"
         Me.btnTabroomLogout.visible = True
         Me.btnTabroomLogin.visible = False
@@ -476,7 +475,6 @@ Private Sub btnResetAllSettings_Click()
        
     ' Plugins Tab
     Me.cboTimer.Value = ""
-    Me.cboCapture2Text.Value = ""
     Me.cboOCR.Value = ""
     Me.cboSearch.Value = ""
     
@@ -716,7 +714,6 @@ Private Sub btnSave_Click()
         
     ' Plugins Tab
     SaveSetting "Verbatim", "Plugins", "TimerPath", Me.cboTimer.Value
-    SaveSetting "Verbatim", "Plugins", "Capture2TextPath", Me.cboCapture2Text.Value
     SaveSetting "Verbatim", "Plugins", "OCRPath", Me.cboOCR.Value
     SaveSetting "Verbatim", "Plugins", "SearchPath", Me.cboSearch.Value
     
@@ -753,9 +750,11 @@ Private Sub btnTabroomLogin_Click()
 End Sub
 
 Private Sub btnTabroomLogout_Click()
-    SaveSetting "Verbatim", "Profile", "CaselistToken", ""
-    SaveSetting "Verbatim", "Profile", "CaselistTokenExpires", ""
+    SaveSetting "Verbatim", "Caselist", "CaselistToken", ""
+    SaveSetting "Verbatim", "Caselist", "CaselistTokenExpires", ""
     Me.lblTabroomLoggedIn.Caption = "You are logged out of Tabroom"
+    Me.btnTabroomLogout.visible = False
+    Me.btnTabroomLogin.visible = True
 End Sub
 
 Private Sub lblTabroomRegister_Click()
@@ -910,7 +909,6 @@ Private Sub btnImportSettings_Click()
     
     ' Import settings - Plugins
     Me.cboTimer.Value = System.PrivateProfileString(SettingsFileName, "Plugins", "TimerPath")
-    Me.cboCapture2Text.Value = System.PrivateProfileString(SettingsFileName, "Plugins", "Capture2TextPath")
     Me.cboOCR.Value = System.PrivateProfileString(SettingsFileName, "Plugins", "OCRPath")
     Me.cboSearch.Value = System.PrivateProfileString(SettingsFileName, "Plugins", "SearchPath")
     
@@ -1052,7 +1050,6 @@ Private Sub btnExportSettings_Click()
     
     ' Export settings - Plugins
     System.PrivateProfileString(SettingsFileName, "Plugins", "TimerPath") = Me.cboTimer.Value
-    System.PrivateProfileString(SettingsFileName, "Plugins", "Capture2TextPath") = Me.cboCapture2Text.Value
     System.PrivateProfileString(SettingsFileName, "Plugins", "OCRPath") = Me.cboOCR.Value
     System.PrivateProfileString(SettingsFileName, "Plugins", "SearchPath") = Me.cboSearch.Value
 
@@ -1313,28 +1310,21 @@ End Sub
 Private Sub cboTimer_DropButtonClick()
     On Error Resume Next
     
-    Me.cboTimer.Value = UI.GetFileFromDialog("Timer", "*.*", "Choose a Timer application...", "Select")
-    Me.btnCancel.SetFocus 'Have to switch focus to avoid dropdown getting stuck
-End Sub
-
-Private Sub cboCapture2Text_DropButtonClick()
-    On Error Resume Next
-    
-    Me.cboCapture2Text.Value = UI.GetFileFromDialog("Capture2Text", "*.exe", "Choose the location for Capture2Text_CLI.exe", "Select")
+    Me.cboTimer.Value = UI.GetFileFromDialog("Timer Application", "*.*", "Choose a Timer application...", "Select")
     Me.btnCancel.SetFocus 'Have to switch focus to avoid dropdown getting stuck
 End Sub
 
 Private Sub cboOCR_DropButtonClick()
     On Error Resume Next
     
-    Me.cboOCR.Value = UI.GetFileFromDialog("OCR Program", "*.*", "Choose an OCR application...", "Select")
+    Me.cboOCR.Value = UI.GetFileFromDialog("OCR Application", "*.*", "Choose an OCR application...", "Select")
     Me.btnCancel.SetFocus 'Have to switch focus to avoid dropdown getting stuck
 End Sub
 
 Private Sub cboSearch_DropButtonClick()
     On Error Resume Next
     
-    Me.cboSearch.Value = UI.GetFileFromDialog("Search Program", "*.*", "Choose a Search application...", "Select")
+    Me.cboSearch.Value = UI.GetFileFromDialog("Search Application", "*.*", "Choose a Search application...", "Select")
     Me.btnCancel.SetFocus 'Have to switch focus to avoid dropdown getting stuck
 End Sub
 

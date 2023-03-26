@@ -86,6 +86,7 @@ Private Sub btnLogin_Click()
             expires = b("expires")
             SaveSetting "Verbatim", "Caselist", "CaselistToken", token
             SaveSetting "Verbatim", "Caselist", "CaselistTokenExpires", JSONTools.ParseIso(expires)
+            Ribbon.RefreshRibbon
             MsgBox "Successfully logged in, you can now use integrated caselist features!"
             Me.Hide
             Unload Me

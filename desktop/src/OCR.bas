@@ -50,14 +50,14 @@ Public Sub PasteOCR()
         Dim cmd As String
         Dim TempImagePath As String
         
-        Dim ExternalOCR As String
-        ExternalOCR = GetSetting("Verbatim", "Plugins", "ExternalOCR", "")
-        If ExternalOCR <> "" Then
-            If Filesystem.FileExists(ExternalOCR) = False Then
+        Dim OCRPath As String
+        OCRPath = GetSetting("Verbatim", "Plugins", "OCRPath", "")
+        If OCRPath <> "" Then
+            If Filesystem.FileExists(OCRPath) = False Then
                 MsgBox "External OCR program not found. Please check the path to the application in your Verbatim settings, or remove it to use the built-in Windows Snipping Tool."
                 Exit Sub
             Else
-                CreateObject("WSCript.Shell").Run ExternalOCR, 0, True
+                CreateObject("WSCript.Shell").Run OCRPath, 0, True
                 Exit Sub
             End If
         End If
@@ -69,12 +69,12 @@ Public Sub PasteOCR()
             Exit Sub
         End If
         
-        C2TPath = GetSetting("Verbatim", "Plugins", "Capture2Text", "")
-        If C2TPath = "" Then
+        If Filesystem.FileExists(Environ("ProgramW6432") & Application.PathSeparator & "Verbatim" & Application.PathSeparator & "Plugins" & Application.PathSeparator & "Capture2Text_CLI.exe") = True Then
+            C2TPath = Filesystem.FileExists(Environ("ProgramW6432") & Application.PathSeparator & "Verbatim" & Application.PathSeparator & "Plugins" & Application.PathSeparator & "Capture2Text_CLI.exe")
+        ElseIf Filesystem.FileExists(Environ("ProgramW6432") & Application.PathSeparator & "Capture2Text" & Application.PathSeparator & "Capture2Text_CLI.exe") = True Then
             C2TPath = Environ("ProgramW6432") & Application.PathSeparator & "Capture2Text" & Application.PathSeparator & "Capture2Text_CLI.exe"
-        End If
-        If Filesystem.FileExists(C2TPath) = False Then
-            MsgBox "Capture2Text must be installed to run OCR. Please see https://paperlessdebate.com/ for more details or check the path to the application in your Verbatim settings."
+        Else
+            MsgBox "Capture2Text must be installed to run OCR. Please see https://paperlessdebate.com/ for more details on how to install."
         End If
         
         ' Take a screenshot with the snipping tool

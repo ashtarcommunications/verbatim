@@ -69,7 +69,7 @@ Public Sub Start()
     ActiveWindow.DocumentMap = True
     
     ' Refresh document styles from template if setting checked and not editing template itself
-    If GetSetting("Verbatim", "Format", "AutoUpdateStyles", True) = True And ActiveDocument.FullName <> ActiveDocument.AttachedTemplate.FullName Then ActiveDocument.UpdateStyles
+    If GetSetting("Verbatim", "Admin", "AutoUpdateStyles", True) = True And ActiveDocument.FullName <> ActiveDocument.AttachedTemplate.FullName Then ActiveDocument.UpdateStyles
     ActiveDocument.Saved = True
        
     ' Prevent Word making new styles
@@ -79,7 +79,7 @@ Public Sub Start()
     End If
        
     ' Check for NPCStartup setting and call NavPaneCycle if True
-    If GetSetting("Verbatim", "Admin", "NPCStartup", False) = True Then View.NavPaneCycle
+    If GetSetting("Verbatim", "View", "NPCStartup", False) = True Then View.NavPaneCycle
     
     ' Refresh screen to solve blank screen bug
     Application.ScreenRefresh
@@ -107,7 +107,7 @@ Public Sub Start()
         End If
         
         ' Check for updates weekly on Wednesdays
-        If GetSetting("Verbatim", "Admin", "AutoUpdateCheck", True) = True Then
+        If GetSetting("Verbatim", "Profile", "AutomaticUpdates", True) = True Then
             If DateDiff("d", GetSetting("Verbatim", "Profile", "LastUpdateCheck"), Now) > 6 Then
                 If DatePart("w", Now) = 4 Then
                     Settings.UpdateCheck
@@ -119,7 +119,7 @@ Public Sub Start()
     End If
 
     ' Check for custom code to import
-    If GetSetting("Verbatim", "Profile", "ImportCustomCode", False) = True Then
+    If GetSetting("Verbatim", "Admin", "ImportCustomCode", False) = True Then
         Settings.ImportCustomCode Notify:=True
     End If
 

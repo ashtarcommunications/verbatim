@@ -367,6 +367,7 @@ Sub ResetKeyboardShortcuts()
     KeyBindings.Add wdKeyCategoryMacro, "Paperless.MoveDown", BuildKeyCode(ModifierKey, wdKeyAlt, vbKeyDown)
     KeyBindings.Add wdKeyCategoryMacro, "Paperless.DeleteHeading", BuildKeyCode(ModifierKey, wdKeyAlt, vbKeyLeft)
     KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeech", BuildKeyCode(ModifierKey, wdKeyAlt, vbKeyRight)
+    KeyBindings.Add wdKeyCategoryMacro, "Paperless.SelectHeadingAndContent", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyShift, vbKeyDown)
     
     KeyBindings.Add wdKeyCategoryMacro, "Paperless.CopyToUSB", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyS)
     KeyBindings.Add wdKeyCategoryMacro, "Paperless.StartTimer", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyT)

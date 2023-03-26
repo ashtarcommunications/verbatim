@@ -87,7 +87,7 @@ Sub PasteText()
             
         Selection = PasteText
         
-        If GetSetting("Verbatim", "Formatting", "CondenseOnPaste", False) = True Then
+        If GetSetting("Verbatim", "Format", "CondenseOnPaste", False) = True Then
             Formatting.Condense
         End If
     
@@ -420,22 +420,31 @@ End Sub
 
 Sub Uncondense()
 ' Replaces pilcrows with paragraph breaks
-
+    Dim r As Range
+    
     ' Turn off Screen Updating
     Application.ScreenUpdating = False
     
-    If Selection.Start = Selection.End Then Paperless.SelectCardText
+    If Selection.Start <= ActiveDocument.Range.Start And Selection.Start = Selection.End Then
+        Set r = ActiveDocument.Range
+    ElseIf Selection.Start = Selection.End Then
+        Set r = Paperless.SelectHeadingAndContentRange(Selection.Paragraphs(1))
+    Else
+        Set r = Selection.Range
+    End If
     
-    With Selection.Find
+    With r.Find
         .ClearFormatting
         .Replacement.ClearFormatting
-        .Text = Chr(182)
+        .Text = Chr(182) ' Pilcrow
         .Replacement.Text = "^p"
         .Execute Replace:=wdReplaceAll
         
         .Text = ""
         .Replacement.Text = ""
     End With
+    
+    Set r = Nothing
     
     ' Turn on Screen Updating
     Application.ScreenUpdating = True
@@ -449,7 +458,7 @@ Sub ShrinkPilcrows()
     Application.ScreenUpdating = False
     
     ' If at beginning of document, shrink all pilcrows and exit
-    If Selection.Start <= ActiveDocument.Range.Start Then
+    If Selection.Start <= ActiveDocument.Range.Start And Selection.Start = Selection.End Then
         Selection.Collapse
         With Selection.Find
             .ClearFormatting
@@ -1056,17 +1065,19 @@ Sub GetFromCiteCreator()
         Exit Sub
     #Else
         Dim retval As Double
-         
+        Dim CiteCreatorPath As String
+        
         On Error GoTo Handler
         
         ' Check GetFromCiteCreator script exists
-        If Filesystem.FileExists(Application.NormalTemplate.Path & "\GetFromCiteCreator.exe") = False Then
-            MsgBox "GetFromCiteCreator.exe must be installed in your Templates folder."
+        CiteCreatorPath = Environ("ProgramW6432") & Application.PathSeparator & "Verbatim" & Application.PathSeparator & "Plugins" & Application.PathSeparator & "GetFromCiteCreator.exe"
+        If Filesystem.FileExists(CiteCreatorPath) = False Then
+            MsgBox "The GetFromCiteCreator plugin does not appear to be installed. Check https://paperlessdebate.com for more information on how to install."
             Exit Sub
         End If
         
         ' Run the script
-        retval = Shell(Application.NormalTemplate.Path & "\GetFromCiteCreator.exe", vbMinimizedNoFocus)
+        retval = Shell(CiteCreatorPath, vbMinimizedNoFocus)
                 
         Exit Sub
     #End If

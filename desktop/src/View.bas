@@ -110,15 +110,18 @@ End Sub
 
 Sub NavPaneCycle()
 ' Runs the NavPaneCycle program via Shell
-' To install, place NavPaneCycle.exe in the same folder as Debate.dotm, and name the executable "NavPaneCycle.exe"
-
     #If Mac Then
         MsgBox "NavPaneCycle is only supported on Windows"
+        Exit Sub
     #Else
         On Error Resume Next
     
+        Dim NPCPath As String
+        NPCPath = Environ("ProgramW6432") & Application.PathSeparator & "Verbatim" & Application.PathSeparator & "Plugins" & Application.PathSeparator & "NavPaneCycle.exe"
+    
         ' Check NPC exists
-        If Filesystem.FileExists(ActiveDocument.AttachedTemplate.Path & "\NavPaneCycle.exe") = False Then
+        If Filesystem.FileExists(NPCPath) = False Then
+            MsgBox "The NavPaneCycle plugin does not appear to be installed. Check https://paperlessdebate.com for more information on how to install."
             Exit Sub
         End If
 
@@ -129,7 +132,7 @@ Sub NavPaneCycle()
         If ActiveWindow.visible = False Then Exit Sub
     
         ' Run NPC
-        Shell ActiveDocument.AttachedTemplate.Path & "\NavPaneCycle.exe", vbMinimizedNoFocus
+        Shell NPCPath, vbMinimizedNoFocus
     
         Exit Sub
     #End If

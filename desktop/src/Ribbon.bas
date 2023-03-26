@@ -64,13 +64,17 @@ Sub RibbonMain(ByVal c As IRibbonControl)
     Case Is = "QuickCardSettings"
         UI.ShowForm "QuickCards"
         
-    Case Is = "TabroomShare"
-        UI.ShowForm "Share"
-         
+    Case Is = "SelectHeadingAndContent"
+        Paperless.SelectHeadingAndContent
+    
+    
+    
     ' Share Group
     Case Is = "CopyToUSB"
         Paperless.CopyToUSB
-    
+    Case Is = "TabroomShare"
+        UI.ShowForm "Share"
+        
     ' Tools Group
     Case Is = "StartTimer"
         Paperless.StartTimer
@@ -165,6 +169,17 @@ Sub RibbonMain(ByVal c As IRibbonControl)
         Formatting.DeNumberTags
     Case Is = "GetFromCiteCreator"
         Formatting.GetFromCiteCreator
+        
+    Case Is = "CondenseWithPilcrows"
+        Formatting.CondenseWithPilcrows
+    Case Is = "CondenseNoPilcrows"
+        Formatting.CondenseNoPilcrows
+    Case Is = "RemoveNonHighlightedUnderlining"
+        Formatting.RemoveNonHighlightedUnderlining
+    Case Is = "Uncondense"
+        Formatting.Uncondense
+    Case Is = "UnshrinkAll"
+        Formatting.UnshrinkAll
         
     ' Caselist Group
     Case Is = "CaselistWizard"

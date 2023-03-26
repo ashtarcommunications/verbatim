@@ -29,7 +29,7 @@ Private Sub UserForm_Initialize()
     #End If
     
     ' Run install checks
-    If GetSetting("Verbatim", "Admin", "SkipInstallChecks", False) = False Then
+    If GetSetting("Verbatim", "Admin", "SuppressInstallChecks", False) = False Then
         If Troubleshooting.InstallCheckTemplateName = True Then
             MsgBox "WARNING - Verbatim appears to be installed incorrectly as " & ActiveDocument.AttachedTemplate.Name & " - Verbatim should always be named ""Debate.dotm"" or many features will not work correctly. It is strongly recommended you change the file name back." & vbCrLf & vbCrLf & "Please close Verbatim and install correctly before proceeding."
             Unload Me

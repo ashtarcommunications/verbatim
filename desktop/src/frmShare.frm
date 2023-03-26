@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmShare 
    Caption         =   "Share on share.tabroom.com"
-   ClientHeight    =   7425
+   ClientHeight    =   7410
    ClientLeft      =   120
    ClientTop       =   465
-   ClientWidth     =   8955
+   ClientWidth     =   8445
    OleObjectBlob   =   "frmShare.frx":0000
    StartUpPosition =   1  'CenterOwner
 End

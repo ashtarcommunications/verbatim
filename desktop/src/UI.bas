@@ -4,6 +4,8 @@ Option Explicit
 Public Sub ShowForm(FormName As String)
     Dim Form As Object
     
+    On Error Resume Next
+    
     Select Case FormName
         Case "Caselist"
             Set Form = New frmCaselist

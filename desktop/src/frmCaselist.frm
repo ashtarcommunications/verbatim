@@ -165,7 +165,7 @@ Private Sub UserForm_Initialize()
     Me.cboSide.List(Me.cboSide.ListCount - 1, 0) = "Neg"
     Me.cboSide.List(Me.cboSide.ListCount - 1, 1) = "N"
         
-    If GetSetting("Verbatim", "Caselist", "DefaultOpenSource", False) = True Then
+    If GetSetting("Verbatim", "Caselist", "OpenSource", False) = True Then
         Me.chkOpenSource.Value = True
     End If
     
@@ -211,7 +211,7 @@ Private Sub UserForm_Initialize()
         Me.cboCaselistTeamName.Value = Split(DefaultCaselistTeam, "|")(1)
     End If
     
-    'If GetSetting("Verbatim", "Caselist", "AutoProcessCites", True) = True Then ProcessCiteEntries Else AddCiteEntry "" ""
+    'If GetSetting("Verbatim", "Caselist", "ProcessCites", True) = True Then ProcessCiteEntries Else AddCiteEntry "" ""
     'ProcessCiteEntries
     
     Exit Sub
@@ -678,8 +678,8 @@ Public Sub UploadToCaselist()
     
     If Me.chkSaveDefault = True Then
         SaveSetting "Verbatim", "Caselist", "DefaultCaselist", Me.cboCaselists.Text & "|" & Me.cboCaselists.Value
-        SaveSetting "Verbatim", "Caselist", "CaselistSchool", Me.cboCaselistSchoolName.Text & "|" & Me.cboCaselistSchoolName.Value
-        SaveSetting "Verbatim", "Caselist", "CaselistTeam", Me.cboCaselistTeamName.Text & "|" & Me.cboCaselistTeamName.Value
+        SaveSetting "Verbatim", "Caselist", "DefaultCaselistSchool", Me.cboCaselistSchoolName.Text & "|" & Me.cboCaselistSchoolName.Value
+        SaveSetting "Verbatim", "Caselist", "DefaultCaselistTeam", Me.cboCaselistTeamName.Text & "|" & Me.cboCaselistTeamName.Value
     End If
     
     Set Body = Nothing
