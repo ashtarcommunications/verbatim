@@ -23,6 +23,7 @@ Macros to convert all formatting to built-in styles and remove extraneous styles
 Macro to reformat existing cites to switch from year to month/day for older cites
 New OCR integrations, including a Mac option
 Macro to convert custom analytics styles into tags
+Macro to move current heading to the bottom of the current document
 
 ### Changed
 Combined Mac & PC code bases
@@ -41,6 +42,7 @@ Rewrote update check to work with new update server and not download new version
 Integrated the new speech dropdown with openCaselist for easier speech creation
 Reorganized settings form and added lots of new settings
 The tilde key now marks a card whenever you're in the active speech document, instead of relying on reading mode
+Option to unset the current speech document, so a speech doc can be used as a regular document
 
 ### Removed
 Removed Email feature, superceded by Tabroom sharing functionality
