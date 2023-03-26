@@ -5,7 +5,6 @@ Search plugin
 Troubleshooting form
 Tutorial Replacement, consider a sample card in building blocks
 Rewrite Find blocks to use a range where possible
-Mark card feature for Mac
 Unify card/doc selection modes (shrink, condense, uncondense, shrink pilcrows, cite-ify, convert dates, etc.)
 
 # Flow template
