@@ -48,6 +48,7 @@ Integrated the new speech dropdown with openCaselist for easier speech creation
 Reorganized settings form and added lots of new settings
 The tilde key now marks a card whenever you're in the active speech document, instead of relying on reading mode
 Option to unset the current speech document, so a speech doc can be used as a regular document
+Simplified troubleshooting form and moved some checks to the setup tool
 
 ### Removed
 Removed Email feature, superceded by Tabroom sharing functionality
