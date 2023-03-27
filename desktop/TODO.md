@@ -1,5 +1,5 @@
 # Bugs & New Features
-Finish caselist upload and sharing functions (inc. handling offline state)
+Finish sharing functions (inc. handling offline state)
 Search plugin
 Troubleshooting form
 Tutorial Replacement, consider a sample card in building blocks

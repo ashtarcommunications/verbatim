@@ -25,6 +25,7 @@ New OCR integrations, including a Mac option
 Macro to convert custom analytics styles into tags
 Macro to move current heading to the bottom of the current document
 Plugin system for overriding the built-in timer, OCR, or search
+New caselist upload feature to work with new openCaselist
 
 ### Changed
 Combined Mac & PC code bases
