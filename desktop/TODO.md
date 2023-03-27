@@ -1,5 +1,4 @@
 # Bugs & New Features
-Finish sharing functions (inc. handling offline state)
 Search plugin
 Troubleshooting form
 Tutorial Replacement, consider a sample card in building blocks

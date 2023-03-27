@@ -26,6 +26,7 @@ Macro to convert custom analytics styles into tags
 Macro to move current heading to the bottom of the current document
 Plugin system for overriding the built-in timer, OCR, or search
 New caselist upload feature to work with new openCaselist
+Integration with share.tabroom.com to allow privacy-first document sharing
 
 ### Changed
 Combined Mac & PC code bases
