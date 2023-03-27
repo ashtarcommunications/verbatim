@@ -24,6 +24,7 @@ Macro to reformat existing cites to switch from year to month/day for older cite
 New OCR integrations, including a Mac option
 Macro to convert custom analytics styles into tags
 Macro to move current heading to the bottom of the current document
+Plugin system for overriding the built-in timer, OCR, or search
 
 ### Changed
 Combined Mac & PC code bases

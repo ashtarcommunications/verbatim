@@ -1,6 +1,5 @@
 # Bugs & New Features
 Finish caselist upload and sharing functions (inc. handling offline state)
-Plugin system for GetFromCiteCreator, timer, OCR
 Search plugin
 Troubleshooting form
 Tutorial Replacement, consider a sample card in building blocks
@@ -49,6 +48,7 @@ Mac setup tool
 	defaults write "Apple Global Domain" "com.apple.keyboard.fnState" "0" ## Brightness/Media	https://apple.stackexchange.com/questions/344494/how-to-disable-default-mission-control-shortcuts-in-terminal
 PC Installer
 	Fix template getting put into admin templates folder when run with UAC (look at not needing admin permissions)
+Plugin installer for Capture2Text, Timer, GetFromCiteCreator, NavPaneCycle, and EverythingSearch
 Mac Installer
 	Mac installer check/disbale Mac OS keyboard shortcuts
 
