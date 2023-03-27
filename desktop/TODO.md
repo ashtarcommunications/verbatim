@@ -1,5 +1,4 @@
 # Bugs & New Features
-Search plugin
 Troubleshooting form
 Tutorial Replacement, consider a sample card in building blocks
 Rewrite Find blocks to use a range where possible
