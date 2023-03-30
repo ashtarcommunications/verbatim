@@ -1,7 +1,7 @@
 # Bugs & New Features
 Tutorial Replacement, consider a sample card in building blocks
 Rewrite Find blocks to use a range where possible
-Unify card/doc selection modes (shrink, condense, uncondense, shrink pilcrows, cite-ify, convert dates, etc.)
+Unify card/doc selection modes (*shrink, *condense, *uncondense, *remove pilcrows, *shrink pilcrows, cite-ify, convert dates, etc.)
 
 # Flow template
 Send selected or heading from Word to excel in cell or column
