@@ -49,6 +49,8 @@ Reorganized settings form and added lots of new settings
 The tilde key now marks a card whenever you're in the active speech document, instead of relying on reading mode
 Option to unset the current speech document, so a speech doc can be used as a regular document
 Simplified troubleshooting form and moved some checks to the setup tool
+Unified selection modes for most core formatting macros (current card if no selection, selection if selected, or whole doc if at top)
+Modified most macros using the Find dialog to use a range and avoid changing users selection
 
 ### Removed
 Removed Email feature, superceded by Tabroom sharing functionality
