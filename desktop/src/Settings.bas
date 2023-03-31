@@ -297,7 +297,6 @@ Public Sub ChangeKeyboardShortcut(ByVal KeyName As WdKey, ByVal MacroName As Str
 End Sub
 
 Public Sub ResetKeyboardShortcuts()
-      
     On Error Resume Next
     
     Dim ModifierKey As Long
@@ -328,6 +327,11 @@ Public Sub ResetKeyboardShortcuts()
 
     ' Speech shortcuts (tilde key shortcuts are set by FixTilde)
     KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechCursor", BuildKeyCode(ModifierKey, wdKeyAlt, vbKeyRight)
+    KeyBindings.Add wdKeyCategoryMacro, "Flow.SendToFlowCell", BuildKeyCode(ModifierKey, wdKeyG)
+    KeyBindings.Add wdKeyCategoryMacro, "Flow.SendToFlowColumn", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyG)
+    KeyBindings.Add wdKeyCategoryMacro, "Flow.SendHeadingsToFlowCell", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyG)
+    KeyBindings.Add wdKeyCategoryMacro, "Flow.SendHeadingsToFlowColumn", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyShift, wdKeyG)
+    
     KeyBindings.Add wdKeyCategoryMacro, "QuickCards.InsertCurrentQuickCard", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyShift, wdKeyV)
     
     ' Organize shortcuts
@@ -375,6 +379,7 @@ Public Sub ResetKeyboardShortcuts()
     KeyBindings.Add wdKeyCategoryMacro, "Formatting.AutoNumberTags", BuildKeyCode(ModifierKey, wdKeyShift, wdKey3)
     
     ' Paperless shortcuts
+    KeyBindings.Add wdKeyCategoryMacro, "Paperless.SelectHeadingAndContent", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyA)
     KeyBindings.Add wdKeyCategoryMacro, "Paperless.MoveUp", BuildKeyCode(ModifierKey, wdKeyAlt, vbKeyUp)
     KeyBindings.Add wdKeyCategoryMacro, "Paperless.MoveDown", BuildKeyCode(ModifierKey, wdKeyAlt, vbKeyDown)
     KeyBindings.Add wdKeyCategoryMacro, "Paperless.MoveToBottom", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyShift, vbKeyDown)

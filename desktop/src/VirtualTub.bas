@@ -3,7 +3,7 @@ Attribute VB_Name = "VirtualTub"
 Option Explicit
 
 '@Ignore ParameterNotUsed, ProcedureCanBeWrittenAsFunction
-Public Sub GetVTubContent(ByVal c As IRibbonControl, ByRef returnedVal As String)
+Public Sub GetVTubContent(ByVal c As IRibbonControl, ByRef returnedVal As Variant)
 ' Get content for dynamic menu from JSON file
     Dim VTubPath As String
     Dim Folder As clsFolder

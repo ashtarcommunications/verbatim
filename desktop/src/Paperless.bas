@@ -337,6 +337,31 @@ Public Function IdentifyCite(ByVal p As Paragraph) As Boolean
     End If
 End Function
 
+Public Function IdentifyCiteStyle(ByVal p As Paragraph) As Boolean
+    IdentifyCiteStyle = False
+    With p.Range.Find
+        .ClearFormatting
+        .Replacement.ClearFormatting
+        .Text = ""
+        .Forward = True
+        .Wrap = wdFindStop
+        .Format = True
+        .Style = "Cite"
+        .MatchCase = False
+        .MatchWholeWord = False
+        .MatchWildcards = False
+        .MatchSoundsLike = False
+        .MatchAllWordForms = False
+        
+        .Execute
+        
+        If .Found Then IdentifyCiteStyle = True
+        
+        .ClearFormatting
+        .Replacement.ClearFormatting
+    End With
+End Function
+
 Public Function SelectCardTextRange(ByVal p As Paragraph) As Range
     Dim r As Range
     
@@ -726,7 +751,6 @@ Handler:
     Set SpeechDoc = Nothing
     
     MsgBox "Error " & Err.Number & ": " & Err.Description
-
 End Sub
 
 '*************************************************************************************

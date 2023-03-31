@@ -47,8 +47,14 @@ Public Sub RibbonMain(ByVal c As IRibbonControl)
         Paperless.SendToSpeech
     Case Is = "SendToSpeechEnd"
         Paperless.SendToSpeechEnd
-    Case Is = "SendToFlow"
-        Flow.SendToFlow
+    Case Is = "SendToFlowCell"
+        Flow.SendToFlowCell
+    Case Is = "SendToFlowColumn"
+        Flow.SendToFlowColumn
+    Case Is = "SendHeadingsToFlowCell"
+        Flow.SendHeadingsToFlowCell
+    Case Is = "SendHeadingsToFlowColumn"
+        Flow.SendHeadingsToFlowColumn
     Case Is = "SelectHeadingAndContent"
         Paperless.SelectHeadingAndContent
     Case Is = "MoveDown"
@@ -221,8 +227,8 @@ Public Sub RibbonMain(ByVal c As IRibbonControl)
     End Select
 
     ' Reset Customization Context
-    CustomizationContext = ActiveDocument.Name
-
+    '@Ignore ValueRequired
+    CustomizationContext = ThisDocument
 End Sub
 
 Public Sub GetRibbonLabels(ByVal c As IRibbonControl, ByRef label As Variant)
@@ -283,12 +289,15 @@ Public Sub GetRibbonImages(ByVal c As IRibbonControl, ByRef returnedBitmap As Va
                 returnedBitmap = "ViewFullScreenReadingView"
             #End If
         
-        Case Is = "SendToFlow"
+        Case Is = "SendToFlowCell", "SendToFlowColumn"
             #If Mac Then
                 returnedBitmap = "ChartShowDataContextualMenu"
             #Else
                 returnedBitmap = "ExportExcel"
             #End If
+            
+        Case Is = "SendHeadingsToFlowCell", "SendHeadingsToFlowColumn"
+            returnedBitmap = "ViewOutlineView"
             
         Case Is = "CaselistWizard"
             #If Mac Then

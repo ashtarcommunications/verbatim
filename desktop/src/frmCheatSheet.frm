@@ -45,8 +45,20 @@ Private Sub UserForm_Activate()
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Paperless.SendToSpeechEnd")
     
     Me.lboxShortcuts.AddItem
-    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Send To Flow"
-    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Flow.SendToFlow")
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Send To Flow (Cell)"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Flow.SendToFlowCell")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Send To Flow (Column)"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Flow.SendToFlowColumn")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Send Headings To Flow (Cell)"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Flow.SendHeadingsToFlowCell")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Send Headings To Flow (Column)"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Flow.SendHeadingsToFlowColumn")
     
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Insert Quick Card"

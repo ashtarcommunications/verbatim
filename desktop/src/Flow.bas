@@ -1,18 +1,121 @@
 Attribute VB_Name = "Flow"
 Option Explicit
 
-Public Sub SendToFlow()
+Public Sub SendToFlowCell()
+    Flow.SendToFlow SplitParagraphs:=False
+End Sub
+
+Public Sub SendToFlowColumn()
+    Flow.SendToFlow SplitParagraphs:=True
+End Sub
+
+Public Sub SendHeadingsToFlowCell()
+    Flow.SendToFlow SplitParagraphs:=False, HeadingsOnly:=True
+End Sub
+
+Public Sub SendHeadingsToFlowColumn()
+    Flow.SendToFlow SplitParagraphs:=True, HeadingsOnly:=True
+End Sub
+
+Public Sub SendToFlow(Optional ByVal SplitParagraphs As Boolean, Optional ByVal HeadingsOnly As Boolean)
     Dim ExcelApp As Object
-    Dim Flow As Object
     Dim w As Variant
+    Dim Flow As Object
+    Dim p As Paragraph
+    Dim i As Long
+    Dim Overwrite As Boolean
+    Dim SendText As String
+    
+    On Error GoTo Handler
     
     Set ExcelApp = GetObject(, "Excel.Application")
+    
+    If ExcelApp Is Nothing Then
+        MsgBox "Excel must be open to send to your flow!"
+        Exit Sub
+    End If
+    
     For Each w In ExcelApp.Workbooks
-        If w.Name = "Debate.xltm" Then Set Flow = w
+        If InStr(LCase$(w.Name), "flow") Then Set Flow = w
     Next w
     
-    Paperless.SelectHeadingAndContent
+    If Flow Is Nothing Then
+        MsgBox "You must have an Excel document open with ""Flow"" in the name to send to it!"
+        Exit Sub
+    End If
     
-    Flow.ActiveSheet.Range("A1").Value = Selection.Text
+    If Flow.ActiveSheet Is Nothing Then
+        MsgBox "You must have an active sheet in your Flow to send to it!"
+        Exit Sub
+    End If
     
+    If Selection.End = Selection.Start Then
+        Paperless.SelectHeadingAndContent
+    End If
+    
+    ' Make sure the Flow is the active sheet or cell selection will fail
+    Flow.Activate
+    Flow.ActiveSheet.Select
+    
+    If SplitParagraphs Then
+        i = 0
+        
+        ' Check for overwriting existing content
+        For Each p In Selection.Paragraphs
+            If Len(p.Range.Text) > 1 Then
+                If Flow.ActiveSheet.Cells(Flow.ActiveSheet.Application.ActiveCell.Offset(i, 0).Row, Flow.ActiveSheet.Application.ActiveCell.Column).Value <> "" Then
+                    Overwrite = True
+                End If
+                i = i + 1
+            End If
+        Next p
+        
+        If Overwrite = True Then
+            If MsgBox("There's already text where you're sending.  Are you sure you want to overwrite it?", vbOKCancel) = vbCancel Then Exit Sub
+        End If
+        
+        i = 0
+
+        ' Copy each paragraph to a separate cell
+        For Each p In Selection.Paragraphs
+            If Len(p.Range.Text) > 1 Then
+                ' In HeadingsOnly mode, just send headings and cites
+                If HeadingsOnly <> True Or (p.OutlineLevel <> wdOutlineLevelBodyText Or Paperless.IdentifyCiteStyle(p)) Then
+                    Flow.ActiveSheet.Cells(Flow.ActiveSheet.Application.ActiveCell.Row, Flow.ActiveSheet.Application.ActiveCell.Column).Value = p.Range.Text
+                    Flow.ActiveSheet.Application.ActiveCell.Offset(1, 0).Select
+                    i = i + 1
+                End If
+            End If
+        Next p
+    Else
+        ' Copy selected content into the current cell
+        If Flow.ActiveSheet.Cells(Flow.ActiveSheet.Application.ActiveCell.Row, Flow.ActiveSheet.Application.ActiveCell.Column).Value <> "" Then
+            If MsgBox("There is already text where you're sending.  Are you sure you want to overwrite it?", vbOKCancel) = vbCancel Then Exit Sub
+        End If
+        
+        For Each p In Selection.Paragraphs
+            If HeadingsOnly <> True Or (p.OutlineLevel <> wdOutlineLevelBodyText Or Paperless.IdentifyCiteStyle(p)) Then
+                SendText = SendText & p.Range.Text
+            End If
+        Next p
+
+        Flow.ActiveSheet.Cells(Flow.ActiveSheet.Application.ActiveCell.Row, Flow.ActiveSheet.Application.ActiveCell.Column).Value = SendText
+        Flow.ActiveSheet.Application.ActiveCell.Offset(1, 0).Select
+    End If
+    
+    Set ExcelApp = Nothing
+    Set w = Nothing
+    Set Flow = Nothing
+    
+    Exit Sub
+    
+Handler:
+    Set ExcelApp = Nothing
+    Set w = Nothing
+    Set Flow = Nothing
+    If Err.Number = 429 Then
+        MsgBox "Excel must be open to send to your flow!"
+    Else
+        MsgBox "Error " & Err.Number & ": " & Err.Description
+    End If
 End Sub

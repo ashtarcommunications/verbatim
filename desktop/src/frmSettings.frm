@@ -145,7 +145,7 @@ End Sub
 Private Sub UserForm_Initialize()
     Dim e As String
     Dim FontSize As Long
-    Dim f As String
+    Dim f As Variant
     Dim MacroArray() As String
     
     ' Turn on Error handling

@@ -237,19 +237,13 @@ Public Sub FixTilde()
     #If Mac Then
         KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechCursor", Chr(96)
         KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechEnd", BuildKeyCode(wdKeyAlt, Chr(96))
-        KeyBindings.Add wdKeyCategoryMacro, "Flow.SendToFlow", BuildKeyCode(ModifierKey, Chr(96))
-        KeyBindings.Add wdKeyCategoryMacro, "Paperless.SelectHeadingAndContent", BuildKeyCode(ModifierKey, wdKeyShift, Chr(96))
     #Else
         If VkKeyScan(Asc("`")) = 192 Then
             KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechCursor", VkKeyScan(Asc("`"))
             KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechEnd", BuildKeyCode(wdKeyAlt, VkKeyScan(Asc("`")))
-            KeyBindings.Add wdKeyCategoryMacro, "Flow.SendToFlow", BuildKeyCode(ModifierKey, VkKeyScan(Asc("`")))
-            KeyBindings.Add wdKeyCategoryMacro, "Paperless.SelectHeadingAndContent", BuildKeyCode(ModifierKey, wdKeyShift, VkKeyScan(Asc("`")))
         Else
             KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechCursor", VkKeyScan(96)
             KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechEnd", BuildKeyCode(wdKeyAlt, VkKeyScan(96))
-            KeyBindings.Add wdKeyCategoryMacro, "Flow.SendToFlow", BuildKeyCode(ModifierKey, VkKeyScan(96))
-            KeyBindings.Add wdKeyCategoryMacro, "Paperless.SelectHeadingAndContent", BuildKeyCode(ModifierKey, wdKeyShift, VkKeyScan(96))
         End If
     #End If
 End Sub

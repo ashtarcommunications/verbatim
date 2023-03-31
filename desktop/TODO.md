@@ -1,5 +1,4 @@
 # Flow template
-Send outline tag/cite from word to excel
 Send excel selection/cell/column to word at cursor or end of doc
 Insert row(s) above/below current based on hotkey (make sure it doesn't screw up clipboard/undo)
 Insert cells above/below in same column

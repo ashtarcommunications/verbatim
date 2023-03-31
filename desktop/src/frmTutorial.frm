@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmTutorial 
    Caption         =   "Verbatim Tutorial"
-   ClientHeight    =   5025
+   ClientHeight    =   5820
    ClientLeft      =   120
    ClientTop       =   465
    ClientWidth     =   7755
@@ -23,7 +23,7 @@ Private Sub UserForm_Initialize()
     Globals.InitializeGlobals
     
     #If Mac Then
-        UI.ResizeUserForm Me
+        ' Don't use UI.ResizeUserForm for this form to make positioning easier
         Me.btnExit.ForeColor = Globals.RED
         Me.btnNext.ForeColor = Globals.BLUE
     #End If
@@ -117,7 +117,11 @@ Public Sub btnNext_Click()
                 & "You can also press the `\~ key instead (next to the number 1 key)."
         
             ShowImage "Speech"
-            HighlightControl 180, 85, 22, 38
+            #If Mac Then
+                HighlightControl 175, 120, 24, 50
+            #Else
+                HighlightControl 180, 132, 22, 38
+            #End If
         
         Case Is = 6
             Me.lblMessage.Caption = "Try it out! Click on a heading and click the arrow button to send the heading to the speech document. " _
@@ -155,7 +159,11 @@ Public Sub btnNext_Click()
             Me.lblMessage.Caption = "These menus open your ""Quick Cards"" and ""Virtual Tub,"" which let you quickly insert cards or blocks without needing to actually open the files. " _
             & "It must be configured in the Verbatim Settings before use."
         
-            HighlightControl 180, 105, 39, 38
+            #If Mac Then
+                HighlightControl 178, 146, 46, 42
+            #Else
+                HighlightControl 180, 149, 39, 38
+            #End If
         
             Selection.Style = "Tag"
             Selection.TypeText "Tip: The Virtual Tub is designed to be used with a relatively small number of files that are very well organized - " _
@@ -168,7 +176,11 @@ Public Sub btnNext_Click()
             
             ShowImage "Paperless"
 
-            HighlightControl 135, 88, 18, 72
+            #If Mac Then
+                HighlightControl 120, 120, 22, 90
+            #Else
+                HighlightControl 135, 132, 18, 72
+            #End If
             
             Selection.Style = "Tag"
             Selection.TypeText "Tip: For the auto-naming functions to work, you must have a Tabroom.com account, and the tournament you are attending must be run on Tabroom." & vbCrLf
@@ -177,14 +189,22 @@ Public Sub btnNext_Click()
         Case Is = 9
             Me.lblMessage.Caption = "By default, any document with the name ""Speech"" in the name will be your speech document for sending things to. " _
                 & "This button lets you choose any document you want as the current speech document."
-            
-            HighlightControl 135, 105, 18, 72
+                        
+            #If Mac Then
+                HighlightControl 120, 142, 22, 90
+            #Else
+                HighlightControl 135, 149, 18, 72
+            #End If
 
         ' Share
         Case Is = 10
             Me.lblMessage.Caption = "These buttons let you quickly share a speech document via USB or share.tabroom.com"
             
-            HighlightControl 206, 105, 36, 58
+            #If Mac Then
+                HighlightControl 210, 142, 50, 75
+            #Else
+                HighlightControl 206, 149, 36, 58
+            #End If
             
             Selection.Style = "Tag"
             Selection.TypeText "Tip: share.tabroom.com lets you share your document without sharing your email address, and can automatically email a copy to everyone in your round." & vbCrLf
@@ -216,7 +236,11 @@ Public Sub btnNext_Click()
                         
             ShowImage "View"
             
-            HighlightControl 210, 105, 16, 24
+            #If Mac Then
+                HighlightControl 212, 142, 22, 26
+            #Else
+                HighlightControl 210, 149, 16, 24
+            #End If
             
             Selection.Style = "Tag"
             Selection.TypeText "Tip: You can configure your default view and the layout of the automatic windows arranger in the Verbatim Settings." & vbCrLf
@@ -226,7 +250,11 @@ Public Sub btnNext_Click()
             Me.lblMessage.Caption = "This button toggles ""Invisibility Mode,"" which temporarily hides all non-highlighted card text for easier reading or judging. " _
                 & "Click Next to see it in action."
             
-            HighlightControl 210, 88, 16, 24
+            #If Mac Then
+                HighlightControl 212, 120, 22, 26
+            #Else
+                HighlightControl 210, 132, 16, 24
+            #End If
             
             SampleCard
             
@@ -267,7 +295,11 @@ Public Sub btnNext_Click()
         Case Is = 19
             Me.lblMessage.Caption = "This button opens a handy cheat sheet of all the Verbatim keyboard shortcuts."
             
-            HighlightControl 152, 124, 16, 24
+            #If Mac Then
+                HighlightControl 142, 168, 22, 24
+            #Else
+                HighlightControl 152, 168, 16, 24
+            #End If
             
         ' Finish
         Case Is = 20
@@ -302,13 +334,58 @@ Private Sub ShowImage(ByVal Image As String)
     Dim i As String
     i = "img" & Image
 
-    If Image <> "None" Then
-        Me.Controls(i).Left = 75
-        Me.Controls(i).Top = 60
-        Me.Controls(i).Width = 250
-        Me.Controls(i).Height = 125
-        Me.Controls(i).Visible = True
-    End If
+    Select Case Image
+        Case Is = "Speech"
+            Me.Controls(i).Left = 173
+            Me.Controls(i).Top = 120
+            Me.Controls(i).Width = 54
+            Me.Controls(i).Height = 95
+            Me.Controls(i).Visible = True
+        Case Is = "Organize"
+            Me.Controls(i).Left = 68
+            Me.Controls(i).Top = 120
+            Me.Controls(i).Width = 263
+            Me.Controls(i).Height = 92
+            Me.Controls(i).Visible = True
+        Case Is = "Format"
+            Me.Controls(i).Left = 130
+            Me.Controls(i).Top = 120
+            Me.Controls(i).Width = 140
+            Me.Controls(i).Height = 93
+            Me.Controls(i).Visible = True
+        Case Is = "Paperless"
+            Me.Controls(i).Left = 116
+            Me.Controls(i).Top = 120
+            Me.Controls(i).Width = 168
+            Me.Controls(i).Height = 93
+            Me.Controls(i).Visible = True
+        Case Is = "Tools"
+            Me.Controls(i).Left = 109
+            Me.Controls(i).Top = 120
+            Me.Controls(i).Width = 181
+            Me.Controls(i).Height = 93
+            Me.Controls(i).Visible = True
+        Case Is = "View"
+            Me.Controls(i).Left = 142
+            Me.Controls(i).Top = 120
+            Me.Controls(i).Width = 115
+            Me.Controls(i).Height = 92
+            Me.Controls(i).Visible = True
+        Case Is = "Caselist"
+            Me.Controls(i).Left = 155
+            Me.Controls(i).Top = 120
+            Me.Controls(i).Width = 89
+            Me.Controls(i).Height = 93
+            Me.Controls(i).Visible = True
+        Case Is = "Settings"
+            Me.Controls(i).Left = 135
+            Me.Controls(i).Top = 120
+            Me.Controls(i).Width = 129
+            Me.Controls(i).Height = 91
+            Me.Controls(i).Visible = True
+        Case Else
+            ' Do Nothing
+    End Select
     
     For Each c In Me.Controls
         If Left$(c.Name, 3) = "img" And c.Name <> i Then

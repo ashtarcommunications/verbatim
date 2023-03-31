@@ -4,7 +4,7 @@ Option Explicit
 
 Public SearchText As String
 
-Public Sub SearchChanged(ByVal c As IRibbonControl, ByVal strText As String)
+Public Sub SearchChanged(ByVal c As IRibbonControl, ByVal strText As Variant)
     ' Set the search text, then refresh ribbon
     SearchText = strText
     Ribbon.RefreshRibbon
@@ -17,7 +17,7 @@ Public Sub SearchChanged(ByVal c As IRibbonControl, ByVal strText As String)
 End Sub
 
 '@Ignore ProcedureCanBeWrittenAsFunction
-Public Sub GetSearchResultsContent(ByVal c As IRibbonControl, ByRef returnedVal As String)
+Public Sub GetSearchResultsContent(ByVal c As IRibbonControl, ByRef returnedVal As Variant)
     Dim xml As String
     Dim SearchDir As String
     Dim x As Long
