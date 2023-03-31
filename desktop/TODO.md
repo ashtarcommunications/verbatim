@@ -1,5 +1,4 @@
 # Flow template
-Send selected or heading from Word to excel in cell or column
 Send outline tag/cite from word to excel
 Send excel selection/cell/column to word at cursor or end of doc
 Insert row(s) above/below current based on hotkey (make sure it doesn't screw up clipboard/undo)
