@@ -29,6 +29,7 @@ New caselist upload feature to work with new openCaselist
 Integration with share.tabroom.com to allow privacy-first document sharing
 Everything Search plugin for better document searching integration
 Mac ribbon search integration with Spotlight
+New streamlined cross-platform tutorial
 
 ### Changed
 Combined Mac & PC code bases

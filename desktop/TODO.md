@@ -1,6 +1,3 @@
-# Bugs & New Features
-Tutorial Replacement, consider a sample card in building blocks
-
 # Flow template
 Send selected or heading from Word to excel in cell or column
 Send outline tag/cite from word to excel
@@ -49,7 +46,6 @@ Mac Installer
 
 # Pre-release QA
 Double check all Mac-specific macro modifications made it into the combined version
-Switch URL endpoints to production
 Check for extraneous styles
 Test all functions on PC
 Test all functions on Mac
