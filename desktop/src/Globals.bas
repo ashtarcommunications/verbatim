@@ -1,4 +1,5 @@
 Attribute VB_Name = "Globals"
+'@IgnoreModule ConstantNotUsed, ImplicitlyTypedConst, MoveFieldCloserToUsage, EncapsulatePublicField
 Option Explicit
 
 ' API declarations
@@ -13,9 +14,6 @@ Option Explicit
     
     ' VkKeyScan needed to fix the tilde key bug on Macs running Boot Camp
     Public Declare PtrSafe Function VkKeyScan Lib "user32" Alias "VkKeyScanA" (ByVal cChar As Byte) As Integer
-    
-    ' ShellExecute needed to launch installer package after updates
-    Public Declare PtrSafe Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hwnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
 #End If
 
 ' UI globals
@@ -31,7 +29,6 @@ Public Const USER_FORM_RESIZE_FACTOR As Double = 1.333333
 
 ' Togglebutton state variables
 Public AutoOpenFolderToggle As Boolean
-Public AutoCoauthoringToggle As Boolean
 Public RecordAudioToggle As Boolean
 Public InvisibilityToggle As Boolean
 Public UnderlineModeToggle As Boolean
@@ -89,7 +86,7 @@ Public ORANGE As Long
 Public LIGHT_ORANGE As Long
 Public DARK_GRAY As Long
 
-Sub InitializeGlobals()
+Public Sub InitializeGlobals()
     WHITE = RGB(255, 255, 255) '16777215, &H00FFFFFF&
     BLACK = RGB(0, 0, 0) ' 0, &H00000000&
     BLUE = RGB(64, 92, 121) ' 7953472, &H00795C40&
@@ -101,18 +98,7 @@ Sub InitializeGlobals()
     ORANGE = RGB(191, 139, 86) ' 5671871, &H00568BBF&
     LIGHT_ORANGE = RGB(223, 197, 170) ' 11191775, &H00AAC5DF&
     DARK_GRAY = RGB(169, 169, 169) ' 11119017, &H00A9A9A9&
-    
-    If GetSetting("Verbatim", "Format", "ParagraphIntegrity", True) = True Then
-        Globals.ParagraphIntegrityToggle = True
-    Else
-        Globals.ParagraphIntegrityToggle = False
-    End If
-    
-    If GetSetting("Verbatim", "Format", "UsePilcrows", True) = True Then
-        Globals.UsePilcrowsToggle = True
-    Else
-        Globals.UsePilcrowsToggle = False
-    End If
+        
+    Globals.ParagraphIntegrityToggle = GetSetting("Verbatim", "Format", "ParagraphIntegrity", True)
+    Globals.UsePilcrowsToggle = GetSetting("Verbatim", "Format", "UsePilcrows", True)
 End Sub
-
-

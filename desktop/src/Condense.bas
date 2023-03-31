@@ -1,7 +1,9 @@
 Attribute VB_Name = "Condense"
+'@IgnoreModule ObsoleteWhileWendStatement
 Option Explicit
 
-Sub CondenseAllOrCard()
+'@Ignore ProcedureNotUsed
+Public Sub CondenseAllOrCard()
     Dim p As Paragraph
     If Selection.Start <= ActiveDocument.Range.Start And Selection.End = ActiveDocument.Range.Start Then
         If MsgBox("This will condense all cards in the document. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
@@ -15,7 +17,7 @@ Sub CondenseAllOrCard()
     End If
 End Sub
 
-Sub CondenseCard(Optional r As Range)
+Public Sub CondenseCard(Optional ByVal r As Range)
 ' Removes white-space from selection and optionally retains paragraph integrity
 
     Dim CondenseRange As Range
@@ -24,9 +26,9 @@ Sub CondenseCard(Optional r As Range)
     
     ' Default to condensing the provided range, or the selection, otherwise select the current card
     If Not r Is Nothing Then
-        Set CondenseRange = Paperless.SelectCardTextRange(r.Paragraphs(1))
+        Set CondenseRange = Paperless.SelectCardTextRange(r.Paragraphs.Item(1))
     ElseIf Selection.Start = Selection.End Then
-        Set CondenseRange = Paperless.SelectCardTextRange(Selection.Paragraphs(1))
+        Set CondenseRange = Paperless.SelectCardTextRange(Selection.Paragraphs.Item(1))
     Else
         If Selection.Type <> wdSelectionNormal Then
             Application.StatusBar = "Can only condense text, not other document elements"
@@ -39,7 +41,7 @@ Sub CondenseCard(Optional r As Range)
     If Len(CondenseRange.Text) < 2 Then Exit Sub
         
     ' If end of range is a line break, shorten it
-    If CondenseRange.Characters.Last = vbCr Or CondenseRange.Characters.Last = vbCrLf Then CondenseRange.MoveEnd , -1
+    If CondenseRange.Characters.Last.Text = vbCr Or CondenseRange.Characters.Last.Text = vbCrLf Then CondenseRange.MoveEnd , -1
        
     ' Condense everything except hard returns
     With CondenseRange.Find
@@ -86,9 +88,9 @@ Sub CondenseCard(Optional r As Range)
                 .Execute Replace:=wdReplaceAll
             Wend
             
-            If CondenseRange.Characters(1) = " " And _
-            CondenseRange.Paragraphs(1).Range.Start = CondenseRange.Start Then _
-            CondenseRange.Characters(1).Delete
+            If CondenseRange.Characters.Item(1).Text = " " And _
+            CondenseRange.Paragraphs.Item(1).Range.Start = CondenseRange.Start Then _
+            CondenseRange.Characters.Item(1).Delete
         End With
     
     Else
@@ -96,14 +98,14 @@ Sub CondenseCard(Optional r As Range)
         If GetSetting("Verbatim", "Format", "UsePilcrows", False) = True Then
             With CondenseRange.Find
                 .Text = "^p"
-                .Replacement.Text = Chr(182) & " " ' Pilcrow sign
+                .Replacement.Text = Chr$(182) & " " ' Pilcrow sign
                 .Replacement.Font.size = 6
                 .Execute Replace:=wdReplaceAll
                 
-                .Text = Chr(182) & " " & Chr(182)
-                .Replacement.Text = Chr(182)
+                .Text = Chr$(182) & " " & Chr$(182)
+                .Replacement.Text = Chr$(182)
                 
-                While InStr(CondenseRange.Text, Chr(182) & " " & Chr(182))
+                While InStr(CondenseRange.Text, Chr$(182) & " " & Chr$(182))
                     .Execute Replace:=wdReplaceAll
                 Wend
                 
@@ -115,12 +117,12 @@ Sub CondenseCard(Optional r As Range)
                     .Execute Replace:=wdReplaceAll
                 Wend
                 
-                If CondenseRange.Characters(1) = " " And _
-                CondenseRange.Paragraphs(1).Range.Start = CondenseRange.Start Then _
-                CondenseRange.Characters(1).Delete
+                If CondenseRange.Characters.Item(1).Text = " " And _
+                CondenseRange.Paragraphs.Item(1).Range.Start = CondenseRange.Start Then _
+                CondenseRange.Characters.Item(1).Delete
                 
                 ' Remove trailing pilcrows
-                If CondenseRange.Characters.Last.Previous = Chr(182) Then CondenseRange.Characters.Last.Previous.Delete
+                If CondenseRange.Characters.Last.Previous.Text = Chr$(182) Then CondenseRange.Characters.Last.Previous.Delete
             End With
     
         Else ' Else, paragraph integrity is off and Pilcrows are off, leave single paragraph marks
@@ -149,9 +151,9 @@ Sub CondenseCard(Optional r As Range)
                 .Replacement.Text = " "
                 .Execute Replace:=wdReplaceAll
                 
-                If CondenseRange.Characters(1) = " " And _
-                CondenseRange.Paragraphs(1).Range.Start = CondenseRange.Start Then _
-                CondenseRange.Characters(1).Delete
+                If CondenseRange.Characters.Item(1).Text = " " And _
+                CondenseRange.Paragraphs.Item(1).Range.Start = CondenseRange.Start Then _
+                CondenseRange.Characters.Item(1).Delete
             End With
     
         End If
@@ -163,7 +165,7 @@ Sub CondenseCard(Optional r As Range)
     Application.ScreenUpdating = True
 End Sub
 
-Sub CondenseNoPilcrows()
+Public Sub CondenseNoPilcrows()
 ' Easier to override saved settings temporarily because of poor VBA handling of optional boolean parameters
     Dim ParagraphIntegrity As Boolean
     Dim UsePilcrows As Boolean
@@ -180,7 +182,7 @@ Sub CondenseNoPilcrows()
     SaveSetting "Verbatim", "Format", "UsePilcrows", UsePilcrows
 End Sub
 
-Sub CondenseWithPilcrows()
+Public Sub CondenseWithPilcrows()
     Dim ParagraphIntegrity As Boolean
     Dim UsePilcrows As Boolean
     
@@ -196,7 +198,7 @@ Sub CondenseWithPilcrows()
     SaveSetting "Verbatim", "Format", "UsePilcrows", UsePilcrows
 End Sub
 
-Sub Uncondense()
+Public Sub Uncondense()
 ' Replaces pilcrows with paragraph breaks
     Dim r As Range
     
@@ -206,7 +208,7 @@ Sub Uncondense()
         If MsgBox("This will uncondense all cards in the document. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
         Set r = ActiveDocument.Range
     ElseIf Selection.Start = Selection.End Then
-        Set r = Paperless.SelectHeadingAndContentRange(Selection.Paragraphs(1))
+        Set r = Paperless.SelectHeadingAndContentRange(Selection.Paragraphs.Item(1))
     Else
         If Selection.Type <> wdSelectionNormal Then
             Application.StatusBar = "Can only uncondense text, not other document elements"
@@ -218,7 +220,7 @@ Sub Uncondense()
     With r.Find
         .ClearFormatting
         .Replacement.ClearFormatting
-        .Text = Chr(182) ' Pilcrow
+        .Text = Chr$(182) ' Pilcrow
         .Replacement.Text = "^p"
         .Execute Replace:=wdReplaceAll
         
@@ -231,7 +233,7 @@ Sub Uncondense()
     Application.ScreenUpdating = True
 End Sub
 
-Sub RemovePilcrows()
+Public Sub RemovePilcrows()
     Dim r As Range
     
     Application.ScreenUpdating = False
@@ -240,7 +242,7 @@ Sub RemovePilcrows()
         If MsgBox("This will remove all pilcrows in the document. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
         Set r = ActiveDocument.Range
     ElseIf Selection.Start = Selection.End Then
-        Set r = Paperless.SelectHeadingAndContentRange(Selection.Paragraphs(1))
+        Set r = Paperless.SelectHeadingAndContentRange(Selection.Paragraphs.Item(1))
     Else
         If Selection.Type <> wdSelectionNormal Then
             Application.StatusBar = "Can only remove pilcrows from text, not other document elements"
@@ -252,7 +254,7 @@ Sub RemovePilcrows()
     With r.Find
         .ClearFormatting
         .Replacement.ClearFormatting
-        .Text = Chr(182)
+        .Text = Chr$(182)
         .Replacement.Text = ""
         .Forward = True
         .Wrap = wdFindContinue
@@ -273,7 +275,9 @@ Sub RemovePilcrows()
     Application.ScreenUpdating = True
 End Sub
 
-Public Sub ToggleParagraphIntegrity(c As IRibbonControl, pressed As Boolean)
+'@Ignore ProcedureNotUsed
+'@Ignore ParameterNotUsed
+Public Sub ToggleParagraphIntegrity(ByVal c As IRibbonControl, ByVal pressed As Boolean)
 ' Toggle setting for Paragraph Integrity
     If GetSetting("Verbatim", "Format", "ParagraphIntegrity", True) = True Then
         SaveSetting "Verbatim", "Format", "ParagraphIntegrity", False
@@ -286,10 +290,11 @@ Public Sub ToggleParagraphIntegrity(c As IRibbonControl, pressed As Boolean)
     End If
 
     Ribbon.RefreshRibbon
-
 End Sub
 
-Public Sub ToggleUsePilcrows(c As IRibbonControl, pressed As Boolean)
+'@Ignore ProcedureNotUsed
+'@Ignore ParameterNotUsed
+Public Sub ToggleUsePilcrows(ByVal c As IRibbonControl, ByVal pressed As Boolean)
 ' Toggle setting for Use Pilcrows
     If GetSetting("Verbatim", "Format", "UsePilcrows", True) = True Then
         SaveSetting "Verbatim", "Format", "UsePilcrows", False
@@ -300,5 +305,4 @@ Public Sub ToggleUsePilcrows(c As IRibbonControl, pressed As Boolean)
     End If
 
     Ribbon.RefreshRibbon
-
 End Sub

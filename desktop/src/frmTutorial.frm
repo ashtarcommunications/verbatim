@@ -16,7 +16,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-Public TutorialDoc As Document
+'@Ignore EncapsulatePublicField
 Public TutorialStep As Long
  
 Private Sub UserForm_Initialize()
@@ -30,15 +30,14 @@ Private Sub UserForm_Initialize()
     
     ' Reset tutorial step counter
     TutorialStep = 0
-          
 End Sub
  
-Sub btnExit_Click()
+Public Sub btnExit_Click()
     If Globals.InvisibilityToggle = True Then View.InvisibilityOff
     Unload Me
 End Sub
 
-Sub btnNext_Click()
+Public Sub btnNext_Click()
     On Error GoTo Handler
 
     ' Increment step counter
@@ -55,7 +54,7 @@ Sub btnNext_Click()
         Case Is = 1
             
             ' Make sure ribbon is visible
-            If CommandBars("Ribbon").Controls(1).Height < 100 Then ActiveWindow.ToggleRibbon
+            If CommandBars.Item("Ribbon").Controls.Item(1).Height < 100 Then ActiveWindow.ToggleRibbon
             
             Me.lblMessage.Caption = "First, let's get acquainted with the Debate ribbon - it contains buttons for almost every feature. " _
                 & "Many features also have keyboard shortcuts."
@@ -139,15 +138,15 @@ Sub btnNext_Click()
             Selection.TypeText "Block 2" & vbCrLf & "Block 3" & vbCrLf & "Block 4" & vbCrLf
             
             Dim TempSpeechDoc As String
-            TempSpeechDoc = Documents.Add(Template:=ActiveDocument.AttachedTemplate.FullName)
+            TempSpeechDoc = Documents.Add(Template:=ActiveDocument.AttachedTemplate.FullName).Name
             Globals.ActiveSpeechDoc = TempSpeechDoc
             View.ArrangeWindows
                     
         ' VTub/Quick Cards
         Case Is = 7
-            Dim d
+            Dim d As Document
             For Each d In Documents
-                If d = ActiveSpeechDoc Then Documents(ActiveSpeechDoc).Close wdDoNotSaveChanges
+                If d.Name = ActiveSpeechDoc Then Documents.Item(ActiveSpeechDoc).Close wdDoNotSaveChanges
             Next d
             
             ActiveWindow.WindowState = wdWindowStateMaximize
@@ -298,7 +297,7 @@ Private Sub ClearTutorialDoc()
     Selection.ClearFormatting
 End Sub
 
-Private Sub ShowImage(Image As String)
+Private Sub ShowImage(ByVal Image As String)
     Dim c As Object
     Dim i As String
     i = "img" & Image
@@ -312,13 +311,13 @@ Private Sub ShowImage(Image As String)
     End If
     
     For Each c In Me.Controls
-        If Left(c.Name, 3) = "img" And c.Name <> i Then
+        If Left$(c.Name, 3) = "img" And c.Name <> i Then
             c.Visible = False
         End If
     Next c
 End Sub
 
-Private Sub HighlightControl(Left As Integer, Top As Integer, Height As Integer, Width As Integer)
+Private Sub HighlightControl(ByVal Left As Long, ByVal Top As Long, ByVal Height As Long, ByVal Width As Long)
     Me.lblHighlight.Left = Left
     Me.lblHighlight.Top = Top
     Me.lblHighlight.Height = Height
@@ -335,7 +334,6 @@ Private Sub SampleCard()
     Selection.TypeText "Its continuing mission: to explore strange new worlds, to seek out new life and new civilizations, "
     Selection.TypeText "to boldly go where no one has gone before."
     
-    Dim r As Range
     ActiveDocument.Range(20, 26).Style = "Cite"
     ActiveDocument.Range(37, 41).Style = "Cite"
     

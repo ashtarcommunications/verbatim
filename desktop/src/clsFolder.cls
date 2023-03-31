@@ -44,9 +44,11 @@ Public Property Get Files() As Collection
     Set Files = m_Files
 End Property
 
-Public Sub Init(Path As String)
-    Dim SubFolder
-    Dim File
+Public Sub Init(ByRef Path As String)
+    Dim SubFolder As Variant
+    Dim File As Variant
+    
+    On Error GoTo Handler
     
     m_Path = Path
     

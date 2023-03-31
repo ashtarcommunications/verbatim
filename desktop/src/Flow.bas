@@ -1,8 +1,10 @@
 Attribute VB_Name = "Flow"
-Sub SendToFlow()
+Option Explicit
+
+Public Sub SendToFlow()
     Dim ExcelApp As Object
     Dim Flow As Object
-    Dim w
+    Dim w As Variant
     
     Set ExcelApp = GetObject(, "Excel.Application")
     For Each w In ExcelApp.Workbooks

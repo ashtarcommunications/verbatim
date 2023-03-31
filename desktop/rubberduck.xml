@@ -40,7 +40,7 @@
       <CodeInspection Name="EmptyWhileWendBlockInspection" Severity="Warning" InspectionType="MaintainabilityAndReadabilityIssues" />
       <CodeInspection Name="EncapsulatePublicFieldInspection" Severity="Suggestion" InspectionType="MaintainabilityAndReadabilityIssues" />
       <CodeInspection Name="HostSpecificExpressionInspection" Severity="Warning" InspectionType="LanguageOpportunities" />
-      <CodeInspection Name="HungarianNotationInspection" Severity="Suggestion" InspectionType="MaintainabilityAndReadabilityIssues" />
+      <CodeInspection Name="HungarianNotationInspection" Severity="DoNotShow" InspectionType="MaintainabilityAndReadabilityIssues" />
       <CodeInspection Name="ImplicitActiveSheetReferenceInspection" Severity="Warning" InspectionType="LanguageOpportunities" />
       <CodeInspection Name="ImplicitActiveWorkbookReferenceInspection" Severity="Warning" InspectionType="LanguageOpportunities" />
       <CodeInspection Name="ImplicitContainingWorkbookReferenceInspection" Severity="Suggestion" InspectionType="LanguageOpportunities" />
@@ -59,7 +59,7 @@
       <CodeInspection Name="UnassignedVariableUsageInspection" Severity="Error" InspectionType="CodeQualityIssues" />
       <CodeInspection Name="UndeclaredVariableInspection" Severity="Error" InspectionType="CodeQualityIssues" />
       <CodeInspection Name="UntypedFunctionUsageInspection" Severity="Hint" InspectionType="LanguageOpportunities" />
-      <CodeInspection Name="UseMeaningfulNameInspection" Severity="Suggestion" InspectionType="MaintainabilityAndReadabilityIssues" />
+      <CodeInspection Name="UseMeaningfulNameInspection" Severity="DoNotShow" InspectionType="MaintainabilityAndReadabilityIssues" />
       <CodeInspection Name="VariableNotAssignedInspection" Severity="Warning" InspectionType="CodeQualityIssues" />
       <CodeInspection Name="VariableNotUsedInspection" Severity="Warning" InspectionType="CodeQualityIssues" />
       <CodeInspection Name="VariableTypeNotDeclaredInspection" Severity="Warning" InspectionType="LanguageOpportunities" />
@@ -71,7 +71,7 @@
       <CodeInspection Name="ObsoleteMemberUsageInspection" Severity="Warning" InspectionType="MaintainabilityAndReadabilityIssues" />
       <CodeInspection Name="ObsoleteCallingConventionInspection" Severity="Warning" InspectionType="CodeQualityIssues" />
       <CodeInspection Name="DuplicatedAnnotationInspection" Severity="Error" InspectionType="RubberduckOpportunities" />
-      <CodeInspection Name="ModuleWithoutFolderInspection" Severity="Suggestion" InspectionType="RubberduckOpportunities" />
+      <CodeInspection Name="ModuleWithoutFolderInspection" Severity="DoNotShow" InspectionType="RubberduckOpportunities" />
       <CodeInspection Name="OnLocalErrorInspection" Severity="Suggestion" InspectionType="LanguageOpportunities" />
       <CodeInspection Name="IsMissingOnInappropriateArgumentInspection" Severity="Warning" InspectionType="CodeQualityIssues" />
       <CodeInspection Name="IsMissingWithNonArgumentParameterInspection" Severity="Warning" InspectionType="CodeQualityIssues" />

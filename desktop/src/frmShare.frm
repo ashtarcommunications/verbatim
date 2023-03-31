@@ -27,23 +27,23 @@ Private Sub UserForm_Initialize()
         Me.btnBrowser.ForeColor = Globals.BLUE
     #End If
     
-    Dim Phrase
+    Dim Phrase As String
     Phrase = RandomPhrase
     
     If GetSetting("Verbatim", "Profile", "DisableTabroom", False) = False Then
         Dim Response As Dictionary
         Set Response = HTTP.GetReq(Globals.CASELIST_URL & "/tabroom/rounds?current=true")
         
-        Select Case Response("status")
+        Select Case Response.Item("status")
         Case Is = "200"
             Me.lblError.Visible = False
             
-            Dim Round
-            Dim RoundName
+            Dim Round As Variant
+            Dim RoundName As String
             Dim Side As String
-            Dim SideName
+            Dim SideName As String
             
-            For Each Round In Response("body")
+            For Each Round In Response.Item("body")
                 If (Round("share") <> "") Then
                     RoundName = Strings.RoundName(Round("round"))
                     Side = Round("side")
@@ -77,12 +77,14 @@ End Sub
 
 Private Sub lboxRounds_Change()
     Me.txtRoom.Value = ""
+    '@Ignore FunctionReturnValueDiscarded
     ValidateForm
 End Sub
 
 Private Sub txtRoom_Change()
     Me.lboxRounds.Value = ""
     Me.txtRoom.Value = Strings.OnlyAlphaNumericChars(Me.txtRoom.Value)
+    '@Ignore FunctionReturnValueDiscarded
     ValidateForm
 End Sub
 
@@ -108,19 +110,19 @@ End Function
 
 #If Mac Then
 #Else
-Sub btnShare_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Public Sub btnShare_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnShare.BackColor = Globals.LIGHT_BLUE
 End Sub
 
-Sub btnBrowser_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Public Sub btnBrowser_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnBrowser.BackColor = Globals.LIGHT_BLUE
 End Sub
 
-Sub btnCancel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Public Sub btnCancel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnCancel.BackColor = Globals.LIGHT_RED
 End Sub
 
-Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Public Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnShare.BackColor = Globals.BLUE
     Me.btnBrowser.BackColor = Globals.BLUE
     Me.btnCancel.BackColor = Globals.RED
@@ -131,7 +133,7 @@ Private Sub lblURL_Click()
     Settings.LaunchWebsite Globals.SHARE_URL
 End Sub
 
-Sub btnBrowser_Click()
+Public Sub btnBrowser_Click()
     Dim Room As String
     If Me.lboxRounds.Value <> "" Then Room = Me.lboxRounds.Value
     If Me.txtRoom.Value <> "" Then Room = Strings.OnlyAlphaNumericChars(Me.txtRoom.Value)
@@ -144,7 +146,7 @@ Sub btnBrowser_Click()
     Settings.LaunchWebsite Globals.SHARE_URL & "/" & Room
 End Sub
 
-Sub btnCancel_Click()
+Public Sub btnCancel_Click()
     Unload Me
 End Sub
 
@@ -160,12 +162,12 @@ Private Sub btnShare_Click()
 End Sub
 
 Private Function RandomPhrase() As String
-    Dim Adjectives
-    Dim Animals
+    Dim Adjectives() As String
+    Dim Animals() As String
     
-    Dim Adjective
-    Dim Animal
-    Dim RandomNumber
+    Dim Adjective As String
+    Dim Animal As String
+    Dim RandomNumber As Long
     
     Adjectives = Array( _
         "ancient", "average", "best", "better", "big", "blue", "brave", "breezy", "bright", "brown", "calm", _
@@ -193,7 +195,7 @@ Private Function RandomPhrase() As String
 
     Adjective = StrConv(Adjectives(CInt(Rnd() * UBound(Adjectives))), vbProperCase)
     Animal = StrConv(Animals(CInt(Rnd() * UBound(Animals))), vbProperCase)
-    RandomNumber = CInt(Rnd() * (999 - 1) + 1)
+    RandomNumber = CLng(Rnd() * (999 - 1) + 1)
     If (RandomNumber = 69 Or RandomNumber = 420 Or RandomNumber = 666) Then RandomNumber = RandomNumber + 1
 
     RandomPhrase = Adjective + Animal + CStr(RandomNumber)
@@ -213,15 +215,15 @@ Private Sub UploadToShare()
     
     ' Strip "Speech" if option set
     If GetSetting("Verbatim", "Paperless", "StripSpeech", True) = True And Len(ActiveDocument.Name) > 11 Then
-        Filename = Trim(Replace(ActiveDocument.Name, "speech", "", 1, -1, vbTextCompare))
+        Filename = Trim$(Replace(ActiveDocument.Name, "speech", "", 1, -1, vbTextCompare))
     Else
-        Filename = Trim(ActiveDocument.Name)
+        Filename = Trim$(ActiveDocument.Name)
     End If
     
     Dim Body As Dictionary
     Set Body = New Dictionary
        
-    Dim Base64
+    Dim Base64 As String
     Base64 = Filesystem.GetFileAsBase64(ActiveDocument.FullName)
     Body.Add "file", Base64
     Body.Add "filename", Filename
@@ -230,10 +232,10 @@ Private Sub UploadToShare()
     If Me.lboxRounds.Value <> "" Then Room = Me.lboxRounds.Value
     If Me.txtRoom.Value <> "" Then Room = Strings.OnlyAlphaNumericChars(Me.txtRoom.Value)
     
-    Dim Request
+    Dim Request As Dictionary
     Set Request = HTTP.PostReq(Globals.SHARE_URL & "/" & Room, Body)
     
-    Select Case Request("status")
+    Select Case Request.Item("status")
     Case Is = "200" ' Success
         MsgBox "File successfully shared to https://share.tabroom.com/" & Room & " - anyone linked to your round on Tabroom has been emailed!"
         Me.Hide
@@ -252,7 +254,7 @@ Private Sub UploadToShare()
         Me.lblError.Visible = True
 
     Case Else
-        Me.lblError.Caption = "Error uploading file, please try again. " & Request("status")
+        Me.lblError.Caption = "Error uploading file, please try again. " & Request.Item("status")
         Me.lblError.Visible = True
     End Select
     
@@ -270,5 +272,3 @@ Handler:
     System.Cursor = wdCursorNormal
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
-
-

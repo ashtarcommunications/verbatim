@@ -1,18 +1,20 @@
 Attribute VB_Name = "Registry"
+'@IgnoreModule ProcedureNotUsed
 Option Explicit
 
 #If Mac Then
     ' Do Nothing
 #Else
-Function RegKeyRead(RegKey As String) As String
+Public Function RegKeyRead(ByRef RegKey As String) As String
     Dim WS As Object
     On Error Resume Next
     Set WS = CreateObject("WScript.Shell")
     RegKeyRead = WS.RegRead(RegKey)
     Set WS = Nothing
+    On Error GoTo 0
 End Function
 
-Function RegKeyExists(RegKey As String) As Boolean
+Public Function RegKeyExists(ByRef RegKey As String) As Boolean
     Dim WS As Object
     On Error GoTo Handler
     Set WS = CreateObject("WScript.Shell")
@@ -27,11 +29,12 @@ Handler:
     Set WS = Nothing
 End Function
 
-Sub RegKeySave(RegKey As String, Value As String, Optional ValueType As String = "REG_SZ")
+Public Sub RegKeySave(ByRef RegKey As String, ByRef Value As String, Optional ByRef ValueType As String = "REG_SZ")
     Dim WS As Object
     On Error Resume Next
     Set WS = CreateObject("WScript.Shell")
     WS.RegWrite RegKey, Value, ValueType
     Set WS = Nothing
+    On Error GoTo 0
 End Sub
 #End If

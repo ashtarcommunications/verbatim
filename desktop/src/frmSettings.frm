@@ -18,7 +18,7 @@ Option Explicit
 '*************************************************************************************
 '* FORM UI                                                                           *
 '*************************************************************************************
-Private Sub SetPage(MenuTab As String)
+Private Sub SetPage(ByVal MenuTab As String)
     ' Reset all tabs
     Me.lblTabProfile.BackColor = Globals.WHITE
     Me.lblTabProfile.ForeColor = Globals.BLACK
@@ -98,33 +98,43 @@ End Sub
 Private Sub lblTabProfile_Click()
     SetPage "Profile"
 End Sub
+
 Private Sub lblTabAdmin_Click()
     SetPage "Admin"
 End Sub
+
 Private Sub lblTabView_Click()
     SetPage "View"
 End Sub
+
 Private Sub lblTabPaperless_Click()
     SetPage "Paperless"
 End Sub
+
 Private Sub lblTabStyles_Click()
     SetPage "Styles"
 End Sub
+
 Private Sub lblTabFormat_Click()
     SetPage "Format"
 End Sub
+
 Private Sub lblTabKeyboard_Click()
     SetPage "Keyboard"
 End Sub
+
 Private Sub lblTabVTub_Click()
     SetPage "VTub"
 End Sub
+
 Private Sub lblTabCaselist_Click()
     SetPage "Caselist"
 End Sub
+
 Private Sub lblTabPlugins_Click()
     SetPage "Plugins"
 End Sub
+
 Private Sub lblTabAbout_Click()
     SetPage "About"
 End Sub
@@ -134,9 +144,9 @@ End Sub
 '*************************************************************************************
 Private Sub UserForm_Initialize()
     Dim e As String
-    Dim FontSize As Integer
-    Dim f
-    Dim MacroArray
+    Dim FontSize As Long
+    Dim f As String
+    Dim MacroArray() As String
     
     ' Turn on Error handling
     On Error GoTo Handler
@@ -185,7 +195,7 @@ Private Sub UserForm_Initialize()
     Me.chkSuppressStyleChecks.Value = GetSetting("Verbatim", "Admin", "SuppressStyleChecks", True)
     Me.chkSuppressInstallChecks.Value = GetSetting("Verbatim", "Admin", "SuppressInstallChecks", False)
     Me.chkSuppressDocCheck.Value = GetSetting("Verbatim", "Admin", "SuppressDocCheck", False)
-    Me.chkFirstRun = GetSetting("Verbatim", "Admin", "FirstRun", False)
+    Me.chkFirstRun.Value = GetSetting("Verbatim", "Admin", "FirstRun", False)
     
     ' View Tab
     If GetSetting("Verbatim", "View", "DefaultView", Globals.DefaultView) = "Web" Then
@@ -269,7 +279,7 @@ Private Sub UserForm_Initialize()
         Me.optSpacingNarrow.Value = True
     End If
         
-    Me.chkShrinkOmissions = GetSetting("Verbatim", "Format", "ShrinkOmissions", False)
+    Me.chkShrinkOmissions.Value = GetSetting("Verbatim", "Format", "ShrinkOmissions", False)
     
     Me.chkParagraphIntegrity.Value = GetSetting("Verbatim", "Format", "ParagraphIntegrity", False)
     Me.chkUsePilcrows.Value = GetSetting("Verbatim", "Format", "UsePilcrows", False)
@@ -343,7 +353,7 @@ Private Sub UserForm_Initialize()
     Me.lblVersion.Caption = "Verbatim v. " & Settings.GetVersion
     Me.chkAutomaticUpdates.Value = GetSetting("Verbatim", "Profile", "AutomaticUpdates", True)
     Me.lblLastUpdateCheck.Caption = "Last Update Check:" & vbCrLf & _
-        Format(GetSetting("Verbatim", "Profile", "LastUpdateCheck", ""), "mm-dd-yy hh:mm")
+        Format$(GetSetting("Verbatim", "Profile", "LastUpdateCheck", ""), "mm-dd-yy hh:mm")
     Exit Sub
         
 Handler:
@@ -368,10 +378,8 @@ End Sub
 
 Private Sub btnResetAllSettings_Click()
 'Resets all settings to the default
-
     On Error GoTo Handler
     
-    'Prompt for confirmation
     If MsgBox("This will reset all settings to their default values - changes will not be committed until you click Save. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
     
     ' Profile Tab
@@ -590,73 +598,69 @@ Private Sub btnSave_Click()
     End If
     
     ' Update template styles based on Styles settings
-    DebateTemplate.Styles("Normal").Font.size = Me.cboNormalSize.Value
-    DebateTemplate.Styles("Normal").Font.Name = Me.cboNormalFont.Value
-    DebateTemplate.Styles("Pocket").Font.size = Me.cboPocketSize.Value
-    DebateTemplate.Styles("Hat").Font.size = Me.cboHatSize.Value
-    DebateTemplate.Styles("Block").Font.size = Me.cboBlockSize.Value
-    DebateTemplate.Styles("Tag").Font.size = Me.cboTagSize.Value
-    DebateTemplate.Styles("Cite").Font.size = Me.cboCiteSize.Value
+    DebateTemplate.Styles.Item("Normal").Font.size = Me.cboNormalSize.Value
+    DebateTemplate.Styles.Item("Normal").Font.Name = Me.cboNormalFont.Value
+    DebateTemplate.Styles.Item("Pocket").Font.size = Me.cboPocketSize.Value
+    DebateTemplate.Styles.Item("Hat").Font.size = Me.cboHatSize.Value
+    DebateTemplate.Styles.Item("Block").Font.size = Me.cboBlockSize.Value
+    DebateTemplate.Styles.Item("Tag").Font.size = Me.cboTagSize.Value
+    DebateTemplate.Styles.Item("Cite").Font.size = Me.cboCiteSize.Value
     If Me.chkUnderlineCite.Value = True Then
-        DebateTemplate.Styles("Cite").Font.Underline = wdUnderlineSingle
+        DebateTemplate.Styles.Item("Cite").Font.Underline = wdUnderlineSingle
     Else
-        DebateTemplate.Styles("Cite").Font.Underline = wdUnderlineNone
+        DebateTemplate.Styles.Item("Cite").Font.Underline = wdUnderlineNone
     End If
-    DebateTemplate.Styles("Underline").Font.size = Me.cboUnderlineSize.Value
-    If Me.chkBoldUnderline.Value = True Then
-        DebateTemplate.Styles("Underline").Font.Bold = True
-    Else
-        DebateTemplate.Styles("Underline").Font.Bold = False
-    End If
-    DebateTemplate.Styles("Emphasis").Font.size = Me.cboEmphasisSize.Value
-    DebateTemplate.Styles("Emphasis").Font.Name = Me.cboNormalFont.Value
-    DebateTemplate.Styles("Emphasis").Font.Bold = Me.chkEmphasisBold.Value
-    DebateTemplate.Styles("Emphasis").Font.Italic = Me.chkEmphasisItalic.Value
+    DebateTemplate.Styles.Item("Underline").Font.size = Me.cboUnderlineSize.Value
+    DebateTemplate.Styles.Item("Underline").Font.Bold = Me.chkBoldUnderline.Value
+    DebateTemplate.Styles.Item("Emphasis").Font.size = Me.cboEmphasisSize.Value
+    DebateTemplate.Styles.Item("Emphasis").Font.Name = Me.cboNormalFont.Value
+    DebateTemplate.Styles.Item("Emphasis").Font.Bold = Me.chkEmphasisBold.Value
+    DebateTemplate.Styles.Item("Emphasis").Font.Italic = Me.chkEmphasisItalic.Value
     
     If Me.chkEmphasisBox.Value = True Then
-        DebateTemplate.Styles("Emphasis").Font.Borders(1).LineStyle = wdLineStyleSingle
+        DebateTemplate.Styles.Item("Emphasis").Font.Borders.Item(1).LineStyle = wdLineStyleSingle
     
         Select Case Me.cboEmphasisBoxSize.Value
             Case Is = "1pt"
-                DebateTemplate.Styles("Emphasis").Font.Borders(1).LineWidth = wdLineWidth100pt
+                DebateTemplate.Styles.Item("Emphasis").Font.Borders.Item(1).LineWidth = wdLineWidth100pt
             Case Is = "1.5pt"
-                DebateTemplate.Styles("Emphasis").Font.Borders(1).LineWidth = wdLineWidth150pt
+                DebateTemplate.Styles.Item("Emphasis").Font.Borders.Item(1).LineWidth = wdLineWidth150pt
             Case Is = "2.25pt"
-                DebateTemplate.Styles("Emphasis").Font.Borders(1).LineWidth = wdLineWidth225pt
+                DebateTemplate.Styles.Item("Emphasis").Font.Borders.Item(1).LineWidth = wdLineWidth225pt
             Case Is = "3pt"
-                DebateTemplate.Styles("Emphasis").Font.Borders(1).LineWidth = wdLineWidth300pt
+                DebateTemplate.Styles.Item("Emphasis").Font.Borders.Item(1).LineWidth = wdLineWidth300pt
             Case Else
-                DebateTemplate.Styles("Emphasis").Font.Borders(1).LineWidth = wdLineWidth100pt
+                DebateTemplate.Styles.Item("Emphasis").Font.Borders.Item(1).LineWidth = wdLineWidth100pt
         End Select
     Else
-        DebateTemplate.Styles("Emphasis").Font.Borders(1).LineStyle = wdLineStyleNone
+        DebateTemplate.Styles.Item("Emphasis").Font.Borders.Item(1).LineStyle = wdLineStyleNone
     End If
     
     If Me.optSpacingWide.Value = True Then
-        DebateTemplate.Styles("Normal").ParagraphFormat.SpaceBefore = 0
-        DebateTemplate.Styles("Normal").ParagraphFormat.SpaceAfter = 8
-        DebateTemplate.Styles("Normal").ParagraphFormat.LineSpacingRule = wdLineSpaceMultiple
-        DebateTemplate.Styles("Normal").ParagraphFormat.LineSpacing = LinesToPoints(1.08)
-        DebateTemplate.Styles("Pocket").ParagraphFormat.SpaceBefore = 12
-        DebateTemplate.Styles("Pocket").ParagraphFormat.SpaceAfter = 0
-        DebateTemplate.Styles("Hat").ParagraphFormat.SpaceBefore = 2
-        DebateTemplate.Styles("Hat").ParagraphFormat.SpaceAfter = 0
-        DebateTemplate.Styles("Block").ParagraphFormat.SpaceBefore = 2
-        DebateTemplate.Styles("Block").ParagraphFormat.SpaceAfter = 0
-        DebateTemplate.Styles("Tag").ParagraphFormat.SpaceBefore = 2
-        DebateTemplate.Styles("Tag").ParagraphFormat.SpaceAfter = 0
+        DebateTemplate.Styles.Item("Normal").ParagraphFormat.SpaceBefore = 0
+        DebateTemplate.Styles.Item("Normal").ParagraphFormat.SpaceAfter = 8
+        DebateTemplate.Styles.Item("Normal").ParagraphFormat.LineSpacingRule = wdLineSpaceMultiple
+        DebateTemplate.Styles.Item("Normal").ParagraphFormat.LineSpacing = LinesToPoints(1.08)
+        DebateTemplate.Styles.Item("Pocket").ParagraphFormat.SpaceBefore = 12
+        DebateTemplate.Styles.Item("Pocket").ParagraphFormat.SpaceAfter = 0
+        DebateTemplate.Styles.Item("Hat").ParagraphFormat.SpaceBefore = 2
+        DebateTemplate.Styles.Item("Hat").ParagraphFormat.SpaceAfter = 0
+        DebateTemplate.Styles.Item("Block").ParagraphFormat.SpaceBefore = 2
+        DebateTemplate.Styles.Item("Block").ParagraphFormat.SpaceAfter = 0
+        DebateTemplate.Styles.Item("Tag").ParagraphFormat.SpaceBefore = 2
+        DebateTemplate.Styles.Item("Tag").ParagraphFormat.SpaceAfter = 0
     Else
-        DebateTemplate.Styles("Normal").ParagraphFormat.SpaceBefore = 0
-        DebateTemplate.Styles("Normal").ParagraphFormat.SpaceAfter = 0
-        DebateTemplate.Styles("Normal").ParagraphFormat.LineSpacingRule = wdLineSpaceSingle
-        DebateTemplate.Styles("Pocket").ParagraphFormat.SpaceBefore = 24
-        DebateTemplate.Styles("Pocket").ParagraphFormat.SpaceAfter = 0
-        DebateTemplate.Styles("Hat").ParagraphFormat.SpaceBefore = 24
-        DebateTemplate.Styles("Hat").ParagraphFormat.SpaceAfter = 0
-        DebateTemplate.Styles("Block").ParagraphFormat.SpaceBefore = 10
-        DebateTemplate.Styles("Block").ParagraphFormat.SpaceAfter = 0
-        DebateTemplate.Styles("Tag").ParagraphFormat.SpaceBefore = 10
-        DebateTemplate.Styles("Tag").ParagraphFormat.SpaceAfter = 0
+        DebateTemplate.Styles.Item("Normal").ParagraphFormat.SpaceBefore = 0
+        DebateTemplate.Styles.Item("Normal").ParagraphFormat.SpaceAfter = 0
+        DebateTemplate.Styles.Item("Normal").ParagraphFormat.LineSpacingRule = wdLineSpaceSingle
+        DebateTemplate.Styles.Item("Pocket").ParagraphFormat.SpaceBefore = 24
+        DebateTemplate.Styles.Item("Pocket").ParagraphFormat.SpaceAfter = 0
+        DebateTemplate.Styles.Item("Hat").ParagraphFormat.SpaceBefore = 24
+        DebateTemplate.Styles.Item("Hat").ParagraphFormat.SpaceAfter = 0
+        DebateTemplate.Styles.Item("Block").ParagraphFormat.SpaceBefore = 10
+        DebateTemplate.Styles.Item("Block").ParagraphFormat.SpaceAfter = 0
+        DebateTemplate.Styles.Item("Tag").ParagraphFormat.SpaceBefore = 10
+        DebateTemplate.Styles.Item("Tag").ParagraphFormat.SpaceAfter = 0
     End If
     
     ' Keyboard Tab
@@ -687,6 +691,7 @@ Private Sub btnSave_Click()
     
     ' Close template if opened separately
     If CloseDebateTemplate = True Then
+        '@Ignore MemberNotOnInterface
         DebateTemplate.Close SaveChanges:=wdSaveChanges
     End If
     
@@ -1108,6 +1113,8 @@ Private Sub cboAutoSaveDir_DropButtonClick()
     
     Me.cboAutoSaveDir.Value = UI.GetFolderFromDialog("Choose an AutoSave Folder", "Select")
     Me.btnCancel.SetFocus ' Have to switch focus to avoid dropdown getting stuck
+    
+    On Error GoTo 0
 End Sub
 
 Private Sub cboSearchDir_DropButtonClick()
@@ -1115,6 +1122,8 @@ Private Sub cboSearchDir_DropButtonClick()
     
     Me.cboSearchDir.Value = UI.GetFolderFromDialog("Choose a Search Folder", "Select")
     Me.btnCancel.SetFocus 'Have to switch focus to avoid dropdown getting stuck
+    
+    On Error GoTo 0
 End Sub
 
 Private Sub cboAutoOpenDir_DropButtonClick()
@@ -1122,6 +1131,8 @@ Private Sub cboAutoOpenDir_DropButtonClick()
     
     Me.cboAutoOpenDir.Value = UI.GetFolderFromDialog("Choose an AutoOpen Folder", "Select")
     Me.btnCancel.SetFocus 'Have to switch focus to avoid dropdown getting stuck
+    
+    On Error GoTo 0
 End Sub
 
 Private Sub cboAudioDir_DropButtonClick()
@@ -1129,6 +1140,8 @@ Private Sub cboAudioDir_DropButtonClick()
     
     Me.cboAudioDir.Value = UI.GetFolderFromDialog("Choose an Audio Recordings Folder", "Select")
     Me.btnCancel.SetFocus 'Have to switch focus to avoid dropdown getting stuck
+    
+    On Error GoTo 0
 End Sub
 
 '*************************************************************************************
@@ -1141,11 +1154,7 @@ Private Sub cboNormalFont_Change()
 End Sub
 
 Private Sub chkEmphasisBox_Change()
-    If Me.chkEmphasisBox.Value = True Then
-        Me.cboEmphasisBoxSize.Enabled = True
-    Else
-        Me.cboEmphasisBoxSize.Enabled = False
-    End If
+    Me.cboEmphasisBoxSize.Enabled = Me.chkEmphasisBox.Value
 End Sub
 
 Private Sub btnResetStyles_Click()
@@ -1184,11 +1193,7 @@ End Sub
 
 Private Sub chkParagraphIntegrity_Change()
     ' Disable Pilcrows button if unchecked
-    If Me.chkParagraphIntegrity.Value = False Then
-        Me.chkUsePilcrows.Enabled = False
-    Else
-        Me.chkUsePilcrows.Enabled = True
-    End If
+    Me.chkUsePilcrows.Enabled = Me.chkParagraphIntegrity.Value
 End Sub
 
 Private Sub btnResetFormatting_Click()
@@ -1219,7 +1224,7 @@ End Sub
 
 Private Sub btnOtherKeyboardShortcuts_Click()
     ' Shows the Customize Keyboard dialogue
-    Dialogs(wdDialogToolsCustomizeKeyboard).Show
+    Dialogs.Item(wdDialogToolsCustomizeKeyboard).Show
 End Sub
 
 Private Sub btnResetKeyboard_Click()
@@ -1249,7 +1254,7 @@ Handler:
 End Sub
 
 Private Sub btnFixTilde_Click()
-    Call Troubleshooting.FixTilde
+    Troubleshooting.FixTilde
     MsgBox "Tilde shortcuts fixed!"
 End Sub
 
@@ -1265,6 +1270,8 @@ Private Sub cboVTubPath_DropButtonClick()
     
     ' Save immediately so the Create button can find a path
     SaveSetting "Verbatim", "VTub", "VTubPath", Me.cboVTubPath.Value
+    
+    On Error GoTo 0
 End Sub
 
 Private Sub btnCreateVTub_Click()
@@ -1288,6 +1295,8 @@ Private Sub cboTimer_DropButtonClick()
     
     Me.cboTimer.Value = UI.GetFileFromDialog("Timer Application", "*.*", "Choose a Timer application...", "Select")
     Me.btnCancel.SetFocus 'Have to switch focus to avoid dropdown getting stuck
+    
+    On Error GoTo 0
 End Sub
 
 Private Sub cboOCR_DropButtonClick()
@@ -1295,6 +1304,8 @@ Private Sub cboOCR_DropButtonClick()
     
     Me.cboOCR.Value = UI.GetFileFromDialog("OCR Application", "*.*", "Choose an OCR application...", "Select")
     Me.btnCancel.SetFocus 'Have to switch focus to avoid dropdown getting stuck
+    
+    On Error GoTo 0
 End Sub
 
 Private Sub cboSearch_DropButtonClick()
@@ -1302,6 +1313,8 @@ Private Sub cboSearch_DropButtonClick()
     
     Me.cboSearch.Value = UI.GetFileFromDialog("Search Application", "*.*", "Choose a Search application...", "Select")
     Me.btnCancel.SetFocus 'Have to switch focus to avoid dropdown getting stuck
+    
+    On Error GoTo 0
 End Sub
 
 '*************************************************************************************

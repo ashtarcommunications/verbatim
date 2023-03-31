@@ -43,19 +43,21 @@ Private Sub PopulateQuickCards()
     Dim j As Long
     Dim k As Long
     
+    On Error GoTo Handler
+    
     Me.lboxQuickCards.Clear
     
     Set t = ActiveDocument.AttachedTemplate
 
     ' Populate the list of current Quick Cards in the Custom 1 / Verbatim gallery
     For i = 1 To t.BuildingBlockTypes.Count
-        If t.BuildingBlockTypes(i).Name = "Custom 1" Then
-            For j = 1 To t.BuildingBlockTypes(i).Categories.Count
-                If t.BuildingBlockTypes(i).Categories(j).Name = "Verbatim" Then
-                    For k = 1 To t.BuildingBlockTypes(i).Categories(j).BuildingBlocks.Count
+        If t.BuildingBlockTypes.Item(i).Name = "Custom 1" Then
+            For j = 1 To t.BuildingBlockTypes.Item(i).Categories.Count
+                If t.BuildingBlockTypes.Item(i).Categories.Item(j).Name = "Verbatim" Then
+                    For k = 1 To t.BuildingBlockTypes.Item(i).Categories.Item(j).BuildingBlocks.Count
                         Me.lboxQuickCards.AddItem
-                        Me.lboxQuickCards.List(Me.lboxQuickCards.ListCount - 1, 0) = t.BuildingBlockTypes(i).Categories(j).BuildingBlocks(k).Name
-                        Me.lboxQuickCards.List(Me.lboxQuickCards.ListCount - 1, 1) = Left(t.BuildingBlockTypes(i).Categories(j).BuildingBlocks(k).Value, 50) & "..."
+                        Me.lboxQuickCards.List(Me.lboxQuickCards.ListCount - 1, 0) = t.BuildingBlockTypes.Item(i).Categories.Item(j).BuildingBlocks.Item(k).Name
+                        Me.lboxQuickCards.List(Me.lboxQuickCards.ListCount - 1, 1) = Left$(t.BuildingBlockTypes.Item(i).Categories.Item(j).BuildingBlocks.Item(k).Value, 50) & "..."
                     Next k
                 End If
             Next j
@@ -74,19 +76,19 @@ End Sub
 #If Mac Then
     ' Do Nothing
 #Else
-Sub btnAdd_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Public Sub btnAdd_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnAdd.BackColor = Globals.LIGHT_GREEN
 End Sub
-Sub btnDelete_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Public Sub btnDelete_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnDelete.BackColor = Globals.LIGHT_ORANGE
 End Sub
-Sub btnDeleteAll_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Public Sub btnDeleteAll_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnDeleteAll.BackColor = Globals.LIGHT_RED
 End Sub
-Sub btnClose_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Public Sub btnClose_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnClose.BackColor = Globals.LIGHT_BLUE
 End Sub
-Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Public Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     Me.btnAdd.BackColor = Globals.GREEN
     Me.btnDelete.BackColor = Globals.ORANGE
     Me.btnDeleteAll.BackColor = Globals.RED
@@ -102,6 +104,8 @@ Private Sub btnAdd_Click()
 End Sub
 
 Private Sub btnDelete_Click()
+    On Error GoTo Handler
+    
     If Me.lboxQuickCards.Value = "" Or IsNull(Me.lboxQuickCards.Value) Then
         MsgBox "Please select a Quick Card to delete first.", vbOKOnly
         Exit Sub
@@ -117,6 +121,8 @@ Handler:
 End Sub
 
 Private Sub btnDeleteAll_Click()
+    On Error GoTo Handler
+    
     ' Calling without a name parameter deletes all
     QuickCards.DeleteQuickCard ""
     Me.lboxQuickCards.Clear

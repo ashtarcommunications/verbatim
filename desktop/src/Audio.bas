@@ -1,4 +1,5 @@
 Attribute VB_Name = "Audio"
+'@IgnoreModule ProcedureNotUsed, UnassignedVariableUsage, VariableNotAssigned
 Option Explicit
 
 Public Sub StartRecord(ByVal BPS As BitsPerSec, ByVal SPS As SamplesPerSec, ByVal Mode As Channels)
@@ -57,20 +58,20 @@ Public Sub SaveRecord()
         #If Mac Then
             FilePath = AppleScriptTask("Verbatim.scpt", "DesktopPath", "")
         #Else
-            FilePath = CStr(Environ("USERPROFILE")) & "\Desktop"
+            FilePath = CStr(Environ$("USERPROFILE")) & "\Desktop"
         #End If
     Else
         FilePath = AudioDir
     End If
 
     ' Ensure a trailing separator
-    If Right(FilePath, 1) <> Application.PathSeparator Then FilePath = FilePath & Application.PathSeparator
+    If Right$(FilePath, 1) <> Application.PathSeparator Then FilePath = FilePath & Application.PathSeparator
              
 GetFileName:
     Filename = InputBox("Please enter a name for your saved audio file. It will be saved to the following directory:" _
         & vbCrLf & "(Configurable in Settings)" & vbCrLf & FilePath, _
         "Save Audio Recording", _
-        "Recording " & Format(Now, "m d yyyy hmmAMPM"))
+        "Recording " & Format$(Now, "m d yyyy hmmAMPM"))
     
     ' Exit if no file name or user pressed Cancel, recording is still active
     If Filename = "" Then
@@ -83,7 +84,7 @@ GetFileName:
     #If Mac Then
         If Right(Filename, 4) <> ".m4a" Then Filename = Filename & ".m4a"
     #Else
-        If Right(Filename, 4) <> ".wav" Then Filename = Filename & ".wav"
+        If Right$(Filename, 4) <> ".wav" Then Filename = Filename & ".wav"
     #End If
     Filename = FilePath & Filename
     
@@ -139,7 +140,8 @@ Public Function RecordStatus() As String
     #End If
 End Function
 
-Sub RecordAudio(c As IRibbonControl, pressed As Boolean)
+'@Ignore ParameterNotUsed
+Public Sub RecordAudio(ByVal c As IRibbonControl, ByVal pressed As Boolean)
     On Error GoTo Handler
     
     If pressed Then
@@ -163,3 +165,5 @@ Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
     Ribbon.RefreshRibbon
 End Sub
+
+

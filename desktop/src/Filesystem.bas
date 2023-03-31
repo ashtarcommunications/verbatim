@@ -61,28 +61,35 @@ Handler:
     Application.StatusBar = "Error checking for folder " & FolderPath & " - Error " & Err.Number & ": " & Err.Description
 End Function
 
-Function GetSubfoldersInFolder(FolderPath) As String
+'@Ignore ProcedureNotUsed
+'@Ignore ParameterNotUsed
+Public Function GetSubfoldersInFolder(ByVal FolderPath As String) As String
     #If Mac Then
         GetSubfoldersInFolder = AppleScriptTask("Verbatim.scpt", "GetSubfoldersInFolder", FolderPath)
         
         ' Trim trailing newline
         If Right(GetSubfoldersInFolder, 1) = Chr(10) Or Right(GetSubfoldersInFolder, 1) = Chr(13) Then GetSubfoldersInFolder = Left(GetSubfoldersInFolder, Len(GetSubfoldersInFolder) - 1)
     #Else
+        GetSubfoldersInFolder = ""
         Exit Function
     #End If
 End Function
-Function GetFilesInFolder(FolderPath) As String
+
+'@Ignore ProcedureNotUsed
+'@Ignore ParameterNotUsed
+Public Function GetFilesInFolder(ByVal FolderPath As String) As String
     #If Mac Then
         GetFilesInFolder = AppleScriptTask("Verbatim.scpt", "GetFilesInFolder", FolderPath)
         
         ' Trim trailing newline
         If Right(GetFilesInFolder, 1) = Chr(10) Or Right(GetFilesInFolder, 1) = Chr(13) Then GetFilesInFolder = Left(GetFilesInFolder, Len(GetFilesInFolder) - 1)
     #Else
+        GetFilesInFolder = ""
         Exit Function
     #End If
 End Function
 
-Sub DeleteFile(Path As String)
+Public Sub DeleteFile(ByRef Path As String)
     On Error Resume Next
     
     #If Mac Then
@@ -91,9 +98,12 @@ Sub DeleteFile(Path As String)
     #Else
         Kill Path
     #End If
+
+    On Error GoTo 0
 End Sub
 
-Sub DeleteFolder(Path As String)
+'@Ignore ProcedureNotUsed
+Public Sub DeleteFolder(ByRef Path As String)
     On Error Resume Next
     
     #If Mac Then
@@ -104,27 +114,31 @@ Sub DeleteFolder(Path As String)
         FSO.DeleteFolder Path
         Set FSO = Nothing
     #End If
+    
+    On Error GoTo 0
 End Sub
 
-Public Function GetFile(Path As String) As clsFile
+Public Function GetFile(ByRef Path As String) As clsFile
     Set GetFile = New clsFile
+    '@Ignore FunctionReturnValueDiscarded
     GetFile.Init Path
 End Function
 
-Public Function GetFolder(Path As String) As clsFolder
+Public Function GetFolder(ByRef Path As String) As clsFolder
     Set GetFolder = New clsFolder
+    '@Ignore FunctionReturnValueDiscarded
     GetFolder.Init Path
 End Function
 
-Public Function ReadFile(Path As String) As String
-    Dim i As Integer
+Public Function ReadFile(ByVal Path As String) As String
+    Dim i As Long
     i = FreeFile
     Open Path For Input As FreeFile
-    ReadFile = Input(LOF(i), i)
+    ReadFile = Input$(LOF(i), i)
     Close i
 End Function
 
-Public Sub CopyFile(Path As String, NewPath As String)
+Public Sub CopyFile(ByRef Path As String, ByRef NewPath As String)
     On Error GoTo Handler
 
     #If Mac Then
@@ -148,7 +162,7 @@ Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
-Public Function GetFileAsBase64(Path As String) As String
+Public Function GetFileAsBase64(ByRef Path As String) As String
     On Error GoTo Handler
 
     #If Mac Then
@@ -158,14 +172,10 @@ Public Function GetFileAsBase64(Path As String) As String
     #Else
         Dim FileStream As Object
         
-        Dim FSO
-        Set FSO = CreateObject("Scripting.FileSystemObject")
-        Dim TempFileName As String
-        
-        Dim xmlDoc
+        Dim xmlDoc As Object
         Set xmlDoc = CreateObject("Microsoft.XMLDOM")
         
-        Dim xmlElem
+        Dim xmlElem As Object
         Set xmlElem = xmlDoc.createElement("tmp")
                 
         ' Create a temporary copy of the current file to upload

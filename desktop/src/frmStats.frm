@@ -16,6 +16,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
+'@Ignore EncapsulatePublicField
 Public ComputingStats As Boolean
 
 Private Sub UserForm_Initialize()
@@ -34,37 +35,37 @@ Private Sub UserForm_Initialize()
     
     ' Set form caption
     If InStr(ActiveDocument.Name, ".") > 1 Then
-        Me.Caption = "Stats - " & Left(ActiveDocument.Name, InStrRev(ActiveDocument.Name, ".") - 1)
+        Me.Caption = "Stats - " & Left$(ActiveDocument.Name, InStrRev(ActiveDocument.Name, ".") - 1)
     Else
         Me.Caption = "Stats - " & ActiveDocument.Name
     End If
-    
-    SpeechType = "Constructive"
-    
+
     If InStr(ActiveDocument.Name, "NR") > 0 Or _
         InStr(ActiveDocument.Name, "AR") > 0 Or _
         InStr(ActiveDocument.Name, "Final Focus") > 0 Then
         SpeechType = "Rebuttal"
+    Else
+        SpeechType = "Constructive"
     End If
     
     e = GetSetting("Verbatim", "Profile", "Event", "CX")
     CollegeHS = GetSetting("Verbatim", "Profile", "CollegeHS", "College")
     
-    Me.spnSpeechLength = 9
-    If SpeechType = "Constructive" And e = "CX" And CollegeHS = "College" Then Me.spnSpeechLength = 9
-    If SpeechType = "Rebuttal" And e = "CX" And CollegeHS = "College" Then Me.spnSpeechLength = 6
-    If SpeechType = "Constructive" And e = "CX" And CollegeHS = "K12" Then Me.spnSpeechLength = 8
-    If SpeechType = "Rebuttal" And e = "CX" And CollegeHS = "K12" Then Me.spnSpeechLength = 5
+    Me.spnSpeechLength.Value = 9
+    If SpeechType = "Constructive" And e = "CX" And CollegeHS = "College" Then Me.spnSpeechLength.Value = 9
+    If SpeechType = "Rebuttal" And e = "CX" And CollegeHS = "College" Then Me.spnSpeechLength.Value = 6
+    If SpeechType = "Constructive" And e = "CX" And CollegeHS = "K12" Then Me.spnSpeechLength.Value = 8
+    If SpeechType = "Rebuttal" And e = "CX" And CollegeHS = "K12" Then Me.spnSpeechLength.Value = 5
     
-    If SpeechType = "Constructive" And e = "LD" And CollegeHS = "College" Then Me.spnSpeechLength = 6
-    If SpeechType = "Rebuttal" And e = "LD" And CollegeHS = "College" Then Me.spnSpeechLength = 4
-    If SpeechType = "Constructive" And e = "LD" And CollegeHS = "K12" Then Me.spnSpeechLength = 6
-    If SpeechType = "Rebuttal" And e = "LD" And CollegeHS = "K12" Then Me.spnSpeechLength = 4
+    If SpeechType = "Constructive" And e = "LD" And CollegeHS = "College" Then Me.spnSpeechLength.Value = 6
+    If SpeechType = "Rebuttal" And e = "LD" And CollegeHS = "College" Then Me.spnSpeechLength.Value = 4
+    If SpeechType = "Constructive" And e = "LD" And CollegeHS = "K12" Then Me.spnSpeechLength.Value = 6
+    If SpeechType = "Rebuttal" And e = "LD" And CollegeHS = "K12" Then Me.spnSpeechLength.Value = 4
 
-    If SpeechType = "Constructive" And e = "PF" And CollegeHS = "College" Then Me.spnSpeechLength = 4
-    If SpeechType = "Rebuttal" And e = "PF" And CollegeHS = "College" Then Me.spnSpeechLength = 3
-    If SpeechType = "Constructive" And e = "PF" And CollegeHS = "K12" Then Me.spnSpeechLength = 4
-    If SpeechType = "Rebuttal" And e = "PF" And CollegeHS = "K12" Then Me.spnSpeechLength = 3
+    If SpeechType = "Constructive" And e = "PF" And CollegeHS = "College" Then Me.spnSpeechLength.Value = 4
+    If SpeechType = "Rebuttal" And e = "PF" And CollegeHS = "College" Then Me.spnSpeechLength.Value = 3
+    If SpeechType = "Constructive" And e = "PF" And CollegeHS = "K12" Then Me.spnSpeechLength.Value = 4
+    If SpeechType = "Rebuttal" And e = "PF" And CollegeHS = "K12" Then Me.spnSpeechLength.Value = 3
     
 End Sub
 
@@ -85,7 +86,7 @@ End Sub
 
 Private Sub spnSpeechLength_Change()
     Me.txtSpeechLength.Value = Me.spnSpeechLength.Value
-    If Me.lblEstimate <> "mm:ss" Then ComputeTotal
+    If Me.lblEstimate.Caption <> "mm:ss" Then ComputeTotal
 End Sub
 
 Private Sub btnRefreshStats_Click()
@@ -93,7 +94,7 @@ Private Sub btnRefreshStats_Click()
 End Sub
 
 Private Sub chkAutoRefresh_Click()
-    Dim StartTime
+    Dim StartTime As Variant
     On Error GoTo Handler
     If Me.chkAutoRefresh.Value = True Then
         StartTime = Now
@@ -142,7 +143,7 @@ End Sub
 Private Sub ComputeHighlightedWords()
     Dim r As Range
     Dim HighlightCount As Long
-    Set r = Documents(Me.txtParentDoc.Value).Content
+    Set r = Documents.Item(Me.txtParentDoc.Value).Content
     
     On Error GoTo Handler
     
@@ -184,7 +185,7 @@ End Sub
 Private Sub ComputeTagWords()
     Dim r As Range
     Dim TagCount As Long
-    Set r = Documents(Me.txtParentDoc.Value).Content
+    Set r = Documents.Item(Me.txtParentDoc.Value).Content
     
     On Error GoTo Handler
     
@@ -235,7 +236,7 @@ Private Sub ComputeNumberOfCards()
     Me.lblNumberOfCards1.Caption = "Computing..."
     Me.lblNumberOfCards1.ForeColor = vbRed
     
-    For Each p In Documents(Me.txtParentDoc.Value).Paragraphs
+    For Each p In Documents.Item(Me.txtParentDoc.Value).Paragraphs
         If p.OutlineLevel = wdOutlineLevel4 Then
             If p.Range.End <> ActiveDocument.Range.End Then
                 If p.Next.OutlineLevel > wdOutlineLevel4 And p.Next.Next.OutlineLevel > wdOutlineLevel4 Then
@@ -254,16 +255,16 @@ Private Sub ComputeNumberOfCards()
 End Sub
 
 Private Sub ComputeTotal()
-    Dim WPM As Integer
-    Dim Remain
+    Dim WPM As Long
+    Dim Remain As Long
     
-    WPM = Int(GetSetting("Verbatim", "Profile", "WPM", "250"))
+    WPM = CLng(GetSetting("Verbatim", "Profile", "WPM", "250"))
     
-    Me.lblTotal.Caption = Int(Me.lblHighlightCount.Caption) + Int(Me.lblTagCount.Caption)
-    Remain = Round(((Int(Me.lblTotal.Caption) Mod WPM) / WPM) * 60, 0)
+    Me.lblTotal.Caption = CLng(Me.lblHighlightCount.Caption) + CLng(Me.lblTagCount.Caption)
+    Remain = CLng(Round(((CLng(Me.lblTotal.Caption) Mod WPM) / WPM) * 60, 0))
     If Remain < 10 Then Remain = "0" & Remain
-    Me.lblEstimate.Caption = Int(Me.lblTotal.Caption) \ WPM & ":" & Remain
-    Me.lblEstimate1.Caption = "ESTIMATE" & vbCrLf & "(@" & Str(WPM) & "wpm)"
+    Me.lblEstimate.Caption = CLng(Me.lblTotal.Caption) \ WPM & ":" & Remain
+    Me.lblEstimate1.Caption = "ESTIMATE" & vbCrLf & "(@" & Str$(WPM) & "wpm)"
     
     If Int(Me.lblTotal.Caption) / WPM < (0.75 * Me.spnSpeechLength.Value) Then Me.lblEstimate.BackColor = vbGreen
     If Int(Me.lblTotal.Caption) / WPM > (0.75 * Me.spnSpeechLength.Value) Then Me.lblEstimate.BackColor = vbYellow

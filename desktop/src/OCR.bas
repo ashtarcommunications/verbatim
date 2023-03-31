@@ -62,14 +62,14 @@ Public Sub PasteOCR()
             End If
         End If
         
-        SnippingToolPath = Environ("SYSTEMROOT") & Application.PathSeparator & "sysnative" & Application.PathSeparator & "SnippingTool.exe"
+        SnippingToolPath = Environ$("SYSTEMROOT") & Application.PathSeparator & "sysnative" & Application.PathSeparator & "SnippingTool.exe"
         
         If Filesystem.FileExists(SnippingToolPath) = False Then
             MsgBox "The Windows Snipping Tool must be installed to run OCR"
             Exit Sub
         End If
         
-        If Filesystem.FileExists(Environ("ProgramW6432") _
+        If Filesystem.FileExists(Environ$("ProgramW6432") _
             & Application.PathSeparator _
             & "Verbatim" _
             & Application.PathSeparator _
@@ -79,7 +79,7 @@ Public Sub PasteOCR()
             & Application.PathSeparator _
             & "Capture2Text_CLI.exe" _
         ) = True Then
-            C2TPath = Environ("ProgramW6432") _
+            C2TPath = Environ$("ProgramW6432") _
                 & Application.PathSeparator _
                 & "Verbatim" _
                 & Application.PathSeparator _
@@ -88,8 +88,8 @@ Public Sub PasteOCR()
                 & "Capture2Text" _
                 & Application.PathSeparator _
                 & "Capture2Text_CLI.exe"
-        ElseIf Filesystem.FileExists(Environ("ProgramW6432") & Application.PathSeparator & "Capture2Text" & Application.PathSeparator & "Capture2Text_CLI.exe") = True Then
-            C2TPath = Environ("ProgramW6432") & Application.PathSeparator & "Capture2Text" & Application.PathSeparator & "Capture2Text_CLI.exe"
+        ElseIf Filesystem.FileExists(Environ$("ProgramW6432") & Application.PathSeparator & "Capture2Text" & Application.PathSeparator & "Capture2Text_CLI.exe") = True Then
+            C2TPath = Environ$("ProgramW6432") & Application.PathSeparator & "Capture2Text" & Application.PathSeparator & "Capture2Text_CLI.exe"
         Else
             MsgBox "Capture2Text must be installed to run OCR. Please see https://paperlessdebate.com/ for more details on how to install."
         End If
@@ -98,7 +98,7 @@ Public Sub PasteOCR()
         CreateObject("WSCript.Shell").Run SnippingToolPath & " /clip", 0, True
         
         ' Save screenshot from clipboard to temp file
-        TempImagePath = Environ("TEMP") & Application.PathSeparator & "ocrtemp.jpg"
+        TempImagePath = Environ$("TEMP") & Application.PathSeparator & "ocrtemp.jpg"
         cmd = "$img = get-clipboard -format image; $img.save('" & TempImagePath & "');"
         CreateObject("WScript.Shell").Run "powershell -command " & cmd, 0, True
         
@@ -117,4 +117,3 @@ Public Sub PasteOCR()
 Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
-

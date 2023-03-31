@@ -1,7 +1,7 @@
 Attribute VB_Name = "Settings"
 Option Explicit
 
-Sub UnverbatimizeNormal(Optional Notify As Boolean)
+Public Sub UnverbatimizeNormal(Optional ByVal Notify As Boolean)
 ' Deprecated except to uninstall old versions
        
     ' Bail without VBOM access
@@ -21,8 +21,8 @@ Sub UnverbatimizeNormal(Optional Notify As Boolean)
         ' Do Nothing
     #Else
         On Error GoTo Handler
-        If Filesystem.FileExists(CStr(Environ("USERPROFILE")) & "\AppData\Local\Microsoft\Office\Word.officeUI") = True Then
-            Kill CStr(Environ("USERPROFILE")) & "\AppData\Local\Microsoft\Office\Word.officeUI"
+        If Filesystem.FileExists(CStr(Environ$("USERPROFILE")) & "\AppData\Local\Microsoft\Office\Word.officeUI") = True Then
+            Kill CStr(Environ$("USERPROFILE")) & "\AppData\Local\Microsoft\Office\Word.officeUI"
         End If
     #End If
     
@@ -38,7 +38,7 @@ End Sub
 '* IMPORT/EXPORT FUNCTIONS                                                           *
 '*************************************************************************************
 
-Sub ImportCustomCode(Optional Notify As Boolean)
+Public Sub ImportCustomCode(Optional ByVal Notify As Boolean)
     Dim p As Object
 
     ' Turn on Error Handling
@@ -99,14 +99,14 @@ Handler:
 
 End Sub
 
-Sub ExportCustomCode(Optional Notify As Boolean)
-    Dim p As Object
+Public Sub ExportCustomCode(Optional ByVal Notify As Boolean)
     Dim Module As Object
     
     'Turn on Error Handling
     On Error GoTo Handler
   
     #If Mac Then
+        Dim p As Object
         Set p = FindVBProject(ActiveDocument.AttachedTemplate.Path & Application.PathSeparator & ActiveDocument.AttachedTemplate)
         If p Is Nothing Then
             MsgBox "Failed to find the Custom code module."
@@ -139,13 +139,17 @@ Sub ExportCustomCode(Optional Notify As Boolean)
     
     If Notify = True Then MsgBox "Custom code exported as VerbatimCustomCode.bas to your Templates folder."
    
-    Set p = Nothing
+    #If Mac Then
+        Set p = Nothing
+    #End If
     Set Module = Nothing
     
     Exit Sub
 
 Handler:
-    Set p = Nothing
+    #If Mac Then
+        Set p = Nothing
+    #End If
     Set Module = Nothing
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
@@ -171,17 +175,17 @@ End Function
 ' * UPDATE FUNCTIONS                                                                  *
 ' *************************************************************************************
 
-Sub UpdateCheck(Optional Notify As Boolean)
+Public Sub UpdateCheck(Optional ByVal Notify As Boolean)
     On Error GoTo Handler
 
     Application.StatusBar = "Checking for Verbatim updates..."
 
     ' Create and send HttpReq
-    Dim Response
+    Dim Response As Dictionary
     Set Response = HTTP.GetReq(Globals.UPDATES_URL)
     
     ' Exit if the request fails
-    If Response("status") <> 200 Then
+    If Response.Item("status") <> 200 Then
         Application.StatusBar = "Update Check Failed"
         SaveSetting "Verbatim", "Profile", "LastUpdateCheck", Now
         If Notify = True Then MsgBox "Update Check Failed."
@@ -193,7 +197,7 @@ Sub UpdateCheck(Optional Notify As Boolean)
     
     ' If newer version is found
     Dim UpdatedVersion As String
-    UpdatedVersion = Response("body")("verbatim")("latest")("desktop")
+    UpdatedVersion = Response.Item("body")("verbatim")("latest")("desktop")
     
     If Settings.NewerVersion(UpdatedVersion, Settings.GetVersion) Then
     
@@ -216,15 +220,15 @@ Handler:
 
 End Sub
 
-Public Function NewerVersion(Version1 As String, Version2 As String) As Boolean
+Public Function NewerVersion(ByVal Version1 As String, ByVal Version2 As String) As Boolean
 ' Adapted from https://forum.ozgrid.com/forum/index.php?thread%2F52830-compare-version-number-strings%2F=
 ' Returns true if Version1 is newer
-    Dim i As Integer
+    Dim i As Long
     Dim Version1Array() As String
     Dim Version2Array() As String
     Version1Array = Split(Version1, ".")
     Version2Array = Split(Version2, ".")
-    Dim k As Integer
+    Dim k As Long
     
     k = UBound(Version1Array)
     If UBound(Version2Array) < k Then k = UBound(Version2Array)
@@ -252,7 +256,7 @@ End Function
 ' * KEYBOARD FUNCTIONS                                                                  *
 ' *************************************************************************************
 
-Sub ChangeKeyboardShortcut(KeyName As WdKey, MacroName As String)
+Public Sub ChangeKeyboardShortcut(ByVal KeyName As WdKey, ByVal MacroName As String)
     ' Change keyboard shortcuts in template
     Application.CustomizationContext = ActiveDocument.AttachedTemplate
     
@@ -288,14 +292,15 @@ Sub ChangeKeyboardShortcut(KeyName As WdKey, MacroName As String)
         
     End Select
     
+    '@Ignore ValueRequired
     Application.CustomizationContext = ThisDocument
 End Sub
 
-Sub ResetKeyboardShortcuts()
+Public Sub ResetKeyboardShortcuts()
       
     On Error Resume Next
     
-    Dim ModifierKey
+    Dim ModifierKey As Long
     #If Mac Then
         ModifierKey = wdKeyCommand
     #Else
@@ -406,10 +411,13 @@ Sub ResetKeyboardShortcuts()
     ActiveDocument.AttachedTemplate.Save
 
     ' Reset customization context
+    '@Ignore ValueRequired
     Application.CustomizationContext = ThisDocument
+    
+    On Error GoTo 0
 End Sub
 
-Sub RemoveKeyBindings()
+Public Sub RemoveKeyBindings()
     Dim k As KeyBinding
     
     For Each k In Application.KeyBindings
@@ -421,7 +429,7 @@ End Sub
 ' * MISC FUNCTIONS                                                                    *
 ' *************************************************************************************
 
-Sub LaunchWebsite(URL As String)
+Public Sub LaunchWebsite(ByVal URL As String)
     On Error GoTo Handler
     
     #If Mac Then
@@ -441,7 +449,7 @@ Handler:
 
 End Sub
 
-Sub OpenWordHelp()
+Public Sub OpenWordHelp()
     #If Mac Then
         Help wdHelp
     #Else
@@ -449,19 +457,15 @@ Sub OpenWordHelp()
     #End If
 End Sub
 
-Sub OpenTemplatesFolder()
+Public Sub OpenTemplatesFolder()
     #If Mac Then
     
         AppleScriptTask "Verbatim.scpt", "OpenFolder", Application.NormalTemplate.Path
     #Else
-        Shell "explorer.exe " & CStr(Environ("USERPROFILE")) & "\AppData\Roaming\Microsoft\Templates", vbNormalFocus
+        Shell "explorer.exe " & CStr(Environ$("USERPROFILE")) & "\AppData\Roaming\Microsoft\Templates", vbNormalFocus
     #End If
 End Sub
 
-Sub QuitWord()
-    Application.Quit wdPromptToSaveChanges
-End Sub
-
-Function GetVersion() As String
+Public Function GetVersion() As String
     GetVersion = ActiveDocument.AttachedTemplate.BuiltInDocumentProperties(wdPropertyKeywords)
 End Function

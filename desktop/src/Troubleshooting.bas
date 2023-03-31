@@ -1,7 +1,7 @@
 Attribute VB_Name = "Troubleshooting"
 Option Explicit
 
-Function InstallCheckTemplateName(Optional Notify As Boolean) As Boolean
+Public Function InstallCheckTemplateName(Optional ByVal Notify As Boolean) As Boolean
     Dim msg As String
     
     On Error Resume Next
@@ -23,12 +23,14 @@ Function InstallCheckTemplateName(Optional Notify As Boolean) As Boolean
     Else
         InstallCheckTemplateName = True
     End If
+    
+    On Error GoTo 0
 End Function
 
-Function InstallCheckTemplateLocation(Optional Notify As Boolean) As Boolean
+Public Function InstallCheckTemplateLocation(Optional ByVal Notify As Boolean) As Boolean
     Dim msg As String
-    Dim NormalPath
-    Dim MsgPath
+    Dim NormalPath As String
+    Dim MsgPath As String
     
     On Error Resume Next
 
@@ -37,12 +39,12 @@ Function InstallCheckTemplateLocation(Optional Notify As Boolean) As Boolean
         MsgPath = "~/Library/Group Containers/UBF8T34G9.Office/User Content/Templates"
     #Else
         ' Use LCase because Windows 8 Environ returns uppercase drive letters
-        NormalPath = LCase(CStr(Environ("USERPROFILE")) & "\AppData\Roaming\Microsoft\Templates")
+        NormalPath = LCase$(CStr(Environ$("USERPROFILE")) & "\AppData\Roaming\Microsoft\Templates")
         MsgPath = "c:\Users\<yourname>\AppData\Roaming\Microsoft\Templates"
     #End If
 
     ' Checks if Verbatim is installed in the wrong location and optionally notifes the user
-    If LCase(ActiveDocument.AttachedTemplate.Path) <> NormalPath Then
+    If LCase$(ActiveDocument.AttachedTemplate.Path) <> NormalPath Then
         InstallCheckTemplateLocation = False
         
         If Notify = True Then
@@ -57,6 +59,8 @@ Function InstallCheckTemplateLocation(Optional Notify As Boolean) As Boolean
     Else
         InstallCheckTemplateLocation = True
     End If
+    
+    On Error GoTo 0
 End Function
 
 #If Mac Then
@@ -81,10 +85,12 @@ Function InstallCheckScptFileExists(Optional Notify As Boolean) As Boolean
     Else
         InstallCheckScptFileExists = True
     End If
+    
+    On Error GoTo 0
 End Function
 #End If
 
-Function CheckSaveFormat(Optional Notify As Boolean) As Boolean
+Public Function CheckSaveFormat(Optional ByVal Notify As Boolean) As Boolean
     Dim msg As String
     
     On Error Resume Next
@@ -102,15 +108,18 @@ Function CheckSaveFormat(Optional Notify As Boolean) As Boolean
     Else
         CheckSaveFormat = True
     End If
+    
+    On Error GoTo 0
 End Function
 
-Function CheckDocx(Optional Notify As Boolean) As Boolean
+'@Ignore FunctionReturnValueAlwaysDiscarded
+Public Function CheckDocx(Optional ByVal Notify As Boolean) As Boolean
     Dim msg As String
     
     On Error Resume Next
     
     ' Check if current document is a .doc instead of a docx
-    If Right(ActiveDocument.Name, 3) = "doc" Then
+    If Right$(ActiveDocument.Name, 3) = "doc" Then
         CheckDocx = False
         
         If Notify = True Then
@@ -118,12 +127,14 @@ Function CheckDocx(Optional Notify As Boolean) As Boolean
             msg = msg & " - It is highly recommended that you use the .docx format instead. "
             msg = msg & "Save as .docx automatically? This will overwrite any current file in the same directory with the same name." & vbCrLf & "(This warning can be supressed in the Verbatim options)"
             If MsgBox(msg, vbYesNo) = vbYes Then
-                ActiveDocument.SaveAs Filename:=Left(ActiveDocument.FullName, InStrRev(ActiveDocument.FullName, ".") - 1), FileFormat:=wdFormatXMLDocument
+                ActiveDocument.SaveAs Filename:=Left$(ActiveDocument.FullName, InStrRev(ActiveDocument.FullName, ".") - 1), FileFormat:=wdFormatXMLDocument
             End If
         End If
     Else
         CheckDocx = True
     End If
+    
+    On Error GoTo 0
 End Function
 
 Public Function CheckDuplicateTemplates() As Boolean
@@ -136,15 +147,13 @@ Public Function CheckDuplicateTemplates() As Boolean
         DesktopPath = "/Users/" & Environ("USER") & "/Desktop/Debate.dotm"
         DownloadsPath = "/Users/" & Environ("USER") & "/Downloads/Debate.dotm"
     #Else
-        DesktopPath = Environ("USERPROFILE") & "\Desktop\Debate.dotm"
-        DownloadsPath = Environ("USERPROFILE") & "\Downloads\Debate.dotm"
+        DesktopPath = Environ$("USERPROFILE") & "\Desktop\Debate.dotm"
+        DownloadsPath = Environ$("USERPROFILE") & "\Downloads\Debate.dotm"
     #End If
     
-    If Filesystem.FileExists(DesktopPath) = True Or Filesystem.FileExists(DownloadsPath) = True Then
-        CheckDuplicateTemplates = False
-    Else
-        CheckDuplicateTemplates = True
-    End If
+    CheckDuplicateTemplates = Filesystem.FileExists(DesktopPath) = True Or Filesystem.FileExists(DownloadsPath) = True
+    
+    On Error GoTo 0
 End Function
 
 Public Function CheckAddins() As Boolean
@@ -164,12 +173,15 @@ Public Function CheckAddins() As Boolean
             End If
         Next Addin
     #End If
+    
+    On Error GoTo 0
 End Function
 
 ' *************************************************************************************
 ' * FIX FUNCTIONS                                                                     *
 ' *************************************************************************************
-Sub DeleteDuplicateTemplates()
+
+Public Sub DeleteDuplicateTemplates()
     Dim DesktopPath As String
     Dim DownloadsPath As String
     
@@ -182,21 +194,23 @@ Sub DeleteDuplicateTemplates()
                 DesktopPath = "/Users/" & Environ("USER") & "/Desktop/Debate.dotm"
                 DownloadsPath = "/Users/" & Environ("USER") & "/Downloads/Debate.dotm"
             #Else
-                DesktopPath = Environ("USERPROFILE") & "\Desktop\Debate.dotm"
-                DownloadsPath = Environ("USERPROFILE") & "\Downloads\Debate.dotm"
+                DesktopPath = Environ$("USERPROFILE") & "\Desktop\Debate.dotm"
+                DownloadsPath = Environ$("USERPROFILE") & "\Downloads\Debate.dotm"
             #End If
             
             If Filesystem.FileExists(DesktopPath) Then Filesystem.DeleteFile DesktopPath
             If Filesystem.FileExists(DownloadsPath) Then Filesystem.DeleteFile DownloadsPath
         End If
     End If
+    
+    On Error GoTo 0
 End Sub
 
-Sub SetDefaultSave()
+Public Sub SetDefaultSave()
     Application.DefaultSaveFormat = "Docx"
 End Sub
 
-Sub DisableAddins()
+Public Sub DisableAddins()
     #If Mac Then
         MsgBox "This function doesn't work on Mac"
         Exit Sub
@@ -209,8 +223,8 @@ Sub DisableAddins()
     #End If
 End Sub
 
-Sub FixTilde()
-    Dim ModifierKey
+Public Sub FixTilde()
+    Dim ModifierKey As Long
     
     #If Mac Then
         ModifierKey = wdKeyCommand

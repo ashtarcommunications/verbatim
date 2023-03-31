@@ -1,7 +1,7 @@
 Attribute VB_Name = "HTTP"
 Option Explicit
 
-Public Function GetReq(URL As String) As Dictionary
+Public Function GetReq(ByRef URL As String) As Dictionary
     On Error GoTo Handler
     
     Dim Response As Dictionary
@@ -67,13 +67,13 @@ Handler:
     #End If
 End Function
 
-Public Function PostReq(URL As String, Body As Dictionary) As Dictionary
+Public Function PostReq(ByRef URL As String, ByVal Body As Dictionary) As Dictionary
     On Error GoTo Handler
     
     Dim Response As Dictionary
     Set Response = New Dictionary
         
-    Dim JSON
+    Dim JSON As String
     JSON = JSONTools.ConvertToJson(Body)
     
     #If Mac Then

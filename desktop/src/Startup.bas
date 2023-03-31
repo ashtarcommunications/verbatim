@@ -38,7 +38,9 @@ Public Sub AutoClose()
         
         ' Check if current file is a .doc file instead of a .docx and default save settings
         If GetSetting("Verbatim", "Admin", "SuppressDocCheck", False) = False Then
+            '@Ignore FunctionReturnValueDiscarded
             Troubleshooting.CheckDocx Notify:=True
+            '@Ignore FunctionReturnValueDiscarded
             Troubleshooting.CheckSaveFormat Notify:=True
         End If
     

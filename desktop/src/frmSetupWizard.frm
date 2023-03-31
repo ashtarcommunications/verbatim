@@ -55,11 +55,7 @@ Private Sub UserForm_Initialize()
     End If
     
     ' Set defaults
-    If GetSetting("Verbatim", "Admin", "AlwaysOn", True) = False Then
-        Me.chkAlwaysOn = False
-    Else
-        Me.chkAlwaysOn.Value = True
-    End If
+    Me.chkAlwaysOn.Value = GetSetting("Verbatim", "Admin", "AlwaysOn", True)
     
     If GetSetting("Verbatim", "Profile", "CollegeHS", "College") = "College" Then
         Me.optCollege.Value = True
@@ -115,16 +111,18 @@ End Sub
 #If Mac Then
     ' Do Nothing
 #Else
-Sub btnOK_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Public Sub btnOK_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnOK.BackColor = Globals.LIGHT_BLUE
 End Sub
 
-Sub btnCancel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Public Sub btnCancel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnCancel.BackColor = Globals.LIGHT_RED
 End Sub
 
-Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Public Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnOK.BackColor = Globals.BLUE
     btnCancel.BackColor = Globals.RED
 End Sub
 #End If
+
+

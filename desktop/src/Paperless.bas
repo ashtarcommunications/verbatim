@@ -5,18 +5,19 @@ Option Explicit
 '* RIBBON FUNCTIONS                                                                  *
 '*************************************************************************************
 
-Sub AutoOpenFolder(c As IRibbonControl, pressed As Boolean)
+'@Ignore ProcedureNotUsed
+'@Ignore ParameterNotUsed
+Public Sub AutoOpenFolder(ByVal c As IRibbonControl, ByVal pressed As Boolean)
 ' Runs in the background to automatically open all documents in the speech folder.
-
     Dim AutoOpenDir As String
     
     #If Mac Then
-        Dim Files
-        Dim f
+        Dim Files As Variant
+        Dim f As Variant
     #Else
-        Dim Files
+        Dim Files As Variant
         Dim FSO As Object
-        Dim f
+        Dim f As Variant
     #End If
     Dim d As Document
     Dim IsOpen As Boolean
@@ -78,10 +79,10 @@ Sub AutoOpenFolder(c As IRibbonControl, pressed As Boolean)
                 Next d
                 
                 If IsOpen = False _
-                    And Left(f.Name, 1) <> "~" _
-                    And (Right(f.Path, 3) = "doc" _
-                        Or Right(f.Path, 4) = "docx" _
-                        Or Right(f.Path, 3) = "rtf" _
+                    And Left$(f.Name, 1) <> "~" _
+                    And (Right$(f.Path, 3) = "doc" _
+                        Or Right$(f.Path, 4) = "docx" _
+                        Or Right$(f.Path, 3) = "rtf" _
                     ) Then Documents.Open f.Path
             Next f
         Loop Until Globals.AutoOpenFolderToggle = False
@@ -113,8 +114,10 @@ Handler:
 
 End Sub
 
-Sub GetSpeeches(c As IRibbonControl, ByRef returnedVal)
-
+'@Ignore ProcedureNotUsed
+'@Ignore ParameterNotUsed
+'@Ignore ProcedureCanBeWrittenAsFunction
+Public Sub GetSpeeches(ByVal c As IRibbonControl, ByRef returnedVal As Variant)
     Dim xml As String
     
     On Error Resume Next
@@ -131,33 +134,31 @@ Sub GetSpeeches(c As IRibbonControl, ByRef returnedVal)
         Dim Response As Dictionary
         Set Response = HTTP.GetReq(Globals.CASELIST_URL & "/tabroom/rounds?current=true")
         
-        If Response("status") = 401 Then
+        If Response.Item("status") = 401 Then
             UI.ShowForm "Login"
             Exit Sub
         End If
     
-        Dim Round
+        Dim Round As Variant
         Dim Tournament As String
         Dim RoundName As String
         Dim Side As String
-        Dim SideName As String
         Dim Opponent As String
         
         Dim i As Long
         i = 0
     
         Application.StatusBar = "Retrieved rounds from openCaselist"
-        For Each Round In Response("body")
+        For Each Round In Response.Item("body")
             i = i + 1
             Tournament = Round("tournament")
             Side = Round("side")
             RoundName = Round("round")
             Opponent = Round("opponent")
-            Tournament = Trim(ScrubString(Tournament))
-            Side = Trim(ScrubString(Side))
-            SideName = Strings.DisplaySide(Side)
-            RoundName = Strings.RoundName(Trim(ScrubString(RoundName)))
-            Opponent = Trim(ScrubString(Opponent))
+            Tournament = Trim$(ScrubString(Tournament))
+            Side = Trim$(ScrubString(Side))
+            RoundName = Strings.RoundName(Trim$(ScrubString(RoundName)))
+            Opponent = Trim$(ScrubString(Opponent))
                 
             If Side = "A" Then
                 xml = xml & "<button id=""Speech2AC" & i & """ label=""2AC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ tag=""2AC" & " " & Tournament & " " & RoundName & " vs " & Opponent & """ onAction=""Paperless.NewSpeechFromMenu"" />"
@@ -194,18 +195,19 @@ Sub GetSpeeches(c As IRibbonControl, ByRef returnedVal)
     Set Response = Nothing
 
     System.Cursor = wdCursorNormal
+    
+    On Error GoTo 0
+    
     Exit Sub
-
-Handler:
-    Set Response = Nothing
-    System.Cursor = wdCursorNormal
-    MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
-Sub NewSpeechFromMenu(c As IRibbonControl)
+'@Ignore ProcedureNotUsed
+Public Sub NewSpeechFromMenu(ByVal c As IRibbonControl)
     Dim AutoSaveDirectory As String
     Dim Filename As String
-    Dim h
+    Dim h As String
+
+    On Error GoTo Handler
 
     ' Add a new document based on the template
     Paperless.NewDocument
@@ -227,12 +229,12 @@ Sub NewSpeechFromMenu(c As IRibbonControl)
     
     ' Autosave or open save dialog
     If GetSetting("Verbatim", "Paperless", "AutoSaveSpeech", False) = True Then
-        AutoSaveDirectory = GetSetting("Verbatim", "Paperless", "AutoSaveDir", CurDir())
-        If Right(AutoSaveDirectory, 1) <> Application.PathSeparator Then AutoSaveDirectory = AutoSaveDirectory & Application.PathSeparator
+        AutoSaveDirectory = GetSetting("Verbatim", "Paperless", "AutoSaveDir", CurDir$())
+        If Right$(AutoSaveDirectory, 1) <> Application.PathSeparator Then AutoSaveDirectory = AutoSaveDirectory & Application.PathSeparator
         Filename = AutoSaveDirectory & Application.PathSeparator & Filename
         ActiveDocument.SaveAs Filename:=Filename, FileFormat:=wdFormatXMLDocument
     Else
-        With Application.Dialogs(wdDialogFileSaveAs)
+        With Application.Dialogs.Item(wdDialogFileSaveAs)
             .Name = Filename
             If .Show = 0 Then Exit Sub
         End With
@@ -242,17 +244,16 @@ Sub NewSpeechFromMenu(c As IRibbonControl)
 
 Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
-
 End Sub
 
 '*************************************************************************************
 '* MOVE AND SELECT FUNCTIONS                                                         *
 '*************************************************************************************
 
-Public Function SelectHeadingAndContentRange(p As Paragraph) As Range
+Public Function SelectHeadingAndContentRange(ByVal p As Paragraph) As Range
     Dim r As Range
     Set r = p.Range
-    Dim OLevel As Integer
+    Dim OLevel As Long
     
     ' Move to start of current paragraph and collapse the selection
     r.StartOf Unit:=wdParagraph
@@ -287,29 +288,29 @@ End Function
 
 Public Sub SelectHeadingAndContent()
     Dim r As Range
-    Set r = Paperless.SelectHeadingAndContentRange(Selection.Paragraphs(1))
+    Set r = Paperless.SelectHeadingAndContentRange(Selection.Paragraphs.Item(1))
     Selection.SetRange r.Start, r.End
     Set r = Nothing
 End Sub
 
-Public Function IdentifyCite(p As Paragraph) As Boolean
+Public Function IdentifyCite(ByVal p As Paragraph) As Boolean
     IdentifyCite = False
     If p.OutlineLevel <> wdOutlineLevelBodyText Then
         IdentifyCite = True
     ' Ignore paragraphs starting with [, (, or < as they're likely 2-line cites
-    ElseIf Left(p.Range.Text, 1) Like "[\[(<\*]" Then
+    ElseIf Left$(p.Range.Text, 1) Like "[\[(<\*]" Then
         IdentifyCite = True
     ' Paragraphs with a URL are likely cites
     ElseIf InStr(p.Range.Text, "http://") > 0 Or InStr(p.Range.Text, "https://") > 0 Then
         IdentifyCite = True
     ' Skip omission markings and editing notes
-    ElseIf Len(p.Range.Text) < 50 And InStr(LCase(p.Range.Text), "omitted") Then
+    ElseIf Len(p.Range.Text) < 50 And InStr(LCase$(p.Range.Text), "omitted") Then
         IdentifyCite = True
-    ElseIf Len(p.Range.Text) < 50 And InStr(LCase(p.Range.Text), "edited") Then
+    ElseIf Len(p.Range.Text) < 50 And InStr(LCase$(p.Range.Text), "edited") Then
         IdentifyCite = True
-    ElseIf Len(p.Range.Text) < 50 And InStr(LCase(p.Range.Text), "modified") Then
+    ElseIf Len(p.Range.Text) < 50 And InStr(LCase$(p.Range.Text), "modified") Then
         IdentifyCite = True
-    ElseIf Len(p.Range.Text) < 50 And InStr(LCase(p.Range.Text), "sic") Then
+    ElseIf Len(p.Range.Text) < 50 And InStr(LCase$(p.Range.Text), "sic") Then
         IdentifyCite = True
     Else
         With p.Range.Find
@@ -336,7 +337,7 @@ Public Function IdentifyCite(p As Paragraph) As Boolean
     End If
 End Function
 
-Public Function SelectCardTextRange(p As Paragraph) As Range
+Public Function SelectCardTextRange(ByVal p As Paragraph) As Range
     Dim r As Range
     
     If p.OutlineLevel < 4 Then
@@ -350,7 +351,7 @@ Public Function SelectCardTextRange(p As Paragraph) As Range
     Do While True
         If r.Paragraphs.Count < 2 Then Exit Do
 
-        If IdentifyCite(r.Paragraphs(1)) = True Then
+        If IdentifyCite(r.Paragraphs.Item(1)) = True Then
             r.MoveStart Unit:=wdParagraph, Count:=1
         Else
             Exit Do
@@ -362,12 +363,12 @@ End Function
 
 Public Sub SelectCardText()
     Dim r As Range
-    Set r = Paperless.SelectCardTextRange(Selection.Paragraphs(1))
+    Set r = Paperless.SelectCardTextRange(Selection.Paragraphs.Item(1))
     Selection.SetRange r.Start, r.End
     Set r = Nothing
 End Sub
 
-Sub MoveUp()
+Public Sub MoveUp()
 ' Moves the current pocket, hat, block, or tag, up one level in the document outline
     Dim OLevel As Long
     Dim CurrentView As Long
@@ -437,7 +438,7 @@ Handler:
 
 End Sub
 
-Sub MoveDown()
+Public Sub MoveDown()
 ' Moves the current pocket, hat, block, or tag down one level in the document outline
 
     Dim OLevel As Long
@@ -531,7 +532,7 @@ Handler:
 
 End Sub
 
-Sub MoveToBottom()
+Public Sub MoveToBottom()
     On Error GoTo Handler
 
     Application.ScreenUpdating = False
@@ -557,7 +558,8 @@ Handler:
 
 End Sub
 
-Sub DeleteHeading()
+'@Ignore ProcedureNotUsed
+Public Sub DeleteHeading()
 ' Deletes the current card, block, hat, or pocket
     Paperless.SelectHeadingAndContent
     Selection.Delete
@@ -567,19 +569,20 @@ End Sub
 '*************************************************************************************
 '* SEND FUNCTIONS                                                                    *
 '*************************************************************************************
-Sub SendToSpeechCursor()
+
+'@Ignore ProcedureNotUsed
+Public Sub SendToSpeechCursor()
     Paperless.SendToSpeech PasteAtEnd:=False
 End Sub
 
-Sub SendToSpeechEnd()
+Public Sub SendToSpeechEnd()
     Paperless.SendToSpeech PasteAtEnd:=True
 End Sub
 
-Sub SendToSpeech(Optional PasteAtEnd As Boolean)
+Public Sub SendToSpeech(Optional ByVal PasteAtEnd As Boolean)
 ' Sends content to the Speech doc.  Sends currently selected text,
 ' or if nothing is selected, the current tag, block, hat, or pocket
 ' If in current speech document, enters a card marker at the current location
-
     Dim CurrentView As Long
     Dim CurrentPage As Long
     Dim CurrentDoc As String
@@ -595,19 +598,19 @@ Sub SendToSpeech(Optional PasteAtEnd As Boolean)
         
         ' Save current view state
         CurrentPage = ActiveWindow.ActivePane.Selection.Information(wdActiveEndPageNumber)
-        CurrentView = ActiveWindow.View
+        CurrentView = ActiveWindow.View.Type
         
         ' Switch to an editable view to avoid read-only problems in certain Word view modes
-        ActiveWindow.View = wdWebView
+        ActiveWindow.View.Type = wdWebView
         Selection.Collapse Direction:=wdCollapseEnd
-        If Selection.Words(1).End <> Selection.End Then Selection.MoveRight wdWord
+        If Selection.Words.Item(1).End <> Selection.End Then Selection.MoveRight wdWord
         Selection.Font.Color = wdColorRed
         Selection.Font.size = 16
-        Selection.TypeText Chr(126) & " Marked " & FormatDateTime(Time, 4) & " " & Chr(126) & " "
-        ActiveWindow.View = CurrentView
+        Selection.TypeText Chr$(126) & " Marked " & FormatDateTime(Time, 4) & " " & Chr$(126) & " "
+        ActiveWindow.View.Type = CurrentView
         
         ' Fix scroll issues after editing in reading view
-        If ActiveWindow.View = wdReadingView Then
+        If ActiveWindow.View.Type = wdReadingView Then
             With ActiveWindow.ActivePane
                 If CurrentPage > .Selection.Information(wdActiveEndPageNumber) Then
                     .PageScroll Down:=CurrentPage - .Selection.Information(wdActiveEndPageNumber)
@@ -630,13 +633,13 @@ SpeechDocCheck:
     If Globals.ActiveSpeechDoc <> "" Then
         For Each d In Application.Documents
             If d.Name = Globals.ActiveSpeechDoc Then
-                Set SpeechDoc = Application.Documents(Globals.ActiveSpeechDoc)
+                Set SpeechDoc = Application.Documents.Item(Globals.ActiveSpeechDoc)
             End If
         Next d
     Else
         ' Look for a document with "speech" in the title
         For Each d In Application.Documents
-            If InStr(LCase(d.Name), "speech") Then
+            If InStr(LCase$(d.Name), "speech") Then
                 FoundDoc = FoundDoc + 1
                 If FoundDoc = 1 Then Set SpeechDoc = d
             End If
@@ -652,7 +655,7 @@ SpeechDocCheck:
                 Paperless.NewSpeech
             
                 ' Switch focus back after save
-                Documents(CurrentDoc).Activate
+                Documents.Item(CurrentDoc).Activate
                 GoTo SpeechDocCheck:
             End If
         End If
@@ -678,8 +681,8 @@ SpeechDocCheck:
     ' If still nothing selected, exit
     If Selection.Start = Selection.End Then Exit Sub
           
-    Dim SpeechDocStart
-    Dim SpeechDocEnd
+    Dim SpeechDocStart As Long
+    Dim SpeechDocEnd As Long
           
     If PasteAtEnd = True Then
         SpeechDocStart = SpeechDoc.ActiveWindow.Selection.Start
@@ -689,10 +692,10 @@ SpeechDocCheck:
         SpeechDoc.ActiveWindow.Selection.InsertParagraph
     Else
         ' Trap for sending to middle of text or sending a card into a block/hat
-        If SpeechDoc.ActiveWindow.Selection.Start <> SpeechDoc.ActiveWindow.Selection.Paragraphs(1).Range.Start Then
+        If SpeechDoc.ActiveWindow.Selection.Start <> SpeechDoc.ActiveWindow.Selection.Paragraphs.Item(1).Range.Start Then
            If MsgBox("Sending to the middle of text. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
         End If
-        If Selection.Paragraphs(1).OutlineLevel = 4 Then
+        If Selection.Paragraphs.Item(1).OutlineLevel = 4 Then
             If SpeechDoc.ActiveWindow.Selection.Paragraphs.OutlineLevel < wdOutlineLevel4 Then
                 If MsgBox("Sending a card into a block, hat, or pocket.  Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
             End If
@@ -701,7 +704,7 @@ SpeechDocCheck:
    
     ' Paste it and add a return if necessary
     SpeechDoc.ActiveWindow.Selection.Paste
-    If Selection.Characters.Last.Text <> Chr(13) Then
+    If Selection.Characters.Last.Text <> Chr$(13) Then
         SpeechDoc.ActiveWindow.Selection.TypeParagraph
     End If
         
@@ -730,16 +733,16 @@ End Sub
 '* DOCUMENT FUNCTIONS                                                                *
 '*************************************************************************************
 
-Sub NewDocument()
+Public Sub NewDocument()
 ' Adds a new document based on the debate template
     Application.Documents.Add Template:=Application.NormalTemplate.Path & Application.PathSeparator & "Debate.dotm"
 End Sub
 
-Sub NewSpeech()
+Public Sub NewSpeech()
 ' Creates a new Speech document
     Dim SpeechName As String
     Dim Filename As String
-    Dim h
+    Dim h As String
     Dim AutoSaveDirectory As String
  
     On Error GoTo Handler
@@ -749,7 +752,7 @@ SpeechName:
     SpeechName = InputBox("Which Speech (1NC, 2AC, etc...)? You can also add extra info about the round.", "New Speech", "e.g. 2AC Round 3 vs Hogwarts")
     If SpeechName = "" Then Exit Sub
     If SpeechName = "e.g. 2AC Round 3 vs Hogwarts" Then GoTo SpeechName
-    SpeechName = Trim(ScrubString(SpeechName))
+    SpeechName = Trim$(ScrubString(SpeechName))
     SpeechName = Replace(SpeechName, "/", "")
     SpeechName = Replace(SpeechName, "\", "")
     SpeechName = Replace(SpeechName, Application.PathSeparator, "")
@@ -766,12 +769,12 @@ SpeechName:
  
     ' If AutoSave is set, save the doc - otherwise bring up Save As dialogue with default name set
     If GetSetting("Verbatim", "Paperless", "AutoSaveSpeech", False) = True Then
-        AutoSaveDirectory = GetSetting("Verbatim", "Paperless", "AutoSaveDir", CurDir())
-        If Right(AutoSaveDirectory, 1) <> Application.PathSeparator Then AutoSaveDirectory = AutoSaveDirectory & Application.PathSeparator
+        AutoSaveDirectory = GetSetting("Verbatim", "Paperless", "AutoSaveDir", CurDir$())
+        If Right$(AutoSaveDirectory, 1) <> Application.PathSeparator Then AutoSaveDirectory = AutoSaveDirectory & Application.PathSeparator
         Filename = AutoSaveDirectory & Filename
         ActiveDocument.SaveAs Filename:=Filename, FileFormat:=wdFormatXMLDocument
     Else
-        With Application.Dialogs(wdDialogFileSaveAs)
+        With Application.Dialogs.Item(wdDialogFileSaveAs)
             .Name = Filename
             If .Show = 0 Then Exit Sub
         End With
@@ -788,16 +791,15 @@ End Sub
 '* TOOL FUNCTIONS                                                                    *
 '*************************************************************************************
 
-Sub CopyToUSB()
+Public Sub CopyToUSB()
 ' Copies the current file to the root folder of the first found USB drive
-
     Dim Filename As String
     
     ' Strip "Speech" if option set
     If GetSetting("Verbatim", "Paperless", "StripSpeech", True) = True And Len(ActiveDocument.Name) > 11 Then
-        Filename = Trim(Replace(ActiveDocument.Name, "speech", "", 1, -1, vbTextCompare))
+        Filename = Trim$(Replace(ActiveDocument.Name, "speech", "", 1, -1, vbTextCompare))
     Else
-        Filename = Trim(ActiveDocument.Name)
+        Filename = Trim$(ActiveDocument.Name)
     End If
     
     ' Save File locally
@@ -841,10 +843,10 @@ Sub CopyToUSB()
     #Else
         Dim FSO As Object
         Set FSO = CreateObject("Scripting.FileSystemObject")
-        Dim Drv
+        Dim Drv As Variant
         Set Drv = FSO.Drives
-        Dim d
-        Dim USB
+        Dim d As Variant
+        Dim USB As Variant
         
         On Error GoTo Handler
         
@@ -890,16 +892,15 @@ Handler:
 
 End Sub
 
-
 '*************************************************************************************
 '* WARRANT FUNCTIONS                                                                 *
 '*************************************************************************************
 
-Sub NewWarrant()
+Public Sub NewWarrant()
     Selection.Comments.Add Range:=Selection.Range
 End Sub
 
-Sub DeleteAllWarrants()
+Public Sub DeleteAllWarrants()
     Dim c As Comment
     For Each c In ActiveDocument.Comments
         c.Delete

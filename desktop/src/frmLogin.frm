@@ -42,15 +42,15 @@ End Sub
 
 #If Mac Then
 #Else
-Sub btnLogin_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Public Sub btnLogin_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnLogin.BackColor = Globals.LIGHT_BLUE
 End Sub
 
-Sub btnCancel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Public Sub btnCancel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnCancel.BackColor = Globals.LIGHT_RED
 End Sub
 
-Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Public Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnLogin.BackColor = Globals.BLUE
     btnCancel.BackColor = Globals.RED
 End Sub
@@ -59,6 +59,9 @@ End Sub
 Private Sub btnLogin_Click()
     Dim Body As Dictionary
     Set Body = New Dictionary
+    
+    On Error GoTo Handler
+    
     Body.Add "username", Me.txtUsername.Value
     #If Mac Then
         Body.Add "password", Password
@@ -66,13 +69,13 @@ Private Sub btnLogin_Click()
         Body.Add "password", Me.txtPassword.Value
     #End If
        
-    Dim Response
+    Dim Response As Variant
     Set Response = HTTP.PostReq(Globals.CASELIST_URL & "/login", Body)
     
-    Dim status
+    Dim status As String
     status = Response("status")
     
-    Dim b
+    Dim b As Dictionary
     Dim token As String
     Dim expires As String
 
@@ -82,8 +85,8 @@ Private Sub btnLogin_Click()
             Exit Sub
         Case "201"
             Set b = Response("body")
-            token = b("token")
-            expires = b("expires")
+            token = b.Item("token")
+            expires = b.Item("expires")
             SaveSetting "Verbatim", "Caselist", "CaselistToken", token
             SaveSetting "Verbatim", "Caselist", "CaselistTokenExpires", JSONTools.ParseIso(expires)
             Ribbon.RefreshRibbon

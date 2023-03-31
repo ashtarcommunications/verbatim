@@ -1,13 +1,12 @@
 Attribute VB_Name = "View"
+'@IgnoreModule ProcedureNotUsed
 Option Explicit
 
-Sub ArrangeWindows()
+Public Sub ArrangeWindows()
     Dim CurrentWindow As Window
     Dim w As Window
-    Dim MaxSize() As String
-    Dim MaxWidth As Integer
-    Dim MaxLeft As Integer
-    Dim MaxTop As Integer
+    Dim MaxLeft As Long
+    Dim MaxTop As Long
     Dim LeftSplitPct As Single
     Dim RightSplitPct As Single
     
@@ -18,6 +17,9 @@ Sub ArrangeWindows()
     
     ' Find largest usable window size
     #If Mac Then
+        Dim MaxSize() As String
+        Dim MaxWidth As Long
+        
         ' Mac has issues maximizing windows with the new "full-screen" mode so use an AppleScript to get the usable bounds
         MaxSize = Split(AppleScriptTask("Verbatim.scpt", "GetHorizontalWindowSize", ""), ",")
         MaxWidth = CInt(MaxSize(0))
@@ -52,7 +54,7 @@ Sub ArrangeWindows()
         ' If an ActiveSpeechDoc, put only that doc on the right, otherwise any doc with "Speech" in the name
         If ( _
             (Globals.ActiveSpeechDoc <> "" And w.Document.Name = Globals.ActiveSpeechDoc) _
-            Or (Globals.ActiveSpeechDoc = "" And InStr(LCase(w.Document.Name), "speech") > 0) _
+            Or (Globals.ActiveSpeechDoc = "" And InStr(LCase$(w.Document.Name), "speech") > 0) _
         ) Then
             ' Mac has trouble with Application.UsableWidth, so use values from above to take dock into account
             #If Mac Then
@@ -96,19 +98,19 @@ Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
-Sub SwitchWindows()
+Public Sub SwitchWindows()
     Dim i As Long
     
     ' Cycle through all open windows
     For i = 1 To Documents.Count
-        If Documents(i).Name = ActiveDocument.Name Then Exit For
+        If Documents.Item(i).Name = ActiveDocument.Name Then Exit For
     Next i
     
     If i = 1 Then i = Documents.Count + 1
-    Documents(i - 1).Activate
+    Documents.Item(i - 1).Activate
 End Sub
 
-Sub ToggleReadingView()
+Public Sub ToggleReadingView()
     #If Mac Then
         MsgBox "Reading View is not supported on Mac. Try the ""Focus Mode"" button at the bottom of the window."
         Exit Sub
@@ -121,7 +123,7 @@ Sub ToggleReadingView()
     End If
 End Sub
 
-Sub DefaultView()
+Public Sub DefaultView()
     If GetSetting("Verbatim", "View", "DefaultView", Globals.DefaultView) = "Web" Then
         ActiveWindow.ActivePane.View.Type = wdWebView
     Else
@@ -129,7 +131,7 @@ Sub DefaultView()
     End If
 End Sub
 
-Sub ReadingView()
+Public Sub ReadingView()
     #If Mac Then
         ActiveWindow.ActivePane.View.Type = wdWebView
     #Else
@@ -137,11 +139,12 @@ Sub ReadingView()
     #End If
 End Sub
 
-Sub SetZoom()
+Public Sub SetZoom()
     ActiveWindow.ActivePane.View.Zoom.Percentage = GetSetting("Verbatim", "View", "ZoomPct", "100")
 End Sub
 
-Sub InvisibilityMode(c As IRibbonControl, pressed As Boolean)
+'@Ignore ParameterNotUsed
+Public Sub InvisibilityMode(ByVal c As IRibbonControl, ByVal pressed As Boolean)
     On Error Resume Next
     
     If pressed Then
@@ -155,9 +158,11 @@ Sub InvisibilityMode(c As IRibbonControl, pressed As Boolean)
     End If
     
     Ribbon.RefreshRibbon
+
+    On Error GoTo 0
 End Sub
 
-Sub InvisibilityOn()
+Public Sub InvisibilityOn()
     Dim p As Paragraph
     Dim pCount As Long
  
@@ -224,7 +229,7 @@ Skip:
     ActiveDocument.ShowSpellingErrors = False
 End Sub
 
-Sub InvisibilityOff()
+Public Sub InvisibilityOff()
     ' Set the whole doc visible
     ActiveDocument.Range.Font.Hidden = False
     
@@ -236,4 +241,5 @@ Sub InvisibilityOff()
     ActiveDocument.ShowGrammaticalErrors = True
     ActiveDocument.ShowSpellingErrors = True
 End Sub
+
 

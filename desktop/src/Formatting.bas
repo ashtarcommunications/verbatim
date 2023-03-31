@@ -1,7 +1,9 @@
 Attribute VB_Name = "Formatting"
+'@IgnoreModule ProcedureNotUsed
 Option Explicit
 
-Sub UnderlineMode(c As IRibbonControl, pressed As Boolean)
+'@Ignore ParameterNotUsed
+Public Sub UnderlineMode(ByVal c As IRibbonControl, ByVal pressed As Boolean)
 ' Ribbon callback for onAction of UnderlineMode togglebutton
     ' If ToggleButton is turned on
     If pressed Then
@@ -29,7 +31,7 @@ Sub UnderlineMode(c As IRibbonControl, pressed As Boolean)
     End If
 End Sub
 
-Sub ToggleUnderline()
+Public Sub ToggleUnderline()
 ' Toggles any style underlined text to Normal and back to Underline style
     
     ' Check for all underlinining, not a specific style, to be more universal
@@ -40,22 +42,23 @@ Sub ToggleUnderline()
     End If
 End Sub
 
-Sub PasteText()
+Public Sub PasteText()
 ' Pastes unformatted text
     #If Mac Then
         ' Normal Clipboard DataObject is unreliable in Mac VBA and pastes extra characters,
         ' so use the built-in method instead
         Selection.PasteSpecial dataType:=wdPasteText
     #Else
-        Dim Clipboard As New DataObject
-        Dim PasteText
+        Dim Clipboard As DataObject
+        Set Clipboard = New DataObject
+        Dim Text As String
         
         ' Assign clipboard contents to string if text to stop screen moving while pasting
         Clipboard.GetFromClipboard
         If Clipboard.GetFormat(1) = False Then Exit Sub
-        PasteText = Clipboard.GetText(1)
+        Text = Clipboard.GetText(1)
             
-        Selection = PasteText
+        Selection.Text = Text
         
         If GetSetting("Verbatim", "Format", "CondenseOnPaste", False) = True Then
             Condense.CondenseCard
@@ -65,20 +68,20 @@ Sub PasteText()
     #End If
 End Sub
 
-Sub Highlight()
+Public Sub Highlight()
     WordBasic.Highlight
 End Sub
 
-Sub ClearToNormal()
+Public Sub ClearToNormal()
 ' Clears all formatting if text is selected, otherwise sets the paragraph style to Normal
     If Selection.End > Selection.Start Then
         Selection.ClearFormatting
     Else
-        Selection.Paragraphs.Style = ActiveDocument.Styles("Normal")
+        Selection.Paragraphs.Style = ActiveDocument.Styles.Item("Normal").NameLocal
     End If
 End Sub
 
-Sub CopyPreviousCite()
+Public Sub CopyPreviousCite()
 ' Duplicates previous cite - only works with one-line cites
     Dim StartLocation As Long
     
@@ -91,7 +94,7 @@ Sub CopyPreviousCite()
       .Text = ""
       .Wrap = wdFindStop
       .Format = True
-      .Style = ActiveDocument.Styles("Cite")
+      .Style = ActiveDocument.Styles.Item("Cite").NameLocal
       .Forward = False
       .Execute
     End With
@@ -114,9 +117,8 @@ Sub CopyPreviousCite()
     Selection.Paste
 End Sub
 
-Sub UniHighlight()
+Public Sub UniHighlight()
 ' Replaces all highlighting in the document with the selected color
-
     Dim r As Range
     Set r = ActiveDocument.Range
     
@@ -145,7 +147,7 @@ Sub UniHighlight()
     Set r = Nothing
 End Sub
 
-Sub UniHighlightWithException()
+Public Sub UniHighlightWithException()
     Dim r As Range
     Set r = ActiveDocument.Range
     
@@ -188,7 +190,7 @@ Sub UniHighlightWithException()
     Set r = Nothing
 End Sub
 
-Public Function HighlightColorToEnum(Color As String) As Long
+Public Function HighlightColorToEnum(ByVal Color As String) As Long
     Select Case Color
         Case Is = "None"
             HighlightColorToEnum = wdNoHighlight
@@ -229,7 +231,7 @@ Public Function HighlightColorToEnum(Color As String) As Long
     End Select
 End Function
 
-Sub RemoveBlanks()
+Public Sub RemoveBlanks()
 ' Removes blank lines from appearing in the Navigation Pane by setting them to Normal text
     Dim p As Paragraph
 
@@ -243,7 +245,7 @@ Sub RemoveBlanks()
     Next p
 End Sub
 
-Sub ShowComments()
+Public Sub ShowComments()
 ' Toggles showing comments
     With ActiveWindow.View
         If .ShowRevisionsAndComments Then
@@ -255,23 +257,23 @@ Sub ShowComments()
     End With
 End Sub
 
-Sub InsertHeader()
+Public Sub InsertHeader()
 ' Inserts a custom header based on team/user information in Verbatim settings
-    ActiveDocument.Sections(1).Headers(wdHeaderFooterPrimary).Range.Text = GetSetting("Verbatim", "Profile", "SchoolName") & vbCrLf & "File Title" & vbTab & vbTab & GetSetting("Verbatim", "Profile", "Name")
-    ActiveDocument.Sections(1).Headers(wdHeaderFooterPrimary).PageNumbers.Add (wdAlignPageNumberRight)
+    ActiveDocument.Sections.Item(1).Headers.Item(wdHeaderFooterPrimary).Range.Text = GetSetting("Verbatim", "Profile", "SchoolName") & vbCrLf & "File Title" & vbTab & vbTab & GetSetting("Verbatim", "Profile", "Name")
+    ActiveDocument.Sections.Item(1).Headers.Item(wdHeaderFooterPrimary).PageNumbers.Add (wdAlignPageNumberRight)
 End Sub
 
-Sub UpdateStyles()
+Public Sub UpdateStyles()
 ' Updates document styles from template
     ActiveDocument.UpdateStyles
 End Sub
 
-Sub SelectSimilar()
+Public Sub SelectSimilar()
     On Error Resume Next
     
     Application.ScreenUpdating = False
     
-    If Selection.Font.Underline = wdUnderlineNone And Selection.Font.size = ActiveDocument.Styles("Normal").Font.size Then
+    If Selection.Font.Underline = wdUnderlineNone And Selection.Font.size = ActiveDocument.Styles.Item("Normal").Font.size Then
         ActiveDocument.Content.Font.Shrink
         WordBasic.SelectSimilarFormatting
         ActiveDocument.Content.Font.Grow
@@ -280,26 +282,28 @@ Sub SelectSimilar()
     End If
     
     Application.ScreenUpdating = True
+    
+    On Error GoTo 0
 End Sub
 
-Sub RemoveHyperlinks()
+Public Sub RemoveHyperlinks()
 ' Remove all hyperlinks from document
-    Dim i
+    Dim i As Long
     Dim Count As Long
     
     For i = ActiveDocument.Hyperlinks.Count To 1 Step -1
-        ActiveDocument.Hyperlinks(i).Delete
+        ActiveDocument.Hyperlinks.Item(i).Delete
         Count = Count + 1
     Next i
 
     Application.StatusBar = Count & " hyperlinks removed."
 End Sub
 
-Sub AutoFormatCite()
+Public Sub AutoFormatCite()
     Dim r As Range
        
     ' Set range to current paragraph
-    Set r = Selection.Paragraphs(1).Range
+    Set r = Selection.Paragraphs.Item(1).Range
     
     ' Find first comma
     With r.Find
@@ -326,11 +330,11 @@ Sub AutoFormatCite()
     End If
     
     ' Move right in paragraph until finding a digit - should be the start of the date, then extend to get whole date
-    r.MoveStartUntil Cset:="0123456789", Count:=Len(Selection.Paragraphs(1).Range.Text)
-    r.MoveEndWhile Cset:="-/0123456789", Count:=Len(Selection.Paragraphs(1).Range.Text)
+    r.MoveStartUntil Cset:="0123456789", Count:=Len(Selection.Paragraphs.Item(1).Range.Text)
+    r.MoveEndWhile Cset:="-/0123456789", Count:=Len(Selection.Paragraphs.Item(1).Range.Text)
 
     ' If end of date doesn't match current year, make year portion a cite
-    If Right(r.Text, 2) <> Right(Year(Date), 2) Then
+    If Right$(r.Text, 2) <> Right$(Year(Date), 2) Then
         r.Collapse 0
         r.MoveStartWhile Cset:="0123456789", Count:=-4
         r.Style = "Cite"
@@ -349,7 +353,7 @@ Sub AutoFormatCite()
     Set r = Nothing
 End Sub
 
-Sub ReformatAllCites()
+Public Sub ReformatAllCites()
     Dim SelectionStart As Long
     Dim SelectionEnd As Long
     SelectionStart = Selection.Start
@@ -399,8 +403,7 @@ Sub ReformatAllCites()
     Selection.End = SelectionEnd
 End Sub
 
-Sub AutoUnderline()
-    Dim Tag As Range
+Public Sub AutoUnderline()
     Dim TagWord As Range
     
     Dim SI As SynonymInfo
@@ -408,14 +411,14 @@ Sub AutoUnderline()
     Dim TagSynonyms As Collection
     Set TagSynonyms = New Collection
     
-    Dim i
-    Dim j
-    Dim k
+    Dim i As Long
+    Dim j As Long
+    Dim k As Variant
     
     Dim w As Range
-    Dim CardEnd
+    Dim CardEnd As Long
     
-    Dim IntersectionCount
+    Dim IntersectionCount As Long
     
     Dim dict As Dictionary
     Set dict = New Dictionary
@@ -424,13 +427,13 @@ Sub AutoUnderline()
     
     ' If cursor isn't on a tag, exit
     Selection.Collapse
-    If Selection.Paragraphs.OutlineLevel <> wdOutlineLevel4 Or Len(Selection.Paragraphs(1).Range.Text) < 2 Then
+    If Selection.Paragraphs.OutlineLevel <> wdOutlineLevel4 Or Len(Selection.Paragraphs.Item(1).Range.Text) < 2 Then
         MsgBox "Cursor must be in a tag to automatically underline a card."
         Exit Sub
     End If
     
     ' Select tag and loop words, add each word and all synonyms if adjective, noun, adverb, or verb
-    Selection.Paragraphs(1).Range.Select
+    Selection.Paragraphs.Item(1).Range.Select
     For Each TagWord In Selection.Words
         TagSynonyms.Add TagWord.Text
         Set SI = SynonymInfo(TagWord.Text)
@@ -447,37 +450,23 @@ Sub AutoUnderline()
     Next TagWord
         
     ' Select card, then deselect tag - exit if no more content
-    Call Paperless.SelectHeadingAndContent
-    If Selection.Paragraphs.Count < 2 Then Exit Sub
-    Selection.MoveStart Unit:=wdParagraph, Count:=1
-    
-    ' If cite detected in 1st or 2nd paragraph, skip to next to avoid underlining cite
-    If Selection.Paragraphs.Count > 2 Then
-        If InStr(Selection.Paragraphs(2).Range.Text, "http://") > 0 Or Selection.Paragraphs(2).Range.Characters(1) Like "[(<]" Or Selection.Paragraphs(2).Range.Characters(1) Like "[[]" Then
-            Selection.MoveStart Unit:=wdParagraph, Count:=2
-        ElseIf InStr(Selection.Paragraphs(1).Range.Text, "http://") > 0 Or Selection.Paragraphs(1).Range.Characters(1) Like "[(<]" Or Selection.Paragraphs(1).Range.Characters(1) Like "[[]" Then
-            Selection.MoveStart Unit:=wdParagraph, Count:=1
-        End If
-    ElseIf InStr(Selection.Paragraphs(1).Range.Text, "http://") > 0 Or Selection.Paragraphs(1).Range.Characters(1) Like "[(<]" Or Selection.Paragraphs(1).Range.Characters(1) Like "[[]" Then
-        Selection.MoveStart Unit:=wdParagraph, Count:=1
-    End If
+    Paperless.SelectCardText
     
     ' Set end point, then collapse and start processing card
     CardEnd = Selection.End
     Selection.Collapse
     Do While Selection.End <> CardEnd
-        
         Selection.MoveEnd wdWord, 1
-        Select Case Trim(Selection.Words(Selection.Words.Count).Text)
+        Select Case Trim$(Selection.Words.Item(Selection.Words.Count).Text)
             ' Extend the chunk until we find punctuation, then roll back 1 word
-            Case Is = ".", ",", """", "(", ")", "),", ":", ";", " - ", Chr(151) ' 151 = em dash
+            Case Is = ".", ",", """", "(", ")", "),", ":", ";", " - ", Chr$(151) ' 151 = em dash
                 Selection.MoveEnd wdWord, -1
                 
                 ' Loop all words in chunk and compare to all words in TagSynonyms - count it if it matches
                 For Each w In Selection.Words
-                        For i = 1 To TagSynonyms.Count
-                            If LCase(Trim(w.Text)) = LCase(Trim(TagSynonyms(i))) Then IntersectionCount = IntersectionCount + 1
-                        Next i
+                    For i = 1 To TagSynonyms.Count
+                        If LCase$(Trim$(w.Text)) = LCase$(Trim$(TagSynonyms.Item(i))) Then IntersectionCount = IntersectionCount + 1
+                    Next i
                 Next w
                 
                 ' Add the range for the chunk and the normalized chunk score to the dictionary, then reset counter
@@ -487,7 +476,6 @@ Sub AutoUnderline()
                 ' Move one word right to skip punctuation and start new chunk
                 Selection.MoveEnd wdWord, 1
                 Selection.Collapse Direction:=0
-                
         End Select
     Loop
     Selection.Collapse
@@ -516,14 +504,14 @@ Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
-Sub AutoEmphasizeFirst()
+Public Sub AutoEmphasizeFirst()
     Dim w As Range
     For Each w In Selection.Words
-        w.Characters(1).Style = "Emphasis"
+        w.Characters.Item(1).Style = "Emphasis"
     Next w
 End Sub
 
-Sub RemoveEmphasis()
+Public Sub RemoveEmphasis()
     Dim r As Range
     Set r = ActiveDocument.Range
     
@@ -553,7 +541,7 @@ Sub RemoveEmphasis()
     Set r = Nothing
 End Sub
 
-Sub AutoNumberTags()
+Public Sub AutoNumberTags()
     Dim p As Paragraph
     Dim i As Long
     
@@ -570,13 +558,13 @@ Sub AutoNumberTags()
                     i = i + 1
                     p.Range.InsertBefore i & ". "
                 End If
-            Case Is > 4
+            Case Else
                 ' Do Nothing
         End Select
     Next p
 End Sub
 
-Sub DeNumberTags()
+Public Sub DeNumberTags()
     Dim p As Paragraph
     Dim r As Range
     
@@ -588,7 +576,7 @@ Sub DeNumberTags()
             Set r = p.Range
             r.Collapse
             r.MoveEndWhile Cset:="0123456789.():-", Count:=5
-            If Left(r.Text, 5) Like "*[.():-]*" And r.Text <> "" Then
+            If Left$(r.Text, 5) Like "*[.():-]*" And r.Text <> "" Then
                 r.Delete
                 r.Collapse
                 r.MoveEndWhile Cset:=" "
@@ -600,11 +588,11 @@ Sub DeNumberTags()
     Set r = Nothing
 End Sub
 
-Sub FixFakeTags()
+Public Sub FixFakeTags()
     Dim p As Paragraph
     
     For Each p In ActiveDocument.Paragraphs
-        If p.OutlineLevel = wdOutlineLevelBodyText And p.Range.Bold = True And p.Range.Font.size > ActiveDocument.Styles("Underline").Font.size Then
+        If p.OutlineLevel = wdOutlineLevelBodyText And p.Range.Bold = True And p.Range.Font.size > ActiveDocument.Styles.Item("Underline").Font.size Then
             p.Range.Select
             Selection.ClearFormatting
             p.Style = "Tag"
@@ -612,17 +600,16 @@ Sub FixFakeTags()
     Next p
 End Sub
 
-Sub ConvertAnalyticsToTags()
+Public Sub ConvertAnalyticsToTags()
     Dim p As Paragraph
     
     For Each p In ActiveDocument.Paragraphs
-        If LCase(Left(p.Style, 8)) = "analytic" Then p.Style = "Tag"
+        If LCase$(Left$(p.Style, 8)) = "analytic" Then p.Style = "Tag"
     Next p
 End Sub
 
-Sub RemoveExtraStyles()
+Public Sub RemoveExtraStyles()
     Dim s As Style
-    Dim t As WdStyleType
        
     Dim i As Long
     i = 0
@@ -657,19 +644,19 @@ Sub RemoveExtraStyles()
         DoEvents ' Necessary for Progress form to update
     
         If s.Type = wdStyleTypeParagraph Or s.Type = wdStyleTypeLinked Then
-            If Left(s.NameLocal, 16) = "Heading 1,Pocket" And s.ParagraphFormat.OutlineLevel = wdOutlineLevel1 Then
+            If Left$(s.NameLocal, 16) = "Heading 1,Pocket" And s.ParagraphFormat.OutlineLevel = wdOutlineLevel1 Then
                 s.NameLocal = "Heading 1,Pocket"
                 s.Visibility = False
-            ElseIf Left(s.NameLocal, 13) = "Heading 2,Hat" And s.ParagraphFormat.OutlineLevel = wdOutlineLevel2 Then
+            ElseIf Left$(s.NameLocal, 13) = "Heading 2,Hat" And s.ParagraphFormat.OutlineLevel = wdOutlineLevel2 Then
                 s.NameLocal = "Heading 2,Hat"
                 s.Visibility = False
-            ElseIf Left(s.NameLocal, 15) = "Heading 3,Block" And s.ParagraphFormat.OutlineLevel = wdOutlineLevel3 Then
+            ElseIf Left$(s.NameLocal, 15) = "Heading 3,Block" And s.ParagraphFormat.OutlineLevel = wdOutlineLevel3 Then
                 s.NameLocal = "Heading 3,Block"
                 s.Visibility = False
-            ElseIf Left(s.NameLocal, 13) = "Heading 4,Tag" And s.ParagraphFormat.OutlineLevel = wdOutlineLevel4 Then
+            ElseIf Left$(s.NameLocal, 13) = "Heading 4,Tag" And s.ParagraphFormat.OutlineLevel = wdOutlineLevel4 Then
                 s.NameLocal = "Heading 4,Tag"
                 s.Visibility = False
-            ElseIf Left(s.NameLocal, 18) = "Normal,Normal/Card" And s.ParagraphFormat.OutlineLevel = wdOutlineLevelBodyText Then
+            ElseIf Left$(s.NameLocal, 18) = "Normal,Normal/Card" And s.ParagraphFormat.OutlineLevel = wdOutlineLevelBodyText Then
                 s.NameLocal = "Normal,Normal/Card"
                 s.Visibility = False
             Else
@@ -682,13 +669,13 @@ Sub RemoveExtraStyles()
                 End If
             End If
         ElseIf s.Type = wdStyleTypeCharacter Then
-            If Left(s.NameLocal, 21) = "Style 13 pt Bold,Cite" Then
+            If Left$(s.NameLocal, 21) = "Style 13 pt Bold,Cite" Then
                 s.NameLocal = "Style 13 pt Bold,Cite"
                 s.Visibility = False
-            ElseIf Left(s.NameLocal, 25) = "Style Underline,Underline" Then
+            ElseIf Left$(s.NameLocal, 25) = "Style Underline,Underline" Then
                 s.NameLocal = "Style Underline,Underline"
                 s.Visibility = False
-            ElseIf s.NameLocal = "Emphasis" Or Left(s.NameLocal, 9) = "Emphasis," Then
+            ElseIf s.NameLocal = "Emphasis" Or Left$(s.NameLocal, 9) = "Emphasis," Then
                 s.NameLocal = "Emphasis"
                 s.Visibility = False
             Else
@@ -734,9 +721,9 @@ Public Sub ConvertToDefaultStyles()
     Dim s As Style
     Dim r As Range
 
-    Dim i
+    Dim i As Long
     i = 0
-    Dim StyleCount
+    Dim StyleCount As Long
     StyleCount = ActiveDocument.Styles.Count * 2
     Dim ProgressForm As frmProgress
     
@@ -781,11 +768,11 @@ Public Sub ConvertToDefaultStyles()
     
         DoEvents ' Necessary for Progress form to update
     
-        If Left(s.NameLocal, 21) = "Style 13 pt Bold,Cite" Then
+        If Left$(s.NameLocal, 21) = "Style 13 pt Bold,Cite" Then
             s.NameLocal = "Style 13 pt Bold,Cite"
-        ElseIf Left(s.NameLocal, 25) = "Style Underline,Underline" Then
+        ElseIf Left$(s.NameLocal, 25) = "Style Underline,Underline" Then
             s.NameLocal = "Style Underline,Underline"
-        ElseIf Left(s.NameLocal, 9) = "Emphasis," Then
+        ElseIf Left$(s.NameLocal, 9) = "Emphasis," Then
             s.NameLocal = "Emphasis"
         End If
     Next s
@@ -804,20 +791,20 @@ Public Sub ConvertToDefaultStyles()
   
         ' Ignore headings converted above
         If s.BuiltIn = False _
-            And Left(LCase(s.NameLocal), 6) <> "pocket" _
-            And Left(LCase(s.NameLocal), 3) <> "hat" _
-            And Left(LCase(s.NameLocal), 5) <> "block" _
-            And Left(LCase(s.NameLocal), 3) <> "tag" _
+            And Left$(LCase$(s.NameLocal), 6) <> "pocket" _
+            And Left$(LCase$(s.NameLocal), 3) <> "hat" _
+            And Left$(LCase$(s.NameLocal), 5) <> "block" _
+            And Left$(LCase$(s.NameLocal), 3) <> "tag" _
         Then
             ' Convert cite styles
-            If InStr(LCase(s.NameLocal), "cite") > 0 _
-                And Left(s.NameLocal, 25) <> "Style Underline,Underline" _
-                And Left(LCase(s.NameLocal), 9) <> "underline" _
-                And Left(LCase(s.NameLocal), 8) <> "emphasis" _
-                And Left(LCase(s.NameLocal), 6) <> "normal" _
-                And Left(LCase(s.NameLocal), 4) <> "card" _
-                And Left(LCase(s.NameLocal), 8) <> "analytic" _
-                And Left(LCase(s.NameLocal), 4) <> "body" _
+            If InStr(LCase$(s.NameLocal), "cite") > 0 _
+                And Left$(s.NameLocal, 25) <> "Style Underline,Underline" _
+                And Left$(LCase$(s.NameLocal), 9) <> "underline" _
+                And Left$(LCase$(s.NameLocal), 8) <> "emphasis" _
+                And Left$(LCase$(s.NameLocal), 6) <> "normal" _
+                And Left$(LCase$(s.NameLocal), 4) <> "card" _
+                And Left$(LCase$(s.NameLocal), 8) <> "analytic" _
+                And Left$(LCase$(s.NameLocal), 4) <> "body" _
             Then
                 With ActiveDocument.Range.Find
                     .ClearFormatting
@@ -836,7 +823,7 @@ Public Sub ConvertToDefaultStyles()
                 End With
             
             ' Convert emphasis styles
-            ElseIf InStr(LCase(s.NameLocal), "emphasi") > 0 And Left(s.NameLocal, 25) <> "Style Underline,Underline" Then
+            ElseIf InStr(LCase$(s.NameLocal), "emphasi") > 0 And Left$(s.NameLocal, 25) <> "Style Underline,Underline" Then
                 
                 ' Fixes weird linked emphasis styles that don't show up in Find
                 If s.Linked Then s.LinkStyle = "Normal"
@@ -887,13 +874,13 @@ Public Sub ConvertToDefaultStyles()
                 End With
             
             ' Convert underline styles
-            ElseIf InStr(LCase(s.NameLocal), "underline") > 0 _
-                And InStr(LCase(s.NameLocal), "no underline") = 0 _
-                And InStr(LCase(s.NameLocal), "not underline") = 0 _
-                And InStr(LCase(s.NameLocal), "ununderline") = 0 _
-                And InStr(LCase(s.NameLocal), "un-underline") = 0 _
-                And InStr(LCase(s.NameLocal), "non underline") = 0 _
-                And InStr(LCase(s.NameLocal), "non-underline") = 0 _
+            ElseIf InStr(LCase$(s.NameLocal), "underline") > 0 _
+                And InStr(LCase$(s.NameLocal), "no underline") = 0 _
+                And InStr(LCase$(s.NameLocal), "not underline") = 0 _
+                And InStr(LCase$(s.NameLocal), "ununderline") = 0 _
+                And InStr(LCase$(s.NameLocal), "un-underline") = 0 _
+                And InStr(LCase$(s.NameLocal), "non underline") = 0 _
+                And InStr(LCase$(s.NameLocal), "non-underline") = 0 _
             Then
                 Set r = ActiveDocument.Range
                 With r.Find
@@ -948,9 +935,11 @@ Public Sub ConvertToDefaultStyles()
     ProgressForm.lblProgress.Width = ProgressForm.fProgress.Width - 6
     Unload ProgressForm
     Set ProgressForm = Nothing
+    
+    On Error GoTo 0
 End Sub
 
-Public Function LargestHeading() As Integer
+Public Function LargestHeading() As Long
     LargestHeading = 3
       
     With Selection.Find
@@ -994,7 +983,7 @@ Public Function LargestHeading() As Integer
     End With
 End Function
 
-Public Function RemoveNonHighlightedUnderlining() As Integer
+Public Sub RemoveNonHighlightedUnderlining()
     Dim r As Range
     
     If Selection.Start = Selection.End Then Paperless.SelectCardText
@@ -1031,7 +1020,7 @@ Public Function RemoveNonHighlightedUnderlining() As Integer
     ' Restore the selection
     Selection.Start = r.Start
     Selection.End = r.End
-End Function
+End Sub
 
 Public Sub FixFormattingGaps()
     Dim SelectionStart As Long
@@ -1069,20 +1058,20 @@ Public Sub FixFormattingGaps()
             Set c = Selection.Range.Characters
             
             ' Underline or emphasize based on surrounding styles
-            If Left(c(1).Style, 9) = "Underline" And Left(c(c.Count).Style, 9) = "Underline" Then
+            If Left$(c.Item(1).Style, 9) = "Underline" And Left$(c.Item(c.Count).Style, 9) = "Underline" Then
                 Selection.Style = "Underline"
-            ElseIf Left(c(1).Style, 8) = "Emphasis" And Left(c(c.Count).Style, 8) = "Emphasis" Then
+            ElseIf Left$(c.Item(1).Style, 8) = "Emphasis" And Left$(c.Item(c.Count).Style, 8) = "Emphasis" Then
                 Selection.Style = "Emphasis"
-            ElseIf Left(c(1).Style, 9) = "Underline" And Left(c(c.Count).Style, 8) = "Emphasis" Then
+            ElseIf Left$(c.Item(1).Style, 9) = "Underline" And Left$(c.Item(c.Count).Style, 8) = "Emphasis" Then
                 Selection.Style = "Underline"
-            ElseIf Left(c(1).Style, 8) = "Emphasis" And Left(c(c.Count).Style, 9) = "Underline" Then
+            ElseIf Left$(c.Item(1).Style, 8) = "Emphasis" And Left$(c.Item(c.Count).Style, 9) = "Underline" Then
                 Selection.Style = "Underline"
             End If
             
             ' Extend highlighting to cover when surrounded, have to apply to each character for Word to display it
-            If c(1).HighlightColorIndex > 0 And c(c.Count).HighlightColorIndex > 0 Then
+            If c.Item(1).HighlightColorIndex > 0 And c.Item(c.Count).HighlightColorIndex > 0 Then
                 For i = 2 To c.Count - 1
-                    c(i).HighlightColorIndex = c(1).HighlightColorIndex
+                    c.Item(i).HighlightColorIndex = c.Item(1).HighlightColorIndex
                 Next i
             End If
         Loop

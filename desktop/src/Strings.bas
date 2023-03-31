@@ -6,12 +6,13 @@ Public Function OnlyAlphaNumericChars(ByVal OrigString As String) As String
     Dim sAns As String
     Dim lCtr As Long
     Dim sChar As String
+    Dim TrimString As String
     
-    OrigString = Trim(OrigString)
-    lLen = Len(OrigString)
+    TrimString = Trim$(OrigString)
+    lLen = Len(TrimString)
     For lCtr = 1 To lLen
-        sChar = Mid(OrigString, lCtr, 1)
-        If IsAlphaNumeric(Mid(OrigString, lCtr, 1)) Then
+        sChar = Mid$(TrimString, lCtr, 1)
+        If IsAlphaNumeric(Mid$(TrimString, lCtr, 1)) Then
             sAns = sAns & sChar
         End If
     Next
@@ -19,7 +20,7 @@ Public Function OnlyAlphaNumericChars(ByVal OrigString As String) As String
     OnlyAlphaNumericChars = sAns
 End Function
 
-Public Function IsAlphaNumeric(sChr As String) As Boolean
+Public Function IsAlphaNumeric(ByVal sChr As String) As Boolean
     IsAlphaNumeric = sChr Like "[0-9A-Za-z ]"
 End Function
 
@@ -28,12 +29,13 @@ Public Function OnlySafeChars(ByVal OrigString As String) As String
     Dim sAns As String
     Dim lCtr As Long
     Dim sChar As String
+    Dim TrimString As String
     
-    OrigString = Trim(OrigString)
-    lLen = Len(OrigString)
+    TrimString = Trim$(OrigString)
+    lLen = Len(TrimString)
     For lCtr = 1 To lLen
-        sChar = Mid(OrigString, lCtr, 1)
-        If IsSafeChar(Mid(OrigString, lCtr, 1)) Then
+        sChar = Mid$(TrimString, lCtr, 1)
+        If IsSafeChar(Mid$(TrimString, lCtr, 1)) Then
             sAns = sAns & sChar
         End If
     Next
@@ -41,12 +43,12 @@ Public Function OnlySafeChars(ByVal OrigString As String) As String
     OnlySafeChars = sAns
 End Function
 
-Private Function IsSafeChar(sChr As String) As Boolean
+Private Function IsSafeChar(ByVal sChr As String) As Boolean
     IsSafeChar = sChr Like "[*0-9A-Za-z -]"
     'IsSafeChar = sChr Like "[,.!@$%^():;'""_+=0-9A-Za-z -]"
 End Function
 
-Public Function ScrubString(s As String) As String
+Public Function ScrubString(ByRef s As String) As String
     s = Replace(s, "&", "")
     s = Replace(s, "?", "")
     s = Replace(s, "%", "")
@@ -62,14 +64,16 @@ Public Function ScrubString(s As String) As String
     ScrubString = s
 End Function
 
-Public Function URLEncode(s As String, Optional SpaceAsPlus As Boolean = False) As String
+Public Function URLEncode(ByRef s As String, Optional ByVal SpaceAsPlus As Boolean = False) As String
     Dim StringLen As Long
     StringLen = Len(s)
 
     If StringLen > 0 Then
         ReDim result(StringLen) As String
-        Dim i As Long, CharCode As Integer
-        Dim Char As String, Space As String
+        Dim i As Long
+        Dim CharCode As Long
+        Dim Char As String
+        Dim Space As String
 
         If SpaceAsPlus Then Space = "+" Else Space = "%20"
 
@@ -82,9 +86,9 @@ Public Function URLEncode(s As String, Optional SpaceAsPlus As Boolean = False) 
                 Case 32
                     result(i) = Space
                 Case 0 To 15
-                    result(i) = "%0" & Hex(CharCode)
+                    result(i) = "%0" & Hex$(CharCode)
                 Case Else
-                    result(i) = "%" & Hex(CharCode)
+                    result(i) = "%" & Hex$(CharCode)
             End Select
         Next i
         URLEncode = Join(result, "")
@@ -94,18 +98,18 @@ End Function
 Public Function URLDecode(ByVal s As String) As String
     On Error GoTo Handler
     
-    Dim i As Integer
+    Dim i As Long
     Dim retval As String
     Dim tmp As String
     
     If Len(s) > 0 Then
         ' Loop through each char
         For i = 1 To Len(s)
-            tmp = Mid(s, i, 1)
+            tmp = Mid$(s, i, 1)
             tmp = Replace(tmp, "+", " ")
             If tmp = "%" And Len(s) + 1 > i + 2 Then
-                tmp = Mid(s, i + 1, 2)
-                tmp = Chr(CDbl("&H" & tmp))
+                tmp = Mid$(s, i + 1, 2)
+                tmp = Chr$(CDbl("&H" & tmp))
                 i = i + 2
             End If
             retval = retval & tmp
@@ -119,26 +123,26 @@ Handler:
     URLDecode = ""
 End Function
 
-Public Function NormalizeSide(Side As String) As String
+Public Function NormalizeSide(ByVal Side As String) As String
     Select Case "Side"
-        Case "A"
+        Case Is = "A"
             NormalizeSide = "A"
-        Case "Aff"
+        Case Is = "Aff"
             NormalizeSide = "A"
-        Case "Pro"
+        Case Is = "Pro"
             NormalizeSide = "A"
-        Case "N"
+        Case Is = "N"
             NormalizeSide = "N"
-        Case "Neg"
+        Case Is = "Neg"
             NormalizeSide = "N"
-        Case "Con"
+        Case Is = "Con"
             NormalizeSide = "N"
         Case Else
             NormalizeSide = Side
     End Select
 End Function
 
-Public Function DisplaySide(Side As String, Optional EventName As String) As String
+Public Function DisplaySide(ByVal Side As String, Optional ByVal EventName As String) As String
     If Side = "A" Or Side = "Aff" Or Side = "Pro" Then
         If EventName = "pf" Or EventName = "PF" Then
             DisplaySide = "Pro"
@@ -156,7 +160,7 @@ Public Function DisplaySide(Side As String, Optional EventName As String) As Str
     End If
 End Function
 
-Public Function RoundName(Round As Variant) As String
+Public Function RoundName(ByRef Round As Variant) As String
     If IsNumeric(Round) Then
         RoundName = "Round " & Round
     Else
@@ -164,13 +168,14 @@ Public Function RoundName(Round As Variant) As String
     End If
 End Function
 
-Public Function HeadingToTitle(p As String) As String
+Public Function HeadingToTitle(ByVal p As String) As String
     ' Clean text and ensure a non-zero string
-    HeadingToTitle = Trim(OnlySafeChars(Replace(p, Chr(151), "-")))
-    If Len(HeadingToTitle) > 1000 Then HeadingToTitle = Left(HeadingToTitle, 1000) 'Limit length to 1000 characters to avoid breaking XML
+    HeadingToTitle = Trim$(OnlySafeChars(Replace(p, Chr$(151), "-")))
+    If Len(HeadingToTitle) > 1000 Then HeadingToTitle = Left$(HeadingToTitle, 1000) 'Limit length to 1000 characters to avoid breaking XML
     If HeadingToTitle = "" Then HeadingToTitle = "-"
 End Function
 
-Public Function ConvertUnixTimestampToDate(ts As String) As Date
+'@Ignore ProcedureNotUsed
+Public Function ConvertUnixTimestampToDate(ByRef ts As String) As Date
     ConvertUnixTimestampToDate = DateAdd("s", CDbl(ts), "1/1/1970")
 End Function

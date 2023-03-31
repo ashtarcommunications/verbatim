@@ -5,7 +5,7 @@ Option Explicit
 '* CITEIFY FUNCTIONS                                                                 *
 '*************************************************************************************
 
-Sub CiteRequest(Optional p As Paragraph, Optional SuppressNotify As Boolean)
+Public Sub CiteRequest(Optional ByVal p As Paragraph, Optional ByVal SuppressNotify As Boolean)
     Dim r As Range
     
     If p Is Nothing Then
@@ -16,7 +16,7 @@ Sub CiteRequest(Optional p As Paragraph, Optional SuppressNotify As Boolean)
         End If
         
         ' Use current selection by default
-        Set r = Paperless.SelectCardTextRange(Selection.Paragraphs(1))
+        Set r = Paperless.SelectCardTextRange(Selection.Paragraphs.Item(1))
     Else
         Set r = Paperless.SelectCardTextRange(p)
     End If
@@ -34,7 +34,6 @@ End Sub
 
 Public Sub CiteRequestAll()
     Dim p As Paragraph
-    Dim r As Range
     
     ' Delete blank paragraphs to make processing easier
     For Each p In ActiveDocument.Paragraphs
@@ -46,7 +45,7 @@ Public Sub CiteRequestAll()
     Next p
 End Sub
 
-Sub CiteRequestDoc(Optional Wikify As Boolean)
+Public Sub CiteRequestDoc(Optional ByVal Wikify As Boolean)
     On Error GoTo Handler
     
     ' Make sure Debate.dotm exists in template folder
@@ -86,7 +85,9 @@ End Sub
 '* WIKIFY FUNCTIONS                                                                  *
 '*************************************************************************************
 
-Sub Word2MarkdownCites()
+Public Sub Word2MarkdownCites()
+    On Error GoTo Handler
+    
     ' Cite request and wikify doc
     Caselist.CiteRequestDoc Wikify:=True
     
@@ -133,13 +134,14 @@ Public Sub Word2MarkdownMain()
     ActiveDocument.Content.Copy
     Application.ScreenUpdating = True
     
+    On Error GoTo 0
 End Sub
 
-Private Sub EscapeCharacter(Char As String)
+Private Sub EscapeCharacter(ByVal Char As String)
     ReplaceString Char, "\" & Char
 End Sub
 
-Private Sub ReplaceString(findStr As String, replacementStr As String)
+Private Sub ReplaceString(ByVal findStr As String, ByVal replacementStr As String)
     Selection.Find.ClearFormatting
     Selection.Find.Replacement.ClearFormatting
     With Selection.Find
@@ -157,7 +159,7 @@ Private Sub ReplaceString(findStr As String, replacementStr As String)
     Selection.Find.Execute Replace:=wdReplaceAll
 End Sub
 
-Private Sub ReplaceHeading(OutlineLevel As String, headerPrefix As String)
+Private Sub ReplaceHeading(ByVal OutlineLevel As String, ByVal headerPrefix As String)
     ActiveDocument.Select
     With Selection.Find
         .ClearFormatting
@@ -185,7 +187,7 @@ Private Sub ReplaceHeading(OutlineLevel As String, headerPrefix As String)
                     .InsertBefore headerPrefix
                     '.InsertBefore vbCr
                 End If
-                .Style = ActiveDocument.Styles(wdStyleNormal)
+                .Style = ActiveDocument.Styles.Item(wdStyleNormal).NameLocal
             End With
         Loop
     End With
@@ -196,8 +198,8 @@ Private Sub WikifyReplaceQuotes()
     Dim Quotes As Boolean
     Quotes = Options.AutoFormatAsYouTypeReplaceQuotes
     Options.AutoFormatAsYouTypeReplaceQuotes = False
-    ReplaceString ChrW(8220), """"
-    ReplaceString ChrW(8221), """"
+    ReplaceString ChrW$(8220), """"
+    ReplaceString ChrW$(8221), """"
     ReplaceString "‘", "'"
     ReplaceString "’", "'"
     ReplaceString "`", "'"
@@ -205,7 +207,7 @@ Private Sub WikifyReplaceQuotes()
 End Sub
 
 Private Sub WikifyReplaceDashes()
-    ReplaceString "--", ChrW(8212)
+    ReplaceString "--", ChrW$(8212)
 End Sub
 
 Private Sub WikifyReplaceLineBreaks()
@@ -284,11 +286,12 @@ Private Sub WikifyConvertCites()
                     .InsertAfter "**"
                 End If
 
-                .Style = ActiveDocument.Styles("Default Paragraph Font")
+                .Style = ActiveDocument.Styles.Item("Default Paragraph Font").NameLocal
                 .Font.Bold = False
             End With
         Loop
     End With
+    On Error GoTo 0
 End Sub
 
 Private Sub WikifyConvertItalic()
@@ -320,7 +323,7 @@ Private Sub WikifyConvertItalic()
                     .InsertAfter "*"
                 End If
 
-                .Style = ActiveDocument.Styles("Default Paragraph Font")
+                .Style = ActiveDocument.Styles.Item("Default Paragraph Font").NameLocal
                 .Font.Italic = False
             End With
         Loop
@@ -356,13 +359,14 @@ Private Sub WikifyConvertBold()
                     .InsertAfter "**"
                 End If
 
-                .Style = ActiveDocument.Styles("Default Paragraph Font")
+                .Style = ActiveDocument.Styles.Item("Default Paragraph Font").NameLocal
                 .Font.Bold = False
             End With
         Loop
     End With
 End Sub
 
+'@Ignore ProcedureNotUsed
 Private Sub WikifyConvertUnderline()
     ActiveDocument.Select
     With Selection.Find
@@ -386,11 +390,11 @@ Private Sub WikifyConvertUnderline()
                     .MoveEndUntil vbCr
                 End If
                 ' Don't bother to markup newline characters (prevents a loop, as well)
-                If Not .Text = vbCr Then
+                'If Not .Text = vbCr Then
                     '.InsertBefore "__"
                     '.InsertAfter "__"
-                End If
-                .Style = ActiveDocument.Styles("Default Paragraph Font")
+                'End If
+                .Style = ActiveDocument.Styles.Item("Default Paragraph Font").NameLocal
                 .Font.Underline = False
             End With
         Loop
@@ -413,7 +417,7 @@ Private Sub WikifyConvertSuperscript()
         .Wrap = wdFindContinue
         Do While .Execute
             With Selection
-                .Text = Trim(.Text)
+                .Text = Trim$(.Text)
                 If Len(.Text) > 1 And InStr(1, .Text, vbCr) Then
                     ' Just process the chunk before any newline characters
                     ' We'll pick-up the rest with the next search
@@ -427,7 +431,7 @@ Private Sub WikifyConvertSuperscript()
                     .InsertAfter ("^")
                 End If
 
-                .Style = ActiveDocument.Styles("Default Paragraph Font")
+                .Style = ActiveDocument.Styles.Item("Default Paragraph Font").NameLocal
                 .Font.Superscript = False
             End With
         Loop
@@ -450,7 +454,7 @@ Private Sub WikifyConvertSubscript()
         .Wrap = wdFindContinue
         Do While .Execute
             With Selection
-                .Text = Trim(.Text)
+                .Text = Trim$(.Text)
                 If Len(.Text) > 1 And InStr(1, .Text, vbCr) Then
                     ' Just process the chunk before any newline characters
                     ' We'll pick-up the rest with the next search
@@ -463,7 +467,7 @@ Private Sub WikifyConvertSubscript()
                     .InsertBefore ("~")
                     .InsertAfter ("~")
                 End If
-                .Style = ActiveDocument.Styles("Default Paragraph Font")
+                .Style = ActiveDocument.Styles.Item("Default Paragraph Font").NameLocal
                 .Font.Subscript = False
             End With
         Loop
@@ -476,9 +480,9 @@ Private Sub WikifyRemoveHighlighting()
 End Sub
 
 Private Sub WikifyRemoveComments()
-    Dim i
+    Dim i As Long
     For i = ActiveDocument.Comments.Count To 1 Step -1
-        ActiveDocument.Comments(i).Delete
+        ActiveDocument.Comments.Item(i).Delete
     Next i
 End Sub
 
@@ -487,8 +491,8 @@ End Sub
 '*************************************************************************************
 
 Public Function CheckCaselistToken() As Boolean
-    Dim CaselistToken
-    Dim CaselistTokenExpires
+    Dim CaselistToken As String
+    Dim CaselistTokenExpires As String
     
     On Error GoTo Handler
     

@@ -34,7 +34,9 @@ Public Property Get DateLastModified() As Date
     DateLastModified = m_DateLastModified
 End Property
 
-Public Sub Init(Path As String)
+Public Sub Init(ByRef Path As String)
+    On Error GoTo Handler
+    
     m_Path = Path
     
     #If Mac Then

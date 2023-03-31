@@ -17,7 +17,6 @@ Option Explicit
 Private Sub UserForm_Initialize()
     Dim rFile As RecentFile
            
-    ' Turn on error checking
     On Error GoTo Handler
     
     Globals.InitializeGlobals
@@ -56,7 +55,7 @@ Private Sub UserForm_Initialize()
     Dim Response As Dictionary
     Set Response = HTTP.GetReq(Globals.CASELIST_URL & "/tabroom/rounds")
     
-    If Response("status") = 401 Then
+    If Response.Item("status") = 401 Then
         Me.Hide
         UI.ShowForm "Login"
         Unload Me
@@ -68,18 +67,18 @@ Private Sub UserForm_Initialize()
     Me.cboAutoName.List(Me.cboAutoName.ListCount - 1, 1) = ""
     Me.cboAutoName.ListIndex = 0
        
-    Dim Round
+    Dim Round As Variant
     Dim RoundName As String
     Dim Side As String
     Dim SideName As String
 
-    If Response("body").Count = 0 Then
+    If Response.Item("body").Count = 0 Then
         Me.cboAutoName.List(0, 0) = "No rounds found on Tabroom"
         Me.cboAutoName.ListIndex = 0
         Me.cboAutoName.Enabled = False
     End If
 
-    For Each Round In Response("body")
+    For Each Round In Response.Item("body")
         RoundName = Strings.RoundName(Round("round"))
         Side = Round("side")
         SideName = Strings.DisplaySide(Side)
@@ -99,19 +98,19 @@ End Sub
 
 #If Mac Then
 #Else
-Sub btnCombine_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Public Sub btnCombine_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnCombine.BackColor = Globals.LIGHT_BLUE
 End Sub
 
-Sub btnCancel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Public Sub btnCancel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnCancel.BackColor = Globals.LIGHT_RED
 End Sub
 
-Sub btnManualAdd_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Public Sub btnManualAdd_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnCombine.BackColor = Globals.LIGHT_GREEN
 End Sub
 
-Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+Public Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
     btnCombine.BackColor = Globals.BLUE
     btnCancel.BackColor = Globals.RED
     btnManualAdd.BackColor = Globals.GREEN
@@ -126,24 +125,25 @@ Private Sub btnManualAdd_Click()
     FilePath = UI.GetFileFromDialog("Select document", "*.doc*", "Choose a document...", "Select")
     
     Me.lboxDocs.AddItem , 0
-    Me.lboxDocs.List(0, 0) = Right(FilePath, Len(FilePath) - InStrRev(FilePath, "\"))
+    Me.lboxDocs.List(0, 0) = Right$(FilePath, Len(FilePath) - InStrRev(FilePath, "\"))
     Me.lboxDocs.List(0, 1) = FilePath
     Me.lboxDocs.Selected(0) = True
+    
+    On Error GoTo 0
 End Sub
 
 Private Sub btnCombine_Click()
-
-    Dim i As Integer
-    Dim FileCount As Integer
+    Dim i As Long
+    Dim FileCount As Long
     
     On Error GoTo Handler
     
     ' Make sure only docx, doc and rtf files are selected
     For i = 0 To Me.lboxDocs.ListCount - 1
         If Me.lboxDocs.Selected(i) = True Then
-            If Right(Me.lboxDocs.List(i, 1), Len(Me.lboxDocs.List(i, 1)) - InStrRev(Me.lboxDocs.List(i, 1), ".")) <> "docx" And _
-            Right(Me.lboxDocs.List(i, 1), Len(Me.lboxDocs.List(i, 1)) - InStrRev(Me.lboxDocs.List(i, 1), ".")) <> "doc" And _
-            Right(Me.lboxDocs.List(i, 1), Len(Me.lboxDocs.List(i, 1)) - InStrRev(Me.lboxDocs.List(i, 1), ".")) <> "rtf" Then
+            If Right$(Me.lboxDocs.List(i, 1), Len(Me.lboxDocs.List(i, 1)) - InStrRev(Me.lboxDocs.List(i, 1), ".")) <> "docx" And _
+            Right$(Me.lboxDocs.List(i, 1), Len(Me.lboxDocs.List(i, 1)) - InStrRev(Me.lboxDocs.List(i, 1), ".")) <> "doc" And _
+            Right$(Me.lboxDocs.List(i, 1), Len(Me.lboxDocs.List(i, 1)) - InStrRev(Me.lboxDocs.List(i, 1), ".")) <> "rtf" Then
                 MsgBox "You can only combine .docx, .doc, and .rtf files - please deselect other file formats before proceeding."
                 Exit Sub
             End If
@@ -163,7 +163,7 @@ Private Sub btnCombine_Click()
     ' Insert selected files in new pockets
     For i = 0 To Me.lboxDocs.ListCount - 1
         If Me.lboxDocs.Selected(i) = True Then
-            Selection.TypeText Left(Me.lboxDocs.List(i, 0), InStrRev(Me.lboxDocs.List(i, 0), ".") - 1)
+            Selection.TypeText Left$(Me.lboxDocs.List(i, 0), InStrRev(Me.lboxDocs.List(i, 0), ".") - 1)
             Selection.Style = "Pocket"
             Selection.TypeParagraph
             Selection.InsertFile Me.lboxDocs.List(i, 1)
@@ -172,13 +172,13 @@ Private Sub btnCombine_Click()
    
     ' Save file
     If GetSetting("Verbatim", "Paperless", "AutoSaveDir") <> "" And Me.cboAutoName.Value <> "" Then
-        If Right(GetSetting("Verbatim", "Paperless", "AutoSaveDir"), 1) = Application.PathSeparator Then
+        If Right$(GetSetting("Verbatim", "Paperless", "AutoSaveDir"), 1) = Application.PathSeparator Then
             ActiveDocument.SaveAs Filename:=GetSetting("Verbatim", "Paperless", "AutoSaveDir") & Me.cboAutoName.Value, FileFormat:=wdFormatXMLDocument
         Else
             ActiveDocument.SaveAs Filename:=GetSetting("Verbatim", "Paperless", "AutoSaveDir") & Application.PathSeparator & Me.cboAutoName.Value, FileFormat:=wdFormatXMLDocument
         End If
     Else
-        With Application.Dialogs(wdDialogFileSaveAs)
+        With Application.Dialogs.Item(wdDialogFileSaveAs)
             If Me.cboAutoName.Value <> "" Then
                 .Name = Me.cboAutoName.Value
             Else

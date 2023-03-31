@@ -1,22 +1,24 @@
 Attribute VB_Name = "Ribbon"
+'@IgnoreModule ProcedureCanBeWrittenAsFunction, ProcedureNotUsed
 Option Explicit
 
-Sub OnLoad(Ribbon As IRibbonUI)
+Public Sub OnLoad(ByVal Ribbon As IRibbonUI)
     Dim SavedState As Boolean
     Set Globals.DebateRibbon = Ribbon
     
     ' Save a pointer to the Ribbon in case it gets lost
     SavedState = ActiveDocument.Saved
-    ActiveDocument.Variables("RibbonPointer") = ObjPtr(Ribbon)
+    ActiveDocument.Variables.Item("RibbonPointer").Value = ObjPtr(Ribbon)
     ActiveDocument.Saved = SavedState
     
 End Sub
 
-Function GetRibbon(ByVal lRibbonPointer As LongPtr) As Object
+Public Function GetRibbon(ByVal lRibbonPointer As LongPtr) As Object
     Dim objRibbon As Object
     #If Mac Then
         CopyMemory_byVar objRibbon, lRibbonPointer, LenB(lRibbonPointer)
     #Else
+        '@Ignore ImplicitUnboundDefaultMemberAccess
         CopyMemory objRibbon, lRibbonPointer, LenB(lRibbonPointer)
     #End If
     Set GetRibbon = objRibbon
@@ -25,14 +27,14 @@ End Function
 
 Public Sub RefreshRibbon()
     If Globals.DebateRibbon Is Nothing Then
-        Set Globals.DebateRibbon = GetRibbon(ActiveDocument.Variables("RibbonPointer"))
+        Set Globals.DebateRibbon = GetRibbon(ActiveDocument.Variables.Item("RibbonPointer").Value)
         Globals.DebateRibbon.Invalidate
     Else
         Globals.DebateRibbon.Invalidate
     End If
 End Sub
 
-Sub RibbonMain(ByVal c As IRibbonControl)
+Public Sub RibbonMain(ByVal c As IRibbonControl)
     ' Set Customization context so FindKey returns correct shortcuts
     CustomizationContext = ActiveDocument.AttachedTemplate
 
@@ -219,11 +221,11 @@ Sub RibbonMain(ByVal c As IRibbonControl)
     End Select
 
     ' Reset Customization Context
-    CustomizationContext = ActiveDocument
+    CustomizationContext = ActiveDocument.Name
 
 End Sub
 
-Sub GetRibbonLabels(c As IRibbonControl, ByRef label)
+Public Sub GetRibbonLabels(ByVal c As IRibbonControl, ByRef label As Variant)
 ' Assign labels to F key controls from registry
 
     Select Case c.ID
@@ -265,7 +267,7 @@ Sub GetRibbonLabels(c As IRibbonControl, ByRef label)
 
 End Sub
 
-Sub GetRibbonImages(c As IRibbonControl, ByRef returnedBitmap)
+Public Sub GetRibbonImages(ByVal c As IRibbonControl, ByRef returnedBitmap As Variant)
 ' Get image for Default View
     Select Case c.ID
         Case Is = "DefaultView"
@@ -300,14 +302,11 @@ Sub GetRibbonImages(c As IRibbonControl, ByRef returnedBitmap)
     End Select
 End Sub
 
-Sub GetRibbonToggles(c As IRibbonControl, ByRef state)
+Public Sub GetRibbonToggles(ByVal c As IRibbonControl, ByRef state As Variant)
     Select Case c.ID
         
     Case Is = "AutoOpenFolder"
         state = Globals.AutoOpenFolderToggle
-        
-    Case Is = "AutoCoauthoringUpdates"
-        state = Globals.AutoCoauthoringToggle
         
     Case Is = "RecordAudio"
         state = Globals.RecordAudioToggle
@@ -330,7 +329,7 @@ Sub GetRibbonToggles(c As IRibbonControl, ByRef state)
     End Select
 End Sub
 
-Sub GetRibbonVisibility(c As IRibbonControl, ByRef Visible)
+Public Sub GetRibbonVisibility(ByVal c As IRibbonControl, ByRef Visible As Variant)
 ' Get visibility of ribbon groups
     
     ' Default to true

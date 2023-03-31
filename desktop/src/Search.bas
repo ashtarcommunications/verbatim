@@ -1,9 +1,10 @@
 Attribute VB_Name = "Search"
+'@IgnoreModule ProcedureNotUsed, ParameterNotUsed, EncapsulatePublicField
 Option Explicit
 
 Public SearchText As String
 
-Sub SearchChanged(c As IRibbonControl, strText As String)
+Public Sub SearchChanged(ByVal c As IRibbonControl, ByVal strText As String)
     ' Set the search text, then refresh ribbon
     SearchText = strText
     Ribbon.RefreshRibbon
@@ -13,10 +14,10 @@ Sub SearchChanged(c As IRibbonControl, strText As String)
         ' Activate the search box
         WordBasic.SendKeys "%d%s%r"
     #End If
-    
 End Sub
 
-Sub GetSearchResultsContent(c As IRibbonControl, ByRef returnedVal)
+'@Ignore ProcedureCanBeWrittenAsFunction
+Public Sub GetSearchResultsContent(ByVal c As IRibbonControl, ByRef returnedVal As String)
     Dim xml As String
     Dim SearchDir As String
     Dim x As Long
@@ -71,14 +72,14 @@ Sub GetSearchResultsContent(c As IRibbonControl, ByRef returnedVal)
             Set objRecordset = CreateObject("ADODB.Recordset")
             
             ' Construct SearchDir parameter - Use the UserProfile directory by default
-            SearchDir = GetSetting("Verbatim", "Paperless", "SearchDir", CStr(Environ("USERPROFILE")))
-            If SearchDir = "" Then SearchDir = CStr(Environ("USERPROFILE"))
-            If Right(SearchDir, 1) <> Application.PathSeparator Then SearchDir = SearchDir & Application.PathSeparator
+            SearchDir = GetSetting("Verbatim", "Paperless", "SearchDir", CStr(Environ$("USERPROFILE")))
+            If SearchDir = "" Then SearchDir = CStr(Environ$("USERPROFILE"))
+            If Right$(SearchDir, 1) <> Application.PathSeparator Then SearchDir = SearchDir & Application.PathSeparator
             SearchString = "file:" & Replace(SearchDir, "\", "/")
             
             ' Set search string and open connection
             objConnection.Open "Provider=Search.CollatorDSO;Extended Properties='Application=Windows';"
-            objRecordset.Open "SELECT Top 25 System.ItemName, System.ItemPathDisplay, System.ItemFolderPathDisplayNarrow, System.DateModified, System.Size FROM SystemIndex WHERE contains(System.Search.Contents, '""" & SearchText & """') and SCOPE='" & SearchDir & "'", objConnection
+            objRecordset.Open "SELECT Top 25 System.ItemName, System.ItemPathDisplay, System.ItemFolderPathDisplayNarrow, System.DateModified, System.Size FROM SystemIndex WHERE contains(System.Search.Contents, '""" & SearchText & """') and SCOPE='" & SearchString & "'", objConnection
     
             If objRecordset.EOF = True Then
                 xml = xml & "<button id=""SearchButton1"" label=""No results found."" />"
@@ -90,9 +91,9 @@ Sub GetSearchResultsContent(c As IRibbonControl, ByRef returnedVal)
                 Do Until objRecordset.EOF
                     ' Add a button for top 25 returned document results
                     If x <= 25 And _
-                        (Right(objRecordset.Fields.Item("System.ItemName"), 4) = "docx" Or _
-                        Right(objRecordset.Fields.Item("System.ItemName"), 3) = "doc" Or _
-                        Right(objRecordset.Fields.Item("System.ItemName"), 3) = "rtf") Then
+                        (Right$(objRecordset.Fields.Item("System.ItemName"), 4) = "docx" Or _
+                        Right$(objRecordset.Fields.Item("System.ItemName"), 3) = "doc" Or _
+                        Right$(objRecordset.Fields.Item("System.ItemName"), 3) = "rtf") Then
                         
                         xml = xml & "<button id=""SearchButton" & x & """ label=""" & objRecordset.Fields.Item("System.ItemName") & """ "
                         xml = xml & "supertip=""" _
@@ -145,9 +146,9 @@ Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
-Sub OpenSearchResult(c As IRibbonControl)
+Public Sub OpenSearchResult(ByVal c As IRibbonControl)
     ' Test for file extension, only open doc, docx, rtf - otherwise call shell
-    If Right(c.Tag, 4) = "docx" Or Right(c.Tag, 3) = "doc" Or Right(c.Tag, 3) = "rtf" Then
+    If Right$(c.Tag, 4) = "docx" Or Right$(c.Tag, 3) = "doc" Or Right$(c.Tag, 3) = "rtf" Then
         Documents.Open Strings.URLDecode(c.Tag)
     Else
         #If Mac Then
@@ -158,7 +159,7 @@ Sub OpenSearchResult(c As IRibbonControl)
     End If
 End Sub
 
-Sub ExplorerSearch(c As IRibbonControl)
+Public Sub ExplorerSearch(ByVal c As IRibbonControl)
     #If Mac Then
         MsgBox "Explorer Search is not supported on Mac."
         Exit Sub
@@ -166,15 +167,15 @@ Sub ExplorerSearch(c As IRibbonControl)
         Dim SearchDir As String
         
         ' Use user profile as the default search location if not set
-        SearchDir = GetSetting("Verbatim", "Paperless", "SearchDir", CStr(Environ("USERPROFILE")))
-        If SearchDir = "" Then SearchDir = CStr(Environ("USERPROFILE"))
-        If Right(SearchDir, 1) <> Application.PathSeparator Then SearchDir = SearchDir & Application.PathSeparator
+        SearchDir = GetSetting("Verbatim", "Paperless", "SearchDir", CStr(Environ$("USERPROFILE")))
+        If SearchDir = "" Then SearchDir = CStr(Environ$("USERPROFILE"))
+        If Right$(SearchDir, 1) <> Application.PathSeparator Then SearchDir = SearchDir & Application.PathSeparator
         
         Shell "explorer ""search-ms://query=" & SearchText & "&crumb=location:" & SearchDir & """", vbNormalFocus
     #End If
 End Sub
 
-Sub EverythingSearch(c As IRibbonControl)
+Public Sub EverythingSearch(ByVal c As IRibbonControl)
     #If Mac Then
         MsgBox "Everything Search is not supported on Mac."
         Exit Sub
@@ -182,9 +183,9 @@ Sub EverythingSearch(c As IRibbonControl)
         Dim SearchDir As String
         
         ' Use user profile as the default search location if not set
-        SearchDir = GetSetting("Verbatim", "Paperless", "SearchDir", CStr(Environ("USERPROFILE")))
-        If SearchDir = "" Then SearchDir = CStr(Environ("USERPROFILE"))
-        If Right(SearchDir, 1) <> Application.PathSeparator Then SearchDir = SearchDir & Application.PathSeparator
+        SearchDir = GetSetting("Verbatim", "Paperless", "SearchDir", CStr(Environ$("USERPROFILE")))
+        If SearchDir = "" Then SearchDir = CStr(Environ$("USERPROFILE"))
+        If Right$(SearchDir, 1) <> Application.PathSeparator Then SearchDir = SearchDir & Application.PathSeparator
         
         Dim SearchPath As String
         SearchPath = GetSetting("Verbatim", "Plugins", "SearchPath", "")
@@ -200,7 +201,7 @@ Sub EverythingSearch(c As IRibbonControl)
         
         Dim EverythingPath As String
         
-        If Filesystem.FileExists(Environ("ProgramW6432") _
+        If Filesystem.FileExists(Environ$("ProgramW6432") _
             & Application.PathSeparator _
             & "Verbatim" _
             & Application.PathSeparator _
@@ -210,7 +211,7 @@ Sub EverythingSearch(c As IRibbonControl)
             & Application.PathSeparator _
             & "Everything.exe" _
         ) = True Then
-            EverythingPath = Environ("ProgramW6432") _
+            EverythingPath = Environ$("ProgramW6432") _
                 & Application.PathSeparator _
                 & "Verbatim" _
                 & Application.PathSeparator _
@@ -219,8 +220,8 @@ Sub EverythingSearch(c As IRibbonControl)
                 & "Everything" _
                 & Application.PathSeparator _
                 & "Everything.exe"
-        ElseIf Filesystem.FileExists(Environ("ProgramW6432") & Application.PathSeparator & "Everything" & Application.PathSeparator & "Everything.exe") = True Then
-            EverythingPath = Environ("ProgramW6432") & Application.PathSeparator & "Everything" & Application.PathSeparator & "Everything.exe"
+        ElseIf Filesystem.FileExists(Environ$("ProgramW6432") & Application.PathSeparator & "Everything" & Application.PathSeparator & "Everything.exe") = True Then
+            EverythingPath = Environ$("ProgramW6432") & Application.PathSeparator & "Everything" & Application.PathSeparator & "Everything.exe"
         Else
             MsgBox "Everything Search plugin must be installed to use this feature. Please see https://paperlessdebate.com/ for details on how to install."
             Exit Sub

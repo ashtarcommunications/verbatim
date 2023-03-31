@@ -1,8 +1,7 @@
 Attribute VB_Name = "Shrink"
 Option Explicit
 
-Sub ShrinkAllOrCard()
-    Dim p As Paragraph
+Public Sub ShrinkAllOrCard()
     If Selection.Start <= ActiveDocument.Range.Start And Selection.End = ActiveDocument.Range.Start Then
         If MsgBox("This will shrink all cards in the document. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
         Shrink.ShrinkAll
@@ -11,10 +10,9 @@ Sub ShrinkAllOrCard()
     End If
 End Sub
 
-Sub ShrinkText(Optional ShrinkRange As Range)
+Public Sub ShrinkText(Optional ByVal ShrinkRange As Range)
 ' Cycles non-underlined text in the current paragraph down a size at a time from 11-4pt
 ' Differences in un-underlined font size will be normalized automatically
-
     Dim r As Range
     Dim r2 As Range
     Dim NewFontSize As Long
@@ -23,9 +21,9 @@ Sub ShrinkText(Optional ShrinkRange As Range)
     
     ' Select the card text if nothing is selected
     If Not ShrinkRange Is Nothing Then
-        Set r = Paperless.SelectCardTextRange(ShrinkRange.Paragraphs(1))
+        Set r = Paperless.SelectCardTextRange(ShrinkRange.Paragraphs.Item(1))
     ElseIf Selection.Start = Selection.End Then
-        Set r = Paperless.SelectCardTextRange(Selection.Paragraphs(1))
+        Set r = Paperless.SelectCardTextRange(Selection.Paragraphs.Item(1))
     Else
         If Selection.Type <> wdSelectionNormal Then
             Application.StatusBar = "Can only shrink text, not other document elements"
@@ -73,9 +71,9 @@ Sub ShrinkText(Optional ShrinkRange As Range)
         Case Is = 5
             NewFontSize = 4
         Case Is = 4
-            NewFontSize = ActiveDocument.Styles("Normal").Font.size
+            NewFontSize = ActiveDocument.Styles.Item("Normal").Font.size
         Case Else   ' Anything weird, go back to normal text size
-            NewFontSize = ActiveDocument.Styles("Normal").Font.size
+            NewFontSize = ActiveDocument.Styles.Item("Normal").Font.size
     End Select
                 
     ' Reset range
@@ -116,7 +114,7 @@ Sub ShrinkText(Optional ShrinkRange As Range)
             .Replacement.ClearFormatting
             .Text = "\[*(Omitted)*\]"
             .Replacement.Text = ""
-            .Replacement.Font.size = ActiveDocument.Styles("Normal").Font.size
+            .Replacement.Font.size = ActiveDocument.Styles.Item("Normal").Font.size
             .MatchWildcards = True
             .MatchCase = False
             .MatchWholeWord = False
@@ -148,7 +146,7 @@ Sub ShrinkText(Optional ShrinkRange As Range)
     Set r2 = Nothing
 End Sub
 
-Sub ShrinkAll()
+Public Sub ShrinkAll()
     Dim p As Paragraph
     
     For Each p In ActiveDocument.Paragraphs
@@ -158,7 +156,7 @@ Sub ShrinkAll()
     Next p
 End Sub
 
-Sub UnshrinkAll()
+Public Sub UnshrinkAll()
     With ActiveDocument.Range.Find
         .ClearFormatting
         .Replacement.ClearFormatting
@@ -167,7 +165,7 @@ Sub UnshrinkAll()
         .ParagraphFormat.OutlineLevel = wdOutlineLevelBodyText
         .Font.Underline = wdUnderlineNone
         .Font.Bold = False
-        .Replacement.Font.size = ActiveDocument.Styles("Normal").Font.size
+        .Replacement.Font.size = ActiveDocument.Styles.Item("Normal").Font.size
         .Format = True
         .Wrap = wdFindContinue
         .Execute Replace:=wdReplaceAll
@@ -177,7 +175,7 @@ Sub UnshrinkAll()
     End With
 End Sub
 
-Sub ShrinkPilcrows(Optional ShrinkRange As Range)
+Public Sub ShrinkPilcrows(Optional ByVal ShrinkRange As Range)
 ' Shrinks, un-underlines and unbolds all pilcrows in current paragraph to 6pt
 ' If run with the insertion point at the very beginning of the document, shrinks all pilcrows
     Dim r As Range
@@ -189,7 +187,7 @@ Sub ShrinkPilcrows(Optional ShrinkRange As Range)
     ElseIf Selection.Start <= ActiveDocument.Range.Start And Selection.Start = Selection.End Then
         Set r = ActiveDocument.Range
     ElseIf Selection.Start = Selection.End Then
-        Set r = Paperless.SelectHeadingAndContentRange(Selection.Paragraphs(1))
+        Set r = Paperless.SelectHeadingAndContentRange(Selection.Paragraphs.Item(1))
     Else
         If Selection.Type <> wdSelectionNormal Then
             Application.StatusBar = "Can only shrink text, not other document elements"
@@ -201,8 +199,8 @@ Sub ShrinkPilcrows(Optional ShrinkRange As Range)
     With r.Find
         .ClearFormatting
         .Replacement.ClearFormatting
-        .Text = Chr(182)
-        .Replacement.Text = Chr(182)
+        .Text = Chr$(182)
+        .Replacement.Text = Chr$(182)
         .Replacement.Font.size = 6
         .Replacement.Font.Underline = wdUnderlineNone
         .Replacement.Font.Bold = 0
