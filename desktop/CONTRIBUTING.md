@@ -9,3 +9,5 @@ Please also note that not all suggestions or feature additions will be accepted 
 This repo has a number of discrete projects, including the desktop version of Verbatim, the Verbatim timer, and various setup tools/installer, etc. To get an overview of the project, read the README.
 
 For desktop Verbatim, note that the final template is NOT built from the /src directory. The source of truth for the current template is Debate.dotm - the /src directory is an export of the code modules from the Word template, and exists only to make it easier to use a git diff to understand what's contained in each commit.
+
+Code should also pass all Rubberduck VBA (https://rubberduckvba.com/) code inspections using the rubberduck.xml settings in the root of the repo.

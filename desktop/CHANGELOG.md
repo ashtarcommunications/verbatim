@@ -52,6 +52,7 @@ Option to unset the current speech document, so a speech doc can be used as a re
 Simplified troubleshooting form and moved some checks to the setup tool
 Unified selection modes for most core formatting macros (current card if no selection, selection if selected, or whole doc if at top)
 Modified most macros using the Find dialog to use a range and avoid changing users selection
+Cleaned up all the code to pass Rubberduck VBA code inspections
 
 ### Removed
 Removed Email feature, superceded by Tabroom sharing functionality
