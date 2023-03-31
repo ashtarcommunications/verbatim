@@ -1,34 +1,41 @@
 # Flow template
+## Speech
 Send excel selection/cell/column to word at cursor or end of doc
+Vtub for analytics
+
+## Format on sheet
 Insert row(s) above/below current based on hotkey (make sure it doesn't screw up clipboard/undo)
 Insert cells above/below in same column
 Delete row
+Toggle enter/alt-enter mode
+Highlight argument/cell
+Macro to designate evidence for an argument/cell
+Paste special or expand by crlf
+Add/remove numbers for args automatically
+Merge/group cells
+Move up/down like with blocks
+Keep f2 shortcut for entering cell
+Shortcut to extend to next column of same side
+
+## Format workbook
 Delete empty sheets
 Delete single sheet
 Easy move between sheets
 Add sheets quickly (aff/neg/etc), both hot key and ribbon menu
-Toggle enter/alt-enter mode
-Highlight argument/cell
 Create flow for tabroom round/Speech from Verbatim
 Label flows based on title in A1 (optionally disable)
-Info tracking/scouting info
 Auto-move cursor to columns of chosen speech on all sheets
-Macro to designate evidence for an argument/cell
-Auto-organize windows for flow/speech side-by-side
-Paste special or expand by crlf
-Vtub for analytics
-Add/remove numbers for args automatically
-Merge/group cells
-Move up/down like with blocks
-Configurable for different events
-Keyboard shortcuts cheat sheet
-Keep f2 shortcut for entering cell
 Change row/column size
 Add zoom functions to ribbon
 Configurable font size
+
+## Misc features
+Info tracking/scouting info
 Automatically fill scouting info from subsheets
+Auto-organize windows for flow/speech side-by-side
+Settings form, configurable for different events
+Keyboard shortcuts cheat sheet
 Optional shorthand expansion
-Shortcut to extend to next column of same side
 
 # New Tools
 PC setup tool
