@@ -25,6 +25,7 @@ Private Sub UserForm_Initialize()
     #If Mac Then
         UI.ResizeUserForm Me
         Me.btnChooseSpeechDoc.ForeColor = Globals.BLUE
+        Me.btnClearSpeechDoc.ForeColor = Globals.RED
     #End If
         
     ' Loop through open Windows - use Windows because Application.Documents collection gets corrupted
@@ -71,13 +72,20 @@ Private Sub btnChooseSpeechDoc_Click()
     End If
 End Sub
 
+Private Sub btnClearSpeechDoc_Click()
+    Globals.ActiveSpeechDoc = ""
+    Unload Me
+End Sub
+
 #If Mac Then
     ' Ignore button colors
 #Else
 Sub btnChooseSpeechDoc_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
-    btnChooseSpeechDoc.BackColor = Globals.LIGHT_BLUE
+    Me.btnChooseSpeechDoc.BackColor = Globals.LIGHT_BLUE
+    Me.btnClearSpeechDoc.BackColor = Globals.LIGHT_RED
 End Sub
 Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
-    btnChooseSpeechDoc.BackColor = Globals.BLUE
+    Me.btnChooseSpeechDoc.BackColor = Globals.BLUE
+    Me.btnClearSpeechDoc.BackColor = Globals.RED
 End Sub
 #End If

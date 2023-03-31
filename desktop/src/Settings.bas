@@ -1,9 +1,17 @@
 Attribute VB_Name = "Settings"
 Option Explicit
 
-Sub UnverbatimizeNormal()
+Sub UnverbatimizeNormal(Optional Notify As Boolean)
 ' Deprecated except to uninstall old versions
-    
+       
+    ' Bail without VBOM access
+    #If Mac Then
+    #Else
+        If Registry.RegKeyRead("HKEY_CURRENT_USER\Software\Microsoft\Office\" & Application.Version & "\Word\Security\AccessVBOM") <> 1 Then
+            Exit Sub
+        End If
+    #End If
+       
     ' Delete module from normal template - turn off error checking in case it doesn't exist
     On Error Resume Next
     Application.OrganizerDelete source:=Application.NormalTemplate.FullName, Name:="AttachVerbatim", Object:=wdOrganizerObjectProjectItems
@@ -16,11 +24,9 @@ Sub UnverbatimizeNormal()
         If Filesystem.FileExists(CStr(Environ("USERPROFILE")) & "\AppData\Local\Microsoft\Office\Word.officeUI") = True Then
             Kill CStr(Environ("USERPROFILE")) & "\AppData\Local\Microsoft\Office\Word.officeUI"
         End If
-    
-        Set FSO = Nothing
     #End If
     
-    MsgBox "Normal template successfully un-verbatimized!"
+    If Notify = True Then MsgBox "Normal template successfully un-verbatimized!"
     
     Exit Sub
     
@@ -44,7 +50,7 @@ Sub ImportCustomCode(Optional Notify As Boolean)
     ' Check if Access to VBOM allowed
     #If Mac Then
     #Else
-        If RegKeyRead("HKEY_CURRENT_USER\Software\Microsoft\Office\" & Application.Version & "\Word\Security\AccessVBOM") <> 1 Then
+        If Registry.RegKeyRead("HKEY_CURRENT_USER\Software\Microsoft\Office\" & Application.Version & "\Word\Security\AccessVBOM") <> 1 Then
             If Notify = True Then MsgBox "Importing custom code requires you to enable ""Trust Access to the VBA project object model"" in your Macro security settings. You can do this manually, or run the Verbatim troubleshooter."
             Exit Sub
         End If
@@ -52,7 +58,7 @@ Sub ImportCustomCode(Optional Notify As Boolean)
 
     ' Make sure custom code file exists
     #If Mac Then
-        If Filesystem.FileExists(Application.AttachedTemplate.Path & Application.PathSeparator & "VerbatimCustomCode.bas") = False Then
+        If Filesystem.FileExists(ActiveDocument.AttachedTemplate.Path & Application.PathSeparator & "VerbatimCustomCode.bas") = False Then
     #Else
         If Filesystem.FileExists(Application.NormalTemplate.Path & Application.PathSeparator & "VerbatimCustomCode.bas") = False Then
     #End If
@@ -81,7 +87,6 @@ Sub ImportCustomCode(Optional Notify As Boolean)
     p.VBComponents.Import (Application.NormalTemplate.Path & Application.PathSeparator & "VerbatimCustomCode.bas")
     Filesystem.DeleteFile Application.NormalTemplate.Path & Application.PathSeparator & "VerbatimCustomCode.bas"
     
-
     If Notify = True Then MsgBox "Custom code successfully imported!"
 
     Set p = Nothing
@@ -114,7 +119,7 @@ Sub ExportCustomCode(Optional Notify As Boolean)
             Exit Sub
         End If
     #Else
-        If RegKeyRead("HKEY_CURRENT_USER\Software\Microsoft\Office\" & Application.Version & "\Word\Security\AccessVBOM") <> 1 Then
+        If Registry.RegKeyRead("HKEY_CURRENT_USER\Software\Microsoft\Office\" & Application.Version & "\Word\Security\AccessVBOM") <> 1 Then
             If Notify = True Then MsgBox "Exporting custom code requires you to enable ""Trust Access to the VBA project object model"" in your Macro security settings. You can do this manually, or run the Verbatim troubleshooter."
             Exit Sub
         End If
@@ -143,7 +148,6 @@ Handler:
     Set p = Nothing
     Set Module = Nothing
     MsgBox "Error " & Err.Number & ": " & Err.Description
-
 End Sub
 
 #If Mac Then
@@ -154,7 +158,7 @@ Private Function FindVBProject(d As String) As Object
     On Error Resume Next
     
     For Each p In Application.VBE.VBProjects
-        If (p.FileName = d) Then
+        If (p.Filename = d) Then
             Set FindVBProject = p
             Exit Function
         End If
@@ -168,7 +172,6 @@ End Function
 ' *************************************************************************************
 
 Sub UpdateCheck(Optional Notify As Boolean)
-    ' Turn on error checking
     On Error GoTo Handler
 
     Application.StatusBar = "Checking for Verbatim updates..."
@@ -257,7 +260,7 @@ Sub ChangeKeyboardShortcut(KeyName As WdKey, MacroName As String)
         Case Is = "Paste"
             KeyBindings.Add wdKeyCategoryMacro, "Formatting.PasteText", BuildKeyCode(KeyName)
         Case Is = "Condense"
-            KeyBindings.Add wdKeyCategoryMacro, "Formatting.Condense", BuildKeyCode(KeyName)
+            KeyBindings.Add wdKeyCategoryMacro, "Condense.CondenseAllOrCard", BuildKeyCode(KeyName)
         Case Is = "Pocket"
             KeyBindings.Add wdKeyCategoryStyle, "Pocket", BuildKeyCode(KeyName)
         Case Is = "Hat"
@@ -277,7 +280,7 @@ Sub ChangeKeyboardShortcut(KeyName As WdKey, MacroName As String)
         Case Is = "Clear"
             KeyBindings.Add wdKeyCategoryMacro, "Formatting.ClearToNormal", BuildKeyCode(KeyName)
         Case Is = "Shrink Text"
-            KeyBindings.Add wdKeyCategoryMacro, "Formatting.ShrinkText", BuildKeyCode(KeyName)
+            KeyBindings.Add wdKeyCategoryMacro, "Shrink.ShrinkAllOrCard", BuildKeyCode(KeyName)
         Case Is = "Select Similar"
             KeyBindings.Add wdKeyCategoryMacro, "Formatting.SelectSimilar", BuildKeyCode(KeyName)
         Case Else
@@ -318,10 +321,14 @@ Sub ResetKeyboardShortcuts()
     ' Save shortcuts in the template
     Application.CustomizationContext = ActiveDocument.AttachedTemplate
 
-    ' Set keyboard shortcuts
-    KeyBindings.Add wdKeyCategoryMacro, "Settings.ShowVerbatimHelp", BuildKeyCode(wdKeyF1)
+    ' Speech shortcuts (tilde key shortcuts are set by FixTilde)
+    KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechCursor", BuildKeyCode(ModifierKey, wdKeyAlt, vbKeyRight)
+    KeyBindings.Add wdKeyCategoryMacro, "QuickCards.InsertCurrentQuickCard", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyShift, wdKeyV)
+    
+    ' Organize shortcuts
+    KeyBindings.Add wdKeyCategoryMacro, "UI.ShowFormHelp", BuildKeyCode(wdKeyF1)
     KeyBindings.Add wdKeyCategoryMacro, "Formatting.PasteText", BuildKeyCode(wdKeyF2)
-    KeyBindings.Add wdKeyCategoryMacro, "Formatting.Condense", BuildKeyCode(wdKeyF3)
+    KeyBindings.Add wdKeyCategoryMacro, "Condense.CondenseAllOrCard", BuildKeyCode(wdKeyF3)
     KeyBindings.Add wdKeyCategoryStyle, "Pocket", BuildKeyCode(wdKeyF4)
     KeyBindings.Add wdKeyCategoryStyle, "Hat", BuildKeyCode(wdKeyF5)
     KeyBindings.Add wdKeyCategoryStyle, "Block", BuildKeyCode(wdKeyF6)
@@ -332,11 +339,10 @@ Sub ResetKeyboardShortcuts()
     KeyBindings.Add wdKeyCategoryMacro, "Formatting.Highlight", BuildKeyCode(wdKeyF11)
     KeyBindings.Add wdKeyCategoryMacro, "Formatting.ClearToNormal", BuildKeyCode(wdKeyF12)
     
-    ' Alternate shortcuts for systems with F-key problems, e.g. Mac Word hijacks F6
-    
-    KeyBindings.Add wdKeyCategoryMacro, "Settings.ShowVerbatimHelp", BuildKeyCode(ModifierKey, wdKey1)
+    ' Alternate Organize shortcuts for systems with F-key problems, e.g. Mac Word hijacks F6
+    KeyBindings.Add wdKeyCategoryMacro, "UI.ShowFormHelp", BuildKeyCode(ModifierKey, wdKey1)
     KeyBindings.Add wdKeyCategoryMacro, "Formatting.PasteText", BuildKeyCode(ModifierKey, wdKey2)
-    KeyBindings.Add wdKeyCategoryMacro, "Formatting.Condense", BuildKeyCode(ModifierKey, wdKey3)
+    KeyBindings.Add wdKeyCategoryMacro, "Condense.CondenseAllOrCard", BuildKeyCode(ModifierKey, wdKey3)
     KeyBindings.Add wdKeyCategoryStyle, "Pocket", BuildKeyCode(ModifierKey, wdKey4)
     KeyBindings.Add wdKeyCategoryStyle, "Hat", BuildKeyCode(ModifierKey, wdKey5)
     KeyBindings.Add wdKeyCategoryStyle, "Block", BuildKeyCode(ModifierKey, wdKey6)
@@ -347,48 +353,52 @@ Sub ResetKeyboardShortcuts()
     KeyBindings.Add wdKeyCategoryMacro, "Formatting.Highlight", BuildKeyCode(ModifierKey, wdKeyHyphen)
     KeyBindings.Add wdKeyCategoryMacro, "Formatting.ClearToNormal", BuildKeyCode(ModifierKey, wdKeyEquals)
        
-    KeyBindings.Add wdKeyCategoryMacro, "Formatting.GetFromCiteCreator", BuildKeyCode(wdKeyAlt, wdKeyF2)
-    KeyBindings.Add wdKeyCategoryMacro, "Formatting.SelectSimilar", BuildKeyCode(ModifierKey, wdKeyF2)
-    KeyBindings.Add wdKeyCategoryMacro, "Formatting.CondenseNoPilcrows", BuildKeyCode(ModifierKey, wdKeyF3)
-    KeyBindings.Add wdKeyCategoryMacro, "Formatting.CondenseWithPilcrows", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyF3)
-    KeyBindings.Add wdKeyCategoryMacro, "Formatting.ShrinkText", BuildKeyCode(wdKeyAlt, wdKeyF3)
-    
+    ' Format shortcuts
+    KeyBindings.Add wdKeyCategoryMacro, "Shrink.ShrinkAllOrCard", BuildKeyCode(wdKeyAlt, wdKeyF3)
     ' Old shortcut for Shrink Text, uncomment to restore
-    ' KeyBindings.Add wdKeyCategoryMacro, "Formatting.ShrinkText", BuildKeyCode(ModifierKey, wdKey8)
-    
+    ' KeyBindings.Add wdKeyCategoryMacro, "Shrink.ShrinkAllOrCard", BuildKeyCode(ModifierKey, wdKey8)
+    KeyBindings.Add wdKeyCategoryMacro, "Condense.CondenseWithPilcrows", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyF3)
+    KeyBindings.Add wdKeyCategoryMacro, "Condense.CondenseNoPilcrows", BuildKeyCode(ModifierKey, wdKeyF3)
+    KeyBindings.Add wdKeyCategoryMacro, "Condense.Uncondense", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyShift, wdKeyF3)
     KeyBindings.Add wdKeyCategoryMacro, "Formatting.AutoFormatCite", BuildKeyCode(ModifierKey, wdKeyF8)
     KeyBindings.Add wdKeyCategoryMacro, "Formatting.CopyPreviousCite", BuildKeyCode(wdKeyAlt, wdKeyF8)
     KeyBindings.Add wdKeyCategoryMacro, "Formatting.AutoUnderline", BuildKeyCode(wdKeyAlt, wdKeyF9)
-    KeyBindings.Add wdKeyCategoryMacro, "Formatting.RemoveEmphasis", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyF10)
+    KeyBindings.Add wdKeyCategoryMacro, "Formatting.AutoEmphasizeFirst", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyF10)
     KeyBindings.Add wdKeyCategoryMacro, "Formatting.UpdateStyles", BuildKeyCode(ModifierKey, wdKeyF12)
+    KeyBindings.Add wdKeyCategoryMacro, "Formatting.SelectSimilar", BuildKeyCode(ModifierKey, wdKeyF2)
+    KeyBindings.Add wdKeyCategoryMacro, "Plugins.GetFromCiteCreator", BuildKeyCode(wdKeyAlt, wdKeyF2)
     KeyBindings.Add wdKeyCategoryMacro, "Formatting.AutoNumberTags", BuildKeyCode(ModifierKey, wdKeyShift, wdKey3)
     
+    ' Paperless shortcuts
     KeyBindings.Add wdKeyCategoryMacro, "Paperless.MoveUp", BuildKeyCode(ModifierKey, wdKeyAlt, vbKeyUp)
     KeyBindings.Add wdKeyCategoryMacro, "Paperless.MoveDown", BuildKeyCode(ModifierKey, wdKeyAlt, vbKeyDown)
+    KeyBindings.Add wdKeyCategoryMacro, "Paperless.MoveToBottom", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyShift, vbKeyDown)
     KeyBindings.Add wdKeyCategoryMacro, "Paperless.DeleteHeading", BuildKeyCode(ModifierKey, wdKeyAlt, vbKeyLeft)
-    KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeech", BuildKeyCode(ModifierKey, wdKeyAlt, vbKeyRight)
-    KeyBindings.Add wdKeyCategoryMacro, "Paperless.SelectHeadingAndContent", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyShift, vbKeyDown)
-    
-    KeyBindings.Add wdKeyCategoryMacro, "Paperless.CopyToUSB", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyS)
-    KeyBindings.Add wdKeyCategoryMacro, "Paperless.StartTimer", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyT)
     KeyBindings.Add wdKeyCategoryMacro, "Paperless.NewSpeech", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyN)
+    KeyBindings.Add wdKeyCategoryMacro, "Paperless.CopyToUSB", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyU)
+    KeyBindings.Add wdKeyCategoryMacro, "UI.ShowFormShare", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyS)
+
+    ' Tools shortcuts
+    KeyBindings.Add wdKeyCategoryMacro, "Plugins.StartTimer", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyT)
+    KeyBindings.Add wdKeyCategoryMacro, "UI.ShowFormStats", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyI)
+    KeyBindings.Add wdKeyCategoryMacro, "Plugins.NavPaneCycle", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyW)
     
-    KeyBindings.Add wdKeyCategoryCommand, "InsertAutoText", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyShift, wdKeyV)
-    
-    KeyBindings.Add wdKeyCategoryMacro, "View.SwitchWindows", BuildKeyCode(ModifierKey, wdKeyTab)
+    ' View shortcuts
     KeyBindings.Add wdKeyCategoryMacro, "View.ArrangeWindows", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyTab)
+    KeyBindings.Add wdKeyCategoryMacro, "View.SwitchWindows", BuildKeyCode(ModifierKey, wdKeyTab)
     KeyBindings.Add wdKeyCategoryMacro, "View.InvisibilityOff", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyV)
     KeyBindings.Add wdKeyCategoryMacro, "View.ToggleReadingView", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyR)
     
+    ' Caselist shortcuts
     KeyBindings.Add wdKeyCategoryMacro, "Caselist.CiteRequest", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyQ)
     
-    KeyBindings.Add wdKeyCategoryMacro, "Stats.ShowStatsForm", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyI)
-        
-    KeyBindings.Add wdKeyCategoryMacro, "Settings.ShowSettingsForm", BuildKeyCode(wdKeyAlt, wdKeyF1)
+    ' Settings shortcuts
+    KeyBindings.Add wdKeyCategoryMacro, "UI.ShowFormSettings", BuildKeyCode(wdKeyAlt, wdKeyF1)
     
     #If Mac Then
         ' Do Nothing
     #Else
+        ' Also sets shortcuts that use the tilde key
         Troubleshooting.FixTilde
     #End If
     
@@ -455,31 +465,3 @@ End Sub
 Function GetVersion() As String
     GetVersion = ActiveDocument.AttachedTemplate.BuiltInDocumentProperties(wdPropertyKeywords)
 End Function
-
-Sub EditStyle(StyleToEdit As String)
-    Dim SelStart As Long
-    Dim SelEnd As Long
-    
-    ' Save selection
-    SelStart = Selection.Start
-    SelEnd = Selection.End
-
-    ' Add a dummy paragraph in the style, then launch dialog with SendKeys
-    ActiveDocument.Range.InsertAfter vbCrLf
-    Selection.Start = ActiveDocument.Range.End
-    Selection.Collapse
-    Selection.Style = StyleToEdit
-    SendKeys "%d", True
-    SendKeys "{RIGHT}", True
-    Dialogs(1347).Show
-    
-    ' Delete dummy paragraph and restore selection
-    Selection.ClearFormatting
-    Selection.TypeBackspace
-    Selection.Start = SelStart
-    Selection.End = SelEnd
-End Sub
-
-Sub ShowVerbatimHelp()
-    UI.ShowForm "Settings"
-End Sub

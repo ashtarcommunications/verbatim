@@ -97,7 +97,7 @@ Private Sub chkAutoRefresh_Click()
     On Error GoTo Handler
     If Me.chkAutoRefresh.Value = True Then
         StartTime = Now
-        Do While Me.chkAutoRefresh.Value = True And Me.visible = True
+        Do While Me.chkAutoRefresh.Value = True And Me.Visible = True
             DoEvents
             If Now > StartTime + TimeValue("00:02:00") Then
                 Calculate
@@ -125,7 +125,7 @@ Public Sub Calculate()
     ComputingStats = True
     
     On Error GoTo Handler
-    If Me.visible = False Then Exit Sub
+    If Me.Visible = False Then Exit Sub
     ComputeHighlightedWords
     ComputeTagWords
     ComputeNumberOfCards
@@ -164,7 +164,7 @@ Private Sub ComputeHighlightedWords()
                 Unload Me
                 Exit Sub
             End If
-            If Me.visible = False Then Exit Sub
+            If Me.Visible = False Then Exit Sub
             HighlightCount = HighlightCount + r.ComputeStatistics(wdStatisticWords)
             Application.ScreenRefresh
         Loop
@@ -199,7 +199,7 @@ Private Sub ComputeTagWords()
         .Text = ""
         .Replacement.Text = ""
         .Format = True
-        .ParagraphFormat.outlineLevel = wdOutlineLevel4
+        .ParagraphFormat.OutlineLevel = wdOutlineLevel4
         Do While .Execute
             DoEvents
             If Globals.InvisibilityToggle = True Then
@@ -207,7 +207,7 @@ Private Sub ComputeTagWords()
                 Unload Me
                 Exit Sub
             End If
-            If Me.visible = False Then Exit Sub
+            If Me.Visible = False Then Exit Sub
             TagCount = TagCount + r.ComputeStatistics(wdStatisticWords)
             Application.ScreenRefresh
         Loop
@@ -236,9 +236,9 @@ Private Sub ComputeNumberOfCards()
     Me.lblNumberOfCards1.ForeColor = vbRed
     
     For Each p In Documents(Me.txtParentDoc.Value).Paragraphs
-        If p.outlineLevel = wdOutlineLevel4 Then
+        If p.OutlineLevel = wdOutlineLevel4 Then
             If p.Range.End <> ActiveDocument.Range.End Then
-                If p.Next.outlineLevel > wdOutlineLevel4 And p.Next.Next.outlineLevel > wdOutlineLevel4 Then
+                If p.Next.OutlineLevel > wdOutlineLevel4 And p.Next.Next.OutlineLevel > wdOutlineLevel4 Then
                     NumCards = NumCards + 1
                     Application.ScreenRefresh
                 End If

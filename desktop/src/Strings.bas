@@ -21,7 +21,6 @@ End Function
 
 Public Function IsAlphaNumeric(sChr As String) As Boolean
     IsAlphaNumeric = sChr Like "[0-9A-Za-z ]"
-    'IsSafeChar = sChr Like "[,.!@$%^():;'""_+=0-9A-Za-z -]"
 End Function
 
 Public Function OnlySafeChars(ByVal OrigString As String) As String
@@ -44,6 +43,7 @@ End Function
 
 Private Function IsSafeChar(sChr As String) As Boolean
     IsSafeChar = sChr Like "[*0-9A-Za-z -]"
+    'IsSafeChar = sChr Like "[,.!@$%^():;'""_+=0-9A-Za-z -]"
 End Function
 
 Public Function ScrubString(s As String) As String
@@ -66,7 +66,7 @@ Public Function URLEncode(s As String, Optional SpaceAsPlus As Boolean = False) 
     Dim StringLen As Long
     StringLen = Len(s)
 
-    If s > 0 Then
+    If StringLen > 0 Then
         ReDim result(StringLen) As String
         Dim i As Long, CharCode As Integer
         Dim Char As String, Space As String
@@ -89,6 +89,34 @@ Public Function URLEncode(s As String, Optional SpaceAsPlus As Boolean = False) 
         Next i
         URLEncode = Join(result, "")
     End If
+End Function
+
+Public Function URLDecode(ByVal s As String) As String
+    On Error GoTo Handler
+    
+    Dim i As Integer
+    Dim retval As String
+    Dim tmp As String
+    
+    If Len(s) > 0 Then
+        ' Loop through each char
+        For i = 1 To Len(s)
+            tmp = Mid(s, i, 1)
+            tmp = Replace(tmp, "+", " ")
+            If tmp = "%" And Len(s) + 1 > i + 2 Then
+                tmp = Mid(s, i + 1, 2)
+                tmp = Chr(CDbl("&H" & tmp))
+                i = i + 2
+            End If
+            retval = retval & tmp
+        Next
+        URLDecode = retval
+    End If
+
+    Exit Function
+
+Handler:
+    URLDecode = ""
 End Function
 
 Public Function NormalizeSide(Side As String) As String

@@ -32,35 +32,35 @@ Private Sub UserForm_Initialize()
     
     If GetSetting("Verbatim", "Profile", "DisableTabroom", False) = False Then
         Dim Response As Dictionary
-        'Set Response = HTTP.GetReq(Globals.CASELIST_URL & "/tabroom/rounds?current=true")
-        Set Response = HTTP.GetReq(Globals.MOCK_ROUNDS)
+        Set Response = HTTP.GetReq(Globals.CASELIST_URL & "/tabroom/rounds?current=true")
         
         Select Case Response("status")
         Case Is = "200"
-            Me.lblError.visible = False
-        Case Is = "401"
-            Me.lblLogin1.visible = True
-            Me.lblLoginLink.visible = True
-        Case Else
-            Me.lblLogin1.visible = True
-            Me.lblLoginLink.visible = True
-        End Select
-                
-        Dim Round
-        Dim RoundName
-        Dim Side As String
-        Dim SideName
+            Me.lblError.Visible = False
+            
+            Dim Round
+            Dim RoundName
+            Dim Side As String
+            Dim SideName
+            
+            For Each Round In Response("body")
+                If (Round("share") <> "") Then
+                    RoundName = Strings.RoundName(Round("round"))
+                    Side = Round("side")
+                    SideName = Strings.DisplaySide(Side)
+                    Me.lboxRounds.AddItem
+                    Me.lboxRounds.List(Me.lboxRounds.ListCount - 1, 0) = Round("tournament") & " " & RoundName & " " & SideName & " vs " & Round("opponent") & " (" & Round("share") & ")"
+                    Me.lboxRounds.List(Me.lboxRounds.ListCount - 1, 1) = Round("share")
+                End If
+            Next Round
         
-        For Each Round In Response("body")
-            If (Round("share") <> "") Then
-                RoundName = Strings.RoundName(Round("round"))
-                Side = Round("side")
-                SideName = Strings.DisplaySide(Side)
-                Me.lboxRounds.AddItem
-                Me.lboxRounds.List(Me.lboxRounds.ListCount - 1, 0) = Round("tournament") & " " & RoundName & " " & SideName & " vs " & Round("opponent") & " (" & Round("share") & ")"
-                Me.lboxRounds.List(Me.lboxRounds.ListCount - 1, 1) = Round("share")
-            End If
-        Next Round
+        Case Is = "401"
+            Me.lblLogin1.Visible = True
+            Me.lblLoginLink.Visible = True
+        Case Else
+            Me.lblLogin1.Visible = True
+            Me.lblLoginLink.Visible = True
+        End Select
 
     End If
 
@@ -87,15 +87,15 @@ Private Sub txtRoom_Change()
 End Sub
 
 Private Function ValidateForm() As Boolean
-    If Me.txtRoom.Value = "" And Me.lboxRounds.Value = "" Then
+    If Me.txtRoom.Value = "" And (Me.lboxRounds.Value = "" Or IsNull(Me.lboxRounds.Value)) Then
         Me.btnShare.Enabled = False
         Me.btnBrowser.Enabled = False
         ValidateForm = False
-    ElseIf Me.lboxRounds.Value = "" And Me.txtRoom.TextLength < 8 Then
+    ElseIf (Me.lboxRounds.Value = "" Or IsNull(Me.lboxRounds.Value)) And Me.txtRoom.TextLength < 8 Then
         Me.btnShare.Enabled = False
         Me.btnBrowser.Enabled = False
         ValidateForm = False
-    ElseIf Me.lboxRounds.Value = "" And Len(Strings.OnlyAlphaNumericChars(Me.txtRoom.Value)) < 8 Then
+    ElseIf (Me.lboxRounds.Value = "" Or IsNull(Me.lboxRounds.Value)) And Len(Strings.OnlyAlphaNumericChars(Me.txtRoom.Value)) < 8 Then
         Me.btnShare.Enabled = False
         Me.btnBrowser.Enabled = False
         ValidateForm = False
@@ -129,6 +129,19 @@ End Sub
 
 Private Sub lblURL_Click()
     Settings.LaunchWebsite Globals.SHARE_URL
+End Sub
+
+Sub btnBrowser_Click()
+    Dim Room As String
+    If Me.lboxRounds.Value <> "" Then Room = Me.lboxRounds.Value
+    If Me.txtRoom.Value <> "" Then Room = Strings.OnlyAlphaNumericChars(Me.txtRoom.Value)
+    
+    If Room = "" Then
+        MsgBox "You must select or enter a round name first!"
+        Exit Sub
+    End If
+
+    Settings.LaunchWebsite Globals.SHARE_URL & "/" & Room
 End Sub
 
 Sub btnCancel_Click()
@@ -189,7 +202,7 @@ End Function
 Private Sub UploadToShare()
     On Error GoTo Handler
     
-    Dim FileName As String
+    Dim Filename As String
     
     Application.ScreenUpdating = False
     System.Cursor = wdCursorWait
@@ -200,9 +213,9 @@ Private Sub UploadToShare()
     
     ' Strip "Speech" if option set
     If GetSetting("Verbatim", "Paperless", "StripSpeech", True) = True And Len(ActiveDocument.Name) > 11 Then
-        FileName = Trim(Replace(ActiveDocument.Name, "speech", "", 1, -1, vbTextCompare))
+        Filename = Trim(Replace(ActiveDocument.Name, "speech", "", 1, -1, vbTextCompare))
     Else
-        FileName = Trim(ActiveDocument.Name)
+        Filename = Trim(ActiveDocument.Name)
     End If
     
     Dim Body As Dictionary
@@ -211,7 +224,7 @@ Private Sub UploadToShare()
     Dim Base64
     Base64 = Filesystem.GetFileAsBase64(ActiveDocument.FullName)
     Body.Add "file", Base64
-    Body.Add "filename", FileName
+    Body.Add "filename", Filename
            
     Dim Room As String
     If Me.lboxRounds.Value <> "" Then Room = Me.lboxRounds.Value
@@ -221,22 +234,26 @@ Private Sub UploadToShare()
     Set Request = HTTP.PostReq(Globals.SHARE_URL & "/" & Room, Body)
     
     Select Case Request("status")
-    Case Is = "200"                              ' Success
+    Case Is = "200" ' Success
         MsgBox "File successfully shared to https://share.tabroom.com/" & Room & " - anyone linked to your round on Tabroom has been emailed!"
         Me.Hide
         Unload Me
         
-    Case Is = "400"                              ' Bad file
+    Case Is = "400" ' Bad file
         Me.lblError.Caption = "Something appears to be wrong with your file, please try again"
-        Me.lblError.visible = True
+        Me.lblError.Visible = True
 
-    Case Is = "500"                              ' Server error
+    Case Is = "500" ' Server error
         Me.lblError.Caption = "Failed to upload file, please try again"
-        Me.lblError.visible = True
+        Me.lblError.Visible = True
     
+    Case Is = "504" ' Gateway timeout
+        Me.lblError.Caption = "Connection time out, please try again"
+        Me.lblError.Visible = True
+
     Case Else
-        Me.lblError.Caption = Request("status")
-        Me.lblError.visible = True
+        Me.lblError.Caption = "Error uploading file, please try again. " & Request("status")
+        Me.lblError.Visible = True
     End Select
     
     Set Body = Nothing

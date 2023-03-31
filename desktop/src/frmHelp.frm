@@ -27,7 +27,7 @@ End Sub
 
 Private Sub btnTutorial_Click()
     Unload Me
-    UI.ShowForm "Tutorial"
+    UI.LaunchTutorial
 End Sub
 
 Private Sub btnTroubleshooter_Click()

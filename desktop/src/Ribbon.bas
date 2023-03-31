@@ -14,7 +14,11 @@ End Sub
 
 Function GetRibbon(ByVal lRibbonPointer As LongPtr) As Object
     Dim objRibbon As Object
-    CopyMemory objRibbon, lRibbonPointer, LenB(lRibbonPointer)
+    #If Mac Then
+        CopyMemory_byVar objRibbon, lRibbonPointer, LenB(lRibbonPointer)
+    #Else
+        CopyMemory objRibbon, lRibbonPointer, LenB(lRibbonPointer)
+    #End If
     Set GetRibbon = objRibbon
     Set objRibbon = Nothing
 End Function
@@ -34,7 +38,7 @@ Sub RibbonMain(ByVal c As IRibbonControl)
 
     Select Case c.ID
    
-    ' Paperless Group
+    ' Speech group
     Case Is = "SendToSpeech"
         Paperless.SendToSpeech
     Case Is = "SendToSpeech2"
@@ -43,53 +47,19 @@ Sub RibbonMain(ByVal c As IRibbonControl)
         Paperless.SendToSpeechEnd
     Case Is = "SendToFlow"
         Flow.SendToFlow
-    
-    Case Is = "ChooseSpeechDoc"
-        UI.ShowForm "ChooseSpeechDoc"
-    Case Is = "WindowArranger"
-        View.ArrangeWindows
-    
-    Case Is = "NewSpeech"
-        Paperless.NewSpeech
-    Case Is = "NewDocument"
-        Paperless.NewDocument
-    Case Is = "CombineDocs"
-        UI.ShowForm "CombineDocs"
-        
-    Case Is = "NewWarrant", "NewWarrant1"
-        Paperless.NewWarrant
-    Case Is = "DeleteAllWarrants"
-        Paperless.DeleteAllWarrants
+    Case Is = "SelectHeadingAndContent"
+        Paperless.SelectHeadingAndContent
+    Case Is = "MoveDown"
+        Paperless.MoveDown
+    Case Is = "MoveUp"
+        Paperless.MoveUp
+    Case Is = "MoveToBottom"
+        Paperless.MoveToBottom
     
     Case Is = "QuickCardSettings"
         UI.ShowForm "QuickCards"
         
-    Case Is = "SelectHeadingAndContent"
-        Paperless.SelectHeadingAndContent
-    
-    
-    
-    ' Share Group
-    Case Is = "CopyToUSB"
-        Paperless.CopyToUSB
-    Case Is = "TabroomShare"
-        UI.ShowForm "Share"
-        
-    ' Tools Group
-    Case Is = "StartTimer"
-        Paperless.StartTimer
-    Case Is = "DocumentStats"
-        UI.ShowForm "Stats"
-        
-    'View Group
-    Case Is = "DefaultView"
-        View.DefaultView
-    Case Is = "ReadingView"
-        View.ReadingView
-    Case Is = "NavPaneCycle"
-        View.NavPaneCycle
-                
-    ' Format Group
+    ' Organize group
     Case Is = "F2Button"
         FindKey(wdKeyF2).Execute
     Case Is = "F3Button"
@@ -112,50 +82,68 @@ Sub RibbonMain(ByVal c As IRibbonControl)
         FindKey(wdKeyF11).Execute
     Case Is = "F12Button"
         FindKey(wdKeyF12).Execute
+
+    ' Format Group
+    Case Is = "ShrinkText", "ShrinkText2"
+        Shrink.ShrinkAllOrCard
+    Case Is = "ShrinkAll"
+        Shrink.ShrinkAll
+    Case Is = "ShrinkPilcrows"
+        Shrink.ShrinkPilcrows
+    Case Is = "UnshrinkAll"
+        Shrink.UnshrinkAll
+    
+    Case Is = "FixFakeTags"
+        Formatting.FixFakeTags
+    Case Is = "ConvertAnalyticsToTags"
+        Formatting.ConvertAnalyticsToTags
+    Case Is = "FixFormattingGaps"
+        Formatting.FixFormattingGaps
+    Case Is = "ConvertToDefaultStyles"
+        Formatting.ConvertToDefaultStyles
+    Case Is = "RemoveExtraStyles"
+        Formatting.RemoveExtraStyles
+    Case Is = "AutoNumberTags"
+        Formatting.AutoNumberTags
+    Case Is = "DeNumberTags"
+        Formatting.DeNumberTags
+    Case Is = "InsertHeader"
+        Formatting.InsertHeader
         
-    Case Is = "ShrinkText"
-        Formatting.ShrinkText
-    Case Is = "AutoUnderline"
-        Formatting.AutoUnderline
-    Case Is = "PasteOCR"
-        OCR.PasteOCR
+    Case Is = "RemoveEmphasis"
+        Formatting.RemoveEmphasis
+    Case Is = "RemoveNonHighlightedUnderlining"
+        Formatting.RemoveNonHighlightedUnderlining
+    Case Is = "RemoveBlanks"
+        Formatting.RemoveBlanks
+    Case Is = "RemovePilcrows"
+        Condense.RemovePilcrows
+    Case Is = "RemoveHyperlinks"
+        Formatting.RemoveHyperlinks
+    Case Is = "RemoveBookmarks"
+        VirtualTub.RemoveBookmarks
         
     Case Is = "UpdateStyles"
         Formatting.UpdateStyles
     Case Is = "SelectSimilar"
         Formatting.SelectSimilar
-    Case Is = "ShrinkAll"
-        Formatting.ShrinkAll
-    Case Is = "ShrinkPilcrows"
-        Formatting.ShrinkPilcrows
-    Case Is = "RemovePilcrows"
-        Formatting.RemovePilcrows
-    Case Is = "RemoveBlanks"
-        Formatting.RemoveBlanks
-    Case Is = "RemoveHyperlinks"
-        Formatting.RemoveHyperlinks
-    Case Is = "RemoveBookmarks"
-        VirtualTub.RemoveBookmarks
-    Case Is = "RemoveEmphasis"
-        Formatting.RemoveEmphasis
-    Case Is = "ConvertAnalyticsToTags"
-        Formatting.ConvertAnalyticsToTags
-    Case Is = "ConvertToDefaultStyles"
-        Formatting.ConvertToDefaultStyles
-    Case Is = "RemoveExtraStyles"
-        Formatting.RemoveExtraStyles
-    Case Is = "AutoEmphasizeFirst"
-        Formatting.AutoEmphasizeFirst
-    Case Is = "FixFakeTags"
-        Formatting.FixFakeTags
-    Case Is = "FixFormattingGaps"
-        Formatting.FixFormattingGaps
+    
+    Case Is = "CondenseNoPilcrows"
+        Condense.CondenseNoPilcrows
+    Case Is = "CondenseWithPilcrows"
+        Condense.CondenseWithPilcrows
+    Case Is = "Uncondense"
+        Condense.Uncondense
+
     Case Is = "UniHighlight"
         Formatting.UniHighlight
     Case Is = "UniHighlightWithException"
         Formatting.UniHighlightWithException
-    Case Is = "InsertHeader"
-        Formatting.InsertHeader
+            
+    Case Is = "AutoEmphasizeFirst"
+        Formatting.AutoEmphasizeFirst
+    Case Is = "AutoUnderline"
+        Formatting.AutoUnderline
 
     Case Is = "DuplicateCite"
         Formatting.CopyPreviousCite
@@ -163,24 +151,48 @@ Sub RibbonMain(ByVal c As IRibbonControl)
         Formatting.AutoFormatCite
     Case Is = "ReformatAllCites"
         Formatting.ReformatAllCites
-    Case Is = "AutoNumberTags"
-        Formatting.AutoNumberTags
-    Case Is = "DeNumberTags"
-        Formatting.DeNumberTags
     Case Is = "GetFromCiteCreator"
-        Formatting.GetFromCiteCreator
+        Plugins.GetFromCiteCreator
+    
+    ' Paperless group
+    Case Is = "NewSpeech"
+        Paperless.NewSpeech
+    Case Is = "ChooseSpeechDoc"
+        UI.ShowForm "ChooseSpeechDoc"
+    Case Is = "NewDocument"
+        Paperless.NewDocument
+    Case Is = "CombineDocs"
+        UI.ShowForm "CombineDocs"
+    Case Is = "CopyToUSB"
+        Paperless.CopyToUSB
+    Case Is = "TabroomShare"
+        UI.ShowForm "Share"
+     
+    ' Tools Group
+    Case Is = "StartTimer"
+        Plugins.StartTimer
+    Case Is = "PasteOCR"
+        OCR.PasteOCR
+    Case Is = "DocumentStats"
+        UI.ShowForm "Stats"
+
+    Case Is = "NavPaneCycle"
+        Plugins.NavPaneCycle
+    
+    Case Is = "NewWarrant", "NewWarrant1"
+        Paperless.NewWarrant
+    Case Is = "DeleteAllWarrants"
+        Paperless.DeleteAllWarrants
         
-    Case Is = "CondenseWithPilcrows"
-        Formatting.CondenseWithPilcrows
-    Case Is = "CondenseNoPilcrows"
-        Formatting.CondenseNoPilcrows
-    Case Is = "RemoveNonHighlightedUnderlining"
-        Formatting.RemoveNonHighlightedUnderlining
-    Case Is = "Uncondense"
-        Formatting.Uncondense
-    Case Is = "UnshrinkAll"
-        Formatting.UnshrinkAll
-        
+    ' View Group
+    Case Is = "ReadingView"
+        View.ReadingView
+    Case Is = "DefaultView"
+        View.DefaultView
+    
+    Case Is = "WindowArranger"
+        View.ArrangeWindows
+            
     ' Caselist Group
     Case Is = "CaselistWizard"
         UI.ShowForm "Caselist"
@@ -245,7 +257,7 @@ Sub GetRibbonLabels(c As IRibbonControl, ByRef label)
         Else
             label = "Draft"
         End If
-    
+        
     Case Else
         label = "Undefined"
     
@@ -318,16 +330,16 @@ Sub GetRibbonToggles(c As IRibbonControl, ByRef state)
     End Select
 End Sub
 
-Sub GetRibbonVisibility(c As IRibbonControl, ByRef visible)
+Sub GetRibbonVisibility(c As IRibbonControl, ByRef Visible)
 ' Get visibility of ribbon groups
     
     ' Default to true
-    visible = True
+    Visible = True
     
     Select Case c.ID
         Case "Speech", "Organize", "Format", "Paperless", "Tools", "View", "Caselist", "Settings"
-            If GetSetting("Verbatim", "View", "RibbonDisable" & c.ID, False) = True Then visible = False
+            If GetSetting("Verbatim", "View", "RibbonDisable" & c.ID, False) = True Then Visible = False
         Case Else
-            visible = True
+            Visible = True
     End Select
 End Sub

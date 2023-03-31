@@ -25,7 +25,7 @@ End Sub
 Public Sub AutoClose()
     On Error Resume Next
     
-    If ActiveWindow.visible = True Then
+    If ActiveWindow.Visible = True Then
         ' If current doc was active speech doc, clear it
         If Globals.ActiveSpeechDoc = ActiveDocument.Name Then Globals.ActiveSpeechDoc = ""
         
@@ -61,7 +61,7 @@ Public Sub Start()
     #If Mac Then
         ' Do Nothing
     #Else
-        If Not Application.ActiveProtectedViewWindow Is Nothing Or ActiveWindow.visible = False Then Exit Sub
+        If Not Application.ActiveProtectedViewWindow Is Nothing Or ActiveWindow.Visible = False Then Exit Sub
     #End If
     
     ' Set default view and navigation pane
@@ -79,7 +79,7 @@ Public Sub Start()
     End If
        
     ' Check for NPCStartup setting and call NavPaneCycle if True
-    If GetSetting("Verbatim", "View", "NPCStartup", False) = True Then View.NavPaneCycle
+    If GetSetting("Verbatim", "View", "NPCStartup", False) = True Then Plugins.NavPaneCycle
     
     ' Refresh screen to solve blank screen bug
     Application.ScreenRefresh
@@ -90,14 +90,14 @@ Public Sub Start()
     Else
         ' If first document opened and warnings not suppressed, check if template is incorrectly installed.
         If GetSetting("Verbatim", "Admin", "SuppressInstallChecks", False) = False And Application.Documents.Count = 1 Then
-            If Troubleshooting.InstallCheckTemplateName = True Or Troubleshooting.InstallCheckTemplateLocation = True Then
+            If Troubleshooting.InstallCheckTemplateName = False Or Troubleshooting.InstallCheckTemplateLocation = False Then
                 If MsgBox("Verbatim appears to be installed incorrectly. Would you like to open the Troubleshooter? This message can be suppressed in the Verbatim settings.", vbYesNo) = vbYes Then
                     UI.ShowForm "Settings"
                     Exit Sub
                 End If
             End If
             #If Mac Then
-                If Troubleshooting.InstallCheckScptFileExists = True Then
+                If Troubleshooting.InstallCheckScptFileExists = False Then
                     If MsgBox("Your Verbatim.scpt file appears to be installed incorrectly. Would you like to open the Troubleshooter? This message can be suppressed in the Verbatim settings.", vbYesNo) = vbYes Then
                         UI.ShowForm "Settings"
                         Exit Sub
@@ -131,7 +131,6 @@ Public Sub FirstRun()
     SaveSetting "Verbatim", "Admin", "FirstRun", False
     
     ' Unverbatimize Normal to clear out old installs
-    ' TODO - this won't work if no VBOM access
     Settings.UnverbatimizeNormal
     
     ' Remove old registry keys

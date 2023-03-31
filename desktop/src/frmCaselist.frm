@@ -16,9 +16,31 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-'*************************************************************************************
-'* FORM UI                                                                           *
-'*************************************************************************************
+#If Mac Then
+#Else
+Sub btnSubmit_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    btnSubmit.BackColor = Globals.LIGHT_BLUE
+End Sub
+
+Sub btnCancel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    btnCancel.BackColor = Globals.LIGHT_RED
+End Sub
+
+Sub btnAddCite_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    btnAddCite.BackColor = Globals.LIGHT_GREEN
+End Sub
+
+Sub btnDeleteCite_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    btnDeleteCite.BackColor = Globals.LIGHT_RED
+End Sub
+
+Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    btnSubmit.BackColor = Globals.BLUE
+    btnCancel.BackColor = Globals.RED
+    btnAddCite.BackColor = Globals.GREEN
+    btnDeleteCite.BackColor = Globals.RED
+End Sub
+#End If
 
 Private Sub UserForm_Initialize()
     On Error GoTo Handler
@@ -47,11 +69,10 @@ Private Sub UserForm_Initialize()
         Exit Sub
     End If
     
+    ' Get rounds from Tabroom
     Application.StatusBar = "Retrieving rounds from openCaselist..."
     Dim Response As Dictionary
-    'Set Response = New Dictionary
-    'Set Response = HTTP.GetReq(Globals.CASELIST_URL & "/tabroom/rounds")
-    Set Response = HTTP.GetReq(Globals.MOCK_ROUNDS)
+    Set Response = HTTP.GetReq(Globals.CASELIST_URL & "/tabroom/rounds")
     Application.StatusBar = "Retrieved rounds from openCaselist"
     
     If Response("status") = 401 Then
@@ -61,15 +82,6 @@ Private Sub UserForm_Initialize()
         Exit Sub
     End If
     
-    Me.cboSelectRound.AddItem
-    Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 0) = "Select a Round"
-    Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 1) = ""
-    Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 2) = ""
-    Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 3) = ""
-    Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 4) = ""
-    Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 5) = ""
-    Me.cboSelectRound.ListIndex = 0
-    
     Me.cboTournament.AddItem ""
     Me.cboTournament.AddItem "All Tournaments / General Disclosure"
     
@@ -78,11 +90,20 @@ Private Sub UserForm_Initialize()
     Dim Side As String
     Dim SideName As String
 
+    Me.cboSelectRound.AddItem
+    Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 1) = ""
+    Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 2) = ""
+    Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 3) = ""
+    Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 4) = ""
+    Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 5) = ""
+    
     If Response("body").Count = 0 Then
-        Me.cboSelectRound.List(0, 0) = "No rounds found on Tabroom"
-        Me.cboSelectRound.ListIndex = 0
-        Me.cboSelectRound.Enabled = False
+        Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 0) = "No rounds found on Tabroom"
+    Else
+        Me.cboSelectRound.List(Me.cboSelectRound.ListCount - 1, 0) = "Select a Round"
     End If
+
+    Me.cboSelectRound.ListIndex = 0
 
     For Each Round In Response("body")
         RoundName = Strings.RoundName(Round("round"))
@@ -169,6 +190,7 @@ Private Sub UserForm_Initialize()
         Me.chkOpenSource.Value = True
     End If
     
+    ' Blank options for caselist page selectors
     Me.cboCaselists.AddItem
     Me.cboCaselists.List(Me.cboCaselists.ListCount - 1, 0) = ""
     Me.cboCaselists.List(Me.cboCaselists.ListCount - 1, 1) = ""
@@ -184,6 +206,7 @@ Private Sub UserForm_Initialize()
     Me.cboCaselistTeamName.List(Me.cboCaselistTeamName.ListCount - 1, 1) = ""
     Me.cboCaselistTeamName.Value = ""
     
+    ' Use default caselist page
     Dim DefaultCaselist As String
     DefaultCaselist = GetSetting("Verbatim", "Caselist", "DefaultCaselist", "")
     If DefaultCaselist <> "" Then
@@ -211,8 +234,11 @@ Private Sub UserForm_Initialize()
         Me.cboCaselistTeamName.Value = Split(DefaultCaselistTeam, "|")(1)
     End If
     
-    'If GetSetting("Verbatim", "Caselist", "ProcessCites", True) = True Then ProcessCiteEntries Else AddCiteEntry "" ""
-    'ProcessCiteEntries
+    If GetSetting("Verbatim", "Caselist", "ProcessCites", True) = True Then
+        ProcessCiteEntries
+    Else
+        AddCiteEntry "", ""
+    End If
     
     Exit Sub
 Handler:
@@ -221,6 +247,214 @@ End Sub
 
 Private Sub lblCaselistLink_Click()
     Settings.LaunchWebsite ("https://opencaselist.com")
+End Sub
+
+Private Sub cboSelectRound_Change()
+    If Me.cboSelectRound.ListIndex > -1 Then
+        If Not IsNull(Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 1)) _
+            And Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 1) <> "" _
+        Then
+            Me.cboTournament.AddItem Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 1)
+            Me.cboTournament.Value = Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 1)
+        End If
+        If Not IsNull(Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 2)) Then Me.cboRound.Value = Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 2)
+        If Not IsNull(Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 3)) Then Me.cboSide.Value = Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 3)
+        If Not IsNull(Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 4)) Then Me.txtOpponent.Value = Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 4)
+        If Not IsNull(Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 5)) Then Me.txtJudge.Value = Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 5)
+    Else
+        Me.cboRound.Enabled = True
+        Me.txtOpponent.Enabled = True
+        Me.txtJudge.Enabled = True
+        Me.txtRoundReport.Enabled = True
+        
+        Me.cboTournament.Value = ""
+        Me.cboSide.Value = ""
+        Me.cboRound.Value = ""
+        Me.txtOpponent.Value = ""
+        Me.txtJudge.Value = ""
+    End If
+End Sub
+
+Private Sub cboTournament_Change()
+    If Me.cboTournament.Value = "All Tournaments / General Disclosure" Then
+        Me.cboRound.Value = "All"
+        Me.cboRound.Enabled = False
+        Me.txtOpponent.Value = ""
+        Me.txtOpponent.Enabled = False
+        Me.txtJudge.Value = ""
+        Me.txtJudge.Enabled = False
+        Me.txtRoundReport.Value = ""
+        Me.txtRoundReport.Enabled = False
+    Else
+        Me.cboRound.Enabled = True
+        Me.txtOpponent.Enabled = True
+        Me.txtJudge.Enabled = True
+        Me.txtRoundReport.Enabled = True
+    End If
+End Sub
+
+Private Sub ProcessCiteEntries()
+    Dim LargestHeading
+    LargestHeading = Formatting.LargestHeading
+       
+    Dim CiteEntries As Dictionary
+    Set CiteEntries = New Dictionary
+    Dim Entry As Dictionary
+    
+    Dim i As Long
+    i = 1
+    
+    Dim p As Paragraph
+    Dim key
+    
+    For Each p In ActiveDocument.Paragraphs
+        If p.OutlineLevel = LargestHeading Then
+            ' Limit submission to 5 cite entries
+            i = i + 1
+            If i <= 5 Then
+                Set Entry = New Dictionary
+    
+                Selection.Start = p.Range.Start
+                Paperless.SelectHeadingAndContent
+                
+                Entry.Add "Title", Strings.HeadingToTitle(p.Range.Text)
+                Selection.MoveStart wdParagraph, 1
+                Entry.Add "Content", WikifySelection
+                CiteEntries.Add p.Range.Text, Entry
+                Selection.Collapse
+            End If
+        End If
+    Next p
+    
+    For Each key In CiteEntries.Keys
+        Set Entry = CiteEntries(key)
+        AddCiteEntry Trim(Entry("Title")), Trim(Entry("Content"))
+    Next key
+End Sub
+
+Private Sub AddCiteEntry(Title As String, Content As String)
+    Dim TitleLabel As Object
+    Dim TitleBox As Object
+    Dim EntryLabel As Object
+    Dim EntryText As Object
+    Dim RuleLabel As Object
+    
+    Dim NumEntries As Long
+    
+    ' Each Cite Entry is comprised of five controls
+    NumEntries = 0
+    If Me.fCites.Controls.Count > 0 Then
+        NumEntries = Me.fCites.Controls.Count / 5
+    End If
+    NumEntries = NumEntries + 1
+            
+    ' Create Title Label - All other controls positioning keyed off this
+    Set TitleLabel = Me.fCites.Controls.Add("Forms.Label.1", "lblEntryTitle" & NumEntries)
+    TitleLabel.Caption = "Title " & NumEntries
+    TitleLabel.Height = 12
+    TitleLabel.Width = 65
+    TitleLabel.Left = 5
+    TitleLabel.Top = fCites.ScrollHeight + 10
+    
+    ' Create Title Box
+    Set TitleBox = Me.fCites.Controls.Add("Forms.TextBox.1", "txtEntryTitle" & NumEntries)
+    TitleBox.Height = 18
+    TitleBox.Width = fCites.Width - 60
+    TitleBox.Left = 5
+    TitleBox.Top = TitleLabel.Top + TitleLabel.Height + 5
+    TitleBox.Value = Trim(Title)
+        
+    ' Create Entry Label
+    Set EntryLabel = Me.fCites.Controls.Add("Forms.Label.1", "lblEntryContent" & NumEntries)
+    EntryLabel.Caption = "Entry " & NumEntries
+    EntryLabel.Height = 12
+    EntryLabel.Width = 65
+    EntryLabel.Left = 5
+    EntryLabel.Top = TitleBox.Top + TitleBox.Height + 5
+    
+    ' Create Entry Box
+    Set EntryText = Me.fCites.Controls.Add("Forms.TextBox.1", "txtEntryContent" & NumEntries)
+    EntryText.Height = 100
+    EntryText.Width = fCites.Width - 40
+    EntryText.Left = 5
+    EntryText.Top = EntryLabel.Top + EntryLabel.Height + 5
+    EntryText.MultiLine = True
+    EntryText.EnterKeyBehavior = True
+    EntryText.ScrollBars = 2
+    EntryText.Font.size = 8
+    EntryText.Value = Trim(Content)
+    
+    Set RuleLabel = Me.fCites.Controls.Add("Forms.Label.1", "lblEntryRule" & NumEntries)
+    RuleLabel.Height = 1
+    RuleLabel.Width = fCites.Width - 40
+    RuleLabel.Left = 5
+    RuleLabel.Top = EntryText.Top + EntryText.Height + 10
+    RuleLabel.Caption = ""
+    RuleLabel.BorderStyle = 1
+    
+    ' Add ScrollHeight and scroll to bottom
+    Me.fCites.ScrollHeight = Me.fCites.ScrollHeight + 180
+    Me.fCites.ScrollTop = Me.fCites.ScrollHeight
+End Sub
+
+Private Function WikifySelection() As String
+      
+    On Error GoTo Handler
+    
+    Application.ScreenUpdating = False
+        
+    ' Copy selection
+    Selection.Copy
+    
+    ' Add new document based on debate template
+    Application.Documents.Add Template:=ActiveDocument.AttachedTemplate.FullName, Visible:=False
+
+    ' Paste into new document
+    Selection.Paste
+    
+    ' Go to top of document and collapse selection
+    Selection.HomeKey Unit:=wdStory
+    Selection.Collapse
+
+    ' Convert to cites
+    Caselist.CiteRequestAll
+
+    ' Wikify and clear formatting
+    Caselist.Word2MarkdownMain
+    ActiveDocument.Content.Select
+    Selection.ClearFormatting
+    
+    WikifySelection = Selection.Text
+    ActiveDocument.Close wdDoNotSaveChanges
+       
+    Application.ScreenUpdating = True
+
+    Exit Function
+    
+Handler:
+    Application.ScreenUpdating = True
+    MsgBox "Error " & Err.Number & ": " & Err.Description
+End Function
+
+Private Sub btnAddCite_Click()
+    AddCiteEntry "", ""
+End Sub
+
+Private Sub btnDeleteCite_Click()
+    Dim NumEntries As Long
+    If Me.fCites.Controls.Count > 0 Then
+        NumEntries = Me.fCites.Controls.Count / 5
+
+        ' Delete last entry
+        Me.fCites.Controls.Remove ("lblEntryTitle" & NumEntries)
+        Me.fCites.Controls.Remove ("txtEntryTitle" & NumEntries)
+        Me.fCites.Controls.Remove ("lblEntryContent" & NumEntries)
+        Me.fCites.Controls.Remove ("txtEntryContent" & NumEntries)
+        Me.fCites.Controls.Remove ("lblEntryRule" & NumEntries)
+           
+        ' Remove excess ScrollHeight
+        Me.fCites.ScrollHeight = Me.fCites.ScrollHeight - 180
+    End If
 End Sub
 
 Private Sub cboCaselists_DropButtonClick()
@@ -295,7 +529,6 @@ Private Sub cboCaselistSchoolName_DropButtonClick()
         For i = 0 To Me.cboCaselistSchoolName.ListCount - 1
             If Me.cboCaselistSchoolName.List(i, 1) = Split(DefaultCaselistSchool, "|")(1) Then
                 Me.cboCaselistSchoolName.Value = Split(DefaultCaselistSchool, "|")(1)
-                
             End If
         Next i
     End If
@@ -304,7 +537,6 @@ Private Sub cboCaselistSchoolName_DropButtonClick()
 
 Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
-
 End Sub
 
 Private Sub cboCaselistSchoolName_Change()
@@ -350,181 +582,11 @@ Private Sub cboCaselistTeamName_DropButtonClick()
 
 Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
-
-End Sub
-
-Private Sub cboSelectRound_Change()
-    If Me.cboSelectRound.ListIndex > -1 Then
-        If Not IsNull(Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 1)) _
-            And Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 1) <> "" _
-        Then
-            Me.cboTournament.AddItem Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 1)
-            Me.cboTournament.Value = Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 1)
-        End If
-        If Not IsNull(Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 2)) Then Me.cboRound.Value = Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 2)
-        If Not IsNull(Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 3)) Then Me.cboSide.Value = Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 3)
-        If Not IsNull(Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 4)) Then Me.txtOpponent.Value = Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 4)
-        If Not IsNull(Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 5)) Then Me.txtJudge.Value = Me.cboSelectRound.List(Me.cboSelectRound.ListIndex, 5)
-    Else
-        Me.cboRound.Enabled = True
-        Me.txtOpponent.Enabled = True
-        Me.txtJudge.Enabled = True
-        Me.txtRoundReport.Enabled = True
-        
-        Me.cboTournament.Value = ""
-        Me.cboSide.Value = ""
-        Me.cboRound.Value = ""
-        Me.txtOpponent.Value = ""
-        Me.txtJudge.Value = ""
-    End If
-End Sub
-
-Private Sub ProcessCiteEntries()
-    Dim LargestHeading
-    LargestHeading = Formatting.LargestHeading
-       
-    Dim CiteEntries As Dictionary
-    Set CiteEntries = New Dictionary
-    Dim Entry As Dictionary
-    
-    Dim p As Paragraph
-    For Each p In ActiveDocument.Paragraphs
-        If p.outlineLevel = LargestHeading Then
-            Set Entry = New Dictionary
-            Debug.Print "Found a Pocket"
-            Selection.Start = p.Range.Start
-            Paperless.SelectHeadingAndContent
-            
-            Entry.Add "Title", Strings.HeadingToTitle(p.Range.Text)
-            Selection.MoveStart wdParagraph, 1
-            Entry.Add "Content", WikifySelection
-            CiteEntries.Add p.Range.Text, Entry
-            Selection.Collapse
-        End If
-    Next p
-    
-    Debug.Print "Number of Cite Entries: " & CiteEntries.Count
-    
-    Dim key
-    For Each key In CiteEntries.Keys
-        Set Entry = CiteEntries(key)
-        AddCiteEntry Trim(Entry("Title")), Trim(Entry("Content"))
-    Next key
-    
 End Sub
 
 Private Sub btnSubmit_Click()
     Me.UploadToCaselist
 End Sub
-
-Private Sub cboTournament_Change()
-    If Me.cboTournament.Value = "All Tournaments / General Disclosure" Then
-        Me.cboRound.Value = "All"
-        Me.cboRound.Enabled = False
-        Me.txtOpponent.Value = ""
-        Me.txtOpponent.Enabled = False
-        Me.txtJudge.Value = ""
-        Me.txtJudge.Enabled = False
-        Me.txtRoundReport.Value = ""
-        Me.txtRoundReport.Enabled = False
-    Else
-        Me.cboRound.Enabled = True
-        Me.txtOpponent.Enabled = True
-        Me.txtJudge.Enabled = True
-        Me.txtRoundReport.Enabled = True
-    End If
-End Sub
-
-Private Sub AddCiteEntry(Title As String, Content As String)
-    Dim TitleLabel As Object
-    Dim TitleBox As Object
-    Dim EntryLabel As Object
-    Dim EntryText As Object
-    Dim RuleLabel As Object
-    
-    Dim NumEntries As Long
-    
-    ' Each Cite Entry is comprised of five controls
-    NumEntries = 0
-    If Me.fCites.Controls.Count > 0 Then
-        NumEntries = Me.fCites.Controls.Count / 5
-    End If
-    NumEntries = NumEntries + 1
-            
-    'Create Title Label - All other controls positioning keyed off this
-    Set TitleLabel = Me.fCites.Controls.Add("Forms.Label.1", "lblEntryTitle" & NumEntries)
-    TitleLabel.Caption = "Title " & NumEntries
-    TitleLabel.Height = 12
-    TitleLabel.Width = 65
-    TitleLabel.Left = 5
-    TitleLabel.Top = fCites.ScrollHeight + 10
-    
-    'Create Title Box
-    Set TitleBox = Me.fCites.Controls.Add("Forms.TextBox.1", "txtEntryTitle" & NumEntries)
-    TitleBox.Height = 18
-    TitleBox.Width = fCites.Width - 60
-    TitleBox.Left = 5
-    TitleBox.Top = TitleLabel.Top + TitleLabel.Height + 5
-    TitleBox.Value = Trim(Title)
-        
-    'Create Entry Label
-    Set EntryLabel = Me.fCites.Controls.Add("Forms.Label.1", "lblEntryContent" & NumEntries)
-    EntryLabel.Caption = "Entry " & NumEntries
-    EntryLabel.Height = 12
-    EntryLabel.Width = 65
-    EntryLabel.Left = 5
-    EntryLabel.Top = TitleBox.Top + TitleBox.Height + 5
-    
-    'Create Entry Box
-    Set EntryText = Me.fCites.Controls.Add("Forms.TextBox.1", "txtEntryContent" & NumEntries)
-    EntryText.Height = 100
-    EntryText.Width = fCites.Width - 40
-    EntryText.Left = 5
-    EntryText.Top = EntryLabel.Top + EntryLabel.Height + 5
-    EntryText.MultiLine = True
-    EntryText.EnterKeyBehavior = True
-    EntryText.ScrollBars = 2
-    EntryText.Font.Size = 8
-    EntryText.Value = Trim(Content)
-    
-    Set RuleLabel = Me.fCites.Controls.Add("Forms.Label.1", "lblEntryRule" & NumEntries)
-    RuleLabel.Height = 1
-    RuleLabel.Width = fCites.Width - 40
-    RuleLabel.Left = 5
-    RuleLabel.Top = EntryText.Top + EntryText.Height + 10
-    RuleLabel.Caption = ""
-    RuleLabel.BorderStyle = 1
-    
-    'Add ScrollHeight and scroll to bottom
-    Me.fCites.ScrollHeight = Me.fCites.ScrollHeight + 180
-    Me.fCites.ScrollTop = Me.fCites.ScrollHeight
-End Sub
-
-#If Mac Then
-#Else
-Sub btnSubmit_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
-    btnSubmit.BackColor = Globals.LIGHT_BLUE
-End Sub
-
-Sub btnCancel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
-    btnCancel.BackColor = Globals.LIGHT_RED
-End Sub
-
-Sub btnAddCite_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
-    btnAddCite.BackColor = Globals.LIGHT_GREEN
-End Sub
-
-Sub btnDeleteCite_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
-    btnDeleteCite.BackColor = Globals.LIGHT_RED
-End Sub
-
-Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
-    btnSubmit.BackColor = Globals.BLUE
-    btnCancel.BackColor = Globals.RED
-    btnAddCite.BackColor = Globals.GREEN
-    btnDeleteCite.BackColor = Globals.RED
-End Sub
-#End If
 
 Public Function ValidateForm() As Boolean
 
@@ -532,14 +594,14 @@ Public Function ValidateForm() As Boolean
     Me.cboSide.BorderColor = Globals.DARK_GRAY
     Me.cboRound.BorderColor = Globals.DARK_GRAY
     
-    Me.lblError.visible = False
+    Me.lblError.Visible = False
     Me.lblError.Caption = "No Errors"
     ValidateForm = True
 
     If Trim(Me.cboTournament.Value) = "" Then
         Me.cboTournament.BorderColor = Globals.RED
         Me.lblError.Caption = "Tournament, side, and round are required!"
-        Me.lblError.visible = True
+        Me.lblError.Visible = True
         ValidateForm = False
         Exit Function
     End If
@@ -547,7 +609,7 @@ Public Function ValidateForm() As Boolean
     If Me.cboSide.Value = "" Then
         Me.cboSide.BorderColor = Globals.RED
         Me.lblError.Caption = "Tournament, side, and round are required!"
-        Me.lblError.visible = True
+        Me.lblError.Visible = True
         ValidateForm = False
         Exit Function
     End If
@@ -555,14 +617,14 @@ Public Function ValidateForm() As Boolean
     If Me.cboRound.Value = "" Then
         Me.cboRound.BorderColor = Globals.RED
         Me.lblError.Caption = "Tournament, side, and round are required!"
-        Me.lblError.visible = True
+        Me.lblError.Visible = True
         ValidateForm = False
         Exit Function
     End If
     
     If Me.chkOpenSource.Value = False And Me.fCites.Controls.Count = 0 Then
         Me.lblError.Caption = "Nothing to upload! You must either include cites or upload as open source."
-        Me.lblError.visible = True
+        Me.lblError.Visible = True
         ValidateForm = False
         Exit Function
     End If
@@ -570,7 +632,7 @@ Public Function ValidateForm() As Boolean
     If Me.fCites.Controls.Count > 0 Then
         If Trim(Me.fCites.Controls("txtEntryTitle1").Value) = "" Or Trim(Me.fCites.Controls("txtEntryContent1").Value) = "" Then
             Me.lblError.Caption = "Cite entries require a title and content!"
-            Me.lblError.visible = True
+            Me.lblError.Visible = True
             ValidateForm = False
             Exit Function
         End If
@@ -584,11 +646,12 @@ Public Function ValidateForm() As Boolean
         Or IsNull(Me.cboCaselistTeamName.Value) = True _
     Then
         Me.lblError.Caption = "You must select a caselist, school, and team!"
-        Me.lblError.visible = True
+        Me.lblError.Visible = True
         ValidateForm = False
         Exit Function
     End If
 End Function
+
 Public Sub UploadToCaselist()
 
     On Error GoTo Handler
@@ -652,6 +715,7 @@ Public Sub UploadToCaselist()
     URL = URL & "/rounds"
     
     Application.StatusBar = "Uploading to openCaselist..."
+    
     Dim Request
     Set Request = HTTP.PostReq(URL, Body)
     
@@ -661,19 +725,18 @@ Public Sub UploadToCaselist()
             Application.StatusBar = "Round successfully created on openCaselist"
             Me.Hide
             Unload Me
-        
         Case Is = "401" ' Unauthorized
             Me.lblError.Caption = "Unauthorized, log in first and try again"
-            Me.lblError.visible = True
+            Me.lblError.Visible = True
             Me.Hide
             UI.ShowForm "Login"
             Me.Show
         Case Is = "404" ' Not Found
             Me.lblError.Caption = "Unauthorized, log in first"
-            Me.lblError.visible = True
+            Me.lblError.Visible = True
         Case Else
-            Me.lblError.Caption = Request("body")("message")
-            Me.lblError.visible = True
+            Me.lblError.Caption = Request("status")
+            Me.lblError.Visible = True
     End Select
     
     If Me.chkSaveDefault = True Then
@@ -695,74 +758,6 @@ Handler:
     Application.ScreenUpdating = True
     System.Cursor = wdCursorNormal
     MsgBox "Error " & Err.Number & ": " & Err.Description
-End Sub
-
-Private Function WikifySelection() As String
-      
-    On Error GoTo Handler
-    
-    ' Turn off screen updating
-    'Application.ScreenUpdating = False
-    
-    ' Set entry title to text of first header in selection
-    'Entry(0) = Left(Selection.Paragraphs(1).Range.Text, Len(Selection.Paragraphs(1).Range.Text) - 1)
-    
-    ' Copy selection
-    Selection.Copy
-    
-    ' Add new document based on debate template
-    Application.Documents.Add Template:=ActiveDocument.AttachedTemplate.FullName, visible:=True
-
-    ' Paste into new document
-    Selection.Paste
-    
-    ' Go to top of document and collapse selection
-    Selection.HomeKey Unit:=wdStory
-    Selection.Collapse
-
-    ' Convert to cites
-    Caselist.CiteRequestAll
-
-    ' Wikify and clear formatting
-    Caselist.Word2MarkdownMain
-    ActiveDocument.Content.Select
-    Selection.ClearFormatting
-    
-    WikifySelection = Selection.Text
-    ActiveDocument.Close wdDoNotSaveChanges
-    
-    ' Return the array
-    'WikifySelection = Selection.Text
-    
-    ' Turn on screen updating
-    Application.ScreenUpdating = True
-
-    Exit Function
-    
-Handler:
-    Application.ScreenUpdating = True
-    MsgBox "Error " & Err.Number & ": " & Err.Description
-    
-End Function
-
-Private Sub btnAddCite_Click()
-    AddCiteEntry "", ""
-End Sub
-Private Sub btnDeleteCite_Click()
-    Dim NumEntries As Long
-    If Me.fCites.Controls.Count > 0 Then
-        NumEntries = Me.fCites.Controls.Count / 5
-
-        'Delete last entry
-        Me.fCites.Controls.Remove ("lblEntryTitle" & NumEntries)
-        Me.fCites.Controls.Remove ("txtEntryTitle" & NumEntries)
-        Me.fCites.Controls.Remove ("lblEntryContent" & NumEntries)
-        Me.fCites.Controls.Remove ("txtEntryContent" & NumEntries)
-        Me.fCites.Controls.Remove ("lblEntryRule" & NumEntries)
-           
-        'Remove excess ScrollHeight
-        Me.fCites.ScrollHeight = Me.fCites.ScrollHeight - 180
-    End If
 End Sub
 
 Private Sub btnCancel_Click()

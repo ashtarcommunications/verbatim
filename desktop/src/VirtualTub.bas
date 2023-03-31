@@ -351,7 +351,7 @@ Public Sub VTubCreate()
         
         For j = 1 To SubFolder.Files.Count
             ' Trap for cancel button on Progress Form
-            If ProgressForm.visible = False Then Exit Sub
+            If ProgressForm.Visible = False Then Exit Sub
             
             If Right(SubFolder.Files(j), 4) = "docx" And Left(SubFolder.Files(j), 1) <> "~" Then
                 ' Increment the progress form
@@ -393,7 +393,7 @@ Public Sub VTubCreate()
     ' Process top-level files
     For i = 1 To Folder.Files.Count
         ' Trap for cancel button on Progress Form
-        If ProgressForm.visible = False Then Exit Sub
+        If ProgressForm.Visible = False Then Exit Sub
         
         If Right(Folder.Files(i), 4) = "docx" And Left(Folder.Files(i), 1) <> "~" Then
         
@@ -538,7 +538,7 @@ Sub VTubRefresh()
                         Set File = Filesystem.GetFile(Path)
                         
                         ' Trap for cancel button on Progress Form
-                        If ProgressForm.visible = False Then Exit Sub
+                        If ProgressForm.Visible = False Then Exit Sub
                         
                         ' Update progress form
                         CurrentFileCount = CurrentFileCount + 1
@@ -575,7 +575,7 @@ Sub VTubRefresh()
                 Set File = Filesystem.GetFile(Path)
                 
                 ' Trap for cancel button on Progress Form
-                If ProgressForm.visible = False Then Exit Sub
+                If ProgressForm.Visible = False Then Exit Sub
                 
                 ' Update progress form
                 CurrentFileCount = CurrentFileCount + 1
@@ -655,7 +655,7 @@ Private Function VTubProcessFile(Path As String) As Dictionary
     On Error GoTo Handler
       
     ' Open the file in the background and activate it
-    Documents.Open FileName:=Path, visible:=False
+    Documents.Open Filename:=Path, Visible:=False
     Documents(Path).Activate
     
     ' Delete all bookmarks
@@ -672,7 +672,7 @@ Private Function VTubProcessFile(Path As String) As Dictionary
     ' Add a bookmark for every heading level and save it to the menu
     For Each p In Documents(Path).Paragraphs
         pCount = pCount + 1
-        If p.outlineLevel = StartHeading Then
+        If p.OutlineLevel = StartHeading Then
             Set Level1Range = Paperless.SelectHeadingAndContentRange(p)
             Documents(Path).Bookmarks.Add "Level_1_" & pCount, Level1Range
             Set Level1Menu = New Dictionary
@@ -687,12 +687,12 @@ Private Function VTubProcessFile(Path As String) As Dictionary
             ' Check for nested headings
             SubHeadingLevel = 3
             For Each pp In Level1Range.Paragraphs
-                If pp.outlineLevel = wdOutlineLevel2 Then SubHeadingLevel = 2
+                If pp.OutlineLevel = wdOutlineLevel2 Then SubHeadingLevel = 2
             Next pp
             
             For Each pp In Level1Range.Paragraphs
                 pCount = pCount + 1
-                If pp.outlineLevel = SubHeadingLevel And pp.outlineLevel > StartHeading Then
+                If pp.OutlineLevel = SubHeadingLevel And pp.OutlineLevel > StartHeading Then
                     Set Level2Range = Paperless.SelectHeadingAndContentRange(pp)
                     Documents(Path).Bookmarks.Add "Level_2_" & pCount, Level2Range
                     Set Level2Menu = New Dictionary
@@ -707,7 +707,7 @@ Private Function VTubProcessFile(Path As String) As Dictionary
                     If SubHeadingLevel = 2 Then
                         For Each ppp In Level2Range.Paragraphs
                             pCount = pCount + 1
-                            If ppp.outlineLevel = 3 Then
+                            If ppp.OutlineLevel = 3 Then
                                 Set Level3Range = Paperless.SelectHeadingAndContentRange(ppp)
                                 Documents(Path).Bookmarks.Add "Level_3_" & pCount, Level3Range
                                 Set Level3Menu = New Dictionary

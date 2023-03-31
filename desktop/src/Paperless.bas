@@ -129,8 +129,7 @@ Sub GetSpeeches(c As IRibbonControl, ByRef returnedVal)
     
         Application.StatusBar = "Retrieving rounds from openCaselist..."
         Dim Response As Dictionary
-        'Set Response = HTTP.GetReq(Globals.CASELIST_URL & "/tabroom/rounds?current=true")
-        Set Response = HTTP.GetReq(Globals.MOCK_ROUNDS & "?current=true")
+        Set Response = HTTP.GetReq(Globals.CASELIST_URL & "/tabroom/rounds?current=true")
         
         If Response("status") = 401 Then
             UI.ShowForm "Login"
@@ -205,36 +204,36 @@ End Sub
 
 Sub NewSpeechFromMenu(c As IRibbonControl)
     Dim AutoSaveDirectory As String
-    Dim FileName As String
+    Dim Filename As String
     Dim h
 
     ' Add a new document based on the template
     Paperless.NewDocument
 
     ' Get filename from control tag
-    FileName = c.Tag
+    Filename = c.Tag
     
     ' If Tag is just the speech name, add a date
-    If Len(FileName) = 3 Then
+    If Len(Filename) = 3 Then
         If Hour(Now) = 12 Then h = "12PM"
         If Hour(Now) > 12 Then h = Hour(Now) - 12 & "PM"
         If Hour(Now) < 12 Then h = Hour(Now) & "AM"
         If Hour(Now) = 0 Then h = "12AM"
-        FileName = FileName & " " & Month(Now) & "-" & Day(Now) & " " & h
+        Filename = Filename & " " & Month(Now) & "-" & Day(Now) & " " & h
     End If
     
     ' Add speech to the name
-    FileName = "Speech " & FileName
+    Filename = "Speech " & Filename
     
     ' Autosave or open save dialog
     If GetSetting("Verbatim", "Paperless", "AutoSaveSpeech", False) = True Then
         AutoSaveDirectory = GetSetting("Verbatim", "Paperless", "AutoSaveDir", CurDir())
         If Right(AutoSaveDirectory, 1) <> Application.PathSeparator Then AutoSaveDirectory = AutoSaveDirectory & Application.PathSeparator
-        FileName = AutoSaveDirectory & Application.PathSeparator & FileName
-        ActiveDocument.SaveAs FileName:=FileName, FileFormat:=wdFormatXMLDocument
+        Filename = AutoSaveDirectory & Application.PathSeparator & Filename
+        ActiveDocument.SaveAs Filename:=Filename, FileFormat:=wdFormatXMLDocument
     Else
         With Application.Dialogs(wdDialogFileSaveAs)
-            .Name = FileName
+            .Name = Filename
             If .Show = 0 Then Exit Sub
         End With
     End If
@@ -250,47 +249,34 @@ End Sub
 '* MOVE AND SELECT FUNCTIONS                                                         *
 '*************************************************************************************
 
-Public Sub SelectHeadingAndContent()
-    Dim OLevel As Integer
-    
-    ' Move to start of current paragraph and collapse the selection
-    Selection.StartOf Unit:=wdParagraph
-    Selection.Collapse
-        
-    ' Move backwards through each paragraph to find the first tag, block title, hat, pocket or the top of the document
-    Do While True
-        If Selection.Paragraphs.outlineLevel < wdOutlineLevel5 Then Exit Do ' Headings 1-4
-        If Selection.Start <= ActiveDocument.Range.Start Then ' Top of document
-            Application.StatusBar = "Nothing found to select"
-            Exit Sub
-        End If
-        Selection.Move Unit:=wdParagraph, Count:=-1
-    Loop
-        
-    ' Get current outline level
-    OLevel = Selection.Paragraphs.outlineLevel
-    
-    ' Extend selection until hitting the bottom or a bigger outline level
-    Selection.MoveEnd Unit:=wdParagraph, Count:=1
-    Do While True And Selection.End <> ActiveDocument.Range.End
-        Selection.MoveEnd Unit:=wdParagraph, Count:=1
-        If Selection.Paragraphs.Last.outlineLevel <= OLevel Then
-            Selection.MoveEnd Unit:=wdParagraph, Count:=-1
-            Exit Do ' Bigger Outline Level
-        End If
-    Loop
-
-End Sub
-
 Public Function SelectHeadingAndContentRange(p As Paragraph) As Range
     Dim r As Range
     Set r = p.Range
+    Dim OLevel As Integer
+    
+    ' Move to start of current paragraph and collapse the selection
+    r.StartOf Unit:=wdParagraph
+    r.Collapse
+            
+    ' Move backwards through each paragraph to find the first tag, block title, hat, pocket or the top of the document
+    Do While True
+        If r.Paragraphs.OutlineLevel < wdOutlineLevel5 Then Exit Do ' Headings 1-4
+        If r.Start <= ActiveDocument.Range.Start Then ' Top of document
+            Application.StatusBar = "Nothing found to select"
+            Set SelectHeadingAndContentRange = p.Range
+            Exit Function
+        End If
+        r.Move Unit:=wdParagraph, Count:=-1
+    Loop
+    
+    ' Get current outline level
+    OLevel = r.Paragraphs.OutlineLevel
     
     ' Extend selection until hitting the bottom or a bigger outline level
     r.MoveEnd Unit:=wdParagraph, Count:=1
     Do While True And r.End <> ActiveDocument.Range.End
         r.MoveEnd Unit:=wdParagraph, Count:=1
-        If r.Paragraphs.Last.outlineLevel <= p.outlineLevel Then
+        If r.Paragraphs.Last.OutlineLevel <= OLevel Then
             r.MoveEnd Unit:=wdParagraph, Count:=-1
             Exit Do ' Bigger Outline Level
         End If
@@ -299,46 +285,86 @@ Public Function SelectHeadingAndContentRange(p As Paragraph) As Range
     Set SelectHeadingAndContentRange = r
 End Function
 
-Public Sub SelectCardText()
+Public Sub SelectHeadingAndContent()
+    Dim r As Range
+    Set r = Paperless.SelectHeadingAndContentRange(Selection.Paragraphs(1))
+    Selection.SetRange r.Start, r.End
+    Set r = Nothing
+End Sub
 
-    Paperless.SelectHeadingAndContent
+Public Function IdentifyCite(p As Paragraph) As Boolean
+    IdentifyCite = False
+    If p.OutlineLevel <> wdOutlineLevelBodyText Then
+        IdentifyCite = True
+    ' Ignore paragraphs starting with [, (, or < as they're likely 2-line cites
+    ElseIf Left(p.Range.Text, 1) Like "[\[(<\*]" Then
+        IdentifyCite = True
+    ' Paragraphs with a URL are likely cites
+    ElseIf InStr(p.Range.Text, "http://") > 0 Or InStr(p.Range.Text, "https://") > 0 Then
+        IdentifyCite = True
+    ' Skip omission markings and editing notes
+    ElseIf Len(p.Range.Text) < 50 And InStr(LCase(p.Range.Text), "omitted") Then
+        IdentifyCite = True
+    ElseIf Len(p.Range.Text) < 50 And InStr(LCase(p.Range.Text), "edited") Then
+        IdentifyCite = True
+    ElseIf Len(p.Range.Text) < 50 And InStr(LCase(p.Range.Text), "modified") Then
+        IdentifyCite = True
+    ElseIf Len(p.Range.Text) < 50 And InStr(LCase(p.Range.Text), "sic") Then
+        IdentifyCite = True
+    Else
+        With p.Range.Find
+            .ClearFormatting
+            .Replacement.ClearFormatting
+            .Text = ""
+            .Forward = True
+            .Wrap = wdFindStop
+            .Format = True
+            .Style = "Cite"
+            .MatchCase = False
+            .MatchWholeWord = False
+            .MatchWildcards = False
+            .MatchSoundsLike = False
+            .MatchAllWordForms = False
+            
+            .Execute
+            
+            If .Found Then IdentifyCite = True
+            
+            .ClearFormatting
+            .Replacement.ClearFormatting
+        End With
+    End If
+End Function
+
+Public Function SelectCardTextRange(p As Paragraph) As Range
+    Dim r As Range
+    
+    If p.OutlineLevel < 4 Then
+        Application.StatusBar = "Cannot select card text from a heading larger than a tag"
+        Set SelectCardTextRange = p.Range
+        Exit Function
+    End If
+    
+    Set r = Paperless.SelectHeadingAndContentRange(p)
     
     Do While True
-        If Selection.Paragraphs.Count < 2 Then Exit Do
+        If r.Paragraphs.Count < 2 Then Exit Do
 
-        If Selection.Paragraphs(1).outlineLevel <> wdOutlineLevelBodyText Then
-            Selection.MoveStart Unit:=wdParagraph, Count:=1
-        ' Ignore paragraphs starting with [, (, or < as they're likely 2-line cites
-        ElseIf Left(Selection.Paragraphs(1).Range.Text, 1) Like "[\[(<]" Then
-            Selection.MoveStart Unit:=wdParagraph, Count:=1
+        If IdentifyCite(r.Paragraphs(1)) = True Then
+            r.MoveStart Unit:=wdParagraph, Count:=1
         Else
-            With Selection.Paragraphs(1).Range.Find
-                .ClearFormatting
-                .Replacement.ClearFormatting
-                .Text = ""
-                .Forward = True
-                .Wrap = wdFindStop
-                .Format = True
-                .Style = "Cite"
-                .MatchCase = False
-                .MatchWholeWord = False
-                .MatchWildcards = False
-                .MatchSoundsLike = False
-                .MatchAllWordForms = False
-                
-                .Execute
-                
-                If .Found Then
-                    Selection.MoveStart Unit:=wdParagraph, Count:=1
-                Else
-                    Exit Do
-                End If
-                
-                .ClearFormatting
-                .Replacement.ClearFormatting
-            End With
+            Exit Do
         End If
     Loop
+    
+    Set SelectCardTextRange = r
+End Function
+
+Public Sub SelectCardText()
+    Dim r As Range
+    Set r = Paperless.SelectCardTextRange(Selection.Paragraphs(1))
+    Selection.SetRange r.Start, r.End
+    Set r = Nothing
 End Sub
 
 Sub MoveUp()
@@ -361,12 +387,12 @@ Sub MoveUp()
     ' Move backwards through each paragraph to find the first tag, block title, hat, pocket, or the top of the document
     Do While True
         If Selection.Start <= ActiveDocument.Range.Start Then Exit Sub ' Top of doc
-        If Selection.Paragraphs.outlineLevel < wdOutlineLevel5 Then Exit Do ' Headings 1-4
+        If Selection.Paragraphs.OutlineLevel < wdOutlineLevel5 Then Exit Do ' Headings 1-4
         Selection.Move Unit:=wdParagraph, Count:=-1
     Loop
         
     ' Get current outline level
-    OLevel = Selection.Paragraphs.outlineLevel
+    OLevel = Selection.Paragraphs.OutlineLevel
     
     ' Check to make sure you're not moving a card above a block
     If OLevel = 4 Then
@@ -377,11 +403,11 @@ Sub MoveUp()
                 Selection.Start = StartLocation
                 Exit Sub
             End If
-            If Selection.Paragraphs.outlineLevel = wdOutlineLevel4 Then
+            If Selection.Paragraphs.OutlineLevel = wdOutlineLevel4 Then
                 Selection.Start = StartLocation
                 Exit Do
             End If
-            If Selection.Paragraphs.outlineLevel < wdOutlineLevel4 Then
+            If Selection.Paragraphs.OutlineLevel < wdOutlineLevel4 Then
                 Application.StatusBar = "Already the first card on this block"
                 Selection.Start = StartLocation
                 Exit Sub
@@ -430,7 +456,7 @@ Sub MoveDown()
     
     ' Move backwards through each paragraph to find the first tag, block title, hat, pocket, or the top of the document
     Do While True
-        If Selection.Paragraphs.outlineLevel < wdOutlineLevel5 Then
+        If Selection.Paragraphs.OutlineLevel < wdOutlineLevel5 Then
             Exit Do ' Headings 1-4
         Else
             Application.StatusBar = "Nothing found to move"
@@ -440,7 +466,7 @@ Sub MoveDown()
     Loop
         
     ' Get current outline level
-    OLevel = Selection.Paragraphs.outlineLevel
+    OLevel = Selection.Paragraphs.OutlineLevel
     
     ' Check to make sure you're not already at the bottom
     StartLocation = Selection.Start ' Save current location
@@ -452,7 +478,7 @@ Sub MoveDown()
                 Application.StatusBar = "Already at the bottom"
                 Exit Sub
         End If
-        If Selection.Paragraphs.outlineLevel <= OLevel Then
+        If Selection.Paragraphs.OutlineLevel <= OLevel Then
             Selection.Start = StartLocation
             Selection.Collapse
             Exit Do
@@ -469,12 +495,12 @@ Sub MoveDown()
                 Selection.Collapse
                 Exit Sub
             End If
-            If Selection.Paragraphs.outlineLevel = wdOutlineLevel4 Then
+            If Selection.Paragraphs.OutlineLevel = wdOutlineLevel4 Then
                 Selection.Start = StartLocation
                 Selection.Collapse
                 Exit Do
             End If
-            If Selection.Paragraphs.outlineLevel < wdOutlineLevel4 Then
+            If Selection.Paragraphs.OutlineLevel < wdOutlineLevel4 Then
                 Application.StatusBar = "Already the last card on this block"
                 Selection.Start = StartLocation
                 Selection.Collapse
@@ -505,6 +531,32 @@ Handler:
 
 End Sub
 
+Sub MoveToBottom()
+    On Error GoTo Handler
+
+    Application.ScreenUpdating = False
+    
+    Dim SelectionStart As Long
+    SelectionStart = Selection.Start
+    
+    Paperless.SelectHeadingAndContent
+    
+    Selection.Cut
+    Selection.EndKey Unit:=wdStory
+    Selection.TypeParagraph
+    Selection.Paste
+    
+    Selection.Start = SelectionStart
+    Selection.Collapse
+
+    Application.ScreenUpdating = True
+    Exit Sub
+Handler:
+    Application.ScreenUpdating = True
+    MsgBox "Error " & Err.Number & ": " & Err.Description
+
+End Sub
+
 Sub DeleteHeading()
 ' Deletes the current card, block, hat, or pocket
     Paperless.SelectHeadingAndContent
@@ -518,6 +570,7 @@ End Sub
 Sub SendToSpeechCursor()
     Paperless.SendToSpeech PasteAtEnd:=False
 End Sub
+
 Sub SendToSpeechEnd()
     Paperless.SendToSpeech PasteAtEnd:=True
 End Sub
@@ -525,8 +578,9 @@ End Sub
 Sub SendToSpeech(Optional PasteAtEnd As Boolean)
 ' Sends content to the Speech doc.  Sends currently selected text,
 ' or if nothing is selected, the current tag, block, hat, or pocket
-' If in reading view, enters a stopped reading marker at the current location
+' If in current speech document, enters a card marker at the current location
 
+    Dim CurrentView As Long
     Dim CurrentPage As Long
     Dim CurrentDoc As String
     Dim SpeechDoc As Document
@@ -535,26 +589,33 @@ Sub SendToSpeech(Optional PasteAtEnd As Boolean)
 
     On Error GoTo Handler
 
-    ' If in reading mode, enter a stopped reading marker
-    If ActiveWindow.View.ReadingLayout Then
+    ' If in curent speech doc, enter a card marker
+    If ActiveDocument.Name = Globals.ActiveSpeechDoc Then
         Application.ScreenUpdating = False
-        CurrentPage = ActiveWindow.ActivePane.Selection.Information(wdActiveEndPageNumber)
         
+        ' Save current view state
+        CurrentPage = ActiveWindow.ActivePane.Selection.Information(wdActiveEndPageNumber)
+        CurrentView = ActiveWindow.View
+        
+        ' Switch to an editable view to avoid read-only problems in certain Word view modes
         ActiveWindow.View = wdWebView
         Selection.Collapse Direction:=wdCollapseEnd
         If Selection.Words(1).End <> Selection.End Then Selection.MoveRight wdWord
         Selection.Font.Color = wdColorRed
-        Selection.Font.Size = 18
-        Selection.TypeText Chr(167) & " Marked " & FormatDateTime(Time, 4) & " " & Chr(167) & " "
-        ActiveWindow.View = wdReadingView
+        Selection.Font.size = 16
+        Selection.TypeText Chr(126) & " Marked " & FormatDateTime(Time, 4) & " " & Chr(126) & " "
+        ActiveWindow.View = CurrentView
         
-        With ActiveWindow.ActivePane
-            If CurrentPage > .Selection.Information(wdActiveEndPageNumber) Then
-                .PageScroll Down:=CurrentPage - .Selection.Information(wdActiveEndPageNumber)
-            ElseIf CurrentPage < .Selection.Information(wdActiveEndPageNumber) Then
-                .PageScroll Up:=CurrentPage - .Selection.Information(wdActiveEndPageNumber)
-            End If
-        End With
+        ' Fix scroll issues after editing in reading view
+        If ActiveWindow.View = wdReadingView Then
+            With ActiveWindow.ActivePane
+                If CurrentPage > .Selection.Information(wdActiveEndPageNumber) Then
+                    .PageScroll Down:=CurrentPage - .Selection.Information(wdActiveEndPageNumber)
+                ElseIf CurrentPage < .Selection.Information(wdActiveEndPageNumber) Then
+                    .PageScroll Up:=CurrentPage - .Selection.Information(wdActiveEndPageNumber)
+                End If
+            End With
+        End If
         Application.ScreenUpdating = True
         
         Exit Sub
@@ -631,8 +692,8 @@ SpeechDocCheck:
         If SpeechDoc.ActiveWindow.Selection.Start <> SpeechDoc.ActiveWindow.Selection.Paragraphs(1).Range.Start Then
            If MsgBox("Sending to the middle of text. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
         End If
-        If Selection.Paragraphs(1).outlineLevel = 4 Then
-            If SpeechDoc.ActiveWindow.Selection.Paragraphs.outlineLevel < wdOutlineLevel4 Then
+        If Selection.Paragraphs(1).OutlineLevel = 4 Then
+            If SpeechDoc.ActiveWindow.Selection.Paragraphs.OutlineLevel < wdOutlineLevel4 Then
                 If MsgBox("Sending a card into a block, hat, or pocket.  Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
             End If
         End If
@@ -677,7 +738,7 @@ End Sub
 Sub NewSpeech()
 ' Creates a new Speech document
     Dim SpeechName As String
-    Dim FileName As String
+    Dim Filename As String
     Dim h
     Dim AutoSaveDirectory As String
  
@@ -698,7 +759,7 @@ SpeechName:
     If Hour(Now) > 12 Then h = Hour(Now) - 12 & "PM"
     If Hour(Now) < 12 Then h = Hour(Now) & "AM"
     If Hour(Now) = 0 Then h = "12AM"
-    FileName = "Speech " & SpeechName & " " & Month(Now) & "-" & Day(Now) & " " & h
+    Filename = "Speech " & SpeechName & " " & Month(Now) & "-" & Day(Now) & " " & h
 
     ' Add new document based on template
     Paperless.NewDocument
@@ -707,11 +768,11 @@ SpeechName:
     If GetSetting("Verbatim", "Paperless", "AutoSaveSpeech", False) = True Then
         AutoSaveDirectory = GetSetting("Verbatim", "Paperless", "AutoSaveDir", CurDir())
         If Right(AutoSaveDirectory, 1) <> Application.PathSeparator Then AutoSaveDirectory = AutoSaveDirectory & Application.PathSeparator
-        FileName = AutoSaveDirectory & FileName
-        ActiveDocument.SaveAs FileName:=FileName, FileFormat:=wdFormatXMLDocument
+        Filename = AutoSaveDirectory & Filename
+        ActiveDocument.SaveAs Filename:=Filename, FileFormat:=wdFormatXMLDocument
     Else
         With Application.Dialogs(wdDialogFileSaveAs)
-            .Name = FileName
+            .Name = Filename
             If .Show = 0 Then Exit Sub
         End With
     End If
@@ -730,13 +791,13 @@ End Sub
 Sub CopyToUSB()
 ' Copies the current file to the root folder of the first found USB drive
 
-    Dim FileName As String
+    Dim Filename As String
     
     ' Strip "Speech" if option set
     If GetSetting("Verbatim", "Paperless", "StripSpeech", True) = True And Len(ActiveDocument.Name) > 11 Then
-        FileName = Trim(Replace(ActiveDocument.Name, "speech", "", 1, -1, vbTextCompare))
+        Filename = Trim(Replace(ActiveDocument.Name, "speech", "", 1, -1, vbTextCompare))
     Else
-        FileName = Trim(ActiveDocument.Name)
+        Filename = Trim(ActiveDocument.Name)
     End If
     
     ' Save File locally
@@ -766,12 +827,12 @@ Sub CopyToUSB()
             m = Trim(Replace(m, "Mount Point: ", "")) & "/" ' Get just the mount path and add a trailing /
             
             ' Check if file already exists on USB
-            If AppleScriptTask("Verbatim.scpt", "RunShellScript", "test -e '" & m & FileName & "'; echo $?") = "0" Then
+            If AppleScriptTask("Verbatim.scpt", "RunShellScript", "test -e '" & m & Filename & "'; echo $?") = "0" Then
                 If MsgBox("File Exists.  Overwrite?", vbOKCancel) = vbCancel Then Exit Sub
             End If
             
             ' Copy To USB
-            AppleScriptTask "Verbatim.scpt", "RunShellScript", "cp '" & ActiveDocument.FullName & "' '" & m & FileName & "'"
+            AppleScriptTask "Verbatim.scpt", "RunShellScript", "cp '" & ActiveDocument.FullName & "' '" & m & Filename & "'"
             MsgBox "Sucessfully copied to USB!"
         Next m
         
@@ -802,13 +863,13 @@ Sub CopyToUSB()
         End If
                
         ' Check if file already exists on USB
-        If Filesystem.FileExists(USB & Application.PathSeparator & FileName) = True Then
+        If Filesystem.FileExists(USB & Application.PathSeparator & Filename) = True Then
             If MsgBox("File Exists.  Overwrite?", vbOKCancel) = vbCancel Then Exit Sub
         End If
         
         
         ' Copy To USB
-        FSO.CopyFile ActiveDocument.FullName, USB & Application.PathSeparator & FileName
+        FSO.CopyFile ActiveDocument.FullName, USB & Application.PathSeparator & Filename
     
         MsgBox "Sucessfully copied to USB!"
     
@@ -829,57 +890,6 @@ Handler:
 
 End Sub
 
-Sub StartTimer()
-' Starts a user supplied timer.
-    On Error GoTo Handler
-    Dim TimerPath As String
-    
-    #If Mac Then
-        Dim TimerPOSIX As String
-        
-        On Error GoTo Handler
-        
-        ' Get path to timer app
-        TimerPath = GetSetting("Verbatim", "Plugins", "TimerPath", "?")
-        
-        ' If not set, try default
-        If TimerPath = "?" Then TimerPath = "/Applications/VerbatimTimer.app"
-    
-        ' Make sure timer app exists
-        If Filesystem.FileExists(TimerPath) = False Then
-            MsgBox "Timer application not found. Ensure you have installed the Verbatim Timer or entered a custom path to another application in the Verbatim Settings."
-            Exit Sub
-        Else
-            ' If java app selected, run it from the shell
-            If Right(TimerPath, 5) = ".jar:" Or Right(TimerPath, 4) = ".jar" Then
-                AppleScriptTask "Verbatim.scpt", "RunShellScript", "open '" & TimerPath & "'"
-            Else
-                AppleScriptTask "Verbatim.scpt", "ActivateTimer", TimerPath
-            End If
-        End If
-    
-        Exit Sub
-    #Else
-        TimerPath = GetSetting("Verbatim", "Plugins", "TimerPath", "")
-        If TimerPath = "" Then
-            TimerPath = Environ("ProgramW6432") & Application.PathSeparator & "Verbatim" & Application.PathSeparator & "Plugins" & Application.PathSeparator & "Timer.exe"
-        End If
-        
-        ' Check timer exists
-        If Filesystem.FileExists(TimerPath) = False Then
-            MsgBox "Timer application not found. Ensure you have installed the Verbatim Timer or entered a custom path to another application in the Verbatim Settings."
-            Exit Sub
-        End If
-        
-        ' Run Timer
-        Shell TimerPath, vbNormalFocus
-       
-        Exit Sub
-    #End If
-    
-Handler:
-    MsgBox "Error " & Err.Number & ": " & Err.Description
-End Sub
 
 '*************************************************************************************
 '* WARRANT FUNCTIONS                                                                 *

@@ -47,6 +47,57 @@ Public Sub ShowForm(FormName As String)
     Form.Show
 End Sub
 
+' Functions for assigning keyboard shortcuts to forms
+Public Sub ShowFormHelp()
+    UI.ShowForm "Help"
+End Sub
+
+Public Sub ShowFormSettings()
+    UI.ShowForm "Settings"
+End Sub
+
+Public Sub ShowFormShare()
+    UI.ShowForm "Share"
+End Sub
+
+Public Sub ShowFormStats()
+    UI.ShowForm "Stats"
+End Sub
+
+Public Sub ShowFormCaselist()
+    UI.ShowForm "Caselist"
+End Sub
+
+Public Sub ShowFormChooseSpeechDoc()
+    UI.ShowForm "ChooseSpeechDoc"
+End Sub
+
+Public Sub LaunchTutorial()
+    Dim d As Document
+    Dim TutorialDoc As String
+    
+    ' If more than one non-empty doc is open, prompt to close
+    If Documents.Count > 1 Or ActiveDocument.Words.Count > 1 Then
+        If MsgBox("Tutorial can only be run while a single blank document is open. Open a new blank doc and close everything else?", vbYesNo) = vbYes Then
+            TutorialDoc = Documents.Add(ActiveDocument.AttachedTemplate.FullName)
+            
+            For Each d In Documents
+                If d <> TutorialDoc Then d.Close wdPromptToSaveChanges
+            Next d
+        Else
+            Exit Sub
+        End If
+    End If
+    
+    ' Make sure debate tab is active on ribbon
+    #If Mac Then
+    #Else
+        WordBasic.SendKeys "%d%"
+    #End If
+    
+    UI.ShowForm "Tutorial"
+End Sub
+
 Public Sub ResizeUserForm(frm As Object, Optional dResizeFactor As Double = 0#)
 ' From https://peltiertech.com/userforms-for-mac-and-windows/
     Dim ctrl As Object
@@ -66,7 +117,7 @@ Public Sub ResizeUserForm(frm As Object, Optional dResizeFactor As Double = 0#)
                 .Left = .Left * dResizeFactor
                 .Top = .Top * dResizeFactor
                 On Error Resume Next
-                .Font.Size = .Font.Size * dResizeFactor
+                .Font.size = .Font.size * dResizeFactor
                 On Error GoTo 0
 
                 ' Multi column listboxes, comboboxes
@@ -88,7 +139,6 @@ Public Sub ResizeUserForm(frm As Object, Optional dResizeFactor As Double = 0#)
 End Sub
 
 Public Sub PopulateComboBoxFromJSON(URL As String, DisplayKey As String, ValueKey As String, c As Object)
-    ' TODO - switch c parameter declaration back to Control after moving everything to late binding
     On Error GoTo Handler
 
     System.Cursor = wdCursorWait

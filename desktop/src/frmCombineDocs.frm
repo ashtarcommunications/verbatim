@@ -54,8 +54,7 @@ Private Sub UserForm_Initialize()
     End If
     
     Dim Response As Dictionary
-    'Set Response = HTTP.GetReq(Globals.CASELIST_URL & "/tabroom/rounds")
-    Set Response = HTTP.GetReq(Globals.MOCK_ROUNDS)
+    Set Response = HTTP.GetReq(Globals.CASELIST_URL & "/tabroom/rounds")
     
     If Response("status") = 401 Then
         Me.Hide
@@ -174,9 +173,9 @@ Private Sub btnCombine_Click()
     ' Save file
     If GetSetting("Verbatim", "Paperless", "AutoSaveDir") <> "" And Me.cboAutoName.Value <> "" Then
         If Right(GetSetting("Verbatim", "Paperless", "AutoSaveDir"), 1) = Application.PathSeparator Then
-            ActiveDocument.SaveAs FileName:=GetSetting("Verbatim", "Paperless", "AutoSaveDir") & Me.cboAutoName.Value, FileFormat:=wdFormatXMLDocument
+            ActiveDocument.SaveAs Filename:=GetSetting("Verbatim", "Paperless", "AutoSaveDir") & Me.cboAutoName.Value, FileFormat:=wdFormatXMLDocument
         Else
-            ActiveDocument.SaveAs FileName:=GetSetting("Verbatim", "Paperless", "AutoSaveDir") & Application.PathSeparator & Me.cboAutoName.Value, FileFormat:=wdFormatXMLDocument
+            ActiveDocument.SaveAs Filename:=GetSetting("Verbatim", "Paperless", "AutoSaveDir") & Application.PathSeparator & Me.cboAutoName.Value, FileFormat:=wdFormatXMLDocument
         End If
     Else
         With Application.Dialogs(wdDialogFileSaveAs)

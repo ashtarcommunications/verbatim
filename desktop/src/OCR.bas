@@ -69,8 +69,25 @@ Public Sub PasteOCR()
             Exit Sub
         End If
         
-        If Filesystem.FileExists(Environ("ProgramW6432") & Application.PathSeparator & "Verbatim" & Application.PathSeparator & "Plugins" & Application.PathSeparator & "Capture2Text_CLI.exe") = True Then
-            C2TPath = Filesystem.FileExists(Environ("ProgramW6432") & Application.PathSeparator & "Verbatim" & Application.PathSeparator & "Plugins" & Application.PathSeparator & "Capture2Text_CLI.exe")
+        If Filesystem.FileExists(Environ("ProgramW6432") _
+            & Application.PathSeparator _
+            & "Verbatim" _
+            & Application.PathSeparator _
+            & "Plugins" _
+            & Application.PathSeparator _
+            & "Capture2Text" _
+            & Application.PathSeparator _
+            & "Capture2Text_CLI.exe" _
+        ) = True Then
+            C2TPath = Environ("ProgramW6432") _
+                & Application.PathSeparator _
+                & "Verbatim" _
+                & Application.PathSeparator _
+                & "Plugins" _
+                & Application.PathSeparator _
+                & "Capture2Text" _
+                & Application.PathSeparator _
+                & "Capture2Text_CLI.exe"
         ElseIf Filesystem.FileExists(Environ("ProgramW6432") & Application.PathSeparator & "Capture2Text" & Application.PathSeparator & "Capture2Text_CLI.exe") = True Then
             C2TPath = Environ("ProgramW6432") & Application.PathSeparator & "Capture2Text" & Application.PathSeparator & "Capture2Text_CLI.exe"
         Else

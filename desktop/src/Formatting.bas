@@ -13,7 +13,7 @@ Sub UnderlineMode(c As IRibbonControl, pressed As Boolean)
         Do
           DoEvents ' Give control back to application
           If Selection.Type > 1 Then
-              If Selection.Paragraphs.outlineLevel = wdOutlineLevelBodyText Then ' Only affect cards
+              If Selection.Paragraphs.OutlineLevel = wdOutlineLevelBodyText Then ' Only affect cards
                   If Selection.Font.Underline = wdUnderlineNone Then ' Testing for style here instead doesn't work
                       Selection.Style = "Underline"
                   Else
@@ -40,36 +40,6 @@ Sub ToggleUnderline()
     End If
 End Sub
 
-Public Sub ToggleParagraphIntegrity(c As IRibbonControl, pressed As Boolean)
-' Toggle setting for Paragraph Integrity
-    If GetSetting("Verbatim", "Format", "ParagraphIntegrity", True) = True Then
-        SaveSetting "Verbatim", "Format", "ParagraphIntegrity", False
-        SaveSetting "Verbatim", "Format", "UsePilcrows", False
-        Globals.ParagraphIntegrityToggle = False
-        Globals.UsePilcrowsToggle = False
-    Else
-        SaveSetting "Verbatim", "Format", "ParagraphIntegrity", True
-        Globals.ParagraphIntegrityToggle = True
-    End If
-
-    Ribbon.RefreshRibbon
-
-End Sub
-
-Public Sub ToggleUsePilcrows(c As IRibbonControl, pressed As Boolean)
-' Toggle setting for Use Pilcrows
-    If GetSetting("Verbatim", "Format", "UsePilcrows", True) = True Then
-        SaveSetting "Verbatim", "Format", "UsePilcrows", False
-        Globals.UsePilcrowsToggle = False
-    Else
-        SaveSetting "Verbatim", "Format", "UsePilcrows", True
-        Globals.UsePilcrowsToggle = True
-    End If
-
-    Ribbon.RefreshRibbon
-
-End Sub
-
 Sub PasteText()
 ' Pastes unformatted text
     #If Mac Then
@@ -88,7 +58,7 @@ Sub PasteText()
         Selection = PasteText
         
         If GetSetting("Verbatim", "Format", "CondenseOnPaste", False) = True Then
-            Formatting.Condense
+            Condense.CondenseCard
         End If
     
         Selection.Collapse 0
@@ -97,417 +67,6 @@ End Sub
 
 Sub Highlight()
     WordBasic.Highlight
-End Sub
-
-Sub ShrinkText()
-' Cycles non-underlined text in the current paragraph down a size at a time from 11-4pt
-' Differences in un-underlined font size will be normalized automatically
-
-    Dim r As Range
-    Dim SelectionStart As Long
-    Dim SelectionEnd As Long
-    Dim NewFontSize As Long
-    
-    ' Turn off screen updating
-    Application.ScreenUpdating = False
-    
-    ' Save selection
-    SelectionStart = Selection.Start
-    SelectionEnd = Selection.End
-    
-    ' Select the card text if nothing is selected
-    If Selection.Start = Selection.End Then Paperless.SelectCardText
-    
-    ' If not text, exit
-    If Selection.Type < 2 Then
-        Application.StatusBar = "Can only shrink text, not other document elements"
-        Exit Sub
-    End If
-    
-    ' If in "Paragraph" mode, extend selection to include current paragraph
-    If GetSetting("Verbatim", "Format", "ShrinkMode", "Paragraph") = "Paragraph" Then
-        ' Move selection to start and end of paragraph
-        If Selection.Start <> Selection.Paragraphs(1).Range.Start Then Selection.Start = Selection.Paragraphs(1).Range.Start
-        If Selection.End <> Selection.Paragraphs(Selection.Paragraphs.Count).Range.End Then Selection.End = Selection.Paragraphs(Selection.Paragraphs.Count).Range.End
-    End If
-        
-    ' Use a separate range to avoid the Find continuing to rest of document
-    Set r = Selection.Range
-
-    ' Find first un-underlined part of card and test font size
-    With r.Find
-        .ClearFormatting
-        .Replacement.ClearFormatting
-        .Text = "*[ ]"
-        .Replacement.Text = ""
-        .MatchWildcards = True
-        .Wrap = wdFindStop
-        .Format = True
-        .Font.Underline = 0
-        .Execute
-        
-        .Text = ""
-        .MatchWildcards = False
-    End With
-    
-    ' Depending on font size, shrink or reset to normal text size
-    Select Case r.Font.Size
-        Case Is = wdUndefined   ' Multiple font sizes, shrink to 8
-            NewFontSize = 8
-        Case Is > 8
-            NewFontSize = 8
-        Case Is = 8
-            NewFontSize = 7
-        Case Is = 7
-            NewFontSize = 6
-        Case Is = 6
-            NewFontSize = 5
-        Case Is = 5
-            NewFontSize = 4
-        Case Is = 4
-            NewFontSize = ActiveDocument.Styles("Normal").Font.Size
-        Case Else   ' Anything weird, go back to normal text size
-            NewFontSize = ActiveDocument.Styles("Normal").Font.Size
-    End Select
-    
-    ' Restore original search range - have to collapse range to allow shrinking non-underlined paragraphs
-    ' that match the selection range exactly
-    Set r = Selection.Range
-    r.Collapse wdCollapseStart
-    
-    ' Replace the text and reset Find dialogue
-    With r.Find
-        .ClearFormatting
-        .Replacement.ClearFormatting
-        .Text = ""
-        .Replacement.Text = ""
-        .MatchWildcards = False
-        .Wrap = wdFindStop
-        .Format = True
-        .Font.Underline = 0
-    End With
-    
-    Do While r.Find.Execute(Forward:=True) And r.InRange(Selection.Range)
-        r.Font.Size = NewFontSize
-    Loop
-    
-    r.Find.ClearFormatting
-    r.Find.Replacement.ClearFormatting
-   
-    ' Reset range
-    Set r = Selection.Range
-    
-    ' Optionally restore bracketed ommissions
-    If GetSetting("Verbatim", "Format", "ShrinkOmissions", False) = False Then
-        With r.Find
-            .ClearFormatting
-            .Replacement.ClearFormatting
-            .Text = "\[*(Omitted)*\]"
-            .Replacement.Text = ""
-            .Replacement.Font.Size = ActiveDocument.Styles("Normal").Font.Size
-            .MatchWildcards = True
-            .MatchCase = False
-            .MatchWholeWord = False
-            .MatchSoundsLike = False
-            .MatchAllWordForms = False
-            .Wrap = wdFindStop
-            .Format = True
-            .Execute Replace:=wdReplaceAll
-            
-            .Text = "\[\[*(Omitted)*\]\]"
-            .Execute Replace:=wdReplaceAll
-            
-            .Text = "\<*(Omitted)*\>"
-            .Execute Replace:=wdReplaceAll
-            
-            .ClearFormatting
-            .Replacement.ClearFormatting
-            .MatchWildcards = False
-        End With
-    End If
-    
-    ' Shrink pilcrows too, just in case they've been underlined
-    Formatting.ShrinkPilcrows
-    
-    ' Restore selection
-    Selection.Start = SelectionStart
-    Selection.End = SelectionEnd
-    
-    ' Turn on Screen Updating
-    Application.ScreenUpdating = True
-End Sub
-
-Sub ShrinkAll()
-    Dim ShrinkMode As String
-    Dim p
-    
-    ' Temporarily override ShrinkMode to Paragraph mode
-    ShrinkMode = GetSetting("Verbatim", "Format", "ShrinkMode", "Paragraph")
-    SaveSetting "Verbatim", "Format", "ShrinkMode", "Paragraph"
-    
-    ' Loop all paragraphs, shrink if body text
-    For Each p In ActiveDocument.Paragraphs
-        If p.outlineLevel = wdOutlineLevelBodyText Then
-            Selection.Start = p.Range.Start
-            Formatting.ShrinkText
-        End If
-    Next p
-    
-    ' Restore setting
-    SaveSetting "Verbatim", "Format", "ShrinkMode", ShrinkMode
-
-End Sub
-
-Sub UnshrinkAll()
-    With ActiveDocument.Range.Find
-        .ClearFormatting
-        .Replacement.ClearFormatting
-        .Text = ""
-        .Replacement.Text = ""
-        .ParagraphFormat.outlineLevel = wdOutlineLevelBodyText
-        .Font.Underline = wdUnderlineNone
-        .Font.Bold = False
-        .Replacement.Font.Size = ActiveDocument.Styles("Normal").Font.Size
-        .Format = True
-        .Wrap = wdFindContinue
-        .Execute Replace:=wdReplaceAll
-        
-        .ClearFormatting
-        .Replacement.ClearFormatting
-    End With
-End Sub
-
-Sub Condense()
-' Removes white-space from selection and optionally retains paragraph integrity
-
-    Dim CondenseRange As Range
-    
-    ' Turn off Screen Updating
-    Application.ScreenUpdating = False
-    
-    ' If selection is too short, exit
-    If Len(Selection) < 2 Then Exit Sub
-        
-    ' If end of selection is a line break, shorten it
-    If Selection.Characters.Last = vbCr Then Selection.MoveEnd , -1
-    
-    ' Save selection
-    Set CondenseRange = Selection.Range
-    
-    ' Condense everything except hard returns
-    With Selection.Find
-        .ClearFormatting
-        .Replacement.ClearFormatting
-        .Wrap = wdFindStop
-    
-        .Text = "^m"                    ' page breaks
-        .Replacement.Text = " "
-        .Execute Replace:=wdReplaceAll
-        
-        .Text = "^t"                    ' tabs
-        .Replacement.Text = " "
-        .Execute Replace:=wdReplaceAll
-        
-        .Text = "^s"                    ' non-breaking space
-        .Replacement.Text = " "
-        .Execute Replace:=wdReplaceAll
-        
-        .Text = "^b"                    ' section break
-        .Replacement.Text = " "
-        .Execute Replace:=wdReplaceAll
-        
-        .Text = "^l"                    ' new line
-        .Replacement.Text = " "
-        .Execute Replace:=wdReplaceAll
-        
-        .Text = "^n"                    ' column break
-        .Replacement.Text = " "
-        .Execute Replace:=wdReplaceAll
-    End With
-    
-    ' If paragraph integrity is off, just condense
-    If GetSetting("Verbatim", "Format", "ParagraphIntegrity", False) = False Then
-        With Selection.Find
-            .Text = "^p"
-            .Replacement.Text = " "
-            .Execute Replace:=wdReplaceAll
-        
-            .Text = "  "
-            .Replacement.Text = " "
-            
-            While InStr(Selection, "  ")
-                .Execute Replace:=wdReplaceAll
-            Wend
-            
-            If Selection.Characters(1) = " " And _
-            Selection.Paragraphs(1).Range.Start = Selection.Start Then _
-            Selection.Characters(1).Delete
-        End With
-    
-    Else
-        ' If paragraph integrity and Pilcrows are on, replace paragraph breaks with Pilcrow sign
-        If GetSetting("Verbatim", "Format", "UsePilcrows", False) = True Then
-            With Selection.Find
-                .Text = "^p"
-                .Replacement.Text = Chr(182) & " " ' Pilcrow sign
-                .Replacement.Font.Size = 6
-                .Execute Replace:=wdReplaceAll
-                
-                .Text = Chr(182) & " " & Chr(182)
-                .Replacement.Text = Chr(182)
-                
-                While InStr(Selection, Chr(182) & " " & Chr(182))
-                    .Execute Replace:=wdReplaceAll
-                Wend
-                
-                .Text = "  "
-                .Replacement.ClearFormatting
-                .Replacement.Text = " "
-                
-                While InStr(Selection, "  ")
-                    .Execute Replace:=wdReplaceAll
-                Wend
-                
-                If Selection.Characters(1) = " " And _
-                Selection.Paragraphs(1).Range.Start = Selection.Start Then _
-                Selection.Characters(1).Delete
-                
-                ' Remove trailing pilcrows
-                If Selection.Characters.Last.Previous = Chr(182) Then Selection.Characters.Last.Previous.Delete
-            End With
-    
-        Else ' Else, paragraph integrity is off and Pilcrows are off, leave single paragraph marks
-            With Selection.Find
-                .Text = "^p^w"
-                .Execute
-                .Replacement.Text = "^p"
-                Do Until .Found = False
-                    CondenseRange.Select
-                    .Execute Replace:=wdReplaceAll
-                    CondenseRange.Select
-                    .Execute
-                Loop
-                
-                .Text = "^p^p"
-                .Execute
-                .Replacement.Text = "^p"
-                Do Until .Found = False
-                    CondenseRange.Select
-                    .Execute Replace:=wdReplaceAll
-                    CondenseRange.Select
-                    .Execute
-                Loop
-                
-                .Text = "  "
-                .Replacement.Text = " "
-                .Execute Replace:=wdReplaceAll
-                
-                If Selection.Characters(1) = " " And _
-                Selection.Paragraphs(1).Range.Start = Selection.Start Then _
-                Selection.Characters(1).Delete
-            End With
-    
-        End If
-    End If
-    
-    ' Clear find dialogue
-    Selection.Find.ClearFormatting
-    Selection.Find.Replacement.ClearFormatting
-    
-    ' Turn on Screen Updating
-    Application.ScreenUpdating = True
-End Sub
-
-Sub Uncondense()
-' Replaces pilcrows with paragraph breaks
-    Dim r As Range
-    
-    ' Turn off Screen Updating
-    Application.ScreenUpdating = False
-    
-    If Selection.Start <= ActiveDocument.Range.Start And Selection.Start = Selection.End Then
-        Set r = ActiveDocument.Range
-    ElseIf Selection.Start = Selection.End Then
-        Set r = Paperless.SelectHeadingAndContentRange(Selection.Paragraphs(1))
-    Else
-        Set r = Selection.Range
-    End If
-    
-    With r.Find
-        .ClearFormatting
-        .Replacement.ClearFormatting
-        .Text = Chr(182) ' Pilcrow
-        .Replacement.Text = "^p"
-        .Execute Replace:=wdReplaceAll
-        
-        .Text = ""
-        .Replacement.Text = ""
-    End With
-    
-    Set r = Nothing
-    
-    ' Turn on Screen Updating
-    Application.ScreenUpdating = True
-End Sub
-
-Sub ShrinkPilcrows()
-' Shrinks, un-underlines and unbolds all pilcrows in current paragraph to 8pt
-' If run with the insertion point at the very beginning of the document, shrinks all pilcrows
-
-    ' Turn off screen updating
-    Application.ScreenUpdating = False
-    
-    ' If at beginning of document, shrink all pilcrows and exit
-    If Selection.Start <= ActiveDocument.Range.Start And Selection.Start = Selection.End Then
-        Selection.Collapse
-        With Selection.Find
-            .ClearFormatting
-            .Replacement.ClearFormatting
-            .Text = Chr(182)
-            .Replacement.Text = Chr(182)
-            .Replacement.Font.Size = 6
-            .Replacement.Font.Underline = wdUnderlineNone
-            .Replacement.Font.Bold = 0
-            .Format = True
-            .Wrap = wdFindContinue
-            .Execute Replace:=wdReplaceAll
-            
-            .ClearFormatting
-            .Replacement.ClearFormatting
-        End With
-        
-        Exit Sub
-    End If
-    
-    ' If in "Paragraph" mode, select current paragraph
-    If GetSetting("Verbatim", "Format", "ShrinkMode", "Paragraph") = "Paragraph" Then
-        ' Move selection to start and end of paragraph
-        If Selection.Start <> Selection.Paragraphs(1).Range.Start Then Selection.Paragraphs(1).Range.Select
-        If Selection.End <> Selection.Paragraphs(1).Range.End Then Selection.Paragraphs(1).Range.Select
-    End If
-    
-    ' If not text or no selection, exit
-    If Selection.Type < 2 Then Exit Sub
-    If Selection.Start = Selection.End Then Exit Sub
-    
-    With Selection.Find
-        .ClearFormatting
-        .Replacement.ClearFormatting
-        .Text = Chr(182)
-        .Replacement.Text = Chr(182)
-        .Replacement.Font.Size = 6
-        .Replacement.Font.Underline = wdUnderlineNone
-        .Replacement.Font.Bold = 0
-        .Format = True
-        .Wrap = wdFindStop
-        .Execute Replace:=wdReplaceAll
-    End With
-    
-    Selection.Find.ClearFormatting
-    Selection.Find.Replacement.ClearFormatting
-        
-    ' Turn on Screen Updating
-    Application.ScreenUpdating = True
 End Sub
 
 Sub ClearToNormal()
@@ -521,7 +80,6 @@ End Sub
 
 Sub CopyPreviousCite()
 ' Duplicates previous cite - only works with one-line cites
-    
     Dim StartLocation As Long
     
     ' Save Current Location
@@ -554,7 +112,6 @@ Sub CopyPreviousCite()
     Selection.Start = StartLocation
     Selection.Collapse
     Selection.Paste
-
 End Sub
 
 Sub UniHighlight()
@@ -589,10 +146,8 @@ Sub UniHighlight()
 End Sub
 
 Sub UniHighlightWithException()
-    Dim SelectionStart
-    Dim SelectionEnd
-    SelectionStart = Selection.Start
-    SelectionEnd = Selection.End
+    Dim r As Range
+    Set r = ActiveDocument.Range
     
     Dim ExceptionColor As String
     ExceptionColor = GetSetting("Verbatim", "Format", "HighlightingException", "None")
@@ -602,7 +157,7 @@ Sub UniHighlightWithException()
         Exit Sub
     End If
     
-    With Selection.Find
+    With r.Find
         .ClearFormatting
         .Replacement.ClearFormatting
         .Highlight = True
@@ -610,29 +165,27 @@ Sub UniHighlightWithException()
         .Text = ""
         .Replacement.Text = ""
         .Forward = True
-        .Wrap = wdFindContinue
+        .Wrap = wdFindStop
         .Format = True
         .MatchCase = False
         .MatchWholeWord = False
         .MatchWildcards = False
         .MatchSoundsLike = False
         .MatchAllWordForms = False
+       
+        Do While .Execute(Forward:=True) = True
+            If r.HighlightColorIndex = Formatting.HighlightColorToEnum(ExceptionColor) Then
+                r.Collapse Direction:=wdCollapseEnd
+            Else
+                r.HighlightColorIndex = Options.DefaultHighlightColorIndex
+            End If
+        Loop
+    
+        .ClearFormatting
+        .Replacement.ClearFormatting
     End With
-   
-    Do While Selection.Find.Execute(Forward:=True) = True
-        If Selection.Range.HighlightColorIndex = Formatting.HighlightColorToEnum(ExceptionColor) Then
-            Selection.Collapse Direction:=wdCollapseEnd
-        Else
-            Selection.Range.HighlightColorIndex = Options.DefaultHighlightColorIndex
-        End If
-    Loop
     
-    Selection.Find.ClearFormatting
-    Selection.Find.Replacement.ClearFormatting
-    
-    Selection.Start = SelectionStart
-    Selection.End = SelectionEnd
-
+    Set r = Nothing
 End Sub
 
 Public Function HighlightColorToEnum(Color As String) As Long
@@ -684,11 +237,10 @@ Sub RemoveBlanks()
     If MsgBox("Removing blank lines from the Nav Pane is irreversible. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
 
     For Each p In ActiveDocument.Paragraphs
-        If p.outlineLevel < wdOutlineLevel5 And Len(p) = 1 Then
+        If p.OutlineLevel < wdOutlineLevel5 And p.Range.End - p.Range.Start <= 1 Then
             p.Style = "Normal"
         End If
     Next p
-
 End Sub
 
 Sub ShowComments()
@@ -715,12 +267,11 @@ Sub UpdateStyles()
 End Sub
 
 Sub SelectSimilar()
-    ' Turn off error checking
     On Error Resume Next
     
     Application.ScreenUpdating = False
     
-    If Selection.Font.Underline = wdUnderlineNone And Selection.Font.Size = ActiveDocument.Styles("Normal").Font.Size Then
+    If Selection.Font.Underline = wdUnderlineNone And Selection.Font.size = ActiveDocument.Styles("Normal").Font.size Then
         ActiveDocument.Content.Font.Shrink
         WordBasic.SelectSimilarFormatting
         ActiveDocument.Content.Font.Grow
@@ -729,7 +280,6 @@ Sub SelectSimilar()
     End If
     
     Application.ScreenUpdating = True
-    
 End Sub
 
 Sub RemoveHyperlinks()
@@ -743,27 +293,6 @@ Sub RemoveHyperlinks()
     Next i
 
     Application.StatusBar = Count & " hyperlinks removed."
-End Sub
-
-Sub RemovePilcrows()
-    With Selection.Find
-        .ClearFormatting
-        .Replacement.ClearFormatting
-        .Text = Chr(182)
-        .Replacement.Text = ""
-        .Forward = True
-        .Wrap = wdFindContinue
-        .Format = False
-        .MatchCase = False
-        .MatchWholeWord = False
-        .MatchWildcards = False
-        .MatchSoundsLike = False
-        .MatchAllWordForms = False
-        .Execute Replace:=wdReplaceAll
-        
-        .ClearFormatting
-        .Replacement.ClearFormatting
-    End With
 End Sub
 
 Sub AutoFormatCite()
@@ -831,6 +360,7 @@ Sub ReformatAllCites()
     Selection.Collapse
     
     ' Find each occurrence of the Cite style
+    ' Have to use selection instead of a range to have access to ClearFormatting
     With Selection.Find
         .ClearFormatting
         .Replacement.ClearFormatting
@@ -894,7 +424,7 @@ Sub AutoUnderline()
     
     ' If cursor isn't on a tag, exit
     Selection.Collapse
-    If Selection.Paragraphs.outlineLevel <> wdOutlineLevel4 Or Len(Selection.Paragraphs(1).Range.Text) < 2 Then
+    If Selection.Paragraphs.OutlineLevel <> wdOutlineLevel4 Or Len(Selection.Paragraphs(1).Range.Text) < 2 Then
         MsgBox "Cursor must be in a tag to automatically underline a card."
         Exit Sub
     End If
@@ -993,48 +523,13 @@ Sub AutoEmphasizeFirst()
     Next w
 End Sub
 
-Sub CondenseNoPilcrows()
-' Easier to override saved settings temporarily because of poor VBA handling of optional boolean parameters
-    Dim ParagraphIntegrity As Boolean
-    Dim UsePilcrows As Boolean
-    
-    ParagraphIntegrity = GetSetting("Verbatim", "Format", "ParagraphIntegrity", False)
-    UsePilcrows = GetSetting("Verbatim", "Format", "UsePilcrows", False)
-    
-    SaveSetting "Verbatim", "Format", "ParagraphIntegrity", False
-    SaveSetting "Verbatim", "Format", "UsePilcrows", False
-    
-    Formatting.Condense
-    
-    SaveSetting "Verbatim", "Format", "ParagraphIntegrity", ParagraphIntegrity
-    SaveSetting "Verbatim", "Format", "UsePilcrows", UsePilcrows
-End Sub
-
-Sub CondenseWithPilcrows()
-    Dim ParagraphIntegrity As Boolean
-    Dim UsePilcrows As Boolean
-    
-    ParagraphIntegrity = GetSetting("Verbatim", "Format", "ParagraphIntegrity", False)
-    UsePilcrows = GetSetting("Verbatim", "Format", "UsePilcrows", False)
-    
-    SaveSetting "Verbatim", "Format", "ParagraphIntegrity", True
-    SaveSetting "Verbatim", "Format", "UsePilcrows", True
-    
-    Formatting.Condense
-    
-    SaveSetting "Verbatim", "Format", "ParagraphIntegrity", ParagraphIntegrity
-    SaveSetting "Verbatim", "Format", "UsePilcrows", UsePilcrows
-End Sub
-
 Sub RemoveEmphasis()
-
+    Dim r As Range
+    Set r = ActiveDocument.Range
+    
     If MsgBox("Are you sure you want to convert all emphasized text to underlined?", vbYesNo) = vbNo Then Exit Sub
         
-    ' Go to top of document
-    Selection.HomeKey Unit:=wdStory
-    Selection.Collapse
-
-    With Selection.Find
+    With r.Find
         .ClearFormatting
         .Replacement.ClearFormatting
         .Text = ""
@@ -1054,36 +549,8 @@ Sub RemoveEmphasis()
         .ClearFormatting
         .Replacement.ClearFormatting
     End With
-End Sub
-
-Sub GetFromCiteCreator()
-    On Error GoTo Handler
     
-    #If Mac Then
-        AppleScriptTask "Verbatim.scpt", "GetFromCiteCreator", ""
-        Formatting.PasteText
-        Exit Sub
-    #Else
-        Dim retval As Double
-        Dim CiteCreatorPath As String
-        
-        On Error GoTo Handler
-        
-        ' Check GetFromCiteCreator script exists
-        CiteCreatorPath = Environ("ProgramW6432") & Application.PathSeparator & "Verbatim" & Application.PathSeparator & "Plugins" & Application.PathSeparator & "GetFromCiteCreator.exe"
-        If Filesystem.FileExists(CiteCreatorPath) = False Then
-            MsgBox "The GetFromCiteCreator plugin does not appear to be installed. Check https://paperlessdebate.com for more information on how to install."
-            Exit Sub
-        End If
-        
-        ' Run the script
-        retval = Shell(CiteCreatorPath, vbMinimizedNoFocus)
-                
-        Exit Sub
-    #End If
-    
-Handler:
-    MsgBox "Getting from Cite Creator failed - ensure Google Chrome and the Cite Creator extension are installed and open." & vbCrLf & vbCrLf & "Error " & Err.Number & ": " & Err.Description
+    Set r = Nothing
 End Sub
 
 Sub AutoNumberTags()
@@ -1095,7 +562,7 @@ Sub AutoNumberTags()
     
     ' Loop through each tag and insert a number - restart numbering on any larger heading
     For Each p In ActiveDocument.Paragraphs
-        Select Case p.outlineLevel
+        Select Case p.OutlineLevel
             Case Is = 1, 2, 3
                 i = 0
             Case Is = 4
@@ -1107,7 +574,6 @@ Sub AutoNumberTags()
                 ' Do Nothing
         End Select
     Next p
-
 End Sub
 
 Sub DeNumberTags()
@@ -1116,7 +582,7 @@ Sub DeNumberTags()
     
     ' Loop through each tag
     For Each p In ActiveDocument.Paragraphs
-        If p.outlineLevel = 4 Then
+        If p.OutlineLevel = 4 Then
             
             ' Delete numbers from beginning of line if there's a delimiter, then trim
             Set r = p.Range
@@ -1138,7 +604,7 @@ Sub FixFakeTags()
     Dim p As Paragraph
     
     For Each p In ActiveDocument.Paragraphs
-        If p.outlineLevel = wdOutlineLevelBodyText And p.Range.Bold = True And p.Range.Font.Size > ActiveDocument.Styles("Underline").Font.Size Then
+        If p.OutlineLevel = wdOutlineLevelBodyText And p.Range.Bold = True And p.Range.Font.size > ActiveDocument.Styles("Underline").Font.size Then
             p.Range.Select
             Selection.ClearFormatting
             p.Style = "Tag"
@@ -1180,7 +646,7 @@ Sub RemoveExtraStyles()
     ' Visibility = True actually hides the style in the style pane
     ' Have to change the name before deleting to avoid Word crashing on long style names
     For Each s In ActiveDocument.Styles
-        If ProgressForm.visible = False Then Exit Sub
+        If ProgressForm.Visible = False Then Exit Sub
         
         i = i + 1
         ProgressForm.lblCaption.Caption = ActiveDocument.Styles.Count & " Remaining Styles..."
@@ -1191,19 +657,19 @@ Sub RemoveExtraStyles()
         DoEvents ' Necessary for Progress form to update
     
         If s.Type = wdStyleTypeParagraph Or s.Type = wdStyleTypeLinked Then
-            If Left(s.NameLocal, 16) = "Heading 1,Pocket" And s.ParagraphFormat.outlineLevel = wdOutlineLevel1 Then
+            If Left(s.NameLocal, 16) = "Heading 1,Pocket" And s.ParagraphFormat.OutlineLevel = wdOutlineLevel1 Then
                 s.NameLocal = "Heading 1,Pocket"
                 s.Visibility = False
-            ElseIf Left(s.NameLocal, 13) = "Heading 2,Hat" And s.ParagraphFormat.outlineLevel = wdOutlineLevel2 Then
+            ElseIf Left(s.NameLocal, 13) = "Heading 2,Hat" And s.ParagraphFormat.OutlineLevel = wdOutlineLevel2 Then
                 s.NameLocal = "Heading 2,Hat"
                 s.Visibility = False
-            ElseIf Left(s.NameLocal, 15) = "Heading 3,Block" And s.ParagraphFormat.outlineLevel = wdOutlineLevel3 Then
+            ElseIf Left(s.NameLocal, 15) = "Heading 3,Block" And s.ParagraphFormat.OutlineLevel = wdOutlineLevel3 Then
                 s.NameLocal = "Heading 3,Block"
                 s.Visibility = False
-            ElseIf Left(s.NameLocal, 13) = "Heading 4,Tag" And s.ParagraphFormat.outlineLevel = wdOutlineLevel4 Then
+            ElseIf Left(s.NameLocal, 13) = "Heading 4,Tag" And s.ParagraphFormat.OutlineLevel = wdOutlineLevel4 Then
                 s.NameLocal = "Heading 4,Tag"
                 s.Visibility = False
-            ElseIf Left(s.NameLocal, 18) = "Normal,Normal/Card" And s.ParagraphFormat.outlineLevel = wdOutlineLevelBodyText Then
+            ElseIf Left(s.NameLocal, 18) = "Normal,Normal/Card" And s.ParagraphFormat.OutlineLevel = wdOutlineLevelBodyText Then
                 s.NameLocal = "Normal,Normal/Card"
                 s.Visibility = False
             Else
@@ -1290,14 +756,14 @@ Public Sub ConvertToDefaultStyles()
     ' Convert all headings to built-in styles
     For Each p In ActiveDocument.Paragraphs
         ' Trap for cancel button on Progress Form
-        If ProgressForm.visible = False Then Exit Sub
-        If p.outlineLevel = wdOutlineLevel1 Then
+        If ProgressForm.Visible = False Then Exit Sub
+        If p.OutlineLevel = wdOutlineLevel1 Then
             p.Style = wdStyleHeading1
-        ElseIf p.outlineLevel = wdOutlineLevel2 Then
+        ElseIf p.OutlineLevel = wdOutlineLevel2 Then
             p.Style = wdStyleHeading2
-        ElseIf p.outlineLevel = wdOutlineLevel3 Then
+        ElseIf p.OutlineLevel = wdOutlineLevel3 Then
             p.Style = wdStyleHeading3
-        ElseIf p.outlineLevel = wdOutlineLevel4 Then
+        ElseIf p.OutlineLevel = wdOutlineLevel4 Then
             p.Style = wdStyleHeading4
         End If
     Next p
@@ -1306,7 +772,7 @@ Public Sub ConvertToDefaultStyles()
     
     ' Fix style names for built-in styles to prevent other styles overwriting the name
     For Each s In ActiveDocument.Styles
-        If ProgressForm.visible = False Then Exit Sub
+        If ProgressForm.Visible = False Then Exit Sub
         
         i = i + 1
         ProgressForm.lblFile.Caption = "Processing " & s.NameLocal & " (" & i & " of " & StyleCount & ")"
@@ -1327,7 +793,7 @@ Public Sub ConvertToDefaultStyles()
     ProgressForm.lblCaption.Caption = "Converting styles..."
 
     For Each s In ActiveDocument.Styles
-        If ProgressForm.visible = False Then Exit Sub
+        If ProgressForm.Visible = False Then Exit Sub
         
         i = i + 1
         ProgressForm.lblFile.Caption = "Processing " & s.NameLocal & " (" & i & " of " & StyleCount & ")"
@@ -1536,6 +1002,7 @@ Public Function RemoveNonHighlightedUnderlining() As Integer
     ' Save a duplicate range to limit the Find to the current selection
     Set r = Selection.Range
     
+    ' Have to use Selection instead of a range to have access to ClearFormatting
     With Selection.Find
         .ClearFormatting
         .Replacement.ClearFormatting

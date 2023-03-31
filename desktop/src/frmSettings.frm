@@ -269,11 +269,6 @@ Private Sub UserForm_Initialize()
         Me.optSpacingNarrow.Value = True
     End If
         
-    If GetSetting("Verbatim", "Format", "ShrinkMode", "Paragraph") = "Paragraph" Then
-        Me.optParagraph.Value = True
-    Else
-        Me.optSelected.Value = True
-    End If
     Me.chkShrinkOmissions = GetSetting("Verbatim", "Format", "ShrinkOmissions", False)
     
     Me.chkParagraphIntegrity.Value = GetSetting("Verbatim", "Format", "ParagraphIntegrity", False)
@@ -362,12 +357,12 @@ Private Sub UserForm_Activate()
     ' Set Tabroom logged in state
     If GetSetting("Verbatim", "Caselist", "CaselistToken", "") <> "" And Caselist.CheckCaselistToken = True Then
         Me.lblTabroomLoggedIn.Caption = "You are logged in to Tabroom"
-        Me.btnTabroomLogout.visible = True
-        Me.btnTabroomLogin.visible = False
+        Me.btnTabroomLogout.Visible = True
+        Me.btnTabroomLogin.Visible = False
     Else
         Me.lblTabroomLoggedIn.Caption = "You are logged out of Tabroom"
-        Me.btnTabroomLogout.visible = False
-        Me.btnTabroomLogin.visible = True
+        Me.btnTabroomLogout.Visible = False
+        Me.btnTabroomLogin.Visible = True
     End If
 End Sub
 
@@ -441,7 +436,6 @@ Private Sub btnResetAllSettings_Click()
     
     ' Format Tab
     Me.optSpacingWide.Value = True
-    Me.optParagraph.Value = True
     Me.chkShrinkOmissions.Value = False
     
     Me.chkParagraphIntegrity.Value = False
@@ -575,13 +569,7 @@ Private Sub btnSave_Click()
     Else
         SaveSetting "Verbatim", "Format", "Spacing", "Narrow"
     End If
-    
-    If Me.optParagraph.Value = True Then
-        SaveSetting "Verbatim", "Format", "ShrinkMode", "Paragraph"
-    Else
-        SaveSetting "Verbatim", "Format", "ShrinkMode", "Selected"
-    End If
-    
+   
     SaveSetting "Verbatim", "Format", "ShrinkOmissions", Me.chkShrinkOmissions.Value
     
     SaveSetting "Verbatim", "Format", "ParagraphIntegrity", Me.chkParagraphIntegrity.Value
@@ -602,25 +590,25 @@ Private Sub btnSave_Click()
     End If
     
     ' Update template styles based on Styles settings
-    DebateTemplate.Styles("Normal").Font.Size = Me.cboNormalSize.Value
+    DebateTemplate.Styles("Normal").Font.size = Me.cboNormalSize.Value
     DebateTemplate.Styles("Normal").Font.Name = Me.cboNormalFont.Value
-    DebateTemplate.Styles("Pocket").Font.Size = Me.cboPocketSize.Value
-    DebateTemplate.Styles("Hat").Font.Size = Me.cboHatSize.Value
-    DebateTemplate.Styles("Block").Font.Size = Me.cboBlockSize.Value
-    DebateTemplate.Styles("Tag").Font.Size = Me.cboTagSize.Value
-    DebateTemplate.Styles("Cite").Font.Size = Me.cboCiteSize.Value
+    DebateTemplate.Styles("Pocket").Font.size = Me.cboPocketSize.Value
+    DebateTemplate.Styles("Hat").Font.size = Me.cboHatSize.Value
+    DebateTemplate.Styles("Block").Font.size = Me.cboBlockSize.Value
+    DebateTemplate.Styles("Tag").Font.size = Me.cboTagSize.Value
+    DebateTemplate.Styles("Cite").Font.size = Me.cboCiteSize.Value
     If Me.chkUnderlineCite.Value = True Then
         DebateTemplate.Styles("Cite").Font.Underline = wdUnderlineSingle
     Else
         DebateTemplate.Styles("Cite").Font.Underline = wdUnderlineNone
     End If
-    DebateTemplate.Styles("Underline").Font.Size = Me.cboUnderlineSize.Value
+    DebateTemplate.Styles("Underline").Font.size = Me.cboUnderlineSize.Value
     If Me.chkBoldUnderline.Value = True Then
         DebateTemplate.Styles("Underline").Font.Bold = True
     Else
         DebateTemplate.Styles("Underline").Font.Bold = False
     End If
-    DebateTemplate.Styles("Emphasis").Font.Size = Me.cboEmphasisSize.Value
+    DebateTemplate.Styles("Emphasis").Font.size = Me.cboEmphasisSize.Value
     DebateTemplate.Styles("Emphasis").Font.Name = Me.cboNormalFont.Value
     DebateTemplate.Styles("Emphasis").Font.Bold = Me.chkEmphasisBold.Value
     DebateTemplate.Styles("Emphasis").Font.Italic = Me.chkEmphasisItalic.Value
@@ -753,8 +741,8 @@ Private Sub btnTabroomLogout_Click()
     SaveSetting "Verbatim", "Caselist", "CaselistToken", ""
     SaveSetting "Verbatim", "Caselist", "CaselistTokenExpires", ""
     Me.lblTabroomLoggedIn.Caption = "You are logged out of Tabroom"
-    Me.btnTabroomLogout.visible = False
-    Me.btnTabroomLogin.visible = True
+    Me.btnTabroomLogout.Visible = False
+    Me.btnTabroomLogin.Visible = True
 End Sub
 
 Private Sub lblTabroomRegister_Click()
@@ -781,7 +769,7 @@ End Sub
 
 Private Sub btnTutorial_Click()
     Unload Me
-    UI.ShowForm "Tutorial"
+    UI.LaunchTutorial
 End Sub
 
 Private Sub btnUnverbatimizeNormal_Click()
@@ -870,12 +858,7 @@ Private Sub btnImportSettings_Click()
     Else
         Me.optSpacingNarrow.Value = True
     End If
-    
-    If System.PrivateProfileString(SettingsFileName, "Format", "ShrinkMode") = "Paragraph" Then
-        Me.optParagraph.Value = True
-    Else
-        Me.optSelected.Value = True
-    End If
+
     Me.chkShrinkOmissions.Value = System.PrivateProfileString(SettingsFileName, "Format", "ShrinkOmissions")
 
     Me.chkParagraphIntegrity.Value = System.PrivateProfileString(SettingsFileName, "Format", "ParagraphIntegrity")
@@ -1012,11 +995,6 @@ Private Sub btnExportSettings_Click()
         System.PrivateProfileString(SettingsFileName, "Format", "Spacing") = "Narrow"
     End If
     
-    If Me.optParagraph.Value = True Then
-        System.PrivateProfileString(SettingsFileName, "Format", "ShrinkMode") = "Paragraph"
-    Else
-        System.PrivateProfileString(SettingsFileName, "Format", "ShrinkMode") = "Selected"
-    End If
     System.PrivateProfileString(SettingsFileName, "Format", "ShrinkOmissions") = Me.chkShrinkOmissions.Value
 
     System.PrivateProfileString(SettingsFileName, "Format", "ParagraphIntegrity") = Me.chkParagraphIntegrity.Value
@@ -1200,7 +1178,6 @@ Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
-
 '*************************************************************************************
 '* FORMAT TAB                                                                        *
 '*************************************************************************************
@@ -1222,7 +1199,6 @@ Private Sub btnResetFormatting_Click()
     ' Prompt for confirmation
     If MsgBox("This will reset formatting settings to their default values. Changes will not be committed until you click Save. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
     
-    Me.optParagraph.Value = True
     Me.chkAutoUnderlineEmphasis.Value = False
     Me.chkParagraphIntegrity.Value = False
     Me.chkUsePilcrows.Value = False

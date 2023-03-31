@@ -1,9 +1,9 @@
 Attribute VB_Name = "Globals"
 Option Explicit
 
-' Windows API declarations
+' API declarations
 #If Mac Then
-    ' Do Nothing
+    Public Declare PtrSafe Function CopyMemory_byVar Lib "libc.dylib" Alias "memmove" (ByRef dest As Any, ByRef src As Any, ByVal size As Long) As LongPtr
 #Else
     ' For saving a pointer to the ribbon
     Public Declare PtrSafe Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef destination As Any, ByRef source As Any, ByVal length As Long)
@@ -29,7 +29,7 @@ Public Const USER_FORM_RESIZE_FACTOR As Double = 1.333333
     Public Const DefaultView As String = "Web"
 #End If
 
-'Togglebutton state variables
+' Togglebutton state variables
 Public AutoOpenFolderToggle As Boolean
 Public AutoCoauthoringToggle As Boolean
 Public RecordAudioToggle As Boolean
@@ -41,7 +41,6 @@ Public UsePilcrowsToggle As Boolean
 ' Caselist globals
 Public Const CASELIST_URL As String = "https://api.opencaselist.com/v1"
 Public Const SHARE_URL As String = "https://share.tabroom.com"
-Public Const MOCK_ROUNDS As String = "https://run.mocky.io/v3/be382c53-e49c-4de4-99b6-44ba5e6a3e7c"
 Public Const PAPERLESSDEBATE_URL As String = "https://paperlessdebate.com"
 Public Const UPDATES_URL As String = "https://update.paperlessdebate.com"
 Public Const TABROOM_REGISTER_URL As String = "https://www.tabroom.com/user/login/new_user.mhtml"

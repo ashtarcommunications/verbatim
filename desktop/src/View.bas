@@ -108,36 +108,6 @@ Sub SwitchWindows()
     Documents(i - 1).Activate
 End Sub
 
-Sub NavPaneCycle()
-' Runs the NavPaneCycle program via Shell
-    #If Mac Then
-        MsgBox "NavPaneCycle is only supported on Windows"
-        Exit Sub
-    #Else
-        On Error Resume Next
-    
-        Dim NPCPath As String
-        NPCPath = Environ("ProgramW6432") & Application.PathSeparator & "Verbatim" & Application.PathSeparator & "Plugins" & Application.PathSeparator & "NavPaneCycle.exe"
-    
-        ' Check NPC exists
-        If Filesystem.FileExists(NPCPath) = False Then
-            MsgBox "The NavPaneCycle plugin does not appear to be installed. Check https://paperlessdebate.com for more information on how to install."
-            Exit Sub
-        End If
-
-        ' Make sure NavPane is showing
-        If ActiveWindow.DocumentMap = False Then Exit Sub
-    
-        ' Don't run if window is invisible
-        If ActiveWindow.visible = False Then Exit Sub
-    
-        ' Run NPC
-        Shell NPCPath, vbMinimizedNoFocus
-    
-        Exit Sub
-    #End If
-End Sub
-
 Sub ToggleReadingView()
     #If Mac Then
         MsgBox "Reading View is not supported on Mac. Try the ""Focus Mode"" button at the bottom of the window."
@@ -161,7 +131,7 @@ End Sub
 
 Sub ReadingView()
     #If Mac Then
-        ' TODO - applescript to focus mode maybe
+        ActiveWindow.ActivePane.View.Type = wdWebView
     #Else
         ActiveWindow.ActivePane.View.Type = wdReadingView
     #End If
@@ -188,7 +158,7 @@ Sub InvisibilityMode(c As IRibbonControl, pressed As Boolean)
 End Sub
 
 Sub InvisibilityOn()
-    Dim p
+    Dim p As Paragraph
     Dim pCount As Long
  
     pCount = 0
@@ -202,7 +172,7 @@ Sub InvisibilityOn()
         Application.StatusBar = "Processing paragraph " & pCount & " of " & ActiveDocument.Paragraphs.Count
         
         ' Select each non-blank body text paragraph
-        If p.outlineLevel = wdOutlineLevelBodyText And Len(p) > 1 Then
+        If p.OutlineLevel = wdOutlineLevelBodyText And Len(p.Range.Text) > 1 Then
             p.Range.Select
             
             ' Highlight the cites so they don't disappear
@@ -236,7 +206,7 @@ Sub InvisibilityOn()
                 .MatchWildcards = True
                 .Format = True
                 .Highlight = False
-                .ParagraphFormat.outlineLevel = wdOutlineLevelBodyText
+                .ParagraphFormat.OutlineLevel = wdOutlineLevelBodyText
                 .Replacement.Font.Hidden = True
                 .Execute Replace:=wdReplaceAll
             End With

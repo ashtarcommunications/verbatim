@@ -14,7 +14,6 @@ Public Function FileExists(ByVal FilePath As String) As Boolean
         End If
     #Else
         Dim FSO As Object
-        ' Use late binding to avoid needing an FSO reference
         Set FSO = CreateObject("Scripting.FileSystemObject")
         If FSO.FileExists(FilePath) = True Then
             FileExists = True
@@ -176,7 +175,7 @@ Public Function GetFileAsBase64(Path As String) As String
         Set FileStream = CreateObject("ADODB.Stream")
         FileStream.Open
         FileStream.Type = 1 'adTypeBinary
-        FileStream.LoadFromFile FileName:=Path & ".base64"
+        FileStream.LoadFromFile Filename:=Path & ".base64"
            
         ' Convert to Base64
         xmlElem.dataType = "bin.base64"

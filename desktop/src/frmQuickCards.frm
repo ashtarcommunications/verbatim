@@ -95,7 +95,7 @@ End Sub
 #End If
 
 Private Sub btnAdd_Click()
-    Paperless.AddQuickCard
+    QuickCards.AddQuickCard
     
     ' Refresh the list to get the new Quick Card
     PopulateQuickCards
@@ -107,7 +107,7 @@ Private Sub btnDelete_Click()
         Exit Sub
     End If
         
-    Paperless.DeleteQuickCard Me.lboxQuickCards.Value
+    QuickCards.DeleteQuickCard Me.lboxQuickCards.Value
     Me.lboxQuickCards.RemoveItem (Me.lboxQuickCards.ListIndex)
     
     Exit Sub
@@ -118,7 +118,7 @@ End Sub
 
 Private Sub btnDeleteAll_Click()
     ' Calling without a name parameter deletes all
-    Paperless.DeleteQuickCard ""
+    QuickCards.DeleteQuickCard ""
     Me.lboxQuickCards.Clear
 
     Exit Sub

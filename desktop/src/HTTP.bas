@@ -149,24 +149,3 @@ Handler:
         Set ResponseBody = Nothing
     #End If
 End Function
-
-'Public Sub DownloadFile(URL As String, FilePath As Variant)
-'    #If Mac Then
-'        Dim Script As String
-'        Script = "curl - o '" & URL & "'" & " " & FilePath & """"
-'        AppleScriptTask "Verbatim.scpt", "RunShellScript", Script
-'    #Else
-'        Dim HttpReq As Object
-'        Set HttpReq = CreateObject("MSXML2.ServerXMLHTTP60")
-'        HttpReq.Open "GET", URL, False
-'        HttpReq.send
-'        Dim FileStream
-'        Set FileStream = CreateObject("ADODB.Stream")
-'        FileStream.Open
-'        FileStream.Type = 1
-'        FileStream.Write HttpReq.ResponseBody
-'        FileStream.SaveToFile FilePath, 2 '1 = no overwrite, 2 = overwrite
-'        FileStream.Close
-'        Set FileStream = Nothing
-'    #End If
-'End Sub
