@@ -7,6 +7,7 @@
 * Custom mouse pointers on forms
 * GetSetting doesn't accept vbNullString for the default parameter, use "" instead
 * Have to use replacements for most libraries, inc. XML, HTTP, Dictionary, ADODB, VBIDE
+* PictureSizeMode on userform images doesn't resize the same on Mac as it does on PC
 
 ## Form UI Design
 
