@@ -94,14 +94,14 @@ Public Sub Start()
         If GetSetting("Verbatim", "Admin", "SuppressInstallChecks", False) = False And Application.Documents.Count = 1 Then
             If Troubleshooting.InstallCheckTemplateName = False Or Troubleshooting.InstallCheckTemplateLocation = False Then
                 If MsgBox("Verbatim appears to be installed incorrectly. Would you like to open the Troubleshooter? This message can be suppressed in the Verbatim settings.", vbYesNo) = vbYes Then
-                    UI.ShowForm "Settings"
+                    UI.ShowForm "Troubleshooter"
                     Exit Sub
                 End If
             End If
             #If Mac Then
                 If Troubleshooting.InstallCheckScptFileExists = False Then
                     If MsgBox("Your Verbatim.scpt file appears to be installed incorrectly. Would you like to open the Troubleshooter? This message can be suppressed in the Verbatim settings.", vbYesNo) = vbYes Then
-                        UI.ShowForm "Settings"
+                        UI.ShowForm "Troubleshooter"
                         Exit Sub
                     End If
                 End If

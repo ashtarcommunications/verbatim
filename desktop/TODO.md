@@ -21,8 +21,7 @@ Shortcut to extend to next column of same side (F9)
 Delete empty sheets
 Delete single sheet
 Easy move between sheets
-Add sheets quickly (aff/neg/etc), both hot key and ribbon menu (Ctrl + Alt + N)
-Create flow for tabroom round/Speech from Verbatim
+Add sheets quickly (aff/neg/etc), both hot key and ribbon menu (Ctrl + Alt + A, Ctrl + Alt + N)
 Label flows based on title in A1 (optionally disable)
 Auto-move cursor to columns of chosen speech on all sheets (Ctrl + Alt + M)
 Change row/column size
@@ -60,3 +59,4 @@ Run template through the decompiler
 # Future ideas
 Window arranger for multiple screens
 Save all style customizations to settings to survive updates
+Create flow for tabroom round/Speech from Verbatim

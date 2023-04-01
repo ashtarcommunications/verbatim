@@ -10,7 +10,6 @@ Public Sub OnLoad(ByVal Ribbon As IRibbonUI)
     SavedState = ActiveDocument.Saved
     ActiveDocument.Variables.Item("RibbonPointer").Value = ObjPtr(Ribbon)
     ActiveDocument.Saved = SavedState
-    
 End Sub
 
 Public Function GetRibbon(ByVal lRibbonPointer As LongPtr) As Object
@@ -270,7 +269,6 @@ Public Sub GetRibbonLabels(ByVal c As IRibbonControl, ByRef label As Variant)
         label = "Undefined"
     
     End Select
-
 End Sub
 
 Public Sub GetRibbonImages(ByVal c As IRibbonControl, ByRef returnedBitmap As Variant)

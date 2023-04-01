@@ -62,12 +62,10 @@ Public Sub SendToFlow(Optional ByVal SplitParagraphs As Boolean, Optional ByVal 
         
         ' Check for overwriting existing content
         For Each p In Selection.Paragraphs
-            If Len(p.Range.Text) > 1 Then
-                If Flow.ActiveSheet.Cells(Flow.ActiveSheet.Application.ActiveCell.Offset(i, 0).Row, Flow.ActiveSheet.Application.ActiveCell.Column).Value <> "" Then
-                    Overwrite = True
-                End If
-                i = i + 1
+            If Flow.ActiveSheet.Cells(Flow.ActiveSheet.Application.ActiveCell.Offset(i, 0).Row, Flow.ActiveSheet.Application.ActiveCell.Column).Value <> "" Then
+                Overwrite = True
             End If
+            i = i + 1
         Next p
         
         If Overwrite = True Then
@@ -78,13 +76,11 @@ Public Sub SendToFlow(Optional ByVal SplitParagraphs As Boolean, Optional ByVal 
 
         ' Copy each paragraph to a separate cell
         For Each p In Selection.Paragraphs
-            If Len(p.Range.Text) > 1 Then
-                ' In HeadingsOnly mode, just send headings and cites
-                If HeadingsOnly <> True Or (p.OutlineLevel <> wdOutlineLevelBodyText Or Paperless.IdentifyCiteStyle(p)) Then
-                    Flow.ActiveSheet.Cells(Flow.ActiveSheet.Application.ActiveCell.Row, Flow.ActiveSheet.Application.ActiveCell.Column).Value = p.Range.Text
-                    Flow.ActiveSheet.Application.ActiveCell.Offset(1, 0).Select
-                    i = i + 1
-                End If
+            ' In HeadingsOnly mode, just send headings and cites
+            If HeadingsOnly <> True Or (p.OutlineLevel <> wdOutlineLevelBodyText Or Paperless.IdentifyCiteStyle(p)) Then
+                Flow.ActiveSheet.Cells(Flow.ActiveSheet.Application.ActiveCell.Row, Flow.ActiveSheet.Application.ActiveCell.Column).Value = p.Range.Text
+                Flow.ActiveSheet.Application.ActiveCell.Offset(1, 0).Select
+                i = i + 1
             End If
         Next p
     Else
