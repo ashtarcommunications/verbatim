@@ -40,9 +40,6 @@ Optional shorthand expansion
 # New Tools
 PC setup tool
 Mac setup tool
-	defaults read "Apple Global Domain" "com.apple.keyboard.fnState"
-	defaults write "Apple Global Domain" "com.apple.keyboard.fnState" "1" ## F1 F2 etc
-	defaults write "Apple Global Domain" "com.apple.keyboard.fnState" "0" ## Brightness/Media	https://apple.stackexchange.com/questions/344494/how-to-disable-default-mission-control-shortcuts-in-terminal
 PC Installer
 	Fix template getting put into admin templates folder when run with UAC (look at not needing admin permissions)
 Plugin installer for Capture2Text, Timer, GetFromCiteCreator, NavPaneCycle, and EverythingSearch
