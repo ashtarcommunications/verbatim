@@ -1,32 +1,33 @@
 # Flow template
+
 ## Speech
-Send excel selection/cell/column to word at cursor or end of doc (`, Alt + `)
-Vtub for analytics
+*Send excel selection/cell/column to word at cursor or end of doc (`, Alt + `)
+*Vtub for analytics
 
 ## Format on sheet
-Insert row(s) above/below current based on hotkey (make sure it doesn't screw up clipboard/undo) (F3, Alt + F3)
+*Insert row(s) above/below current based on hotkey (make sure it doesn't screw up clipboard/undo) (F3, Alt + F3)
 Insert cells above/below in same column (Ctrl + Alt + F3)
 Delete row (Ctrl + F3)
 Toggle enter/alt-enter mode
-Highlight argument/cell (F11)
+*Highlight argument/cell (F11)
 Macro to designate evidence for an argument/cell (F7)
 Paste special or expand by crlf (F6, Alt + F6)
 Add/remove numbers for args automatically (Ctrl + Shift + 3)
 Merge/group cells (F5)
 Move up/down like with blocks (Ctrl + Alt + Up, Ctrl + Alt + Down)
-Keep f2 shortcut for entering cell 
+*Keep f2 shortcut for entering cell 
 Shortcut to extend to next column of same side (F9)
 
 ## Format workbook
 Delete empty sheets
 Delete single sheet
-Easy move between sheets
+*Easy move between sheets
 Add sheets quickly (aff/neg/etc), both hot key and ribbon menu (Ctrl + Alt + A, Ctrl + Alt + N)
-Label flows based on title in A1 (optionally disable)
+*Label flows based on title in A1 (optionally disable)
 Auto-move cursor to columns of chosen speech on all sheets (Ctrl + Alt + M)
 Change row/column size
 Add zoom functions to ribbon
-Configurable font size
+*Configurable font size
 
 ## Misc features
 Info tracking/scouting info
