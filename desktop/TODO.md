@@ -6,36 +6,36 @@
 
 ## Format on sheet
 *Insert row(s) above/below current based on hotkey (make sure it doesn't screw up clipboard/undo) (F3, Alt + F3)
-Insert cells above/below in same column (Ctrl + Alt + F3)
-Delete row (Ctrl + F3)
-Toggle enter/alt-enter mode
+*Insert cells above/below in same column (F4, Alt + F4)
+*Delete row (Ctrl + Alt + D)
+*Toggle enter/alt-enter mode
+*Keep f2 shortcut for entering cell
 *Highlight argument/cell (F11)
-Macro to designate evidence for an argument/cell (F7)
-Paste special or expand by crlf (F6, Alt + F6)
-Add/remove numbers for args automatically (Ctrl + Shift + 3)
-Merge/group cells (F5)
-Move up/down like with blocks (Ctrl + Alt + Up, Ctrl + Alt + Down)
-*Keep f2 shortcut for entering cell 
-Shortcut to extend to next column of same side (F9)
+*Macro to designate evidence for an argument/cell (F8)
+*Paste special or expand by crlf (F6, Alt + F6)
+*Move up/down like with blocks (Ctrl + Alt + Up, Ctrl + Alt + Down)
+*Merge/group cells (F5)
+*Shortcut to extend to next column of same side (F9)
 
 ## Format workbook
-Delete empty sheets
-Delete single sheet
+*Delete empty sheets
+*Delete single sheet
 *Easy move between sheets
-Add sheets quickly (aff/neg/etc), both hot key and ribbon menu (Ctrl + Alt + A, Ctrl + Alt + N)
+*Add sheets quickly (aff/neg/etc), both hot key and ribbon menu (Ctrl + Alt + A, Ctrl + Alt + N)
 *Label flows based on title in A1 (optionally disable)
-Auto-move cursor to columns of chosen speech on all sheets (Ctrl + Alt + M)
-Change row/column size
-Add zoom functions to ribbon
+*Auto-move cursor to columns of chosen speech on all sheets
+*Change row/column size
+*Add zoom functions to ribbon
 *Configurable font size
+*CX Sheet
 
 ## Misc features
-Info tracking/scouting info
-Automatically fill scouting info from subsheets
-Auto-organize windows for flow/speech side-by-side
-Settings form, configurable for different events
+*Auto-organize windows for flow/speech side-by-side
+*Automatically fill scouting info from subsheets
+*Temp flash name of sheet on workbook change
+*Info tracking/scouting info
+*Settings form, configurable for different events
 Keyboard shortcuts cheat sheet
-Optional shorthand expansion
 
 # New Tools
 PC setup tool
@@ -58,3 +58,4 @@ Run template through the decompiler
 Window arranger for multiple screens
 Save all style customizations to settings to survive updates
 Create flow for tabroom round/Speech from Verbatim
+Auto-numbering for arguments on flow
