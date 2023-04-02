@@ -39,7 +39,7 @@ Keyboard shortcuts cheat sheet
 
 # New Tools
 PC setup tool
-Mac setup tool
+*Mac setup tool
 PC Installer
 	Fix template getting put into admin templates folder when run with UAC (look at not needing admin permissions)
 Plugin installer for Capture2Text, Timer, GetFromCiteCreator, NavPaneCycle, and EverythingSearch
