@@ -22,9 +22,9 @@
     </contentFiles>
   </metadata>
   <files>
-    <file src="C:\Users\hardy\Projects\verbatim\desktop\setup\Verbatim Setup Check\bin\Debug\net6.0-windows\VerbatimSetupCheck.runtimeconfig.json" target="lib\net6.0-windows7.0\VerbatimSetupCheck.runtimeconfig.json" />
-    <file src="C:\Users\hardy\Projects\verbatim\desktop\setup\Verbatim Setup Check\bin\Debug\net6.0-windows\VerbatimSetupCheck.dll" target="lib\net6.0-windows7.0\VerbatimSetupCheck.dll" />
-    <file src="C:\Users\hardy\Projects\verbatim\desktop\setup\Verbatim Setup Check\verbatim.ico" target="content\verbatim.ico" />
-    <file src="C:\Users\hardy\Projects\verbatim\desktop\setup\Verbatim Setup Check\verbatim.ico" target="contentFiles\any\net6.0-windows7.0\verbatim.ico" />
+    <file src="C:\Users\Aaron\Projects\verbatim\desktop\setup\Verbatim Setup Check\bin\Debug\net6.0-windows\VerbatimSetupCheck.runtimeconfig.json" target="lib\net6.0-windows7.0\VerbatimSetupCheck.runtimeconfig.json" />
+    <file src="C:\Users\Aaron\Projects\verbatim\desktop\setup\Verbatim Setup Check\bin\Debug\net6.0-windows\VerbatimSetupCheck.dll" target="lib\net6.0-windows7.0\VerbatimSetupCheck.dll" />
+    <file src="C:\Users\Aaron\Projects\verbatim\desktop\setup\Verbatim Setup Check\verbatim.ico" target="content\verbatim.ico" />
+    <file src="C:\Users\Aaron\Projects\verbatim\desktop\setup\Verbatim Setup Check\verbatim.ico" target="contentFiles\any\net6.0-windows7.0\verbatim.ico" />
   </files>
 </package>

@@ -3,6 +3,8 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
+	<PublishReadyToRun>false</PublishReadyToRun>
+	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <RootNamespace>Verbatim_Setup_Check</RootNamespace>
     <StartupObject>Sub Main</StartupObject>
     <UseWindowsForms>true</UseWindowsForms>
@@ -12,6 +14,9 @@
     <Title>Verbatim Setup Check</Title>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyName>VerbatimSetupCheck</AssemblyName>
+    <Description>Verbatim Setup Check</Description>
+    <Copyright>2023 Ashtar Communications</Copyright>
+    <PackageProjectUrl>https://paperlessdebate.com</PackageProjectUrl>
   </PropertyGroup>
 	
   <ItemGroup>

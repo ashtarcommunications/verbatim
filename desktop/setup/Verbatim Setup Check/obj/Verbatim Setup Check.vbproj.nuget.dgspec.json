@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\hardy\\Projects\\verbatim\\desktop\\setup\\Verbatim Setup Check\\Verbatim Setup Check.vbproj": {}
+    "C:\\Users\\Aaron\\Projects\\verbatim\\desktop\\setup\\Verbatim Setup Check\\Verbatim Setup Check.vbproj": {}
   },
   "projects": {
-    "C:\\Users\\hardy\\Projects\\verbatim\\desktop\\setup\\Verbatim Setup Check\\Verbatim Setup Check.vbproj": {
+    "C:\\Users\\Aaron\\Projects\\verbatim\\desktop\\setup\\Verbatim Setup Check\\Verbatim Setup Check.vbproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\hardy\\Projects\\verbatim\\desktop\\setup\\Verbatim Setup Check\\Verbatim Setup Check.vbproj",
+        "projectUniqueName": "C:\\Users\\Aaron\\Projects\\verbatim\\desktop\\setup\\Verbatim Setup Check\\Verbatim Setup Check.vbproj",
         "projectName": "VerbatimSetupCheck",
-        "projectPath": "C:\\Users\\hardy\\Projects\\verbatim\\desktop\\setup\\Verbatim Setup Check\\Verbatim Setup Check.vbproj",
-        "packagesPath": "C:\\Users\\hardy\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\hardy\\Projects\\verbatim\\desktop\\setup\\Verbatim Setup Check\\obj\\",
+        "projectPath": "C:\\Users\\Aaron\\Projects\\verbatim\\desktop\\setup\\Verbatim Setup Check\\Verbatim Setup Check.vbproj",
+        "packagesPath": "C:\\Users\\Aaron\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Aaron\\Projects\\verbatim\\desktop\\setup\\Verbatim Setup Check\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\hardy\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Aaron\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -60,6 +64,20 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+              "version": "[6.0.15, 6.0.15]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Runtime.win-x64",
+              "version": "[6.0.15, 6.0.15]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+              "version": "[6.0.15, 6.0.15]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
@@ -68,7 +86,12 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.402\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.202\\RuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "win-x64": {
+          "#import": []
         }
       }
     }
