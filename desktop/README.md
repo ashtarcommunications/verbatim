@@ -45,3 +45,11 @@ Analytics style or anything that removes analytics automatically
 
 ## Notes For Docs
 For Docs: Cursor selection philosophy, plead for 1-paragraph cite format
+
+## Other libraries
+
+VBADecompiler.exe
+Capture2Text
+EverythingSearch
+
+Are bundled with their own licenses
