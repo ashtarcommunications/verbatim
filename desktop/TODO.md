@@ -10,7 +10,6 @@ Mac Installer
 # Pre-release QA
 Test all functions on PC
 Test all functions on Mac
-Run template through the decompiler
 	
 # Future ideas
 Window arranger for multiple screens
