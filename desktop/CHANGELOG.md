@@ -30,6 +30,7 @@ Integration with share.tabroom.com to allow privacy-first document sharing
 Everything Search plugin for better document searching integration
 Mac ribbon search integration with Spotlight
 New streamlined cross-platform tutorial
+Verbatim Flow template for flowing in Excel
 Verbatim Flow integration to send blocks to the flow at either current cell or column
 
 ### Changed

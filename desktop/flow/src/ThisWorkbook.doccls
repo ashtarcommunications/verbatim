@@ -1,0 +1,62 @@
+﻿Option Explicit
+
+Private Sub Workbook_SheetChange(ByVal sh As Object, ByVal Target As Range)
+' Sets sheet name automatically based on value in A2
+    If GetSetting("Verbatim", "Flow", "AutoLabelFlows", True) = False Then Exit Sub
+
+    If sh.Name = "Info" Or InStr(LCase$(sh.Name), "cx") Then Exit Sub
+
+    With sh
+        If Not Intersect(Target, .Range("A2")) Is Nothing Then
+            On Error GoTo Handler
+            Application.EnableEvents = False
+            If .Range("A2").Value <> "" Then
+                .Name = .Range("A2").Value
+            ElseIf .Range("A1") = "1AC" Then
+                .Name = "OnCase" & sh.Index
+            ElseIf .Range("A1") = "1NC" Then
+                .Name = "OffCase" & sh.Index
+            Else
+                .Name = "Sheet" & sh.Index
+            End If
+        End If
+    End With
+Handler:
+    Application.EnableEvents = True
+End Sub
+
+Private Sub Workbook_SheetActivate(ByVal sh As Object)
+    Dim Popup As Shape
+    On Error GoTo Handler
+            
+    If sh.Name = "Info" Or InStr(LCase$(sh.Name), "cx") Then Exit Sub
+        
+    If GetSetting("Verbatim", "Flow", "DisableSheetPopup", False) = True Then Exit Sub
+           
+    ' Add a textbox in the middle of the page
+    Set Popup = ActiveSheet.Shapes.AddTextbox(1, (Application.Width / 2) - 50, Application.Height / 4, 100, 100)
+    Popup.TextFrame.AutoSize = True
+    Popup.TextFrame.HorizontalAlignment = xlHAlignCenter
+    Popup.TextFrame.Characters.Text = sh.Name
+    Popup.TextFrame.Characters.Font.size = 36
+    Popup.TextFrame.Characters.Font.Color = sh.Tab.Color
+    
+    ' Delete it in 1s
+    Application.OnTime Now + TimeValue("00:00:01"), "'ThisWorkbook.DeletePopup """ & sh.Name & """'"
+
+    Set Popup = Nothing
+
+    Exit Sub
+Handler:
+End Sub
+
+'@Ignore ProcedureNotUsed
+Public Sub DeletePopup(ByRef s As String)
+    Dim sh As Shape
+
+    On Error Resume Next
+    For Each sh In ActiveWorkbook.Sheets.[_Default](s).Shapes
+        sh.Delete
+    Next sh
+    On Error GoTo 0
+End Sub

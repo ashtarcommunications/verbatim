@@ -8,11 +8,8 @@ Mac Installer
 	Mac installer check/disbale Mac OS keyboard shortcuts
 
 # Pre-release QA
-Double check all Mac-specific macro modifications made it into the combined version
-Check for extraneous styles
 Test all functions on PC
 Test all functions on Mac
-Rubberduck everything
 Run template through the decompiler
 	
 # Future ideas

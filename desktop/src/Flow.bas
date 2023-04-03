@@ -91,7 +91,12 @@ Public Sub SendToFlow(Optional ByVal SplitParagraphs As Boolean, Optional ByVal 
         
         For Each p In Selection.Paragraphs
             If HeadingsOnly <> True Or (p.OutlineLevel <> wdOutlineLevelBodyText Or Paperless.IdentifyCiteStyle(p)) Then
-                SendText = SendText & p.Range.Text
+                ' Use correct linebreak for each OS
+                #If Mac Then
+                    SendText = SendText & p.Range.Text & Chr(13)
+                #Else
+                    SendText = SendText & p.Range.Text & Chr(10)
+                #End If
             End If
         Next p
 
