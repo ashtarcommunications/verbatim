@@ -1,5 +1,5 @@
 # New Tools
-PC setup tool
+*PC setup tool
 *Mac setup tool
 PC Installer
 	Fix template getting put into admin templates folder when run with UAC (look at not needing admin permissions)
