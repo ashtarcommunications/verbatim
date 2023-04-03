@@ -1,3 +1,8 @@
+;AHK to fetch current cite in Cite Creator chrome extension
+;Not persistent - designed to be called from Word VBA
+;Version 3.0.0
+;2023 Ashtar Communications
+
 #SingleInstance force
 
 ;If Chrome is open, activate it with the current tab
