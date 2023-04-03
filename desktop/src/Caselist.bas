@@ -5,137 +5,47 @@ Option Explicit
 '* CITEIFY FUNCTIONS                                                                 *
 '*************************************************************************************
 
-Sub CiteRequest()
-    Selection.Collapse
+Public Sub CiteRequest(Optional ByVal p As Paragraph, Optional ByVal SuppressNotify As Boolean)
+    Dim r As Range
     
-    ' Make sure cursor is in a card
-    If Selection.Paragraphs.outlineLevel <> wdOutlineLevelBodyText Then
-        MsgBox "Cursor must be in card text - it appears to be in a heading."
-        Exit Sub
+    If p Is Nothing Then
+        ' Make sure cursor is in a card
+        If Selection.Paragraphs.OutlineLevel <> wdOutlineLevelBodyText And Selection.Paragraphs.OutlineLevel <> wdOutlineLevel4 Then
+            MsgBox "Cursor must be in a card - it appears to be in a larger heading."
+            Exit Sub
+        End If
+        
+        ' Use current selection by default
+        Set r = Paperless.SelectCardTextRange(Selection.Paragraphs.Item(1))
+    Else
+        Set r = Paperless.SelectCardTextRange(p)
     End If
     
     ' If card is longer than 50 words, remove all but the first and last few
-    With Selection
-        .StartOf Unit:=wdParagraph
-        .MoveEnd Unit:=wdParagraph, Count:=1
-        If .Range.ComputeStatistics(wdStatisticWords) > 50 Then
-            .Range.HighlightColorIndex = wdNoHighlight 'Remove highlighting
-            .MoveStart Unit:=wdWord, Count:=15
-            .MoveEnd Unit:=wdWord, Count:=-15
-            .TypeText vbCrLf & "AND" & vbCrLf
-        Else
-            MsgBox "Cut longer cards!"
-        End If
-    
-    End With
+    If r.ComputeStatistics(wdStatisticWords) > 50 Then
+        r.HighlightColorIndex = wdNoHighlight 'Remove highlighting
+        r.MoveStart Unit:=wdWord, Count:=15
+        r.MoveEnd Unit:=wdWord, Count:=-15
+        r.Text = vbCrLf & "AND" & vbCrLf
+    Else
+        If SuppressNotify <> True Then MsgBox "Cut longer cards!"
+    End If
 End Sub
 
 Public Sub CiteRequestAll()
-    Dim p
-    Dim r As Range
+    Dim p As Paragraph
     
     ' Delete blank paragraphs to make processing easier
     For Each p In ActiveDocument.Paragraphs
-        If Len(p) = 1 Then p.Range.Delete
-    Next p
-    
-    ' Go to top of document
-    Selection.HomeKey Unit:=wdStory
-    Selection.Collapse
-
-    ' Find tags
-    With Selection.Find
-        .ClearFormatting
-        .Replacement.ClearFormatting
-        .Text = ""
-        .Replacement.Text = ""
-        .ParagraphFormat.outlineLevel = wdOutlineLevel4
-        .Format = True
-        .MatchCase = False
-        .MatchWholeWord = False
-        .MatchWildcards = False
-        .MatchSoundsLike = False
-        .MatchAllWordForms = False
-        .Forward = True
-        .Wrap = wdFindContinue
-        
-        ' Loop all tags
-        Do While .Execute And Selection.End <> ActiveDocument.Range.End
-            
-            ' Select card
-            Call Paperless.SelectHeadingAndContent
-            
-            ' If less than 3 paragraphs (tag, cite, card), something's weird so don't do anything
-            If Selection.Paragraphs.Count < 3 Then
-                ' Do Nothing
-            
-            ' If 3 paragraphs, cite request 3rd paragraph, which will almost always be the card text
-            ElseIf Selection.Paragraphs.Count = 3 Then
-                Set r = Selection.Paragraphs(3).Range
-                
-            ' If 4 or more paragraphs, non-obvious cite
-            Else
-                
-                ' If 2nd, 3rd or 4th paragraph has a URL, start range with next paragraph
-                If InStr(Selection.Paragraphs(2).Range.Text, "http://") > 0 Then
-                    Set r = ActiveDocument.Range(Start:=Selection.Paragraphs(3).Range.Start, End:=Selection.Range.End)
-                ElseIf InStr(Selection.Paragraphs(3).Range.Text, "http://") > 0 Then
-                    Set r = ActiveDocument.Range(Start:=Selection.Paragraphs(4).Range.Start, End:=Selection.Range.End)
-                ElseIf InStr(Selection.Paragraphs(4).Range.Text, "http://") > 0 Then
-                    Set r = ActiveDocument.Range(Start:=Selection.Paragraphs(5).Range.Start, End:=Selection.Range.End)
-                
-                ' No URL found, try brackets
-                Else
-                    
-                    ' If starting character of 2nd, 3rd or 4th paragraph is one of (<[, it's likely a cite
-                    If Selection.Paragraphs(2).Range.Characters(1) Like "[(<]" Or Selection.Paragraphs(2).Range.Characters(1) Like "[[]" Then
-                        Set r = ActiveDocument.Range(Start:=Selection.Paragraphs(3).Range.Start, End:=Selection.Range.End)
-                    ElseIf Selection.Paragraphs(3).Range.Characters(1) Like "[(<]" Or Selection.Paragraphs(3).Range.Characters(1) Like "[[]" Then
-                        Set r = ActiveDocument.Range(Start:=Selection.Paragraphs(4).Range.Start, End:=Selection.Range.End)
-                    ElseIf Selection.Paragraphs(4).Range.Characters(1) Like "[(<]" Or Selection.Paragraphs(4).Range.Characters(1) Like "[[]" Then
-                        Set r = ActiveDocument.Range(Start:=Selection.Paragraphs(5).Range.Start, End:=Selection.Range.End)
-                    
-                    ' No Bracket found, try line-length
-                    Else
-                        ' If 2nd paragraph is a short line, it's likely to be a 2-line cite, so cite request paragraphs 4+
-                        If Selection.Paragraphs(2).Range.Characters.Count < 100 Then
-                            Set r = ActiveDocument.Range(Start:=Selection.Paragraphs(4).Range.Start, End:=Selection.Range.End)
-                        ' Else it's likely a single line cite, so cite request paragraphs 3+
-                        Else
-                            Set r = ActiveDocument.Range(Start:=Selection.Paragraphs(3).Range.Start, End:=Selection.Range.End)
-                        End If
-                    End If
-                End If
-            End If
-            
-            ' Cite request the range
-            If Not r Is Nothing Then
-                If r.Words.Count > 50 Then
-                    r.MoveStart Unit:=wdWord, Count:=15
-                    r.MoveEnd Unit:=wdWord, Count:=-15
-                    r.Text = vbCrLf & "AND" & vbCrLf
-                End If
-            End If
-            
-            ' Reset range for next loop
-            Set r = Nothing
-                
-            ' Collapse right so find moves on
-            Selection.Collapse wdCollapseEnd
-                        
-        Loop
-    End With
-    
-    ' Add a newline before each heading to keep plaintext output clean
-    For Each p In ActiveDocument.Paragraphs
-        If p.outlineLevel < 5 And p.Range.Start <> ActiveDocument.Range.Start Then
-            p.Range.InsertBefore vbCrLf
-            p.Previous.OutlineDemoteToBody
+        If Len(p.Range.Text) = 1 Then
+            p.Range.Delete
+        ElseIf p.OutlineLevel = wdOutlineLevel4 Then
+            Caselist.CiteRequest p, True
         End If
     Next p
 End Sub
 
-Sub CiteRequestDoc()
+Public Sub CiteRequestDoc(Optional ByVal Wikify As Boolean)
     On Error GoTo Handler
     
     ' Make sure Debate.dotm exists in template folder
@@ -154,12 +64,11 @@ Sub CiteRequestDoc()
     ' Paste into new document
     Selection.Paste
     
-    ' Go to top of document and collapse selection
-    Selection.HomeKey Unit:=wdStory
-    Selection.Collapse
-
     ' Convert all cites
     Caselist.CiteRequestAll
+    
+    ' Optionally wikify
+    If (Wikify = True) Then Caselist.Word2MarkdownMain
     
     ' Remove highlighting
     ActiveDocument.Content.Select
@@ -176,10 +85,11 @@ End Sub
 '* WIKIFY FUNCTIONS                                                                  *
 '*************************************************************************************
 
-Sub Word2MarkdownCites()
+Public Sub Word2MarkdownCites()
+    On Error GoTo Handler
+    
     ' Cite request and wikify doc
-    Caselist.CiteRequestDoc
-    Caselist.Word2MarkdownMain
+    Caselist.CiteRequestDoc Wikify:=True
     
     ' Clear all formatting
     ActiveDocument.Content.Select
@@ -202,7 +112,7 @@ Public Sub Word2MarkdownMain()
        
     WikifyReplaceQuotes
     WikifyReplaceDashes
-    Formatting.RemovePilcrows
+    Condense.RemovePilcrows
     WikifyEscapeChars
     WikifyConvertHyperlinks
     WikifyConvertH1
@@ -213,23 +123,25 @@ Public Sub Word2MarkdownMain()
     WikifyConvertCites
     WikifyConvertItalic
     WikifyConvertBold
-    WikifyConvertUnderline
+    ' WikifyConvertUnderline
     WikifyConvertSuperscript
     WikifyConvertSubscript
     WikifyRemoveHighlighting
     WikifyRemoveComments
+    WikifyReplaceLineBreaks
     
     ' Copy to clipboard
     ActiveDocument.Content.Copy
     Application.ScreenUpdating = True
     
+    On Error GoTo 0
 End Sub
 
-Private Function EscapeCharacter(Char As String)
+Private Sub EscapeCharacter(ByVal Char As String)
     ReplaceString Char, "\" & Char
-End Function
+End Sub
 
-Private Function ReplaceString(findStr As String, replacementStr As String)
+Private Sub ReplaceString(ByVal findStr As String, ByVal replacementStr As String)
     Selection.Find.ClearFormatting
     Selection.Find.Replacement.ClearFormatting
     With Selection.Find
@@ -245,13 +157,13 @@ Private Function ReplaceString(findStr As String, replacementStr As String)
         .MatchAllWordForms = False
     End With
     Selection.Find.Execute Replace:=wdReplaceAll
-End Function
+End Sub
 
-Private Function ReplaceHeading(outlineLevel As String, headerPrefix As String)
+Private Sub ReplaceHeading(ByVal OutlineLevel As String, ByVal headerPrefix As String)
     ActiveDocument.Select
     With Selection.Find
         .ClearFormatting
-        .ParagraphFormat.outlineLevel = outlineLevel
+        .ParagraphFormat.OutlineLevel = OutlineLevel
         .Text = ""
         .Format = True
         .MatchCase = False
@@ -275,19 +187,19 @@ Private Function ReplaceHeading(outlineLevel As String, headerPrefix As String)
                     .InsertBefore headerPrefix
                     '.InsertBefore vbCr
                 End If
-                .Style = ActiveDocument.Styles(wdStyleNormal)
+                .Style = ActiveDocument.Styles.Item(wdStyleNormal).NameLocal
             End With
         Loop
     End With
-End Function
+End Sub
 
 Private Sub WikifyReplaceQuotes()
     ' Replace all smart quotes with their dumb equivalents
     Dim Quotes As Boolean
     Quotes = Options.AutoFormatAsYouTypeReplaceQuotes
     Options.AutoFormatAsYouTypeReplaceQuotes = False
-    ReplaceString ChrW(8220), """"
-    ReplaceString ChrW(8221), """"
+    ReplaceString ChrW$(8220), """"
+    ReplaceString ChrW$(8221), """"
     ReplaceString "‘", "'"
     ReplaceString "’", "'"
     ReplaceString "`", "'"
@@ -295,7 +207,12 @@ Private Sub WikifyReplaceQuotes()
 End Sub
 
 Private Sub WikifyReplaceDashes()
-    ReplaceString "--", ChrW(8212)
+    ReplaceString "--", ChrW$(8212)
+End Sub
+
+Private Sub WikifyReplaceLineBreaks()
+    ReplaceString vbCrLf, vbCr
+    ReplaceString vbCr, "  " & vbCr
 End Sub
 
 Private Sub WikifyEscapeChars()
@@ -369,11 +286,12 @@ Private Sub WikifyConvertCites()
                     .InsertAfter "**"
                 End If
 
-                .Style = ActiveDocument.Styles("Default Paragraph Font")
+                .Style = ActiveDocument.Styles.Item("Default Paragraph Font").NameLocal
                 .Font.Bold = False
             End With
         Loop
     End With
+    On Error GoTo 0
 End Sub
 
 Private Sub WikifyConvertItalic()
@@ -401,11 +319,11 @@ Private Sub WikifyConvertItalic()
                 
                 ' Don't bother to markup newline characters (prevents a loop, as well)
                 If Not .Text = vbCr Then
-                    '.InsertBefore "//"
-                    '.InsertAfter "//"
+                    .InsertBefore "*"
+                    .InsertAfter "*"
                 End If
 
-                .Style = ActiveDocument.Styles("Default Paragraph Font")
+                .Style = ActiveDocument.Styles.Item("Default Paragraph Font").NameLocal
                 .Font.Italic = False
             End With
         Loop
@@ -437,17 +355,18 @@ Private Sub WikifyConvertBold()
                 
                 ' Don't bother to markup newline characters (prevents a loop, as well)
                 If Not .Text = vbCr Then
-                '    .InsertBefore "**"
-                '    .InsertAfter "**"
+                    .InsertBefore "**"
+                    .InsertAfter "**"
                 End If
 
-                .Style = ActiveDocument.Styles("Default Paragraph Font")
+                .Style = ActiveDocument.Styles.Item("Default Paragraph Font").NameLocal
                 .Font.Bold = False
             End With
         Loop
     End With
 End Sub
 
+'@Ignore ProcedureNotUsed
 Private Sub WikifyConvertUnderline()
     ActiveDocument.Select
     With Selection.Find
@@ -471,11 +390,11 @@ Private Sub WikifyConvertUnderline()
                     .MoveEndUntil vbCr
                 End If
                 ' Don't bother to markup newline characters (prevents a loop, as well)
-                If Not .Text = vbCr Then
+                'If Not .Text = vbCr Then
                     '.InsertBefore "__"
                     '.InsertAfter "__"
-                End If
-                .Style = ActiveDocument.Styles("Default Paragraph Font")
+                'End If
+                .Style = ActiveDocument.Styles.Item("Default Paragraph Font").NameLocal
                 .Font.Underline = False
             End With
         Loop
@@ -498,7 +417,7 @@ Private Sub WikifyConvertSuperscript()
         .Wrap = wdFindContinue
         Do While .Execute
             With Selection
-                .Text = Trim(.Text)
+                .Text = Trim$(.Text)
                 If Len(.Text) > 1 And InStr(1, .Text, vbCr) Then
                     ' Just process the chunk before any newline characters
                     ' We'll pick-up the rest with the next search
@@ -512,7 +431,7 @@ Private Sub WikifyConvertSuperscript()
                     .InsertAfter ("^")
                 End If
 
-                .Style = ActiveDocument.Styles("Default Paragraph Font")
+                .Style = ActiveDocument.Styles.Item("Default Paragraph Font").NameLocal
                 .Font.Superscript = False
             End With
         Loop
@@ -535,7 +454,7 @@ Private Sub WikifyConvertSubscript()
         .Wrap = wdFindContinue
         Do While .Execute
             With Selection
-                .Text = Trim(.Text)
+                .Text = Trim$(.Text)
                 If Len(.Text) > 1 And InStr(1, .Text, vbCr) Then
                     ' Just process the chunk before any newline characters
                     ' We'll pick-up the rest with the next search
@@ -548,7 +467,7 @@ Private Sub WikifyConvertSubscript()
                     .InsertBefore ("~")
                     .InsertAfter ("~")
                 End If
-                .Style = ActiveDocument.Styles("Default Paragraph Font")
+                .Style = ActiveDocument.Styles.Item("Default Paragraph Font").NameLocal
                 .Font.Subscript = False
             End With
         Loop
@@ -561,9 +480,9 @@ Private Sub WikifyRemoveHighlighting()
 End Sub
 
 Private Sub WikifyRemoveComments()
-    Dim i
+    Dim i As Long
     For i = ActiveDocument.Comments.Count To 1 Step -1
-        ActiveDocument.Comments(i).Delete
+        ActiveDocument.Comments.Item(i).Delete
     Next i
 End Sub
 
@@ -572,17 +491,17 @@ End Sub
 '*************************************************************************************
 
 Public Function CheckCaselistToken() As Boolean
-    Dim CaselistToken
-    Dim CaselistTokenExpires
+    Dim CaselistToken As String
+    Dim CaselistTokenExpires As String
     
     On Error GoTo Handler
     
     CheckCaselistToken = False
     
-    CaselistToken = GetSetting("Verbatim", "Caselist", "CaselistToken", vbNullString)
-    CaselistTokenExpires = GetSetting("Verbatim", "Caselist", "CaselistTokenExpires", vbNullString)
+    CaselistToken = GetSetting("Verbatim", "Caselist", "CaselistToken", "")
+    CaselistTokenExpires = GetSetting("Verbatim", "Caselist", "CaselistTokenExpires", "")
     
-    If CaselistToken <> vbNullString And CaselistTokenExpires <> vbNullString Then
+    If CaselistToken <> "" And CaselistTokenExpires <> "" Then
         If CDate(Now()) < CDate(CaselistTokenExpires) Then
             CheckCaselistToken = True
         End If

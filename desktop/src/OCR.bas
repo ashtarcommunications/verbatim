@@ -3,65 +3,102 @@ Option Explicit
 
 Public Sub PasteOCR()
     On Error GoTo Handler
-    #If Mac Then
-        ' TODO - Mac version
-        MsgBox "OCR not supported on Mac"
-        
-        ' Check tesseract is installed first, then applescript:
-        
-        'set outPath to "/tmp"
-        'set tesseractCmd to (do shell script "zsh -l -c 'which tesseract'")
-        'do shell script "screencapture -i " & outPath & "/untitled.png"
-        'do shell script tesseractCmd & " " & outPath & "/untitled.png " & outPath & "/output -l jpn"
-        'set the_text to (do shell script "cat " & outPath & "/output.txt")
-        'set the clipboard to the_text
-        'do shell script "rm " & outPath & "/untitled.png " & outPath & "/output.txt"
 
+    #If Mac Then
+        Filesystem.RequestFolderAccess "/tmp"
+
+        Dim TesseractPath As String
         
+        If Filesystem.FileExists("/opt/local/bin/tesseract") Then
+            TesseractPath = "/opt/local/bin/tesseract" ' Macports default
+        ElseIf Filesystem.FileExists("/usr/local/opt/tesseract") Then
+            TesseractPath = "/usr/local/opt/tesseract"
+        ElseIf Filesystem.FileExists("/opt/homebrew/bin/tesseract") Then
+            TesseractPath = "/opt/homebrew/bin/tesseract"
+        ElseIf Filesystem.FileExists("/usr/local/bin/tesseract") Then
+            TesseractPath = "/usr/local/bin/tesseract" ' Homebrew default
+        ElseIf Filesystem.FileExists("/usr/bin/tesseract") Then
+            TesseractPath = "/usr/bin/tesseract"
+        Else
+            ' Have to use || true to always get a 0 return code
+            TesseractPath = AppleScriptTask("Verbatim.scpt", "RunShellScript", "which tesseract || true")
+        End If
+        
+        If TesseractPath = "" Then
+            MsgBox "Tesseract is required for OCR functions, and does not appear to be installed. You can install it with MacPorts or Homebrew. For more information, see the Verbatim documentation."
+            Exit Sub
+        End If
+        
+        AppleScriptTask "Verbatim.scpt", "RunShellScript", "screencapture -i /tmp/ocrtemp.png"
+        If Filesystem.FileExists("/tmp/ocrtemp.png") = False Then
+            MsgBox "Something went wrong taking a screenshot. Make sure you have granted Word permissions for Screen Recording in System Preferences -> Security & Privacy."
+            Exit Sub
+        End If
+        
+        AppleScriptTask "Verbatim.scpt", "RunShellScript", TesseractPath & " /tmp/ocrtemp.png /tmp/ocrtemp -l ENG"
+        If Filesystem.FileExists("/tmp/ocrtemp.txt") = False Then
+            MsgBox "Something went wrong with the OCR. Ensure you have Tesseract installed correctly."
+            Exit Sub
+        End If
+        
+        Selection.TypeText Filesystem.ReadFile("/tmp/ocrtemp.txt")
+        Filesystem.DeleteFile "/tmp/ocrtemp.png"
+        Filesystem.DeleteFile "/tmp/ocrtemp.txt"
     #Else
         Dim SnippingToolPath As String
-    
-        Dim FSO As FileSystemObject
-        Set FSO = New FileSystemObject
-        
+        Dim C2TPath As String
         Dim cmd As String
-        
         Dim TempImagePath As String
         
-        Dim C2TPath As String
-        
-        Dim ExternalOCR As String
-        ExternalOCR = GetSetting("Verbatim", "Plugins", "ExternalOCR", vbNullString)
-        If ExternalOCR <> "" Then
-            If Filesystem.FileExists(ExternalOCR) = False Then
+        Dim OCRPath As String
+        OCRPath = GetSetting("Verbatim", "Plugins", "OCRPath", "")
+        If OCRPath <> "" Then
+            If Filesystem.FileExists(OCRPath) = False Then
                 MsgBox "External OCR program not found. Please check the path to the application in your Verbatim settings, or remove it to use the built-in Windows Snipping Tool."
                 Exit Sub
             Else
-                CreateObject("WSCript.Shell").Run ExternalOCR, 0, True
+                CreateObject("WSCript.Shell").Run OCRPath, 0, True
                 Exit Sub
             End If
         End If
         
-        SnippingToolPath = Environ("SYSTEMROOT") & Application.PathSeparator & "sysnative" & Application.PathSeparator & "SnippingTool.exe"
+        SnippingToolPath = Environ$("SYSTEMROOT") & Application.PathSeparator & "sysnative" & Application.PathSeparator & "SnippingTool.exe"
         
         If Filesystem.FileExists(SnippingToolPath) = False Then
             MsgBox "The Windows Snipping Tool must be installed to run OCR"
             Exit Sub
         End If
         
-        C2TPath = GetSetting("Verbatim", "Plugins", "Capture2Text", vbNullString)
-        If C2TPath = vbNullString Then
-            C2TPath = Environ("ProgramW6432") & Application.PathSeparator & "Capture2Text" & Application.PathSeparator & "Capture2Text_CLI.exe"
-        End If
-        If Filesystem.FileExists(C2TPath) = False Then
-            MsgBox "Capture2Text must be installed to run OCR. Please see https://paperlessdebate.com/ for more details or check the path to the application in your Verbatim settings."
+        If Filesystem.FileExists(Environ$("ProgramW6432") _
+            & Application.PathSeparator _
+            & "Verbatim" _
+            & Application.PathSeparator _
+            & "Plugins" _
+            & Application.PathSeparator _
+            & "Capture2Text" _
+            & Application.PathSeparator _
+            & "Capture2Text_CLI.exe" _
+        ) = True Then
+            C2TPath = Environ$("ProgramW6432") _
+                & Application.PathSeparator _
+                & "Verbatim" _
+                & Application.PathSeparator _
+                & "Plugins" _
+                & Application.PathSeparator _
+                & "Capture2Text" _
+                & Application.PathSeparator _
+                & "Capture2Text_CLI.exe"
+        ElseIf Filesystem.FileExists(Environ$("ProgramW6432") & Application.PathSeparator & "Capture2Text" & Application.PathSeparator & "Capture2Text_CLI.exe") = True Then
+            C2TPath = Environ$("ProgramW6432") & Application.PathSeparator & "Capture2Text" & Application.PathSeparator & "Capture2Text_CLI.exe"
+        Else
+            MsgBox "Capture2Text must be installed to run OCR. Please see https://paperlessdebate.com/ for more details on how to install."
         End If
         
         ' Take a screenshot with the snipping tool
         CreateObject("WSCript.Shell").Run SnippingToolPath & " /clip", 0, True
         
         ' Save screenshot from clipboard to temp file
-        TempImagePath = Environ("TEMP") & Application.PathSeparator & "ocrtemp.jpg"
+        TempImagePath = Environ$("TEMP") & Application.PathSeparator & "ocrtemp.jpg"
         cmd = "$img = get-clipboard -format image; $img.save('" & TempImagePath & "');"
         CreateObject("WScript.Shell").Run "powershell -command " & cmd, 0, True
         
@@ -74,18 +111,9 @@ Public Sub PasteOCR()
         
         ' Paste OCR from clipboard
         Selection.Paste
-        
-        ' Clean up
-        Set FSO = Nothing
     #End If
     
     Exit Sub
 Handler:
-    #If Mac Then
-        ' Do Nothing
-    #Else
-        Set FSO = Nothing
-    #End If
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
-

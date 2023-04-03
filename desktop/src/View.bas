@@ -1,13 +1,12 @@
 Attribute VB_Name = "View"
+'@IgnoreModule ProcedureNotUsed
 Option Explicit
 
-Sub ArrangeWindows()
+Public Sub ArrangeWindows()
     Dim CurrentWindow As Window
     Dim w As Window
-    Dim MaxSize() As String
-    Dim MaxWidth As Integer
-    Dim MaxLeft As Integer
-    Dim MaxTop As Integer
+    Dim MaxLeft As Long
+    Dim MaxTop As Long
     Dim LeftSplitPct As Single
     Dim RightSplitPct As Single
     
@@ -18,6 +17,9 @@ Sub ArrangeWindows()
     
     ' Find largest usable window size
     #If Mac Then
+        Dim MaxSize() As String
+        Dim MaxWidth As Long
+        
         ' Mac has issues maximizing windows with the new "full-screen" mode so use an AppleScript to get the usable bounds
         MaxSize = Split(AppleScriptTask("Verbatim.scpt", "GetHorizontalWindowSize", ""), ",")
         MaxWidth = CInt(MaxSize(0))
@@ -52,7 +54,7 @@ Sub ArrangeWindows()
         ' If an ActiveSpeechDoc, put only that doc on the right, otherwise any doc with "Speech" in the name
         If ( _
             (Globals.ActiveSpeechDoc <> "" And w.Document.Name = Globals.ActiveSpeechDoc) _
-            Or (Globals.ActiveSpeechDoc = "" And InStr(LCase(w.Document.Name), "speech") > 0) _
+            Or (Globals.ActiveSpeechDoc = "" And InStr(LCase$(w.Document.Name), "speech") > 0) _
         ) Then
             ' Mac has trouble with Application.UsableWidth, so use values from above to take dock into account
             #If Mac Then
@@ -96,46 +98,19 @@ Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
-Sub SwitchWindows()
+Public Sub SwitchWindows()
     Dim i As Long
     
     ' Cycle through all open windows
     For i = 1 To Documents.Count
-        If Documents(i).Name = ActiveDocument.Name Then Exit For
+        If Documents.Item(i).Name = ActiveDocument.Name Then Exit For
     Next i
     
     If i = 1 Then i = Documents.Count + 1
-    Documents(i - 1).Activate
+    Documents.Item(i - 1).Activate
 End Sub
 
-Sub NavPaneCycle()
-' Runs the NavPaneCycle program via Shell
-' To install, place NavPaneCycle.exe in the same folder as Debate.dotm, and name the executable "NavPaneCycle.exe"
-
-    #If Mac Then
-        MsgBox "NavPaneCycle is only supported on Windows"
-    #Else
-        On Error Resume Next
-    
-        ' Check NPC exists
-        If Filesystem.FileExists(ActiveDocument.AttachedTemplate.Path & "\NavPaneCycle.exe") = False Then
-            Exit Sub
-        End If
-
-        ' Make sure NavPane is showing
-        If ActiveWindow.DocumentMap = False Then Exit Sub
-    
-        ' Don't run if window is invisible
-        If ActiveWindow.visible = False Then Exit Sub
-    
-        ' Run NPC
-        Shell ActiveDocument.AttachedTemplate.Path & "\NavPaneCycle.exe", vbMinimizedNoFocus
-    
-        Exit Sub
-    #End If
-End Sub
-
-Sub ToggleReadingView()
+Public Sub ToggleReadingView()
     #If Mac Then
         MsgBox "Reading View is not supported on Mac. Try the ""Focus Mode"" button at the bottom of the window."
         Exit Sub
@@ -148,7 +123,7 @@ Sub ToggleReadingView()
     End If
 End Sub
 
-Sub DefaultView()
+Public Sub DefaultView()
     If GetSetting("Verbatim", "View", "DefaultView", Globals.DefaultView) = "Web" Then
         ActiveWindow.ActivePane.View.Type = wdWebView
     Else
@@ -156,19 +131,20 @@ Sub DefaultView()
     End If
 End Sub
 
-Sub ReadingView()
+Public Sub ReadingView()
     #If Mac Then
-        ' TODO - applescript to focus mode maybe
+        ActiveWindow.ActivePane.View.Type = wdWebView
     #Else
         ActiveWindow.ActivePane.View.Type = wdReadingView
     #End If
 End Sub
 
-Sub SetZoom()
+Public Sub SetZoom()
     ActiveWindow.ActivePane.View.Zoom.Percentage = GetSetting("Verbatim", "View", "ZoomPct", "100")
 End Sub
 
-Sub InvisibilityMode(c As IRibbonControl, pressed As Boolean)
+'@Ignore ParameterNotUsed
+Public Sub InvisibilityMode(ByVal c As IRibbonControl, ByVal pressed As Boolean)
     On Error Resume Next
     
     If pressed Then
@@ -182,10 +158,12 @@ Sub InvisibilityMode(c As IRibbonControl, pressed As Boolean)
     End If
     
     Ribbon.RefreshRibbon
+
+    On Error GoTo 0
 End Sub
 
-Sub InvisibilityOn()
-    Dim p
+Public Sub InvisibilityOn()
+    Dim p As Paragraph
     Dim pCount As Long
  
     pCount = 0
@@ -199,7 +177,7 @@ Sub InvisibilityOn()
         Application.StatusBar = "Processing paragraph " & pCount & " of " & ActiveDocument.Paragraphs.Count
         
         ' Select each non-blank body text paragraph
-        If p.outlineLevel = wdOutlineLevelBodyText And Len(p) > 1 Then
+        If p.OutlineLevel = wdOutlineLevelBodyText And Len(p.Range.Text) > 1 Then
             p.Range.Select
             
             ' Highlight the cites so they don't disappear
@@ -233,7 +211,7 @@ Sub InvisibilityOn()
                 .MatchWildcards = True
                 .Format = True
                 .Highlight = False
-                .ParagraphFormat.outlineLevel = wdOutlineLevelBodyText
+                .ParagraphFormat.OutlineLevel = wdOutlineLevelBodyText
                 .Replacement.Font.Hidden = True
                 .Execute Replace:=wdReplaceAll
             End With
@@ -251,7 +229,7 @@ Skip:
     ActiveDocument.ShowSpellingErrors = False
 End Sub
 
-Sub InvisibilityOff()
+Public Sub InvisibilityOff()
     ' Set the whole doc visible
     ActiveDocument.Range.Font.Hidden = False
     
@@ -263,4 +241,5 @@ Sub InvisibilityOff()
     ActiveDocument.ShowGrammaticalErrors = True
     ActiveDocument.ShowSpellingErrors = True
 End Sub
+
 

@@ -14,6 +14,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
+'@Ignore EmptyMethod
 Private Sub UserForm_Initialize()
     #If Mac Then
         UI.ResizeUserForm Me
@@ -27,7 +28,7 @@ End Sub
 
 Private Sub btnTutorial_Click()
     Unload Me
-    UI.ShowForm "Tutorial"
+    UI.LaunchTutorial
 End Sub
 
 Private Sub btnTroubleshooter_Click()

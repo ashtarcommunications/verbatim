@@ -16,7 +16,7 @@ Option Explicit
 
 Private Sub UserForm_Initialize()
     Dim w As Window
-    Dim i As Integer
+    Dim i As Long
     
     On Error GoTo Handler
     
@@ -25,11 +25,12 @@ Private Sub UserForm_Initialize()
     #If Mac Then
         UI.ResizeUserForm Me
         Me.btnChooseSpeechDoc.ForeColor = Globals.BLUE
+        Me.btnClearSpeechDoc.ForeColor = Globals.RED
     #End If
         
     ' Loop through open Windows - use Windows because Application.Documents collection gets corrupted
     For Each w In Application.Windows
-        If InStr(LCase(w.Document.Name), "speech") Then
+        If InStr(LCase$(w.Document.Name), "speech") Then
             Me.lboxDocuments.AddItem w.Document.Name, 0
         Else
             Me.lboxDocuments.AddItem w.Document.Name
@@ -55,7 +56,7 @@ Handler:
 End Sub
 
 Private Sub btnChooseSpeechDoc_Click()
-    Dim i As Integer
+    Dim i As Long
     Dim DocSelected As Boolean
 
     ' Make sure a document is selected
@@ -71,13 +72,20 @@ Private Sub btnChooseSpeechDoc_Click()
     End If
 End Sub
 
+Private Sub btnClearSpeechDoc_Click()
+    Globals.ActiveSpeechDoc = ""
+    Unload Me
+End Sub
+
 #If Mac Then
     ' Ignore button colors
 #Else
-Sub btnChooseSpeechDoc_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
-    btnChooseSpeechDoc.BackColor = Globals.LIGHT_BLUE
+Public Sub btnChooseSpeechDoc_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    Me.btnChooseSpeechDoc.BackColor = Globals.LIGHT_BLUE
+    Me.btnClearSpeechDoc.BackColor = Globals.LIGHT_RED
 End Sub
-Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
-    btnChooseSpeechDoc.BackColor = Globals.BLUE
+Public Sub Userform_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
+    Me.btnChooseSpeechDoc.BackColor = Globals.BLUE
+    Me.btnClearSpeechDoc.BackColor = Globals.RED
 End Sub
 #End If

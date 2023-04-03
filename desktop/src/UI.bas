@@ -1,8 +1,11 @@
 Attribute VB_Name = "UI"
+'@IgnoreModule ProcedureNotUsed
 Option Explicit
 
-Public Sub ShowForm(FormName As String)
+Public Sub ShowForm(ByVal FormName As String)
     Dim Form As Object
+    
+    On Error Resume Next
     
     Select Case FormName
         Case "Caselist"
@@ -43,11 +46,65 @@ Public Sub ShowForm(FormName As String)
     End Select
 
     Form.Show
+    
+    On Error GoTo 0
 End Sub
 
-Public Sub ResizeUserForm(frm As Object, Optional dResizeFactor As Double = 0#)
+' Functions for assigning keyboard shortcuts to forms
+Public Sub ShowFormHelp()
+    UI.ShowForm "Help"
+End Sub
+
+Public Sub ShowFormSettings()
+    UI.ShowForm "Settings"
+End Sub
+
+Public Sub ShowFormShare()
+    UI.ShowForm "Share"
+End Sub
+
+Public Sub ShowFormStats()
+    UI.ShowForm "Stats"
+End Sub
+
+Public Sub ShowFormCaselist()
+    UI.ShowForm "Caselist"
+End Sub
+
+Public Sub ShowFormChooseSpeechDoc()
+    UI.ShowForm "ChooseSpeechDoc"
+End Sub
+
+Public Sub LaunchTutorial()
+    Dim d As Document
+    Dim TutorialDoc As String
+    
+    ' If more than one non-empty doc is open, prompt to close
+    If Documents.Count > 1 Or ActiveDocument.Words.Count > 1 Then
+        If MsgBox("Tutorial can only be run while a single blank document is open. Open a new blank doc and close everything else?", vbYesNo) = vbYes Then
+            TutorialDoc = Documents.Add(ActiveDocument.AttachedTemplate.FullName).Name
+            
+            For Each d In Documents
+                '@Ignore MemberNotOnInterface
+                If d.Name <> TutorialDoc Then d.Close wdPromptToSaveChanges
+            Next d
+        Else
+            Exit Sub
+        End If
+    End If
+    
+    ' Make sure debate tab is active on ribbon
+    #If Mac Then
+    #Else
+        WordBasic.SendKeys "%d%"
+    #End If
+    
+    UI.ShowForm "Tutorial"
+End Sub
+
+'@Ignore ProcedureCanBeWrittenAsFunction
+Public Sub ResizeUserForm(ByVal frm As Object, Optional ByRef dResizeFactor As Double = 0#)
 ' From https://peltiertech.com/userforms-for-mac-and-windows/
-    ' TODO - change ctrl to a Control after moving to late binding
     Dim ctrl As Object
     Dim sColWidths As String
     Dim vColWidths As Variant
@@ -65,7 +122,7 @@ Public Sub ResizeUserForm(frm As Object, Optional dResizeFactor As Double = 0#)
                 .Left = .Left * dResizeFactor
                 .Top = .Top * dResizeFactor
                 On Error Resume Next
-                .Font.Size = .Font.Size * dResizeFactor
+                .Font.size = .Font.size * dResizeFactor
                 On Error GoTo 0
 
                 ' Multi column listboxes, comboboxes
@@ -86,8 +143,7 @@ Public Sub ResizeUserForm(frm As Object, Optional dResizeFactor As Double = 0#)
     End With
 End Sub
 
-Public Sub PopulateComboBoxFromJSON(URL As String, DisplayKey As String, ValueKey As String, c As Object)
-    ' TODO - switch c parameter declaration back to Control after moving everything to late binding
+Public Sub PopulateComboBoxFromJSON(ByRef URL As String, ByRef DisplayKey As String, ByRef ValueKey As String, ByVal c As Object)
     On Error GoTo Handler
 
     System.Cursor = wdCursorWait
@@ -95,8 +151,8 @@ Public Sub PopulateComboBoxFromJSON(URL As String, DisplayKey As String, ValueKe
     Dim Response As Dictionary
     Set Response = HTTP.GetReq(URL)
 
-    Dim Item
-    For Each Item In Response("body")
+    Dim Item As Variant
+    For Each Item In Response.Item("body")
         c.AddItem
         c.List(c.ListCount - 1, 0) = Item(DisplayKey)
         c.List(c.ListCount - 1, 1) = Item(ValueKey)
@@ -112,7 +168,7 @@ Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
-Public Function GetFileFromDialog(FilterName As String, FilterExtension As String, Title As String, ButtonText As String) As String
+Public Function GetFileFromDialog(ByVal FilterName As String, ByVal FilterExtension As String, ByVal Title As String, ByVal ButtonText As String) As String
     On Error GoTo Handler
 
     #If Mac Then
@@ -130,7 +186,7 @@ Public Function GetFileFromDialog(FilterName As String, FilterExtension As Strin
         End If
         
         ' Return the first selected filename
-        GetFileFromDialog = Application.FileDialog(msoFileDialogOpen).SelectedItems(1)
+        GetFileFromDialog = Application.FileDialog(msoFileDialogOpen).SelectedItems.Item(1)
         
         ' Reset the dialog
         UI.ResetFileDialog msoFileDialogOpen
@@ -141,7 +197,7 @@ Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Function
 
-Public Function GetFolderFromDialog(Title As String, ButtonName As String) As String
+Public Function GetFolderFromDialog(ByVal Title As String, ByVal ButtonName As String) As String
     On Error GoTo Handler
     
     #If Mac Then
@@ -157,7 +213,7 @@ Public Function GetFolderFromDialog(Title As String, ButtonName As String) As St
         End If
         
         ' Return the first selected folder
-        GetFolderFromDialog = Application.FileDialog(msoFileDialogFolderPicker).SelectedItems(1)
+        GetFolderFromDialog = Application.FileDialog(msoFileDialogFolderPicker).SelectedItems.Item(1)
         
         ' Reset the dialog
         UI.ResetFileDialog msoFileDialogFolderPicker
@@ -169,7 +225,7 @@ Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Function
 
-Sub ResetFileDialog(FD As Byte)
+Public Sub ResetFileDialog(ByVal FD As Byte)
     ' Resets a built-in FileDialog - can pass in a Word constant, also works for folder dialog
     Application.FileDialog(FD).AllowMultiSelect = False
     Application.FileDialog(FD).Filters.Clear

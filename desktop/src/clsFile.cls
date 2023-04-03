@@ -7,6 +7,15 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+' File class for a cross-platform abstraction to mimic the FileSystemObject on Mac
+' Does not implement the complete File API
+' Uses Scripting.FileSystemObject on PC, shell scripting (via AppleScriptTask) on Mac
+'
+' Usage:
+' Dim f as clsFile
+' Set f = New clsFile
+' f.Init <PathToFile>
+
 Option Explicit
 
 Private m_Name As String
@@ -25,7 +34,9 @@ Public Property Get DateLastModified() As Date
     DateLastModified = m_DateLastModified
 End Property
 
-Public Sub Init(Path As String)
+Public Sub Init(ByRef Path As String)
+    On Error GoTo Handler
+    
     m_Path = Path
     
     #If Mac Then
@@ -38,9 +49,9 @@ Public Sub Init(Path As String)
         m_DateLastModified = Strings.ConvertUnixTimestampToDate(AppleScriptTask("Verbatim.scpt", "RunShellScript", Script))
 
     #Else
-        Dim FSO As Scripting.FileSystemObject
-        Set FSO = New Scripting.FileSystemObject
-        Dim f As Scripting.File
+        Dim FSO As Object
+        Set FSO = CreateObject("Scripting.FileSystemObject")
+        Dim f As Object
         Set f = FSO.GetFile(Path)
         m_Name = f.Name
         m_DateLastModified = f.DateLastModified

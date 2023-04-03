@@ -9,8 +9,8 @@ Public Sub AutoNew()
     On Error Resume Next
     
     ' Add doc variables with name and version number
-    ThisDocument.Variables.Add Name:="Creator", Value:=GetSetting("Verbatim", "Profile", "Name", vbNullString)
-    ThisDocument.Variables.Add Name:="Team", Value:=GetSetting("Verbatim", "Profile", "SchoolName", vbNullString)
+    ThisDocument.Variables.Add Name:="Creator", Value:=GetSetting("Verbatim", "Profile", "Name", "")
+    ThisDocument.Variables.Add Name:="Team", Value:=GetSetting("Verbatim", "Profile", "SchoolName", "")
     ThisDocument.Variables.Add Name:="VerbatimVersion", Value:=Settings.GetVersion
     ThisDocument.Variables.Add Name:="OS", Value:=Application.System.OperatingSystem
     ThisDocument.Variables.Add Name:="OSVersion", Value:=Application.System.Version
@@ -25,9 +25,9 @@ End Sub
 Public Sub AutoClose()
     On Error Resume Next
     
-    If ActiveWindow.visible = True Then
+    If ActiveWindow.Visible = True Then
         ' If current doc was active speech doc, clear it
-        If Globals.ActiveSpeechDoc = ActiveDocument.Name Then Globals.ActiveSpeechDoc = vbNullString
+        If Globals.ActiveSpeechDoc = ActiveDocument.Name Then Globals.ActiveSpeechDoc = ""
         
         #If Mac Then
             ' Do nothing
@@ -38,7 +38,9 @@ Public Sub AutoClose()
         
         ' Check if current file is a .doc file instead of a .docx and default save settings
         If GetSetting("Verbatim", "Admin", "SuppressDocCheck", False) = False Then
+            '@Ignore FunctionReturnValueDiscarded
             Troubleshooting.CheckDocx Notify:=True
+            '@Ignore FunctionReturnValueDiscarded
             Troubleshooting.CheckSaveFormat Notify:=True
         End If
     
@@ -61,7 +63,7 @@ Public Sub Start()
     #If Mac Then
         ' Do Nothing
     #Else
-        If Not Application.ActiveProtectedViewWindow Is Nothing Or ActiveWindow.visible = False Then Exit Sub
+        If Not Application.ActiveProtectedViewWindow Is Nothing Or ActiveWindow.Visible = False Then Exit Sub
     #End If
     
     ' Set default view and navigation pane
@@ -69,11 +71,17 @@ Public Sub Start()
     ActiveWindow.DocumentMap = True
     
     ' Refresh document styles from template if setting checked and not editing template itself
-    If GetSetting("Verbatim", "Format", "AutoUpdateStyles", True) = True And ActiveDocument.FullName <> ActiveDocument.AttachedTemplate.FullName Then ActiveDocument.UpdateStyles
+    If GetSetting("Verbatim", "Admin", "AutoUpdateStyles", True) = True And ActiveDocument.FullName <> ActiveDocument.AttachedTemplate.FullName Then ActiveDocument.UpdateStyles
     ActiveDocument.Saved = True
        
+    ' Prevent Word making new styles
+    If GetSetting("Verbatim", "Admin", "SuppressStyleChecks", False) = False Then
+        Application.RestrictLinkedStyles = True
+        Options.AutoFormatAsYouTypeDefineStyles = False
+    End If
+       
     ' Check for NPCStartup setting and call NavPaneCycle if True
-    If GetSetting("Verbatim", "Admin", "NPCStartup", False) = True Then View.NavPaneCycle
+    If GetSetting("Verbatim", "View", "NPCStartup", False) = True Then Plugins.NavPaneCycle
     
     ' Refresh screen to solve blank screen bug
     Application.ScreenRefresh
@@ -84,16 +92,16 @@ Public Sub Start()
     Else
         ' If first document opened and warnings not suppressed, check if template is incorrectly installed.
         If GetSetting("Verbatim", "Admin", "SuppressInstallChecks", False) = False And Application.Documents.Count = 1 Then
-            If Troubleshooting.InstallCheckTemplateName = True Or Troubleshooting.InstallCheckTemplateLocation = True Then
+            If Troubleshooting.InstallCheckTemplateName = False Or Troubleshooting.InstallCheckTemplateLocation = False Then
                 If MsgBox("Verbatim appears to be installed incorrectly. Would you like to open the Troubleshooter? This message can be suppressed in the Verbatim settings.", vbYesNo) = vbYes Then
-                    UI.ShowForm "Settings"
+                    UI.ShowForm "Troubleshooter"
                     Exit Sub
                 End If
             End If
             #If Mac Then
-                If Troubleshooting.InstallCheckScptFileExists = True Then
+                If Troubleshooting.InstallCheckScptFileExists = False Then
                     If MsgBox("Your Verbatim.scpt file appears to be installed incorrectly. Would you like to open the Troubleshooter? This message can be suppressed in the Verbatim settings.", vbYesNo) = vbYes Then
-                        UI.ShowForm "Settings"
+                        UI.ShowForm "Troubleshooter"
                         Exit Sub
                     End If
                 End If
@@ -101,7 +109,7 @@ Public Sub Start()
         End If
         
         ' Check for updates weekly on Wednesdays
-        If GetSetting("Verbatim", "Admin", "AutoUpdateCheck", True) = True Then
+        If GetSetting("Verbatim", "Profile", "AutomaticUpdates", True) = True Then
             If DateDiff("d", GetSetting("Verbatim", "Profile", "LastUpdateCheck"), Now) > 6 Then
                 If DatePart("w", Now) = 4 Then
                     Settings.UpdateCheck
@@ -113,7 +121,7 @@ Public Sub Start()
     End If
 
     ' Check for custom code to import
-    If GetSetting("Verbatim", "Profile", "ImportCustomCode", False) = True Then
+    If GetSetting("Verbatim", "Admin", "ImportCustomCode", False) = True Then
         Settings.ImportCustomCode Notify:=True
     End If
 
@@ -125,7 +133,6 @@ Public Sub FirstRun()
     SaveSetting "Verbatim", "Admin", "FirstRun", False
     
     ' Unverbatimize Normal to clear out old installs
-    ' TODO - this won't work if no VBOM access
     Settings.UnverbatimizeNormal
     
     ' Remove old registry keys

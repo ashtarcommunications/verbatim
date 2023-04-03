@@ -1,4 +1,5 @@
 Attribute VB_Name = "Audio"
+'@IgnoreModule ProcedureNotUsed, UnassignedVariableUsage, VariableNotAssigned
 Option Explicit
 
 Public Sub StartRecord(ByVal BPS As BitsPerSec, ByVal SPS As SamplesPerSec, ByVal Mode As Channels)
@@ -9,10 +10,10 @@ Public Sub StartRecord(ByVal BPS As BitsPerSec, ByVal SPS As SamplesPerSec, ByVa
     On Error GoTo Handler
         
     ' Save instead if already recording
-    If Audio.RecordStatus = "recording" Then Call Audio.SaveRecord
+    If Audio.RecordStatus = "recording" Then Audio.SaveRecord
     
     #If Mac Then
-        AppleScriptTask "Verbatim.scpt", "StartRecord", vbNullString
+        AppleScriptTask "Verbatim.scpt", "StartRecord", ""
     #Else
         ' mciSendString appears to be ignoring the parameters and always recording at 88kbps
         retStr = Space$(128)
@@ -46,67 +47,66 @@ Public Sub SaveRecord()
     Dim cBack As Long
     
     Dim AudioDir As String
-    Dim FileName As String
+    Dim Filename As String
     Dim FilePath As String
-    Dim i
     
     On Error GoTo Handler
     
     ' Get Audio recording directory from settings or use desktop
-    AudioDir = GetSetting("Verbatim", "Paperless", "AudioDir", vbNullString)
+    AudioDir = GetSetting("Verbatim", "Paperless", "AudioDir", "")
     If Filesystem.FolderExists(AudioDir) = False Then
         #If Mac Then
-            FilePath = AppleScriptTask("Verbatim.scpt", "DesktopPath")
+            FilePath = AppleScriptTask("Verbatim.scpt", "DesktopPath", "")
         #Else
-            FilePath = CStr(Environ("USERPROFILE")) & "\Desktop"
+            FilePath = CStr(Environ$("USERPROFILE")) & "\Desktop"
         #End If
     Else
         FilePath = AudioDir
     End If
 
     ' Ensure a trailing separator
-    If Right(FilePath, 1) <> Application.PathSeparator Then FilePath = FilePath & Application.PathSeparator
+    If Right$(FilePath, 1) <> Application.PathSeparator Then FilePath = FilePath & Application.PathSeparator
              
 GetFileName:
-    FileName = InputBox("Please enter a name for your saved audio file. It will be saved to the following directory:" _
+    Filename = InputBox("Please enter a name for your saved audio file. It will be saved to the following directory:" _
         & vbCrLf & "(Configurable in Settings)" & vbCrLf & FilePath, _
         "Save Audio Recording", _
-        "Recording " & Format(Now, "m d yyyy hmmAMPM"))
+        "Recording " & Format$(Now, "m d yyyy hmmAMPM"))
     
     ' Exit if no file name or user pressed Cancel, recording is still active
-    If FileName = vbNullString Then
+    If Filename = "" Then
         RecordAudioToggle = True
         Exit Sub
     End If
     
     ' Clean up filename and ensure correct extension
-    FileName = Strings.OnlyAlphaNumericChars(FileName)
+    Filename = Strings.OnlyAlphaNumericChars(Filename)
     #If Mac Then
-        If Right(FileName, 4) <> ".m4a" Then FileName = FileName & ".m4a"
+        If Right(Filename, 4) <> ".m4a" Then Filename = Filename & ".m4a"
     #Else
-        If Right(FileName, 4) <> ".wav" Then FileName = FileName & ".wav"
+        If Right$(Filename, 4) <> ".wav" Then Filename = Filename & ".wav"
     #End If
-    FileName = FilePath & FileName
+    Filename = FilePath & Filename
     
     ' Test if file exists
-    If Filesystem.FileExists(FileName) = True Then
+    If Filesystem.FileExists(Filename) = True Then
         If MsgBox("File exists. Overwrite?", vbYesNo) = vbNo Then GoTo GetFileName
     End If
     
     #If Mac Then
-        AppleScriptTask "Verbatim.scpt", "SaveRecord", FileName
+        AppleScriptTask "Verbatim.scpt", "SaveRecord", Filename
     #Else
         ' Enclose string in quotes for passing to mciSendString
-        FileName = """" & FileName & """"
+        Filename = """" & Filename & """"
     
         ' Stop and save capture
         retStr = Space$(128)
         mciSendString "stop capture", retStr, 128, cBack
-        mciSendString "save capture " & FileName, retStr, 128, cBack
+        mciSendString "save capture " & Filename, retStr, 128, cBack
         mciSendString "close capture", retStr, 128, cBack
     #End If
     
-    MsgBox "Recording Saved as:" & vbCrLf & FileName, vbOKOnly
+    MsgBox "Recording Saved as:" & vbCrLf & Filename, vbOKOnly
      
     Exit Sub
     
@@ -123,20 +123,25 @@ Handler:
     Ribbon.RefreshRibbon
 End Sub
 
-#If Mac Then
-    ' Do Nothing
-#Else
 Public Function RecordStatus() As String
-    Dim retStr As String
-    Dim cBack As Long
-    
-    retStr = Space$(128)
-    mciSendString "status capture mode", retStr, 128, cBack
-    RecordStatus = retStr
+    #If Mac Then
+        If Globals.RecordAudioToggle = True Then
+            RecordStatus = "recording"
+        Else
+            RecordStatus = "off"
+        End If
+    #Else
+        Dim retStr As String
+        Dim cBack As Long
+        
+        retStr = Space$(128)
+        mciSendString "status capture mode", retStr, 128, cBack
+        RecordStatus = retStr
+    #End If
 End Function
-#End If
 
-Sub RecordAudio(c As IRibbonControl, pressed As Boolean)
+'@Ignore ParameterNotUsed
+Public Sub RecordAudio(ByVal c As IRibbonControl, ByVal pressed As Boolean)
     On Error GoTo Handler
     
     If pressed Then
@@ -160,3 +165,5 @@ Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
     Ribbon.RefreshRibbon
 End Sub
+
+

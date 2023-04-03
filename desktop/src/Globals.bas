@@ -1,9 +1,10 @@
 Attribute VB_Name = "Globals"
+'@IgnoreModule ConstantNotUsed, ImplicitlyTypedConst, MoveFieldCloserToUsage, EncapsulatePublicField
 Option Explicit
 
-' Windows API declarations
+' API declarations
 #If Mac Then
-    ' Do Nothing
+    Public Declare PtrSafe Function CopyMemory_byVar Lib "libc.dylib" Alias "memmove" (ByRef dest As Any, ByRef src As Any, ByVal size As Long) As LongPtr
 #Else
     ' For saving a pointer to the ribbon
     Public Declare PtrSafe Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef destination As Any, ByRef source As Any, ByVal length As Long)
@@ -13,9 +14,6 @@ Option Explicit
     
     ' VkKeyScan needed to fix the tilde key bug on Macs running Boot Camp
     Public Declare PtrSafe Function VkKeyScan Lib "user32" Alias "VkKeyScanA" (ByVal cChar As Byte) As Integer
-    
-    'ShellExecute needed to launch installer package after updates
-    Public Declare PtrSafe Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hwnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
 #End If
 
 ' UI globals
@@ -29,18 +27,19 @@ Public Const USER_FORM_RESIZE_FACTOR As Double = 1.333333
     Public Const DefaultView As String = "Web"
 #End If
 
-'Togglebutton state variables
+' Togglebutton state variables
 Public AutoOpenFolderToggle As Boolean
-Public AutoCoauthoringToggle As Boolean
 Public RecordAudioToggle As Boolean
 Public InvisibilityToggle As Boolean
 Public UnderlineModeToggle As Boolean
+Public ParagraphIntegrityToggle As Boolean
+Public UsePilcrowsToggle As Boolean
 
 ' Caselist globals
 Public Const CASELIST_URL As String = "https://api.opencaselist.com/v1"
 Public Const SHARE_URL As String = "https://share.tabroom.com"
-Public Const MOCK_ROUNDS As String = "https://run.mocky.io/v3/be382c53-e49c-4de4-99b6-44ba5e6a3e7c"
 Public Const PAPERLESSDEBATE_URL As String = "https://paperlessdebate.com"
+Public Const UPDATES_URL As String = "https://update.paperlessdebate.com"
 Public Const TABROOM_REGISTER_URL As String = "https://www.tabroom.com/user/login/new_user.mhtml"
 Public Const WPM_URL As String = "http://www.readingsoft.com/"
 
@@ -87,7 +86,7 @@ Public ORANGE As Long
 Public LIGHT_ORANGE As Long
 Public DARK_GRAY As Long
 
-Sub InitializeGlobals()
+Public Sub InitializeGlobals()
     WHITE = RGB(255, 255, 255) '16777215, &H00FFFFFF&
     BLACK = RGB(0, 0, 0) ' 0, &H00000000&
     BLUE = RGB(64, 92, 121) ' 7953472, &H00795C40&
@@ -99,6 +98,7 @@ Sub InitializeGlobals()
     ORANGE = RGB(191, 139, 86) ' 5671871, &H00568BBF&
     LIGHT_ORANGE = RGB(223, 197, 170) ' 11191775, &H00AAC5DF&
     DARK_GRAY = RGB(169, 169, 169) ' 11119017, &H00A9A9A9&
+        
+    Globals.ParagraphIntegrityToggle = GetSetting("Verbatim", "Format", "ParagraphIntegrity", True)
+    Globals.UsePilcrowsToggle = GetSetting("Verbatim", "Format", "UsePilcrows", True)
 End Sub
-
-

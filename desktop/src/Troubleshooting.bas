@@ -1,56 +1,14 @@
 Attribute VB_Name = "Troubleshooting"
 Option Explicit
 
-' *************************************************************************************
-' * REGISTRY FUNCTIONS                                                                *
-' *************************************************************************************
-
-#If Mac Then
-    ' Do Nothing
-#Else
-Function RegKeyRead(RegKey As String) As String
-    Dim WS As Object
-    On Error Resume Next
-    Set WS = CreateObject("WScript.Shell")
-    RegKeyRead = WS.RegRead(RegKey)
-    Set WS = Nothing
-End Function
-
-Function RegKeyExists(RegKey As String) As Boolean
-    Dim WS As Object
-    On Error GoTo Handler
-    Set WS = CreateObject("WScript.Shell")
-    WS.RegRead RegKey
-    RegKeyExists = True
-    Set WS = Nothing
-    Exit Function
-  
-Handler:
-    ' If key isn't found, it will throw an error
-    RegKeyExists = False
-    Set WS = Nothing
-End Function
-
-Sub RegKeySave(RegKey As String, Value As String, Optional ValueType As String = "REG_SZ")
-    Dim WS As Object
-    On Error Resume Next
-    Set WS = CreateObject("WScript.Shell")
-    WS.RegWrite RegKey, Value, ValueType
-    Set WS = Nothing
-End Sub
-#End If
-
-' *************************************************************************************
-' * INSTALL CHECK FUNCTIONS                                                           *
-' *************************************************************************************
-Function InstallCheckTemplateName(Optional Notify As Boolean) As Boolean
+Public Function InstallCheckTemplateName(Optional ByVal Notify As Boolean) As Boolean
     Dim msg As String
     
     On Error Resume Next
 
     ' Checks if Verbatim is installed as the wrong filename and optionally notifies the user
     If ActiveDocument.AttachedTemplate.Name <> "Debate.dotm" Then
-        InstallCheckTemplateName = True
+        InstallCheckTemplateName = False
         
         If Notify = True Then
             msg = "WARNING - Verbatim appears to be installed incorrectly as " _
@@ -63,14 +21,16 @@ Function InstallCheckTemplateName(Optional Notify As Boolean) As Boolean
         End If
 
     Else
-        InstallCheckTemplateName = False
+        InstallCheckTemplateName = True
     End If
+    
+    On Error GoTo 0
 End Function
 
-Function InstallCheckTemplateLocation(Optional Notify As Boolean) As Boolean
+Public Function InstallCheckTemplateLocation(Optional ByVal Notify As Boolean) As Boolean
     Dim msg As String
-    Dim NormalPath
-    Dim MsgPath
+    Dim NormalPath As String
+    Dim MsgPath As String
     
     On Error Resume Next
 
@@ -79,13 +39,13 @@ Function InstallCheckTemplateLocation(Optional Notify As Boolean) As Boolean
         MsgPath = "~/Library/Group Containers/UBF8T34G9.Office/User Content/Templates"
     #Else
         ' Use LCase because Windows 8 Environ returns uppercase drive letters
-        NormalPath = LCase(CStr(Environ("USERPROFILE")) & "\AppData\Roaming\Microsoft\Templates")
+        NormalPath = LCase$(CStr(Environ$("USERPROFILE")) & "\AppData\Roaming\Microsoft\Templates")
         MsgPath = "c:\Users\<yourname>\AppData\Roaming\Microsoft\Templates"
     #End If
 
     ' Checks if Verbatim is installed in the wrong location and optionally notifes the user
-    If LCase(ActiveDocument.AttachedTemplate.Path) <> NormalPath Then
-        InstallCheckTemplateLocation = True
+    If LCase$(ActiveDocument.AttachedTemplate.Path) <> NormalPath Then
+        InstallCheckTemplateLocation = False
         
         If Notify = True Then
             msg = "WARNING - Verbatim appears to be installed in the wrong location. " _
@@ -97,8 +57,10 @@ Function InstallCheckTemplateLocation(Optional Notify As Boolean) As Boolean
         End If
 
     Else
-        InstallCheckTemplateLocation = False
+        InstallCheckTemplateLocation = True
     End If
+    
+    On Error GoTo 0
 End Function
 
 #If Mac Then
@@ -108,12 +70,12 @@ Function InstallCheckScptFileExists(Optional Notify As Boolean) As Boolean
     On Error Resume Next
 
     ' Checks if Verbatim.scpt is installed at the correct location
-    If Filesystem.FileExists("~/Library/Application Scripts/com.Microsoft.Word/Verbatim.scpt") = False Then
-        InstallCheckScptFileExists = True
+    If Filesystem.FileExists("/Users/" & Environ("USER") & "/Library/Application Scripts/com.Microsoft.Word/Verbatim.scpt") = False Then
+        InstallCheckScptFileExists = False
         
         If Notify = True Then
             msg = "WARNING - You do not appear to have Verbatim.scpt installed at " _
-            & "~/Library/Application Scripts/com.Microsoft.Word/Verbatim.scpt - " _
+            & "/Users/<yourusername>/Library/Application Scripts/com.Microsoft.Word/Verbatim.scpt - " _
             & "Verbatim.scpt must be installed or many features will not work correctly. " _
             & "It is strongly recommended you run the Verbatim installer again, or manually install the file. " _
             & "This warning can be suppressed in the Verbatim settings."
@@ -121,69 +83,77 @@ Function InstallCheckScptFileExists(Optional Notify As Boolean) As Boolean
         End If
 
     Else
-        InstallCheckScptFileExists = False
+        InstallCheckScptFileExists = True
     End If
+    
+    On Error GoTo 0
 End Function
 #End If
-Function CheckSaveFormat(Optional Notify As Boolean) As Boolean
+
+Public Function CheckSaveFormat(Optional ByVal Notify As Boolean) As Boolean
     Dim msg As String
     
     On Error Resume Next
 
     ' Check if default save format is .docx and optionally notifies the user
-    If Application.DefaultSaveFormat = "Doc" Or Application.DefaultSaveFormat = "Doc97" Then
-        CheckSaveFormat = True
+    If Application.DefaultSaveFormat <> "Docx" Then
+        CheckSaveFormat = False
         
         If Notify = True Then
-            msg = "Your default save format appears to be set to .doc instead of .docx"
+            msg = "Your default save format is not set to .docx"
             msg = msg & " - It is highly recommended that you use the .docx format instead. "
             msg = msg & "Change automatically?" & vbCrLf & "(This warning can be supressed in the Verbatim options)"
             If MsgBox(msg, vbYesNo) = vbYes Then Application.DefaultSaveFormat = "Docx"
         End If
     Else
-        CheckSaveFormat = False
+        CheckSaveFormat = True
     End If
+    
+    On Error GoTo 0
 End Function
 
-Function CheckDocx(Optional Notify As Boolean) As Boolean
+'@Ignore FunctionReturnValueAlwaysDiscarded
+Public Function CheckDocx(Optional ByVal Notify As Boolean) As Boolean
     Dim msg As String
     
     On Error Resume Next
     
     ' Check if current document is a .doc instead of a docx
-    If Right(ActiveDocument.Name, 3) = "doc" Then
-        CheckDocx = True
+    If Right$(ActiveDocument.Name, 3) = "doc" Then
+        CheckDocx = False
         
         If Notify = True Then
             msg = "This file is saved as .doc instead of .docx"
             msg = msg & " - It is highly recommended that you use the .docx format instead. "
             msg = msg & "Save as .docx automatically? This will overwrite any current file in the same directory with the same name." & vbCrLf & "(This warning can be supressed in the Verbatim options)"
             If MsgBox(msg, vbYesNo) = vbYes Then
-                ActiveDocument.SaveAs FileName:=Left(ActiveDocument.FullName, InStrRev(ActiveDocument.FullName, ".") - 1), FileFormat:=wdFormatXMLDocument
+                ActiveDocument.SaveAs Filename:=Left$(ActiveDocument.FullName, InStrRev(ActiveDocument.FullName, ".") - 1), FileFormat:=wdFormatXMLDocument
             End If
         End If
     Else
-        CheckDocx = False
+        CheckDocx = True
     End If
-End Function
-
-Public Function CheckDefaultSave() As Boolean
-    If Application.DefaultSaveFormat = "Docx" Then
-        CheckDefaultSave = True
-    Else
-        CheckDefaultSave = False
-    End If
+    
+    On Error GoTo 0
 End Function
 
 Public Function CheckDuplicateTemplates() As Boolean
+    Dim DesktopPath As String
+    Dim DownloadsPath As String
+    
     On Error Resume Next
     
-    If Filesystem.FileExists(Environ("USERPROFILE") & "\Desktop\Debate.dotm") = False And _
-    Filesystem.FileExists(Environ("USERPROFILE") & "\Downloads\Debate.dotm") = False Then
-        CheckDuplicateTemplates = True
-    Else
-        CheckDuplicateTemplates = False
-    End If
+    #If Mac Then
+        DesktopPath = "/Users/" & Environ("USER") & "/Desktop/Debate.dotm"
+        DownloadsPath = "/Users/" & Environ("USER") & "/Downloads/Debate.dotm"
+    #Else
+        DesktopPath = Environ$("USERPROFILE") & "\Desktop\Debate.dotm"
+        DownloadsPath = Environ$("USERPROFILE") & "\Downloads\Debate.dotm"
+    #End If
+    
+    CheckDuplicateTemplates = Filesystem.FileExists(DesktopPath) = True Or Filesystem.FileExists(DownloadsPath) = True
+    
+    On Error GoTo 0
 End Function
 
 Public Function CheckAddins() As Boolean
@@ -191,64 +161,56 @@ Public Function CheckAddins() As Boolean
 
     #If Mac Then
         CheckAddins = True
-        Exit Sub
+        Exit Function
     #Else
         Dim Addin As COMAddIn
-               
+        
+        CheckAddins = True
+        
         For Each Addin In Application.COMAddIns
             If Addin.Description = "Send to Bluetooth" And Addin.Connect = True Then
                 CheckAddins = False
             End If
         Next Addin
     #End If
+    
+    On Error GoTo 0
 End Function
 
 ' *************************************************************************************
 ' * FIX FUNCTIONS                                                                     *
 ' *************************************************************************************
-Sub DeleteDuplicateTemplates()
-    Dim FilePath As String
+
+Public Sub DeleteDuplicateTemplates()
+    Dim DesktopPath As String
+    Dim DownloadsPath As String
     
     On Error Resume Next
     
     ' Check for "Debate.dotm" in the Desktop and Downloads folders, prompt to delete if found
-    #If Mac Then
-        FilePath = MacScript("return the path to the desktop folder as string") & "Debate.dotm"
-        If AppleScriptTask("Verbatim.scpt", "FileExists", FilePath) = "true" Then
-            If MsgBox("A duplicate copy of Debate.dotm was found on your Desktop - this can cause interoperability issues. Attempt to delete automatically?", vbYesNo) = vbYes Then
-                Filesystem.DeleteFile FilePath
-            End If
+    If Troubleshooting.CheckDuplicateTemplates = False Then
+        If MsgBox("A duplicate copy of Debate.dotm was found on your Desktop or in your Downloads folder - this can cause interoperability issues. Attempt to delete automatically?", vbYesNo) = vbYes Then
+            #If Mac Then
+                DesktopPath = "/Users/" & Environ("USER") & "/Desktop/Debate.dotm"
+                DownloadsPath = "/Users/" & Environ("USER") & "/Downloads/Debate.dotm"
+            #Else
+                DesktopPath = Environ$("USERPROFILE") & "\Desktop\Debate.dotm"
+                DownloadsPath = Environ$("USERPROFILE") & "\Downloads\Debate.dotm"
+            #End If
+            
+            If Filesystem.FileExists(DesktopPath) Then Filesystem.DeleteFile DesktopPath
+            If Filesystem.FileExists(DownloadsPath) Then Filesystem.DeleteFile DownloadsPath
         End If
-        
-        FilePath = MacScript("return the path to the downloads folder as string") & "Debate.dotm"
-      
-        If AppleScriptTask("Verbatim.scpt", "FileExists", FilePath) = "true" Then
-            If MsgBox("A duplicate copy of Debate.dotm was found in your Downloads folder - this can cause interoperability issues. Attempt to delete automatically?", vbYesNo) = vbYes Then
-                Filesystem.DeleteFile FilePath
-            End If
-        End If
-    #Else
-        FilePath = Environ("USERPROFILE") & "\Desktop\Debate.dotm"
-        If Filesystem.FileExists(FilePath) = True Then
-            If MsgBox("A duplicate copy of Debate.dotm was found on your Desktop - this can cause interoperability issues. Attempt to delete automatically?", vbYesNo) = vbYes Then
-                Filesystem.DeleteFile FilePath
-            End If
-        End If
-
-        FilePath = Environ("USERPROFILE") & "\Downloads\Debate.dotm"
-        If Filesystem.FileExists(FilePath) = True Then
-            If MsgBox("A duplicate copy of Debate.dotm was found in your Downloads folder - this can cause interoperability issues. Attempt to delete automatically?", vbYesNo) = vbYes Then
-                Filesystem.DeleteFile FilePath
-            End If
-        End If
-    #End If
+    End If
+    
+    On Error GoTo 0
 End Sub
 
-Sub SetDefaultSave()
+Public Sub SetDefaultSave()
     Application.DefaultSaveFormat = "Docx"
 End Sub
 
-Sub DisableAddins()
+Public Sub DisableAddins()
     #If Mac Then
         MsgBox "This function doesn't work on Mac"
         Exit Sub
@@ -261,16 +223,27 @@ Sub DisableAddins()
     #End If
 End Sub
 
-Sub FixTilde()
+Public Sub FixTilde()
+    Dim ModifierKey As Long
+    
+    #If Mac Then
+        ModifierKey = wdKeyCommand
+    #Else
+        ModifierKey = wdKeyControl
+    #End If
+    
     ' VkKeyScan should usually return 192 - on models where it incorrectly returns 223, use 96 instead
     ' Keycodes: 96 = `, 192 = A`, 223 = Beta
-    If VkKeyScan(Asc("`")) = 192 Then
-        KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeech", VkKeyScan(Asc("`"))
-        KeyBindings.Add wdKeyCategoryMacro, "Paperless.ShowChooseSpeechDoc", BuildKeyCode(wdKeyAlt, VkKeyScan(Asc("`")))
-        KeyBindings.Add wdKeyCategoryMacro, "View.NavPaneCycle", BuildKeyCode(wdKeyControl, VkKeyScan(Asc("`")))
-    Else
-        KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeech", VkKeyScan(96)
-        KeyBindings.Add wdKeyCategoryMacro, "Paperless.ShowChooseSpeechDoc", BuildKeyCode(wdKeyAlt, VkKeyScan(96))
-        KeyBindings.Add wdKeyCategoryMacro, "View.NavPaneCycle", BuildKeyCode(wdKeyControl, VkKeyScan(96))
-    End If
+    #If Mac Then
+        KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechCursor", Chr(96)
+        KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechEnd", BuildKeyCode(wdKeyAlt, Chr(96))
+    #Else
+        If VkKeyScan(Asc("`")) = 192 Then
+            KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechCursor", VkKeyScan(Asc("`"))
+            KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechEnd", BuildKeyCode(wdKeyAlt, VkKeyScan(Asc("`")))
+        Else
+            KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechCursor", VkKeyScan(96)
+            KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechEnd", BuildKeyCode(wdKeyAlt, VkKeyScan(96))
+        End If
+    #End If
 End Sub

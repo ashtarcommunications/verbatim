@@ -2,11 +2,12 @@
 
 ## Things that do not work in Mac VBA
 * CommandButton BackColor on UserForms (Use Forecolor as a replacement instead)
-* #WIN64 compiler constant returns true on Mac (Have to use #If Mac Then <do nothing> DElse <do PC only> #End If)
+* #WIN64 compiler constant returns true on Mac (Have to use #If Mac Then <do nothing> Else <do PC only> #End If)
 * Many ribbon icons
 * Custom mouse pointers on forms
 * GetSetting doesn't accept vbNullString for the default parameter, use "" instead
 * Have to use replacements for most libraries, inc. XML, HTTP, Dictionary, ADODB, VBIDE
+* PictureSizeMode on userform images doesn't resize the same on Mac as it does on PC
 
 ## Form UI Design
 
@@ -39,6 +40,16 @@ Font Calibri 14
 ## Features I won't add
 Shrink font below 4pt
 Invisibility modes that actually delete content
+Undertags style
+Analytics style or anything that removes analytics automatically
 
 ## Notes For Docs
 For Docs: Cursor selection philosophy, plead for 1-paragraph cite format
+
+## Other libraries
+
+VBADecompiler.exe
+Capture2Text
+EverythingSearch
+
+Are bundled with their own licenses

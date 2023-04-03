@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmCheatSheet 
    Caption         =   "Cheat Sheet"
-   ClientHeight    =   8985.001
+   ClientHeight    =   9420
    ClientLeft      =   120
    ClientTop       =   450
-   ClientWidth     =   4020
+   ClientWidth     =   5760
    OleObjectBlob   =   "frmCheatSheet.frx":0000
    ShowModal       =   0   'False
    StartUpPosition =   1  'CenterOwner
@@ -18,98 +18,247 @@ Option Explicit
 
 Private Sub UserForm_Activate()
     Dim k As KeyBinding
-    Dim CommandArray
+    Dim Shortcuts As Dictionary
+    Set Shortcuts = New Dictionary
     
     On Error GoTo Handler
 
     CustomizationContext = ActiveDocument.AttachedTemplate
     
+    ' Convert keybindings to a dictionary for easier lookup
     For Each k In KeyBindings
-        Me.lboxShortcuts.AddItem
-        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = k.KeyString
-        
-        Select Case k.Command
-            Case Is = "Verbatim.Formatting.PasteText"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Paste"
-            Case Is = "Verbatim.Settings.ShowVerbatimHelp"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Verbatim Help"
-            Case Is = "Verbatim.Formatting.Condense"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Condense"
-            Case Is = "Verbatim.Formatting.ToggleUnderline"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Underline"
-            Case Is = "Verbatim.Formatting.Highlight"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Highlight"
-            Case Is = "Verbatim.Formatting.ClearToNormal"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Clear"
-            Case Is = "Verbatim.View.SwitchWindows"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Cycle Windows"
-            Case Is = "Verbatim.Settings.ShowSettingsForm"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Verbatim Settings"
-            Case Is = "Verbatim.Formatting.GetFromCiteMaker"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Get From CiteMaker"
-            Case Is = "Verbatim.Formatting.SelectSimilar"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Select Similar"
-            Case Is = "Verbatim.Formatting.CondenseNoPilcrows"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Condense (No Pilcrows)"
-            Case Is = "Verbatim.Formatting.ShrinkText"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Shrink"
-            Case Is = "Verbatim.Formatting.AutoFormatCite"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Auto Format Cite"
-            Case Is = "Verbatim.Formatting.CopyPreviousCite"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Copy Previous Cite"
-            Case Is = "Verbatim.Formatting.AutoUnderline"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Auto Underline"
-            Case Is = "Verbatim.Formatting.RemoveEmphasis"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Remove Emphasis"
-            Case Is = "Verbatim.Formatting.UpdateStyles"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Update Styles"
-            Case Is = "Verbatim.Formatting.AutoNumberTags"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Auto Number Tags"
-            Case Is = "Verbatim.Paperless.MoveUp"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Move Up"
-            Case Is = "Verbatim.Paperless.MoveDown"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Move Down"
-            Case Is = "Verbatim.Paperless.DeleteHeading"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Delete Heading"
-            Case Is = "Verbatim.Email.ShowEmailForm"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Email"
-            Case Is = "Verbatim.Paperless.CopyToUSB"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Copy To USB"
-            Case Is = "Verbatim.PaDS.PaDSPublic"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Public PaDS"
-            Case Is = "Verbatim.PaDS.UploadToPaDSDummy"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Upload To PaDS"
-            Case Is = "Verbatim.PaDS.OpenFromPaDSDummy"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Open From PaDS"
-            Case Is = "Verbatim.View.ArrangeWindows"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Arrange Windows"
-            Case Is = "Verbatim.Paperless.StartTimer"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Start Timer"
-            Case Is = "Verbatim.Caselist.CiteRequest"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Cite Request"
-            Case Is = "Verbatim.Stats.ShowStatsForm"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Document Stats"
-            Case Is = "Verbatim.View.InvisibilityOff"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "No Invisibility"
-            Case Is = "Verbatim.Paperless.NewSpeech"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "New Speech"
-            Case Is = "Verbatim.View.ToggleReadingView"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Toggle View"
-            Case Is = "Verbatim.Paperless.SendToSpeech"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Send To Speech\Mark"
-            Case Is = "Verbatim.Paperless.ShowChooseSpeechDoc"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Choose Doc"
-            Case Is = "Verbatim.View.NavPaneCycle"
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "NavPaneCycle"
-            Case Else
-                CommandArray = Split(k.Command, ".")
-                Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = CommandArray(UBound(CommandArray))
-        End Select
-        
+        If Shortcuts.Exists(k.Command) Then
+            Shortcuts.Item(k.Command) = Shortcuts.Item(k.Command) & " / " & k.KeyString
+        Else
+            Shortcuts.Add k.Command, k.KeyString
+        End If
     Next k
+    
+    Me.lboxShortcuts.AddItem "----------Speech----------"
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Send To Speech/Mark Card"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Paperless.SendToSpeechCursor")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Send To Speech End"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Paperless.SendToSpeechEnd")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Send To Flow (Cell)"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Flow.SendToFlowCell")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Send To Flow (Column)"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Flow.SendToFlowColumn")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Send Headings To Flow (Cell)"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Flow.SendHeadingsToFlowCell")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Send Headings To Flow (Column)"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Flow.SendHeadingsToFlowColumn")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Insert Quick Card"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.QuickCards.InsertCurrentQuickCard")
+    
+    
+    Me.lboxShortcuts.AddItem ""
+    Me.lboxShortcuts.AddItem "----------Organize----------"
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Verbatim Help"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.UI.ShowFormHelp")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Paste"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Formatting.PasteText")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Condense"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Condense.CondenseAllOrCard")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Pocket"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Pocket")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Hat"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Hat")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Block"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Block")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Tag"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Tag")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Cite"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Cite")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Underline"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Formatting.ToggleUnderline")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Emphasis"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Emphasis")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Highlight"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Formatting.Highlight")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Clear"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Formatting.ClearToNormal")
+    
+    
+    Me.lboxShortcuts.AddItem ""
+    Me.lboxShortcuts.AddItem "----------Format----------"
 
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Shrink"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Shrink.ShrinkAllOrCard")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Condense With Pilcrows"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Condense.CondenseWithPilcrows")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Condense No Pilcrows"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Condense.CondenseNoPilcrows")
+        
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Uncondense"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Condense.Uncondense")
+        
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Auto Format Cite"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Formatting.AutoFormatCite")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Copy Previous Cite"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Formatting.CopyPreviousCite")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Auto Underline"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Formatting.AutoUnderline")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Auto Emphasize First"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Formatting.AutoEmphasizeFirst")
+        
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Update Styles"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Formatting.UpdateStyles")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Select Similar"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Formatting.SelectSimilar")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Get From CiteCreator"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Plugins.GetFromCiteCreator")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Auto Number Tags"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Formatting.AutoNumberTags")
+    
+    
+    Me.lboxShortcuts.AddItem ""
+    Me.lboxShortcuts.AddItem "----------Paperless----------"
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Move Up"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Paperless.MoveUp")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Move Down"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Paperless.MoveDown")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Move To Bottom"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Paperless.MoveToBottom")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Select Heading"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Paperless.SelectHeadingAndContent")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Delete Heading"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Paperless.DeleteHeading")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "New Speech"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Paperless.NewSpeech")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Copy To USB"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Paperless.CopyToUSB")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Share To Tabroom"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.UI.ShowFormShare")
+    
+    
+    Me.lboxShortcuts.AddItem ""
+    Me.lboxShortcuts.AddItem "----------Tools----------"
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Start Timer"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Plugins.StartTimer")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Document Stats"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.UI.ShowFormStats")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Run NavPaneCycle"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Plugins.NavPaneCycle")
+    
+    
+    Me.lboxShortcuts.AddItem ""
+    Me.lboxShortcuts.AddItem "----------View----------"
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Arrange Windows"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.View.ArrangeWindows")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Cycle Windows"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.View.SwitchWindows")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Invisibility Off"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.View.InvisibilityOff")
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Toggle Reading View"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.View.ToggleReadingView")
+    
+        
+    Me.lboxShortcuts.AddItem ""
+    Me.lboxShortcuts.AddItem "----------Caselist----------"
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Cite Request Card"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Caselist.CiteRequest")
+    
+    
+    Me.lboxShortcuts.AddItem ""
+    Me.lboxShortcuts.AddItem "----------Settings----------"
+    
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Verbatim Settings"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.UI.ShowFormSettings")
+    
+    '@Ignore ValueRequired
     CustomizationContext = ThisDocument
-
+    
     Exit Sub
     
 Handler:
