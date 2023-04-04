@@ -136,10 +136,10 @@ Public Sub FirstRun()
     Settings.UnverbatimizeNormal
     
     ' Remove old registry keys
-    DeleteSetting "Verbatim", "Main", "TabroomUsername"
-    DeleteSetting "Verbatim", "Main", "TabroomPassword"
-    DeleteSetting "Verbatim", "Main", "GmailUsername"
-    DeleteSetting "Verbatim", "Main", "GmailPassword"
+    SaveSetting "Verbatim", "Main", "TabroomUsername", ""
+    SaveSetting "Verbatim", "Main", "TabroomPassword", ""
+    SaveSetting "Verbatim", "Main", "GmailUsername", ""
+    SaveSetting "Verbatim", "Main", "GmailPassword", ""
     
     ' Setup keyboard shortcuts (includes tilde fix)
     Settings.ResetKeyboardShortcuts
