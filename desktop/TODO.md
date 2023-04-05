@@ -2,7 +2,6 @@
 Fix Verbatimize not loading ribbon
 
 # New Tools
-Plugin installer for Capture2Text, Timer, GetFromCiteCreator, NavPaneCycle, and EverythingSearch
 Mac Installer
 
 # Pre-release QA

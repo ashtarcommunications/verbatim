@@ -3,6 +3,8 @@
 ; v6.0.0
 ; 2023 Ashtar Communications
 
+Unicode true
+
 ; Includes
 !include "MUI2.nsh"
 !include "LogicLib.nsh"
@@ -76,6 +78,10 @@ Section "Verbatim (Required)" sec3
 	SetOutPath $APPDATA\Microsoft\Word\STARTUP
 	File "..\DebateStartup.dotm"
 	
+	; Install changelog
+	SetOutPath $PROGRAMFILES64\Verbatim
+	File "..\CHANGELOG.md"
+	
 	; Remove old registry keys pre v6, otherwise reset FirstRun
 	ReadRegStr $0 HKCU "Software\VB And VBA Program Settings\Verbatim\Profile" Version
 	${If} $0 >= "5"
@@ -99,6 +105,12 @@ Section "Verbatim (Required)" sec3
 SectionEnd
 
 Section "Uninstall"
+	; Kill plugins, since entire Verbatim directory is deleted
+	${nsProcess::KillProcess} "VerbatimTimer.exe" $R0
+	${nsProcess::KillProcess} "Capture2Text.exe" $R0
+	${nsProcess::KillProcess} "Capture2Text_CLI.exe" $R0
+	${nsProcess::KillProcess} "Everything.exe" $R0
+
   	; Check if Word is running
 	retry:
 	${nsProcess::FindProcess} "Winword.exe" $R0
@@ -137,12 +149,12 @@ Section "Uninstall"
 	  
 	; Remove installer registry keys
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Verbatim"
+	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\VerbatimPlugins"
 SectionEnd
 
 ; On initialization, check whether Word is running
 Function .onInit
 	retry:
-	${nsProcess::KillProcess} "Timer.exe" $R0	; Kill Timer if it's running
 	${nsProcess::FindProcess} "Winword.exe" $R0
 	
 	${If} $R0 == 0
