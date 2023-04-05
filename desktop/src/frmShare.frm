@@ -162,8 +162,8 @@ Private Sub btnShare_Click()
 End Sub
 
 Private Function RandomPhrase() As String
-    Dim Adjectives() As String
-    Dim Animals() As String
+    Dim Adjectives() As Variant
+    Dim Animals() As Variant
     
     Dim Adjective As String
     Dim Animal As String
