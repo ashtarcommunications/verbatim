@@ -37,6 +37,8 @@ Public Sub AddQuickCard()
     
     t.BuildingBlockEntries.Add Name, wdTypeCustom1, "Verbatim", Selection.Range
     
+    t.Save
+
     Ribbon.RefreshRibbon
     
     MsgBox "Successfully created Quick Card with the shortcut """ & Name & """"
@@ -122,6 +124,7 @@ Public Sub DeleteQuickCard(Optional ByRef QuickCardName As String)
         End If
     Next i
 
+    t.Save
     Set t = Nothing
         
     Exit Sub

@@ -986,7 +986,12 @@ End Function
 Public Sub RemoveNonHighlightedUnderlining()
     Dim r As Range
     
-    If Selection.Start = Selection.End Then Paperless.SelectCardText
+    If Selection.Start <= ActiveDocument.Range.Start And Selection.End = ActiveDocument.Range.Start Then
+        If MsgBox("This will remove non-highlighted underlining for all cards in the document. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
+        Selection.WholeStory
+    ElseIf Selection.Start = Selection.End Then
+        Paperless.SelectCardText
+    End If
     
     ' Save a duplicate range to limit the Find to the current selection
     Set r = Selection.Range
