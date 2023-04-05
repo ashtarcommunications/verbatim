@@ -4,7 +4,7 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmQuickCards
    ClientHeight    =   6225
    ClientLeft      =   120
    ClientTop       =   465
-   ClientWidth     =   8460
+   ClientWidth     =   8460.001
    OleObjectBlob   =   "frmQuickCards.frx":0000
    ShowModal       =   0   'False
    StartUpPosition =   1  'CenterOwner

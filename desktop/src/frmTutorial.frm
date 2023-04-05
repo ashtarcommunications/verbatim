@@ -141,10 +141,14 @@ Public Sub btnNext_Click()
             Selection.Style = "Block"
             Selection.TypeText "Block 2" & vbCrLf & "Block 3" & vbCrLf & "Block 4" & vbCrLf
             
+            Dim w As Window
+            Set w = ActiveWindow
             Dim TempSpeechDoc As String
             TempSpeechDoc = Documents.Add(Template:=ActiveDocument.AttachedTemplate.FullName).Name
             Globals.ActiveSpeechDoc = TempSpeechDoc
             View.ArrangeWindows
+            w.Activate
+            Set w = Nothing
                     
         ' VTub/Quick Cards
         Case Is = 7

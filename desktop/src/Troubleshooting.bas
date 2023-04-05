@@ -224,11 +224,13 @@ Public Sub DisableAddins()
 End Sub
 
 Public Sub FixTilde()
+    '@Ignore VariableNotUsed
     Dim ModifierKey As Long
     
     #If Mac Then
         ModifierKey = wdKeyCommand
     #Else
+        '@Ignore AssignmentNotUsed
         ModifierKey = wdKeyControl
     #End If
     
@@ -247,3 +249,5 @@ Public Sub FixTilde()
         End If
     #End If
 End Sub
+
+

@@ -95,7 +95,7 @@ Public Sub SendToFlow(Optional ByVal SplitParagraphs As Boolean, Optional ByVal 
                 #If Mac Then
                     SendText = SendText & p.Range.Text & Chr(13)
                 #Else
-                    SendText = SendText & p.Range.Text & Chr(10)
+                    SendText = SendText & p.Range.Text & Chr$(10)
                 #End If
             End If
         Next p
