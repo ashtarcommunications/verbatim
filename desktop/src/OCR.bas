@@ -77,7 +77,7 @@ Public Sub PasteOCR()
             & Application.PathSeparator _
             & "Plugins" _
             & Application.PathSeparator _
-            & "Search" _
+            & "OCR" _
             & Application.PathSeparator _
             & "Capture2Text_CLI.exe" _
         ) = True Then
@@ -87,7 +87,7 @@ Public Sub PasteOCR()
                 & Application.PathSeparator _
                 & "Plugins" _
                 & Application.PathSeparator _
-                & "Search" _
+                & "OCR" _
                 & Application.PathSeparator _
                 & "Capture2Text_CLI.exe"
         ElseIf Filesystem.FileExists(Environ$("ProgramW6432") & Application.PathSeparator & "Capture2Text" & Application.PathSeparator & "Capture2Text_CLI.exe") = True Then
