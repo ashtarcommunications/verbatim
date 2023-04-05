@@ -778,7 +778,7 @@ Private Sub btnTutorial_Click()
 End Sub
 
 Private Sub btnUnverbatimizeNormal_Click()
-    Settings.UnverbatimizeNormal
+    Settings.UnverbatimizeNormal Notify:=True
 End Sub
 
 Private Sub btnImportSettings_Click()
@@ -790,7 +790,8 @@ Private Sub btnImportSettings_Click()
     SettingsFileName = UI.GetFileFromDialog("Verbatim Settings", "*.ini", "Select Verbatim Settings file to import...", "Import")
 
     ' Exit if trying to import an old settings file
-    If System.PrivateProfileString(SettingsFileName, "Profile", "Version") = "" Or System.PrivateProfileString(SettingsFileName, "Profile", "Version") < 6 Then
+    If System.PrivateProfileString(SettingsFileName, "Profile", "Version") = "" Or _
+        CLng(Left$(System.PrivateProfileString(SettingsFileName, "Profile", "Version"), 1)) < 6 Then
         MsgBox "Outdated settings file. You must use a Verbatim settings file exported from v6.0 or newer."
         Exit Sub
     End If
@@ -1335,3 +1336,4 @@ End Sub
 Private Sub btnEasterEgg_Click()
     MsgBox "You have ascended to the Ashtar Command!"
 End Sub
+

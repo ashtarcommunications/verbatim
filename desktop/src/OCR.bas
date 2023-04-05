@@ -106,8 +106,8 @@ Public Sub PasteOCR()
         CreateObject("WScript.Shell").Run "powershell -command " & cmd, 0, True
         
         ' OCR temp file
-        cmd = C2TPath & " --clipboard -i '" & TempImagePath & "'"
-        CreateObject("WScript.Shell").Run "powershell -command " & cmd, 0, True
+        cmd = """" & C2TPath & """ --clipboard -i """ & TempImagePath & """"
+        CreateObject("WScript.Shell").Run cmd, 0, True
         
         ' Delete temp file
         Filesystem.DeleteFile (TempImagePath)

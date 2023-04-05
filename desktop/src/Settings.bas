@@ -8,6 +8,9 @@ Public Sub UnverbatimizeNormal(Optional ByVal Notify As Boolean)
     #If Mac Then
     #Else
         If Registry.RegKeyRead("HKEY_CURRENT_USER\Software\Microsoft\Office\" & Application.Version & "\Word\Security\AccessVBOM") <> 1 Then
+            If Notify = True Then
+                MsgBox "You must enable VBOM access in your macro security settings to unverbatimize your Normal template.", vbOKOnly
+            End If
             Exit Sub
         End If
     #End If
@@ -400,7 +403,7 @@ Public Sub ResetKeyboardShortcuts()
     KeyBindings.Add wdKeyCategoryMacro, "View.ToggleReadingView", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyR)
     
     ' Caselist shortcuts
-    KeyBindings.Add wdKeyCategoryMacro, "Caselist.CiteRequest", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyQ)
+    KeyBindings.Add wdKeyCategoryMacro, "Caselist.CiteRequestCard", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyQ)
     
     ' Settings shortcuts
     KeyBindings.Add wdKeyCategoryMacro, "UI.ShowFormSettings", BuildKeyCode(wdKeyAlt, wdKeyF1)

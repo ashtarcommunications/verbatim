@@ -1,4 +1,5 @@
 Attribute VB_Name = "Caselist"
+'@IgnoreModule ProcedureNotUsed
 Option Explicit
 
 '*************************************************************************************
@@ -30,6 +31,10 @@ Public Sub CiteRequest(Optional ByVal p As Paragraph, Optional ByVal SuppressNot
     Else
         If SuppressNotify <> True Then MsgBox "Cut longer cards!"
     End If
+End Sub
+
+Public Sub CiteRequestCard()
+    Caselist.CiteRequest
 End Sub
 
 Public Sub CiteRequestAll()

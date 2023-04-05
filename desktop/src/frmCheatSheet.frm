@@ -246,7 +246,7 @@ Private Sub UserForm_Activate()
     
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Cite Request Card"
-    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Caselist.CiteRequest")
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.Caselist.CiteRequestCard")
     
     
     Me.lboxShortcuts.AddItem ""

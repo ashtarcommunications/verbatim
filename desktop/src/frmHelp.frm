@@ -33,7 +33,7 @@ End Sub
 
 Private Sub btnTroubleshooter_Click()
     Unload Me
-    UI.ShowForm "Troubleshooting"
+    UI.ShowForm "Troubleshooter"
 End Sub
 
 Private Sub btnSettings_Click()
