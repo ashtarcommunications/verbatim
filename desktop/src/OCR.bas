@@ -62,9 +62,11 @@ Public Sub PasteOCR()
             End If
         End If
         
-        SnippingToolPath = Environ$("SYSTEMROOT") & Application.PathSeparator & "sysnative" & Application.PathSeparator & "SnippingTool.exe"
-        
-        If Filesystem.FileExists(SnippingToolPath) = False Then
+        If Filesystem.FileExists(Environ$("SYSTEMROOT") & Application.PathSeparator & "sysnative" & Application.PathSeparator & "SnippingTool.exe") = True Then
+            SnippingToolPath = Environ$("SYSTEMROOT") & Application.PathSeparator & "sysnative" & Application.PathSeparator & "SnippingTool.exe"
+        ElseIf Filesystem.FileExists(Environ$("SYSTEMROOT") & Application.PathSeparator & "System32" & Application.PathSeparator & "SnippingTool.exe") = True Then
+            SnippingToolPath = Environ$("SYSTEMROOT") & Application.PathSeparator & "System32" & Application.PathSeparator & "SnippingTool.exe"
+        Else
             MsgBox "The Windows Snipping Tool must be installed to run OCR"
             Exit Sub
         End If
