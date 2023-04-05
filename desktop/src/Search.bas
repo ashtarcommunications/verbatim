@@ -207,7 +207,7 @@ Public Sub EverythingSearch(ByVal c As IRibbonControl)
             & Application.PathSeparator _
             & "Plugins" _
             & Application.PathSeparator _
-            & "Everything" _
+            & "Search" _
             & Application.PathSeparator _
             & "Everything.exe" _
         ) = True Then
@@ -217,7 +217,7 @@ Public Sub EverythingSearch(ByVal c As IRibbonControl)
                 & Application.PathSeparator _
                 & "Plugins" _
                 & Application.PathSeparator _
-                & "Everything" _
+                & "Search" _
                 & Application.PathSeparator _
                 & "Everything.exe"
         ElseIf Filesystem.FileExists(Environ$("ProgramW6432") & Application.PathSeparator & "Everything" & Application.PathSeparator & "Everything.exe") = True Then

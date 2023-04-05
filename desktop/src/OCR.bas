@@ -77,7 +77,7 @@ Public Sub PasteOCR()
             & Application.PathSeparator _
             & "Plugins" _
             & Application.PathSeparator _
-            & "Capture2Text" _
+            & "Search" _
             & Application.PathSeparator _
             & "Capture2Text_CLI.exe" _
         ) = True Then
@@ -87,13 +87,14 @@ Public Sub PasteOCR()
                 & Application.PathSeparator _
                 & "Plugins" _
                 & Application.PathSeparator _
-                & "Capture2Text" _
+                & "Search" _
                 & Application.PathSeparator _
                 & "Capture2Text_CLI.exe"
         ElseIf Filesystem.FileExists(Environ$("ProgramW6432") & Application.PathSeparator & "Capture2Text" & Application.PathSeparator & "Capture2Text_CLI.exe") = True Then
             C2TPath = Environ$("ProgramW6432") & Application.PathSeparator & "Capture2Text" & Application.PathSeparator & "Capture2Text_CLI.exe"
         Else
             MsgBox "Capture2Text must be installed to run OCR. Please see https://paperlessdebate.com/ for more details on how to install."
+            Exit Sub
         End If
         
         ' Take a screenshot with the snipping tool
