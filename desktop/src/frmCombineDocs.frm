@@ -135,6 +135,7 @@ End Sub
 Private Sub btnCombine_Click()
     Dim i As Long
     Dim FileCount As Long
+    Dim CombinedName As String
     
     On Error GoTo Handler
     
@@ -170,20 +171,22 @@ Private Sub btnCombine_Click()
         End If
     Next i
    
+    If Me.cboAutoName.Value <> "" And Me.cboAutoName.Value <> "No rounds found on Tabroom" Then
+        CombinedName = Me.cboAutoName.Value
+    Else
+        CombinedName = "Combined Doc"
+    End If
+    
     ' Save file
-    If GetSetting("Verbatim", "Paperless", "AutoSaveDir") <> "" And Me.cboAutoName.Value <> "" Then
-        If Right$(GetSetting("Verbatim", "Paperless", "AutoSaveDir"), 1) = Application.PathSeparator Then
-            ActiveDocument.SaveAs Filename:=GetSetting("Verbatim", "Paperless", "AutoSaveDir") & Me.cboAutoName.Value, FileFormat:=wdFormatXMLDocument
+    If GetSetting("Verbatim", "Paperless", "AutoSaveDir", "") <> "" And Me.cboAutoName.Value <> "" Then
+        If Right$(GetSetting("Verbatim", "Paperless", "AutoSaveDir", ""), 1) = Application.PathSeparator Then
+            ActiveDocument.SaveAs Filename:=GetSetting("Verbatim", "Paperless", "AutoSaveDir") & CombinedName, FileFormat:=wdFormatXMLDocument
         Else
-            ActiveDocument.SaveAs Filename:=GetSetting("Verbatim", "Paperless", "AutoSaveDir") & Application.PathSeparator & Me.cboAutoName.Value, FileFormat:=wdFormatXMLDocument
+            ActiveDocument.SaveAs Filename:=GetSetting("Verbatim", "Paperless", "AutoSaveDir") & Application.PathSeparator & CombinedName, FileFormat:=wdFormatXMLDocument
         End If
     Else
         With Application.Dialogs.Item(wdDialogFileSaveAs)
-            If Me.cboAutoName.Value <> "" Then
-                .Name = Me.cboAutoName.Value
-            Else
-                .Name = "Combined Doc"
-            End If
+            .Name = CombinedName
             .Show
         End With
     End If
@@ -200,3 +203,4 @@ End Sub
 Private Sub btnCancel_Click()
     Unload Me
 End Sub
+

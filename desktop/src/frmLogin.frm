@@ -28,7 +28,7 @@ Private Sub UserForm_Initialize()
     Globals.InitializeGlobals
     
     If GetSetting("Verbatim", "Profile", "DisableTabroom", False) = True Then
-        MsgBox "Caselist functions are disabled in the Verbatim settings. Please enable to use this feature."
+        MsgBox "Tabroom/Caselist functions are disabled in the Verbatim settings. Please enable to use this feature."
         Me.Hide
         Unload Me
     End If
@@ -90,7 +90,7 @@ Private Sub btnLogin_Click()
             SaveSetting "Verbatim", "Caselist", "CaselistToken", token
             SaveSetting "Verbatim", "Caselist", "CaselistTokenExpires", JSONTools.ParseIso(expires)
             Ribbon.RefreshRibbon
-            MsgBox "Successfully logged in, you can now use integrated caselist features!"
+            MsgBox "Successfully logged in, you can now use integrated Tabroom/Caselist features!"
             Me.Hide
             Unload Me
             Exit Sub
