@@ -12,4 +12,4 @@ Shortcuts with "Ctrl" + a key are usually a way of automating or running a macro
 
 Shortcuts using the `/~ key are for "sending" content to different locations, both in Word and Verbatim Flow in Excel.
 
-Shortcuts with Ctrl + Alt + <letter> are usually named with the first letter representing the function.
+Shortcuts with Ctrl + Alt + `<letter>` are usually named with the first letter representing the function.

@@ -1,3 +1,9 @@
+---
+sidebar_position: 1
+---
+
+# What's New
+
 Verbatim 6 has been rewritten from scratch to be cross-platform, with many new features and bug fixes. Here are some of the highlights:
 
 * Combined the Mac and PC versions of Verbatim into a single cross-platform code base, and brought Mac Verbatim very close to feature parity with the PC version, including an improved Ribbon interface
