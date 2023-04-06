@@ -53,7 +53,9 @@ End Sub
 
 '@Ignore ProcedureNotUsed
 Public Sub InsertCurrentQuickCard()
+    On Error Resume Next
     Selection.Range.InsertAutoText
+    On Error GoTo 0
 End Sub
 
 Public Sub InsertQuickCard(ByRef QuickCardName As String)
