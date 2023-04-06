@@ -1,0 +1,31 @@
+{
+  "name": "verbatim-timer",
+  "scripts": {
+    "tauri": "tauri",
+    "lint": "eslint .",
+    "dev": "NODE_ENV=development webpack serve",
+    "build": "NODE_ENV='production' webpack"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^1.2.0",
+    "tauri-plugin-store-api": "github:tauri-apps/tauri-plugin-store#dev"
+  },
+  "devDependencies": {
+    "@speechanddebate/eslint-config-nsda": "^1.0.19",
+    "@tauri-apps/cli": "^1.2.0",
+    "eslint": "^8.28.0",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.0",
+    "webpack-dev-server": "^4.11.1"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@speechanddebate/eslint-config-nsda"
+    ],
+    "ignorePatterns": [
+      "dist/*.min.js",
+      "src-tauri/*",
+      "dist/easytimer/*"
+    ]
+  }
+}
