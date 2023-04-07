@@ -38,7 +38,9 @@ Public Function FolderExists(ByVal FolderPath As String) As Boolean
     FolderExists = False
 
     #If Mac Then
-        If AppleScriptTask("Verbatim.scpt", "FolderExists", Replace(FolderExists, ".localized", "")) = "true" Then
+        Dim Script
+        Script = "if [ -d '" & Replace(FolderPath, ".localized", "") & "' ]; then echo 1; else echo 0; fi;"
+        If AppleScriptTask("Verbatim.scpt", "RunShellScript", Script) = "1" Then
             FolderExists = True
         End If
     #Else
@@ -144,7 +146,7 @@ Public Sub CopyFile(ByRef Path As String, ByRef NewPath As String)
     #If Mac Then
         Dim Script
         Script = "cp " & Path & " " & NewPath
-        AppleScriptTask "Verbatim.scpt", "DoShellScript", Script
+        AppleScriptTask "Verbatim.scpt", "RunShellScript", Script
     #Else
         Dim FSO As Object
         Set FSO = CreateObject("Scripting.FileSystemObject")
@@ -168,7 +170,7 @@ Public Function GetFileAsBase64(ByRef Path As String) As String
     #If Mac Then
         Dim Script
         Script = "base64 " & Path
-        GetFileAsBase64 = AppleScriptTask("Verbatim.scpt", "DoShellScript", Script)
+        GetFileAsBase64 = AppleScriptTask("Verbatim.scpt", "RunShellScript", Script)
     #Else
         Dim FileStream As Object
         

@@ -56,7 +56,7 @@ Public Sub SaveRecord()
     AudioDir = GetSetting("Verbatim", "Paperless", "AudioDir", "")
     If Filesystem.FolderExists(AudioDir) = False Then
         #If Mac Then
-            FilePath = AppleScriptTask("Verbatim.scpt", "DesktopPath", "")
+            FilePath = "/Users/" & Environ("USER") & "/Desktop"
         #Else
             FilePath = CStr(Environ$("USERPROFILE")) & "\Desktop"
         #End If
