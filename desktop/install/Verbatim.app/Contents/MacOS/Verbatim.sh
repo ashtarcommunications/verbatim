@@ -1,9 +1,9 @@
 #!/bin/sh
 
 SCRIPTFILE=~/"Library/Application Scripts/com.microsoft.Word/Verbatim.scpt"
-VERBATIM=~/"Library/Group Containers/UBF8T346G9.Office/User Content.localized/Templates.localized/Debate.dotm"
-STARTUP=~/"Library/Group Containers/UBF8T346G9.Office/User Content.localized/Startup.localized/Word.localized/DebateStartup.dotm"
-FLOW=~/"Library/Group Containers/UBF8T346G9.Office/User Content.localized/Templates.localized/Debate.xltm"
+VERBATIM=~/"Library/Group Containers/UBF8T346G9.Office/User Content/Templates/Debate.dotm"
+STARTUP=~/"Library/Group Containers/UBF8T346G9.Office/User Content/Startup/Word/DebateStartup.dotm"
+FLOW=~/"Library/Group Containers/UBF8T346G9.Office/User Content/Templates/Debate.xltm"
 
 RELEASEDATE="20230407"
 
