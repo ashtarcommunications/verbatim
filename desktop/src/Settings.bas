@@ -441,7 +441,7 @@ Public Sub LaunchWebsite(ByVal URL As String)
     On Error GoTo Handler
     
     #If Mac Then
-        AppleScriptTask "Verbatim.scpt", "LaunchWebsite", URL
+        AppleScriptTask "Verbatim.scpt", "RunShellScript", "open " & URL
     #Else
         ActiveDocument.FollowHyperlink (URL)
     #End If

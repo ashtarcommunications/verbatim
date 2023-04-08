@@ -15,17 +15,12 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-' Have to use global to store password because password masking doesn't work on Mac
-#If Mac Then
-    Dim Password As String
-#End If
-
 Private Sub UserForm_Initialize()
-    #If Mac Then
-        Password = ""
-    #End If
-    
     Globals.InitializeGlobals
+    
+    #If Mac Then
+        Me.lblPassword.Caption = "Password (careful, shown while typing)"
+    #End If
     
     If GetSetting("Verbatim", "Profile", "DisableTabroom", False) = True Then
         MsgBox "Tabroom/Caselist functions are disabled in the Verbatim settings. Please enable to use this feature."
@@ -63,11 +58,7 @@ Private Sub btnLogin_Click()
     On Error GoTo Handler
     
     Body.Add "username", Me.txtUsername.Value
-    #If Mac Then
-        Body.Add "password", Password
-    #Else
-        Body.Add "password", Me.txtPassword.Value
-    #End If
+    Body.Add "password", Me.txtPassword.Value
        
     Dim Response As Variant
     Set Response = HTTP.PostReq(Globals.CASELIST_URL & "/login", Body)
@@ -112,20 +103,3 @@ End Sub
 Private Sub btnCancel_Click()
     Unload Me
 End Sub
- 
-#If Mac Then
-Private Sub txtPassword_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer)
-    Select Case KeyCode
-        Case vbKeyBack
-            If Len(Password) <= 1 Then
-                Password = ""
-            Else
-                Password = Left(Password, Len(Password) - 1)
-            End If
-        Case Else
-            Password = Password & Chr(KeyCode)
-            KeyCode = 0
-    End Select
-    Me.txtPassword.Value = String(Len(Password), "*")
-End Sub
-#End If

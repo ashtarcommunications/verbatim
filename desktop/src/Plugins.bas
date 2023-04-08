@@ -17,8 +17,8 @@ Public Sub StartTimer()
         ' If not set, try default
         If TimerPath = "?" Then TimerPath = "/Applications/VerbatimTimer.app"
     
-        ' Make sure timer app exists
-        If Filesystem.FileExists(TimerPath) = False Then
+        ' Make sure timer app exists (check both folder and file since .app is actually a folder)
+        If Filesystem.FolderExists(TimerPath) = False And Filesystem.FileExists(TimerPath) = False Then
             MsgBox "Timer application not found. Ensure you have installed the Verbatim Timer or entered a custom path to another application in the Verbatim Settings."
             Exit Sub
         Else
