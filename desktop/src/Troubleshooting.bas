@@ -237,8 +237,8 @@ Public Sub FixTilde()
     ' VkKeyScan should usually return 192 - on models where it incorrectly returns 223, use 96 instead
     ' Keycodes: 96 = `, 192 = A`, 223 = Beta
     #If Mac Then
-        KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechCursor", Chr(96)
-        KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechEnd", BuildKeyCode(wdKeyAlt, Chr(96))
+        KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechCursor", Asc("`")
+        KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechEnd", BuildKeyCode(wdKeyAlt, Asc("`"))
     #Else
         If VkKeyScan(Asc("`")) = 192 Then
             KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechCursor", VkKeyScan(Asc("`"))
@@ -249,5 +249,3 @@ Public Sub FixTilde()
         End If
     #End If
 End Sub
-
-

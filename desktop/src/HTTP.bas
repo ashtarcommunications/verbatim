@@ -15,7 +15,10 @@ Public Function GetReq(ByRef URL As String) As Dictionary
         
         ' Get the response from curl as <status_code>\n<body> by redirecting stderr to stdout
         ' -w is the write-out string format, -o redirects to standard, -s is silent
-        Script = "curl -w '%{stderr}%{http_code}\n%{stdout}' -s -o - '" & URL & "' 2>&1"
+        Script = "curl -w '%{stderr}%{http_code}\n%{stdout}' " _
+            & "--cookie 'caselist_token=" & GetSetting("Verbatim", "Caselist", "CaselistToken", "") & "' " _
+            & "-H 'Accept: application/json' " _
+            & "-s -o - '" & URL & "' 2>&1"
         Raw = AppleScriptTask("Verbatim.scpt", "RunShellScript", Script)
         
         ' Chr(13) = matches \n newline output from curl - should only be one newline in output

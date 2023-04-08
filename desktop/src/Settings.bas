@@ -330,6 +330,7 @@ Public Sub ResetKeyboardShortcuts()
 
     ' Speech shortcuts (tilde key shortcuts are set by FixTilde)
     KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechCursor", BuildKeyCode(ModifierKey, wdKeyAlt, vbKeyRight)
+    KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechEnd", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyShift, vbKeyRight)
     KeyBindings.Add wdKeyCategoryMacro, "Flow.SendToFlowCell", BuildKeyCode(ModifierKey, wdKeyG)
     KeyBindings.Add wdKeyCategoryMacro, "Flow.SendToFlowColumn", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyG)
     KeyBindings.Add wdKeyCategoryMacro, "Flow.SendHeadingsToFlowCell", BuildKeyCode(ModifierKey, wdKeyShift, wdKeyG)
