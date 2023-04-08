@@ -124,6 +124,19 @@ Public Sub Start()
     If GetSetting("Verbatim", "Admin", "ImportCustomCode", False) = True Then
         Settings.ImportCustomCode Notify:=True
     End If
+    
+    ' Reset keybindings on Mac if PC shortcuts are set
+    #If Mac Then
+        Dim k As KeyBinding
+        For Each k In Application.KeyBindings
+            If k.Command = "Verbatim.Formatting.PasteText" Then
+                If k.KeyString = "Ctrl+2" Then
+                    Settings.ResetKeyboardShortcuts
+                    Exit Sub
+                End If
+            End If
+        Next k
+    #End If
 
     On Error GoTo 0
 End Sub
