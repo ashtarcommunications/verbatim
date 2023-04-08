@@ -179,6 +179,13 @@ Public Sub ShrinkPilcrows(Optional ByVal ShrinkRange As Range)
 ' Shrinks, un-underlines and unbolds all pilcrows in current paragraph to 6pt
 ' If run with the insertion point at the very beginning of the document, shrinks all pilcrows
     Dim r As Range
+    Dim PilcrowCode As Long
+    
+    #If Mac Then
+        PilcrowCode = 166
+    #Else
+        PilcrowCode = 182
+    #End If
     
     Application.ScreenUpdating = False
     
@@ -199,8 +206,8 @@ Public Sub ShrinkPilcrows(Optional ByVal ShrinkRange As Range)
     With r.Find
         .ClearFormatting
         .Replacement.ClearFormatting
-        .Text = Chr$(182)
-        .Replacement.Text = Chr$(182)
+        .Text = Chr$(PilcrowCode)
+        .Replacement.Text = Chr$(PilcrowCode)
         .Replacement.Font.size = 6
         .Replacement.Font.Underline = wdUnderlineNone
         .Replacement.Font.Bold = 0

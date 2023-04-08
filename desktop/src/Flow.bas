@@ -115,7 +115,11 @@ Handler:
     Set w = Nothing
     Set Flow = Nothing
     If Err.Number = 429 Then
-        MsgBox "Excel must be open to send to your flow!"
+        #If Mac Then
+            MsgBox "Excel must be open to send to your flow! If you're on a Mac, sending to Excel is very unreliable, and may not work on your computer."
+        #Else
+            MsgBox "Excel must be open to send to your flow!"
+        #End If
     Else
         MsgBox "Error " & Err.Number & ": " & Err.Description
     End If

@@ -21,6 +21,13 @@ Public Sub CondenseCard(Optional ByVal r As Range)
 ' Removes white-space from selection and optionally retains paragraph integrity
 
     Dim CondenseRange As Range
+    Dim PilcrowCode As Long
+    
+    #If Mac Then
+        PilcrowCode = 166
+    #Else
+        PilcrowCode = 182
+    #End If
     
     Application.ScreenUpdating = False
     
@@ -98,14 +105,14 @@ Public Sub CondenseCard(Optional ByVal r As Range)
         If GetSetting("Verbatim", "Format", "UsePilcrows", False) = True Then
             With CondenseRange.Find
                 .Text = "^p"
-                .Replacement.Text = Chr$(182) & " " ' Pilcrow sign
+                .Replacement.Text = Chr$(PilcrowCode) & " " ' Pilcrow sign
                 .Replacement.Font.size = 6
                 .Execute Replace:=wdReplaceAll
                 
-                .Text = Chr$(182) & " " & Chr$(182)
-                .Replacement.Text = Chr$(182)
+                .Text = Chr$(PilcrowCode) & " " & Chr$(PilcrowCode)
+                .Replacement.Text = Chr$(PilcrowCode)
                 
-                While InStr(CondenseRange.Text, Chr$(182) & " " & Chr$(182))
+                While InStr(CondenseRange.Text, Chr$(PilcrowCode) & " " & Chr$(PilcrowCode))
                     .Execute Replace:=wdReplaceAll
                 Wend
                 
@@ -122,7 +129,7 @@ Public Sub CondenseCard(Optional ByVal r As Range)
                 CondenseRange.Characters.Item(1).Delete
                 
                 ' Remove trailing pilcrows
-                If CondenseRange.Characters.Last.Previous.Text = Chr$(182) Then CondenseRange.Characters.Last.Previous.Delete
+                If CondenseRange.Characters.Last.Previous.Text = Chr$(PilcrowCode) Then CondenseRange.Characters.Last.Previous.Delete
             End With
     
         Else ' Else, paragraph integrity is off and Pilcrows are off, leave single paragraph marks
@@ -201,6 +208,13 @@ End Sub
 Public Sub Uncondense()
 ' Replaces pilcrows with paragraph breaks
     Dim r As Range
+    Dim PilcrowCode As Long
+    
+    #If Mac Then
+        PilcrowCode = 166
+    #Else
+        PilcrowCode = 182
+    #End If
     
     Application.ScreenUpdating = False
     
@@ -220,7 +234,7 @@ Public Sub Uncondense()
     With r.Find
         .ClearFormatting
         .Replacement.ClearFormatting
-        .Text = Chr$(182) ' Pilcrow
+        .Text = Chr$(PilcrowCode) ' Pilcrow
         .Replacement.Text = "^p"
         .Execute Replace:=wdReplaceAll
         
@@ -235,6 +249,13 @@ End Sub
 
 Public Sub RemovePilcrows()
     Dim r As Range
+    Dim PilcrowCode As Long
+    
+    #If Mac Then
+        PilcrowCode = 166
+    #Else
+        PilcrowCode = 182
+    #End If
     
     Application.ScreenUpdating = False
     
@@ -254,7 +275,7 @@ Public Sub RemovePilcrows()
     With r.Find
         .ClearFormatting
         .Replacement.ClearFormatting
-        .Text = Chr$(182)
+        .Text = Chr$(PilcrowCode)
         .Replacement.Text = ""
         .Forward = True
         .Wrap = wdFindContinue

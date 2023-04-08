@@ -4,7 +4,7 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmCombineDocs
    ClientHeight    =   5610
    ClientLeft      =   120
    ClientTop       =   465
-   ClientWidth     =   8220
+   ClientWidth     =   8220.001
    OleObjectBlob   =   "frmCombineDocs.frx":0000
 End
 Attribute VB_Name = "frmCombineDocs"
