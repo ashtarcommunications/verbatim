@@ -259,7 +259,8 @@ End Sub
 
 Public Sub InsertHeader()
 ' Inserts a custom header based on team/user information in Verbatim settings
-    ActiveDocument.Sections.Item(1).Headers.Item(wdHeaderFooterPrimary).Range.Text = GetSetting("Verbatim", "Profile", "SchoolName") & vbCrLf & "File Title" & vbTab & vbTab & GetSetting("Verbatim", "Profile", "Name")
+    ActiveDocument.Sections.Item(1).Headers.Item(wdHeaderFooterPrimary).Range.Text = GetSetting("Verbatim", "Profile", "SchoolName", "") _
+        & vbCrLf & "File Title" & vbTab & vbTab & GetSetting("Verbatim", "Profile", "Name", "")
     ActiveDocument.Sections.Item(1).Headers.Item(wdHeaderFooterPrimary).PageNumbers.Add (wdAlignPageNumberRight)
 End Sub
 
