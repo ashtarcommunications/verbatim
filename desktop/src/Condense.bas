@@ -247,7 +247,7 @@ Public Sub Uncondense()
     Application.ScreenUpdating = True
 End Sub
 
-Public Sub RemovePilcrows()
+Public Sub RemovePilcrows(Optional ByVal Notify As Boolean)
     Dim r As Range
     Dim PilcrowCode As Long
     
@@ -260,7 +260,7 @@ Public Sub RemovePilcrows()
     Application.ScreenUpdating = False
     
     If Selection.Start <= ActiveDocument.Range.Start And Selection.Start = Selection.End Then
-        If MsgBox("This will remove all pilcrows in the document. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
+        If Notify = True And MsgBox("This will remove all pilcrows in the document. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
         Set r = ActiveDocument.Range
     ElseIf Selection.Start = Selection.End Then
         Set r = Paperless.SelectHeadingAndContentRange(Selection.Paragraphs.Item(1))
@@ -327,3 +327,4 @@ Public Sub ToggleUsePilcrows(ByVal c As IRibbonControl, ByVal pressed As Boolean
 
     Ribbon.RefreshRibbon
 End Sub
+

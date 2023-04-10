@@ -124,7 +124,7 @@ Public Sub RibbonMain(ByVal c As IRibbonControl)
     Case Is = "RemoveBlanks"
         Formatting.RemoveBlanks
     Case Is = "RemovePilcrows"
-        Condense.RemovePilcrows
+        Condense.RemovePilcrows Notify:=True
     Case Is = "RemoveHyperlinks"
         Formatting.RemoveHyperlinks
     Case Is = "RemoveBookmarks"

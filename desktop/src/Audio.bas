@@ -34,10 +34,10 @@ Public Sub StartRecord(ByVal BPS As BitsPerSec, ByVal SPS As SamplesPerSec, ByVa
     
 Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
-    RecordAudioToggle = False
     If Audio.RecordStatus = "recording" Then
         Audio.SaveRecord
     End If
+    Globals.RecordAudioToggle = False
     Ribbon.RefreshRibbon
     
 End Sub
@@ -75,7 +75,7 @@ GetFileName:
     
     ' Exit if no file name or user pressed Cancel, recording is still active
     If Filename = "" Then
-        RecordAudioToggle = True
+        Globals.RecordAudioToggle = True
         Exit Sub
     End If
     
@@ -107,7 +107,8 @@ GetFileName:
     #End If
     
     MsgBox "Recording Saved as:" & vbCrLf & Filename, vbOKOnly
-     
+    Ribbon.RefreshRibbon
+    
     Exit Sub
     
 Handler:
@@ -145,12 +146,11 @@ Public Sub RecordAudio(ByVal c As IRibbonControl, ByVal pressed As Boolean)
     On Error GoTo Handler
     
     If pressed Then
-        RecordAudioToggle = True
-        
         ' Start recording - Mac ignores the parameters
         Audio.StartRecord Bits8, Samples8000, Mono
+        Globals.RecordAudioToggle = True
     Else
-        RecordAudioToggle = False
+        Globals.RecordAudioToggle = False
         
         ' Stop and save recording
         Audio.SaveRecord
@@ -161,7 +161,7 @@ Public Sub RecordAudio(ByVal c As IRibbonControl, ByVal pressed As Boolean)
     Exit Sub
     
 Handler:
-    RecordAudioToggle = False
+    Globals.RecordAudioToggle = False
     MsgBox "Error " & Err.Number & ": " & Err.Description
     Ribbon.RefreshRibbon
 End Sub

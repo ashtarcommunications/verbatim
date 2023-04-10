@@ -117,7 +117,7 @@ Public Sub Word2MarkdownMain()
        
     WikifyReplaceQuotes
     WikifyReplaceDashes
-    Condense.RemovePilcrows
+    Condense.RemovePilcrows Notify:=False
     WikifyEscapeChars
     WikifyConvertHyperlinks
     WikifyConvertH1
