@@ -238,7 +238,7 @@ Public Sub FixTilde()
     ' Keycodes: 96 = `, 192 = A`, 223 = Beta
     #If Mac Then
         KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechCursor", 192
-        KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechEnd", BuildKeyCode(wdKeyAlt, 192
+        KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechEnd", BuildKeyCode(wdKeyAlt, 192)
     #Else
         If VkKeyScan(Asc("`")) = 192 Then
             KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechCursor", VkKeyScan(Asc("`"))
