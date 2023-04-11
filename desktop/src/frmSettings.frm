@@ -786,6 +786,11 @@ Private Sub btnImportSettings_Click()
     Dim SettingsFileName As String
 
     On Error GoTo Handler
+    
+    #If Mac Then
+        MsgBox "Importing settings isn't available for Mac. See the online manual for more information on workarounds.", vbOKOnly
+        Exit Sub
+    #End If
 
     SettingsFileName = UI.GetFileFromDialog("Verbatim Settings", "*.ini", "Select Verbatim Settings file to import...", "Import")
 
@@ -915,6 +920,11 @@ Private Sub btnExportSettings_Click()
     Dim ExportPath As String
 
     On Error GoTo Handler
+    
+    #If Mac Then
+        MsgBox "Exporting settings isn't available for Mac. See the online manual for more information on workarounds.", vbOKOnly
+        Exit Sub
+    #End If
 
     ' Create SettingsFile name
     SettingsFileName = "VerbatimSettings"
