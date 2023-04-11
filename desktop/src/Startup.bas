@@ -130,17 +130,13 @@ Public Sub Start()
         Dim k As KeyBinding
         For Each k In Application.KeyBindings
             If k.Command = "Verbatim.Formatting.PasteText" Then
-                If k.KeyString = "Ctrl+2" Then
+                If k.KeyString = "Shift+2" Or k.KeyString = "Ctrl+2" Then
                     Settings.ResetKeyboardShortcuts
                     Exit Sub
                 End If
             End If
         Next k
     #End If
-    
-    ' Refresh ribbon so Debate tab is visible when Verbatmizing
-    Ribbon.RefreshRibbon
-    Globals.DebateRibbon.ActivateTab ("DebateTab")
 
     On Error GoTo 0
 End Sub
