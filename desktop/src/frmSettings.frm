@@ -589,6 +589,7 @@ Private Sub btnSave_Click()
     SaveSetting "Verbatim", "Format", "HighlightingException", Me.cboHighlightingException.Value
     
     ' Check if Template itself is open, or open it as a Document
+    On Error Resume Next
     If ActiveDocument.FullName = ActiveDocument.AttachedTemplate.FullName Then
         Set DebateTemplate = ActiveDocument
         CloseDebateTemplate = False
@@ -596,6 +597,7 @@ Private Sub btnSave_Click()
         Set DebateTemplate = ActiveDocument.AttachedTemplate.OpenAsDocument
         CloseDebateTemplate = True
     End If
+    On Error GoTo Handler
     
     ' Update template styles based on Styles settings
     DebateTemplate.Styles.Item("Normal").Font.size = Me.cboNormalSize.Value
@@ -695,7 +697,9 @@ Private Sub btnSave_Click()
         DebateTemplate.Close SaveChanges:=wdSaveChanges
     End If
     
+    On Error Resume Next
     ActiveDocument.UpdateStyles
+    On Error GoTo Handler
     
     ' VTub Tab
     SaveSetting "Verbatim", "VTub", "VTubPath", Me.cboVTubPath.Value
