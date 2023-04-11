@@ -48,7 +48,6 @@ Public Sub AutoClose()
         If Application.Documents.Count = 1 And Globals.RecordAudioToggle = True Then
             If MsgBox("Audio recording appears to be active. Stop and save recording now? If you answer ""No"", recording will be lost.", vbYesNo) = vbYes Then Audio.SaveRecord
         End If
-        
     End If
     
     On Error GoTo 0
@@ -127,6 +126,8 @@ Public Sub Start()
     
     ' Reset keybindings on Mac if PC shortcuts are set
     #If Mac Then
+        Dim DebateTemplate As Document
+        Set DebateTemplate = ActiveDocument.AttachedTemplate.OpenAsDocument
         If Application.CustomizationContext <> "Debate.dotm" Then Application.CustomizationContext = ActiveDocument.AttachedTemplate
         Dim k As KeyBinding
         For Each k In KeyBindings
@@ -137,6 +138,11 @@ Public Sub Start()
                 End If
             End If
         Next k
+
+        '@Ignore MemberNotOnInterface
+        DebateTemplate.Close SaveChanges:=True
+        Set DebateTemplate = Nothing
+        
         '@Ignore ValueRequired
         Application.CustomizationContext = ThisDocument
     #End If
