@@ -474,5 +474,9 @@ Public Sub OpenTemplatesFolder()
 End Sub
 
 Public Function GetVersion() As String
+    ' On mac, this can fail with a single document open, so ensure we always return something
+    GetVersion = ""
+    On Error Resume Next
     GetVersion = ActiveDocument.AttachedTemplate.BuiltInDocumentProperties(wdPropertyKeywords)
+    On Error GoTo 0
 End Function
