@@ -14,6 +14,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'@IgnoreModule MemberNotOnInterface
 Option Explicit
 
 #If Mac Then
@@ -399,7 +400,7 @@ Private Sub AddCiteEntry(ByRef Title As String, ByRef Content As String)
 End Sub
 
 Private Function WikifySelection() As String
-      
+    Dim d As Document
     On Error GoTo Handler
     
     Application.ScreenUpdating = False
@@ -408,7 +409,7 @@ Private Function WikifySelection() As String
     Selection.Copy
     
     ' Add new document based on debate template
-    Application.Documents.Add Template:=ActiveDocument.AttachedTemplate.FullName, Visible:=False
+    Set d = Application.Documents.Add(Template:=ActiveDocument.AttachedTemplate.FullName, Visible:=False)
 
     ' Paste into new document
     Selection.Paste
@@ -426,14 +427,16 @@ Private Function WikifySelection() As String
     Selection.ClearFormatting
     
     WikifySelection = Selection.Text
-    '@Ignore MemberNotOnInterface
-    ActiveDocument.Close wdDoNotSaveChanges
+    d.Close wdDoNotSaveChanges
        
     Application.ScreenUpdating = True
 
+    Set d = Nothing
+    
     Exit Function
     
 Handler:
+    Set d = Nothing
     Application.ScreenUpdating = True
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Function
@@ -771,3 +774,4 @@ End Sub
 Private Sub btnCancel_Click()
     Unload Me
 End Sub
+

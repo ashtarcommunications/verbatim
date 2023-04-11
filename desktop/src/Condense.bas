@@ -260,7 +260,9 @@ Public Sub RemovePilcrows(Optional ByVal Notify As Boolean)
     Application.ScreenUpdating = False
     
     If Selection.Start <= ActiveDocument.Range.Start And Selection.Start = Selection.End Then
-        If Notify = True And MsgBox("This will remove all pilcrows in the document. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
+        If Notify = True Then
+            If MsgBox("This will remove all pilcrows in the document. Are you sure?", vbOKCancel) = vbCancel Then Exit Sub
+        End If
         Set r = ActiveDocument.Range
     ElseIf Selection.Start = Selection.End Then
         Set r = Paperless.SelectHeadingAndContentRange(Selection.Paragraphs.Item(1))
