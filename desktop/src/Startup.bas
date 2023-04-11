@@ -66,6 +66,18 @@ Public Sub Start()
         If Not Application.ActiveProtectedViewWindow Is Nothing Or ActiveWindow.Visible = False Then Exit Sub
     #End If
     
+    ' Fix Mac bug on first run with not finding an open document
+    #If Mac Then
+        Dim t As Variant
+        t = ActiveDocument.AttachedTemplate
+        If Err.Number = 4248 And Documents.Count = 1 And Documents(1).FullName = "Document1" And Len(Documents(1).Range) = 1 Then
+            Dim d As Document
+            Set d = Documents.Add(Template:="Debate.dotm")
+            d.Activate
+            Documents(1).Close
+        End If
+    #End If
+    
     ' Set default view and navigation pane
     View.DefaultView
     ActiveWindow.DocumentMap = True
