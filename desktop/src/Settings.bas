@@ -410,13 +410,9 @@ Public Sub ResetKeyboardShortcuts()
     
     ' Settings shortcuts
     KeyBindings.Add wdKeyCategoryMacro, "UI.ShowFormSettings", BuildKeyCode(wdKeyAlt, wdKeyF1)
-    
-    #If Mac Then
-        ' Do Nothing
-    #Else
-        ' Also sets shortcuts that use the tilde key
-        Troubleshooting.FixTilde
-    #End If
+
+    ' Also sets shortcuts that use the tilde key
+    Troubleshooting.FixTilde
     
     ' Save template
     ActiveDocument.AttachedTemplate.Save
