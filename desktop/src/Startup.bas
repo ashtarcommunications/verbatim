@@ -137,6 +137,10 @@ Public Sub Start()
             End If
         Next k
     #End If
+    
+    ' Refresh ribbon so Debate tab is visible when Verbatmizing
+    Ribbon.RefreshRibbon
+    Globals.DebateRibbon.ActivateTab ("DebateTab")
 
     On Error GoTo 0
 End Sub
