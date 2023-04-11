@@ -261,7 +261,8 @@ End Function
 
 Public Sub ChangeKeyboardShortcut(ByVal KeyName As WdKey, ByVal MacroName As String)
     ' Change keyboard shortcuts in template
-    Application.CustomizationContext = ActiveDocument.AttachedTemplate
+    '@Ignore ImplicitUnboundDefaultMemberAccess
+    If Application.CustomizationContext <> "Debate.dotm" Then Application.CustomizationContext = ActiveDocument.AttachedTemplate
     
     Select Case MacroName
         Case Is = "Paste"
@@ -326,7 +327,8 @@ Public Sub ResetKeyboardShortcuts()
     SaveSetting "Verbatim", "Keyboard", "F12Shortcut", "Clear"
 
     ' Save shortcuts in the template
-    Application.CustomizationContext = ActiveDocument.AttachedTemplate
+    '@Ignore ImplicitUnboundDefaultMemberAccess
+    If Application.CustomizationContext <> "Debate.dotm" Then Application.CustomizationContext = ActiveDocument.AttachedTemplate
 
     ' Speech shortcuts (tilde key shortcuts are set by FixTilde)
     KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechCursor", BuildKeyCode(ModifierKey, wdKeyAlt, vbKeyRight)

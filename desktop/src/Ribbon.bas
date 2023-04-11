@@ -35,7 +35,8 @@ End Sub
 
 Public Sub RibbonMain(ByVal c As IRibbonControl)
     ' Set Customization context so FindKey returns correct shortcuts
-    CustomizationContext = ActiveDocument.AttachedTemplate
+    '@Ignore ImplicitUnboundDefaultMemberAccess
+    If Application.CustomizationContext <> "Debate.dotm" Then Application.CustomizationContext = ActiveDocument.AttachedTemplate
 
     Select Case c.ID
    
@@ -227,7 +228,7 @@ Public Sub RibbonMain(ByVal c As IRibbonControl)
 
     ' Reset Customization Context
     '@Ignore ValueRequired
-    CustomizationContext = ThisDocument
+    Application.CustomizationContext = ThisDocument
 End Sub
 
 Public Sub GetRibbonLabels(ByVal c As IRibbonControl, ByRef label As Variant)

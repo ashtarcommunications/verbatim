@@ -23,7 +23,8 @@ Private Sub UserForm_Activate()
     
     On Error GoTo Handler
 
-    CustomizationContext = ActiveDocument.AttachedTemplate
+    '@Ignore ImplicitUnboundDefaultMemberAccess
+    If Application.CustomizationContext <> "Debate.dotm" Then Application.CustomizationContext = ActiveDocument.AttachedTemplate
     
     ' Convert keybindings to a dictionary for easier lookup
     For Each k In KeyBindings
@@ -257,7 +258,7 @@ Private Sub UserForm_Activate()
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = Shortcuts.Item("Verbatim.UI.ShowFormSettings")
     
     '@Ignore ValueRequired
-    CustomizationContext = ThisDocument
+    Application.CustomizationContext = ThisDocument
     
     Exit Sub
     

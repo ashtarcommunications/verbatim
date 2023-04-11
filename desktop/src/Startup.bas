@@ -127,11 +127,11 @@ Public Sub Start()
     
     ' Reset keybindings on Mac if PC shortcuts are set
     #If Mac Then
-        Application.CustomizationContext = ActiveDocument.AttachedTemplate
+        If Application.CustomizationContext <> "Debate.dotm" Then Application.CustomizationContext = ActiveDocument.AttachedTemplate
         Dim k As KeyBinding
         For Each k In KeyBindings
             If k.Command = "Verbatim.Formatting.PasteText" Then
-                If k.KeyString = "Shift+2" Or k.KeyString = "Ctrl+2" Then
+                If k.KeyString = "Shift+2" Then
                     Settings.ResetKeyboardShortcuts
                     Exit Sub
                 End If
