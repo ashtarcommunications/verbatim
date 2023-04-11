@@ -27,13 +27,16 @@ Private Sub UserForm_Activate()
     If Application.CustomizationContext <> "Debate.dotm" Then Application.CustomizationContext = ActiveDocument.AttachedTemplate
     
     ' Convert keybindings to a dictionary for easier lookup
+    ' Mac converts backticks to !, so skip those
+    On Error Resume Next
     For Each k In KeyBindings
         If Shortcuts.Exists(k.Command) Then
-            Shortcuts.Item(k.Command) = Shortcuts.Item(k.Command) & " / " & k.KeyString
+            Shortcuts.Item(k.Command) = Shortcuts.Item(k.Command) & " / " & Replace(k.KeyString, "!", "`")
         Else
-            Shortcuts.Add k.Command, k.KeyString
+            Shortcuts.Add k.Command, Replace(k.KeyString, "!", "`")
         End If
     Next k
+    On Error GoTo Handler
     
     Me.lboxShortcuts.AddItem "----------Speech----------"
     
