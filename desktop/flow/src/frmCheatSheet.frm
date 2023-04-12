@@ -34,7 +34,11 @@ Private Sub UserForm_Activate()
     
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Insert Cell Below"
-    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Shift + F3"
+    #If Mac Then
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Alt + F3"
+    #Else
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Shift + F3"
+    #End If
     
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Merge Cells"
@@ -64,37 +68,69 @@ Private Sub UserForm_Activate()
     
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Insert Row Below"
-    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Shift + F5"
+    #If Mac Then
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Shift + F5"
+    #Else
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Alt + F5"
+    #End If
     
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Delete Row"
-    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Shift + F5"
+    #If Mac Then
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Shift + F5"
+    #Else
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Alt + F5"
+    #End If
     
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Move Selection Up"
-    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Shift + Up"
+    #If Mac Then
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Alt + Up"
+    #Else
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Shift + W"
+    #End If
     
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Move Selection Down"
-    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Shift + Down"
+    #If Mac Then
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Alt + Down"
+    #Else
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Shift + S"
+    #End If
     
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Go To Bottom"
-    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Alt + Shift + Down"
+    #If Mac Then
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Shift + B"
+    #Else
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Alt + Shift + Down"
+    #End If
 
 
     Me.lboxShortcuts.AddItem "----------Sheets----------"
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Add Aff Flow"
-    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Shift + A"
-
+    #If Mac Then
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Shift + A"
+    #Else
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Alt + A"
+    #End If
+    
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Add Neg Flow"
-    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Shift + N"
+    #If Mac Then
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Shift + N"
+    #Else
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Alt + N"
+    #End If
 
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Add CX Flow"
-    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Shift + X"
+    #If Mac Then
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Shift + X"
+    #Else
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Alt + X"
+    #End If
     
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Next Flow"
