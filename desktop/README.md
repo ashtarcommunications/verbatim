@@ -10,7 +10,7 @@
 * PictureSizeMode on userform images doesn't resize the same on Mac as it does on PC
 * System.PrivateProfileString doesn't write to a separate ini file, it writes to the plist, so there's no easy way to import/export settings files
 * AppleScriptTask has undocumented pipe buffer limits (~16K) on the length of the return value of a script invocation, necessitating workarounds when using curl with large payloads
-* Application.OnKey in Excel can't use the command key for shortcuts after Excel 2011
+* Application.OnKey in Excel can't use the command key for shortcuts after Excel 2011, and many other key combos don't work
 
 ## Form UI Design
 

@@ -23,13 +23,13 @@ InstallDir $APPDATA\Microsoft\Templates
 
 ; Configure UI
 !define MUI_COMPONENTSPAGE_NODESC
-!define MUI_ICON "..\assets\icons\Verbatim.ico"
-!define MUI_UNICON "..\assets\icons\Verbatim.ico"
+!define MUI_ICON "..\..\assets\icons\Verbatim.ico"
+!define MUI_UNICON "..\..\assets\icons\Verbatim.ico"
 !define MUI_HEADERIMAGE
-!define MUI_HEADERIMAGE_BITMAP "..\assets\icons\Verbatim.bmp"
+!define MUI_HEADERIMAGE_BITMAP "..\..\assets\icons\Verbatim.bmp"
 
 ; Pages
-!insertmacro MUI_PAGE_LICENSE "..\..\LICENSE"
+!insertmacro MUI_PAGE_LICENSE "..\..\..\LICENSE"
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_INSTFILES
   
@@ -64,8 +64,8 @@ Section "Verbatim (Required)" sec3
 	SetOutPath $INSTDIR
   
 	; Put template files there
-	File "..\Debate.dotm"
-	File "..\flow\Debate.xltm"
+	File "..\..\Debate.dotm"
+	File "..\..\flow\Debate.xltm"
 
 	; Clean up old installs
 	Delete "$INSTDIR\Timer.exe"
@@ -76,11 +76,11 @@ Section "Verbatim (Required)" sec3
 	
 	; Install startup file
 	SetOutPath $APPDATA\Microsoft\Word\STARTUP
-	File "..\DebateStartup.dotm"
+	File "..\..\DebateStartup.dotm"
 	
 	; Install changelog
 	SetOutPath $PROGRAMFILES64\Verbatim
-	File "..\CHANGELOG.md"
+	File "..\..\CHANGELOG.md"
 	
 	; Remove old registry keys pre v6, otherwise reset FirstRun
 	ReadRegStr $0 HKCU "Software\VB And VBA Program Settings\Verbatim\Profile" Version
