@@ -8,9 +8,14 @@ Public Function FileExists(ByVal FilePath As String) As Boolean
 
     #If Mac Then
         Dim Script
-        Script = "if [ -f '" & Replace(FilePath, ".localized", "") & "' ]; then echo 1; else echo 0; fi;"
+        Script = "if [ -f '" & FilePath & "' ]; then echo 1; else echo 0; fi;"
         If AppleScriptTask("Verbatim.scpt", "RunShellScript", Script) = "1" Then
             FileExists = True
+        Else
+            Script = "if [ -f '" & Replace(FilePath, ".localized", "") & "' ]; then echo 1; else echo 0; fi;"
+            If AppleScriptTask("Verbatim.scpt", "RunShellScript", Script) = "1" Then
+                FileExists = True
+            End If
         End If
     #Else
         Dim FSO As Object
@@ -31,4 +36,3 @@ Handler:
     #End If
     Application.StatusBar = "Error checking for file " & FilePath & " - Error " & Err.Number & ": " & Err.Description
 End Function
-

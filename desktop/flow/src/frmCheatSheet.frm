@@ -77,7 +77,7 @@ Private Sub UserForm_Activate()
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Delete Row"
     #If Mac Then
-        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Shift + F5"
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Shift + 5"
     #Else
         Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Alt + F5"
     #End If
@@ -146,6 +146,13 @@ Private Sub UserForm_Activate()
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Enter Cell"
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "F2"
     
+    Me.lboxShortcuts.AddItem
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Paste Unformatted"
+    #If Mac Then
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Shift + 6"
+    #Else
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "F6"
+    #End If
     
     Me.lboxShortcuts.AddItem "----------Settings----------"
     Me.lboxShortcuts.AddItem

@@ -71,7 +71,6 @@ Public Sub ResetKeyboardShortcuts()
         Application.OnKey Modifier & "+s", "Flow.MoveDown"
         Application.OnKey Modifier & "+b", "Flow.GoToBottom"
     #End If
-    
 End Sub
 
 '@Ignore ProcedureNotUsed
