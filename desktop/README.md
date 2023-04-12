@@ -8,6 +8,8 @@
 * GetSetting doesn't accept vbNullString for the default parameter, use "" instead
 * Have to use replacements for most libraries, inc. XML, HTTP, Dictionary, ADODB, VBIDE
 * PictureSizeMode on userform images doesn't resize the same on Mac as it does on PC
+* System.PrivateProfileString doesn't write to a separate ini file, it writes to the plist, so there's no easy way to import/export settings files
+* AppleScriptTask has undocumented pipe buffer limits (~16K) on the length of the return value of a script invocation, necessitating workarounds when using curl with large payloads
 
 ## Form UI Design
 

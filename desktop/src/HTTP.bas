@@ -13,12 +13,12 @@ Public Function GetReq(ByRef URL As String) As Dictionary
         Dim StatusCode As String
         Dim Body As String
         
-        ' Get the response from curl as <status_code>\n<body> by redirecting stderr to stdout
-        ' -w is the write-out string format, -o redirects to standard, -s is silent
-        Script = "curl -w '%{stderr}%{http_code}\n%{stdout}' " _
+        ' Get the response from curl as <status_code>\n<body> by munging stdout with awk
+        ' -w is the write-out string format, -s is silent
+        Script = "curl -w '\n%{http_code}' " _
             & "--cookie 'caselist_token=" & GetSetting("Verbatim", "Caselist", "CaselistToken", "") & "' " _
             & "-H 'Accept: application/json' " _
-            & "-s -o - '" & URL & "' 2>&1"
+            & "-s '" & URL & "' | awk 'NR==1{code=$0} NR>1{print} END{if (code) print code}'"
         Raw = AppleScriptTask("Verbatim.scpt", "RunShellScript", Script)
         
         ' Chr(13) = matches \n newline output from curl - should only be one newline in output
@@ -93,9 +93,9 @@ Public Function PostReq(ByRef URL As String, ByVal Body As Dictionary) As Dictio
         Script = Script & "-H 'Content-Type: application/json' "
         Script = Script & "-H 'Cookie: caselist_token=" & Cookie & "' "
         Script = Script & "-d '" & JSON & "' "
-        Script = Script & "-w '%{stderr}%{http_code}\n%{stdout}' -s -o - "
+        Script = Script & "-w '\n%{http_code}' -s "
         Script = Script & "'" & URL & "'"
-        Script = Script & " 2>&1"
+        Script = Script & " | awk 'NR==1{code=$0} NR>1{print} END{if (code) print code}'"
         
         Raw = AppleScriptTask("Verbatim.scpt", "RunShellScript", Script)
         StatusCode = Split(Raw, Chr(13))(0)
