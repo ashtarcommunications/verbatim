@@ -20,7 +20,11 @@ Public Sub CreateDebateAnalyticsWorkbook()
         Set wb = xl.Workbooks.Add
         wb.SaveAs Application.TemplatesPath & "DebateAnalytics.xlsx"
         wb.Close SaveChanges:=True
-        xl.Quit
+        #If Mac Then
+            xlwb.Close SaveChanges:=False
+        #Else
+            xl.Quit
+        #End If
         
         Set xl = Nothing
         Set wb = Nothing
