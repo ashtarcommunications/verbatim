@@ -19,8 +19,8 @@ copy /y ..\..\timer\release\VerbatimTimer_1.0.0_x64_en-US.msi ..\release\%1\Verb
 copy /y ..\..\timer\release\verbatim-timer_1.0.0_amd64.deb ..\release\%1\verbatim-timer_1.0.0_amd64.deb
 copy /y ..\..\timer\release\VerbatimTimer_1.0.0_x64.dmg ..\release\%1\VerbatimTimer_1.0.0_x64.dmg
 
-copy /y ..\install\GetFromCiteCreator.exe ..\release\%1\GetFromCiteCreator.exe
-copy /y ..\install\NavPaneCycle.exe ..\release\%1\NavPaneCycle.exe
+copy /y ..\plugins\GetFromCiteCreator.exe ..\release\%1\GetFromCiteCreator.exe
+copy /y ..\plugins\NavPaneCycle.exe ..\release\%1\NavPaneCycle.exe
 
 copy /y "..\setup\Verbatim Setup Check\Bin\Release\net6.0-windows\win-x64\VerbatimSetupCheck.exe" ..\release\%1\VerbatimSetupCheck.exe
 copy /y ..\setup\VerbatimSetupCheck.zip ..\release\$1\VerbatimSetupCheck.zip
