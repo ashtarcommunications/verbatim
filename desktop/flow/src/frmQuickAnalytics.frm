@@ -74,7 +74,7 @@ Private Sub PopulateQuickAnalytics()
     wb.Close SaveChanges:=False
 
     #If Mac Then
-        xlwb.Close SaveChange:=False
+        xlwb.Close SaveChanges:=False
     #Else
         xl.Quit
     #End If
