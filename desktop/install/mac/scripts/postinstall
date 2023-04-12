@@ -1,0 +1,23 @@
+#!/bin/sh
+
+if [ -d ~/"Library/Group Containers/UBF8T346G9.Office/User Content.localized" ]
+then
+	SCRIPTFILE=~/"Library/Application Scripts/com.microsoft.Word/Verbatim.scpt"
+	VERBATIM=~/"Library/Group Containers/UBF8T346G9.Office/User Content.localized/Templates.localized/Debate.dotm"
+	STARTUP=~/"Library/Group Containers/UBF8T346G9.Office/User Content.localized/Startup.localized/Word/DebateStartup.dotm"
+	FLOW=~/"Library/Group Containers/UBF8T346G9.Office/User Content.localized/Templates.localized/Debate.xltm"
+else
+	SCRIPTFILE=~/"Library/Application Scripts/com.microsoft.Word/Verbatim.scpt"
+	VERBATIM=~/"Library/Group Containers/UBF8T346G9.Office/User Content/Templates/Debate.dotm"
+	STARTUP=~/"Library/Group Containers/UBF8T346G9.Office/User Content/Startup/Word/DebateStartup.dotm"
+	FLOW=~/"Library/Group Containers/UBF8T346G9.Office/User Content/Templates/Debate.xltm"
+fi
+
+mkdir -p ~/"Library/Application Scripts/com.microsoft.Word"
+cp -p /Applications/Verbatim.app/Contents/Resources/Verbatim.scpt "$SCRIPTFILE"
+cp -p /Applications/Verbatim.app/Contents/Resources/Debate.dotm "$VERBATIM"
+cp -p /Applications/Verbatim.app/Contents/Resources/DebateStartup.dotm "$STARTUP"
+cp -p /Applications/Verbatim.app/Contents/Resources/Debate.xltm "$FLOW"
+
+exit
+
