@@ -89,7 +89,8 @@ Public Sub Start()
     If GetSetting("Verbatim", "Admin", "FirstRun", True) = True Then
         Startup.FirstRun
     Else
-        ' If first document opened and warnings not suppressed, check if template is incorrectly installed.
+        ' If first document opened and warnings not suppressed, check if template is incorrectly installed
+        ' Can't check for script file installation here because running AppleScriptTask during startup prevents the file opening
         If GetSetting("Verbatim", "Admin", "SuppressInstallChecks", False) = False And Application.Documents.Count = 1 Then
             If Troubleshooting.InstallCheckTemplateName = False Or Troubleshooting.InstallCheckTemplateLocation = False Then
                 If MsgBox("Verbatim appears to be installed incorrectly. Would you like to open the Troubleshooter? This message can be suppressed in the Verbatim settings.", vbYesNo) = vbYes Then
@@ -97,14 +98,6 @@ Public Sub Start()
                     Exit Sub
                 End If
             End If
-            #If Mac Then
-                If Troubleshooting.InstallCheckScptFileExists = False Then
-                    If MsgBox("Your Verbatim.scpt file appears to be installed incorrectly. Would you like to open the Troubleshooter? This message can be suppressed in the Verbatim settings.", vbYesNo) = vbYes Then
-                        UI.ShowForm "Troubleshooter"
-                        Exit Sub
-                    End If
-                End If
-            #End If
         End If
         
         ' Check for updates weekly on Wednesdays
@@ -116,7 +109,6 @@ Public Sub Start()
                 End If
             End If
         End If
-        
     End If
 
     ' Check for custom code to import
