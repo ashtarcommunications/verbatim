@@ -410,6 +410,7 @@ Private Function WikifySelection() As String
     
     ' Add new document based on debate template
     Set d = Application.Documents.Add(Template:=ActiveDocument.AttachedTemplate.FullName, Visible:=False)
+    d.Activate
 
     ' Paste into new document
     Selection.Paste
