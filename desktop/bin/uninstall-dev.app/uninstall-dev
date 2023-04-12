@@ -12,6 +12,7 @@ else
 fi
 
 rm ~/"Library/Application Scripts/com.microsoft.Word/Verbatim.scpt"
+rm ~/"Library/Application Scripts/com.microsoft.Excel/Verbatim.scpt"
 rm -fr /Applications/Verbatim.app
 rm -fr /Applications/VerbatimTimer.app
 
