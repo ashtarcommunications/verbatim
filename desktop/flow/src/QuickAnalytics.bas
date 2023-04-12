@@ -4,9 +4,16 @@ Option Explicit
 Public Sub CreateDebateAnalyticsWorkbook()
     If Filesystem.FileExists(Application.TemplatesPath & "DebateAnalytics.xlsx") = False Then
         Dim xl As Object
-        Set xl = New Excel.Application
         Dim wb As Excel.Workbook
-
+        
+        #If Mac Then
+            Dim xlwb As Object
+            Set xlwb = CreateObject("Excel.Application")
+            Set xl = xlwb.Application
+        #Else
+            Set xl = New Excel.Application
+        #End If
+    
         Application.StatusBar = "DebateAnalytics.xlsx spreadsheet not found in your templates folder, creating a blank one."
 
         Application.ScreenUpdating = False
@@ -17,6 +24,9 @@ Public Sub CreateDebateAnalyticsWorkbook()
         
         Set xl = Nothing
         Set wb = Nothing
+        #If Mac Then
+            Set xlwb = Nothing
+        #End If
 
         Application.ScreenUpdating = True
     End If

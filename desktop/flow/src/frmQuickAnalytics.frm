@@ -4,7 +4,7 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmQuickAnalytics
    ClientHeight    =   5535
    ClientLeft      =   120
    ClientTop       =   465
-   ClientWidth     =   8370
+   ClientWidth     =   8370.001
    OleObjectBlob   =   "frmQuickAnalytics.frx":0000
    ShowModal       =   0   'False
    StartUpPosition =   1  'CenterOwner
@@ -46,7 +46,13 @@ Private Sub PopulateQuickAnalytics()
     On Error GoTo Handler
     
     ' Have to use a new Excel instance to avoid the current workbook being set to invisible
-    Set xl = New Excel.Application
+    #If Mac Then
+        Dim xlwb As Object
+        Set xlwb = CreateObject("Excel.Application")
+        Set xl = xlwb.Application
+    #Else
+        Set xl = New Excel.Application
+    #End If
     xl.AutomationSecurity = msoAutomationSecurityForceDisable
     xl.EnableEvents = False
     
@@ -69,6 +75,9 @@ Private Sub PopulateQuickAnalytics()
     xl.Quit
     Set wb = Nothing
     Set xl = Nothing
+    #If Mac Then
+        Set xlwb = Nothing
+    #End If
     
     Exit Sub
     

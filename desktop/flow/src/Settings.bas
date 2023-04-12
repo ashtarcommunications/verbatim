@@ -2,8 +2,9 @@ Attribute VB_Name = "Settings"
 Option Explicit
 
 Public Function GetModifierKey() As String
+    ' Mac Excel versions after 2011 can't assign shortcuts to Command (character code = *), so we have to use Ctrl for now
     #If Mac Then
-        GetModifierKey = "*" ' Command Key
+        GetModifierKey = "^" ' Ctrl Key
     #Else
         GetModifierKey = "^" ' Ctrl Key
     #End If

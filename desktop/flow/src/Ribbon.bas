@@ -121,7 +121,7 @@ Public Sub RibbonMain(ByVal c As IRibbonControl)
         Case Is = "CheatSheet"
             UI.ShowFormCheatSheet
 
-        Case Is = "FlowSettings", "FlowSettings1"
+        Case Is = "FlowSettings", "FlowSettings1", "FlowSettings2"
             UI.ShowFormSettings
 
         Case Else

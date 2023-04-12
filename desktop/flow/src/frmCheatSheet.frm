@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmCheatSheet 
    Caption         =   "Cheat Sheet"
-   ClientHeight    =   9420
+   ClientHeight    =   9420.001
    ClientLeft      =   120
    ClientTop       =   465
    ClientWidth     =   5760
@@ -68,41 +68,41 @@ Private Sub UserForm_Activate()
     
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Delete Row"
-    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl/Cmd + Alt + F5"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Alt + F5"
     
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Move Selection Up"
-    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl/Cmd + Alt + Up"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Alt + Up"
     
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Move Selection Down"
-    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl/Cmd + Alt + Down"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Alt + Down"
     
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Go To Bottom"
-    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl/Cmd + Alt + Shift + Down"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Alt + Shift + Down"
 
 
     Me.lboxShortcuts.AddItem "----------Sheets----------"
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Add Aff Flow"
-    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl/Cmd + Alt + A"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Alt + A"
 
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Add Neg Flow"
-    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl/Cmd + Alt + N"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Alt + N"
 
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Add CX Flow"
-    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl/Cmd + Alt + X"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Alt + X"
     
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Next Flow"
-    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl/Cmd + PgUp"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + PgUp"
     
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Previous Flow"
-    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl/Cmd + PgDown"
+    Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + PgDown"
     
     
     Me.lboxShortcuts.AddItem "----------Insert----------"
