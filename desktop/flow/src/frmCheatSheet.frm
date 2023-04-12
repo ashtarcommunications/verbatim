@@ -35,9 +35,9 @@ Private Sub UserForm_Activate()
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Insert Cell Below"
     #If Mac Then
-        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Alt + F3"
-    #Else
         Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Shift + F3"
+    #Else
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Alt + F3"
     #End If
     
     Me.lboxShortcuts.AddItem
@@ -85,17 +85,17 @@ Private Sub UserForm_Activate()
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Move Selection Up"
     #If Mac Then
-        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Alt + Up"
-    #Else
         Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Shift + W"
+    #Else
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Alt + Up"
     #End If
     
     Me.lboxShortcuts.AddItem
     Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 0) = "Move Selection Down"
     #If Mac Then
-        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Alt + Down"
-    #Else
         Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Shift + S"
+    #Else
+        Me.lboxShortcuts.List(Me.lboxShortcuts.ListCount - 1, 1) = "Ctrl + Alt + Down"
     #End If
     
     Me.lboxShortcuts.AddItem
