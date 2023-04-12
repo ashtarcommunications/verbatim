@@ -1,6 +1,3 @@
-# New Tools
-Mac Installer
-
 # Pre-release QA
 Test all functions on Mac
 Submit files for virus checking
