@@ -50,28 +50,7 @@ Public ActiveSpeechDoc As String
 Public Const SND_SYNC = &H0
 Public Const SND_ASYNC = &H1
 Public Const SND_FILENAME = &H20000
-
-Public Enum BitsPerSec
-    Bits16 = 16
-    Bits8 = 8
-End Enum
-
-Public Enum SamplesPerSec
-    Samples8000 = 8000
-    Samples11025 = 11025
-    Samples12000 = 12000
-    Samples16000 = 16000
-    Samples22050 = 22050
-    Samples24000 = 24000
-    Samples32000 = 32000
-    Samples44100 = 44100
-    Samples48000 = 48000
-End Enum
-
-Public Enum Channels
-    Mono = 1
-    Stereo = 2
-End Enum
+Public BytesPerSec As Long
 
 ' Form UI Constants
 Public WHITE As Long
