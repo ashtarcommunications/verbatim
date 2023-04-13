@@ -143,7 +143,7 @@ Public Sub ResizeUserForm(ByVal frm As Object, Optional ByRef dResizeFactor As D
     End With
 End Sub
 
-Public Sub PopulateComboBoxFromJSON(ByRef URL As String, ByRef DisplayKey As String, ByRef ValueKey As String, ByVal c As Object)
+Public Sub PopulateComboBoxFromJSON(ByRef URL As String, ByRef DisplayKey As Variant, ByRef ValueKey As Variant, ByVal c As Object)
     On Error GoTo Handler
 
     System.Cursor = wdCursorWait
@@ -151,12 +151,12 @@ Public Sub PopulateComboBoxFromJSON(ByRef URL As String, ByRef DisplayKey As Str
     Dim Response As Dictionary
     Set Response = HTTP.GetReq(URL)
 
-    Dim Item As Variant
-    For Each Item In Response.Item("body")
+    Dim ArrayItem As Variant
+    For Each ArrayItem In Response.Item("body")
         c.AddItem
-        c.List(c.ListCount - 1, 0) = Item(DisplayKey)
-        c.List(c.ListCount - 1, 1) = Item(ValueKey)
-    Next Item
+        c.List(c.ListCount - 1, 0) = ArrayItem.Item(DisplayKey)
+        c.List(c.ListCount - 1, 1) = ArrayItem.Item(ValueKey)
+    Next ArrayItem
 
     System.Cursor = wdCursorNormal
     Set Response = Nothing
