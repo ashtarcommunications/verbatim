@@ -1,4 +1,6 @@
-# Website
+# docs.paperlessdebate.com
+
+This is the documentation website for Verbatim and associated tools, hosted at docs.paperlessdebate.com
 
 This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.
 
