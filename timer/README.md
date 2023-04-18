@@ -10,7 +10,7 @@ It shares no code with the Debate Synergy timer by Alex Gulakov (GPL3), but it d
 
 Install rust and dependencies. Also requires Node.js.
 
-<br /><br />
+<br />
 
 https://tauri.app/v1/guides/getting-started/prerequisites
 
