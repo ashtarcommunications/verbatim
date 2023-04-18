@@ -3,7 +3,7 @@
 ## Overview
 This section of the repo is for Verbatim for desktop versions of Microsoft Word.
 
-<br /><br />
+<br />
 
 Note that the final template is NOT built from the /src directory. The source of truth for the current template is Debate.dotm - the /src directory is an export of the code modules from the Word template, and exists only to make it easier to use a git diff to understand what's contained in each commit.
 
