@@ -1,11 +1,26 @@
 # Verbatim Desktop
 
 ## Overview
-This section of the repo is for Verbatim for desktop versions of Microsoft Word.
+This section of the repo is for Verbatim for desktop versions of Microsoft Word. The project is made up of a few discrete tools:
+1) The Verbatim Word template, comprised of Debate.dotm (the core template), DebateStartup.dotm (for bootstrapping the main template), and Verbatim.scpt, for Applescript usage on the Mac
+2) Verbatim Flow, an Excel template for flowing, in Debate.xltm
+3) A Mac .app bundle wrapping the template, with a .pkg installer built by pkgbuild and a convenience uninstall .app bundle
+4) A PC .exe installer wrapping the template, built with NSIS
+5) A PC plugins installer (also NSIS), which bundles several plugins:<br />
+    a) Verbatim Timer, a cross-platform debate timer also in this repo<br />
+    b) Capture2Text for OCR<br />
+    c) Everything Search, for search<br />
+    d) GetFromCiteCreator - an AutoHotKey script compiled to exe that fetches cite info from the Cite Creator extension in Chrome<br />
+    e) NavPaneCycle - an AutoHotKey script compiled to exe that cycles through the Word Navigation Pane levels<br />
+6) A PC setup check tool built with Visual Studio that helps administer macro security settings
+7) A Mac setup check tool built with Applescript that administers macro security and various other Mac system settings
 
 <br />
 
 Note that the final template is NOT built from the /src directory. The source of truth for the current template is Debate.dotm - the /src directory is an export of the code modules from the Word template, and exists only to make it easier to use a git diff to understand what's contained in each commit.
+
+<br />
+
 
 ## Project Structure
 ```
