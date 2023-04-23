@@ -1,10 +1,6 @@
 Attribute VB_Name = "Startup"
 Option Explicit
 
-Private Sub Auto_Open()
-    Startup.Start
-End Sub
-
 Public Sub Start()
     On Error Resume Next
 
@@ -37,4 +33,3 @@ Public Sub Start()
 
     On Error GoTo 0
 End Sub
-

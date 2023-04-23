@@ -124,3 +124,39 @@ Handler:
         MsgBox "Error " & Err.Number & ": " & Err.Description
     End If
 End Sub
+
+Public Sub CreateFlow()
+    Dim AutoSaveDir As String
+    Dim Filename As String
+    Dim xl As Object
+    Dim w As Object
+    
+    On Error GoTo Handler
+    
+    If Filesystem.FileExists(Application.NormalTemplate.Path & Application.PathSeparator & "Debate.xltm") = False Then
+        MsgBox "Verbatim Flow is not installed - ensure Debate.xltm is in your Templates folder."
+        Exit Sub
+    End If
+    
+    Filename = InputBox("Name for your new flow?", "New Flow", Split(ActiveDocument.Name, ".")(0))
+    If Filename = "" Then Exit Sub
+    
+    AutoSaveDir = GetSetting("Verbatim", "Paperless", "AutoSaveDir", CurDir$())
+    If Right$(AutoSaveDir, 1) <> Application.PathSeparator Then AutoSaveDir = AutoSaveDir & Application.PathSeparator
+    Filename = AutoSaveDir & Filename
+    If Filename = "" Then Filename = "Flow"
+    
+    Set xl = CreateObject("Excel.Application")
+    xl.Visible = True
+    Set w = xl.Workbooks.Add(Template:=Application.NormalTemplate.Path & Application.PathSeparator & "Debate.xltm")
+    w.SaveAs Filename:=Filename, FileFormat:=52  ' 52 = Macro-enabled workbook
+    
+    Set xl = Nothing
+    Set w = Nothing
+    Exit Sub
+
+Handler:
+    Set xl = Nothing
+    Set w = Nothing
+    MsgBox "Error " & Err.Number & ": " & Err.Description
+End Sub

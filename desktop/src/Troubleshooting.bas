@@ -243,9 +243,19 @@ Public Sub FixTilde()
         If VkKeyScan(Asc("`")) = 192 Then
             KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechCursor", VkKeyScan(Asc("`"))
             KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechEnd", BuildKeyCode(wdKeyAlt, VkKeyScan(Asc("`")))
+            
+            KeyBindings.Add wdKeyCategoryMacro, "Flow.SendToFlowCell", BuildKeyCode(ModifierKey, VkKeyScan(Asc("`")))
+            KeyBindings.Add wdKeyCategoryMacro, "Flow.SendToFlowColumn", BuildKeyCode(ModifierKey, wdKeyAlt, VkKeyScan(Asc("`")))
+            KeyBindings.Add wdKeyCategoryMacro, "Flow.SendHeadingsToFlowCell", BuildKeyCode(ModifierKey, wdKeyShift, VkKeyScan(Asc("`")))
+            KeyBindings.Add wdKeyCategoryMacro, "Flow.SendHeadingsToFlowColumn", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyShift, VkKeyScan(Asc("`")))
         Else
             KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechCursor", VkKeyScan(96)
             KeyBindings.Add wdKeyCategoryMacro, "Paperless.SendToSpeechEnd", BuildKeyCode(wdKeyAlt, VkKeyScan(96))
+            
+            KeyBindings.Add wdKeyCategoryMacro, "Flow.SendToFlowCell", BuildKeyCode(ModifierKey, VkKeyScan(96))
+            KeyBindings.Add wdKeyCategoryMacro, "Flow.SendToFlowColumn", BuildKeyCode(ModifierKey, wdKeyAlt, VkKeyScan(96))
+            KeyBindings.Add wdKeyCategoryMacro, "Flow.SendHeadingsToFlowCell", BuildKeyCode(ModifierKey, wdKeyShift, VkKeyScan(96))
+            KeyBindings.Add wdKeyCategoryMacro, "Flow.SendHeadingsToFlowColumn", BuildKeyCode(ModifierKey, wdKeyAlt, wdKeyShift, VkKeyScan(96))
         End If
     #End If
 End Sub

@@ -767,7 +767,7 @@ Public Sub NewSpeech()
     Dim SpeechName As String
     Dim Filename As String
     Dim h As String
-    Dim AutoSaveDirectory As String
+    Dim AutoSaveDir As String
  
     On Error GoTo Handler
     
@@ -793,9 +793,9 @@ SpeechName:
  
     ' If AutoSave is set, save the doc - otherwise bring up Save As dialogue with default name set
     If GetSetting("Verbatim", "Paperless", "AutoSaveSpeech", False) = True Then
-        AutoSaveDirectory = GetSetting("Verbatim", "Paperless", "AutoSaveDir", CurDir$())
-        If Right$(AutoSaveDirectory, 1) <> Application.PathSeparator Then AutoSaveDirectory = AutoSaveDirectory & Application.PathSeparator
-        Filename = AutoSaveDirectory & Filename
+        AutoSaveDir = GetSetting("Verbatim", "Paperless", "AutoSaveDir", CurDir$())
+        If Right$(AutoSaveDir, 1) <> Application.PathSeparator Then AutoSaveDir = AutoSaveDir & Application.PathSeparator
+        Filename = AutoSaveDir & Filename
         ActiveDocument.SaveAs Filename:=Filename, FileFormat:=wdFormatXMLDocument
     Else
         With Application.Dialogs.Item(wdDialogFileSaveAs)
