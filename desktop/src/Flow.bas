@@ -138,7 +138,7 @@ Public Sub CreateFlow()
         Exit Sub
     End If
     
-    Filename = InputBox("Name for your new flow?", "New Flow", Split(ActiveDocument.Name, ".")(0))
+    Filename = InputBox("Name for your new flow?", "New Flow", Split(ActiveDocument.Name, ".")(0) & " Flow")
     If Filename = "" Then Exit Sub
     
     AutoSaveDir = GetSetting("Verbatim", "Paperless", "AutoSaveDir", CurDir$())
