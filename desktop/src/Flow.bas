@@ -142,6 +142,7 @@ Public Sub CreateFlow()
     If Filename = "" Then Exit Sub
     
     AutoSaveDir = GetSetting("Verbatim", "Paperless", "AutoSaveDir", CurDir$())
+    If AutoSaveDir = "" Then AutoSaveDir = CurDir$()
     If Right$(AutoSaveDir, 1) <> Application.PathSeparator Then AutoSaveDir = AutoSaveDir & Application.PathSeparator
     Filename = AutoSaveDir & Filename
     If Filename = "" Then Filename = "Flow"
