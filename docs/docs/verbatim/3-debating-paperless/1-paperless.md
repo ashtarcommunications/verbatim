@@ -1,3 +1,9 @@
+---
+sidebar_position: 1
+id: paperless
+title: Debating Paperless
+---
+
 # Paperless
 
 This section covers how to use Verbatim for in-round paperless debating.  The idea is very simple - You take blocks and cards from a variety of files, and put them all in one master “Speech” document, where you further organize them into the order you expect to read them in your speech.  

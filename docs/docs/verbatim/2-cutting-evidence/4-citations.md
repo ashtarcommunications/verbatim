@@ -1,3 +1,9 @@
+---
+sidebar_position: 4
+id: citations
+title: Notes On Cite Format
+---
+
 If you want your cites to work best with Verbatim, and want to take advantage of all the automated formatting macros which rely on accurately detecting the difference between your citations and card text (e.g. automatic condensing, auto-formatting your cites, processing your files for cite entries for the caselist, etc), you should exclusively use one-line citations, with the last name and date of the author in Cite style (F8).
 
 While there are many opinions about the "best" way to format your cites, this isn't purely an aesthetic question. Citations in one line are much, much, much easier for a computer to recognize, because they follow a predictable pattern (that is, 3 paragraphs: tag, cite, card). When debaters use a million other permutations on that (e.g. 2 or 3 line cites, or other formatting changes like putting notes under a tag between the tag and cite), it makes it very difficult for the computer to tell what is a cite and what is card text, or what is the tag vs. what's just a note. As such, automated processing macros all become difficult or impossible. Similar things apply to any cite format that separates the first and last name - automated processing to determine the author, for example, becomes much harder.
@@ -8,10 +14,10 @@ The main reason people cite for putting cites in two lines is for better "readab
 
 As a secondary consideration, using a one-line citation is much more in line with actual academic citation formats. There is no major citation format (MLA, APA, etc) that separates the first and last name for an author, for example.
 
-This is an example of a good cite
+This is an example of a cite that will work well with Verbatim
 Aaron *Hardy*, creator of Verbatim, 1-1-*3000*, "Verbatim Online Manual," https://paperlessdebate.com
 
-This is an example of a bad cite
+This is an example of a cite that will not
 Hardy 3000
 (Aaron, Creator of Verbatim, "Verbatim Online Manual," https://paperlessdebate.com)
 

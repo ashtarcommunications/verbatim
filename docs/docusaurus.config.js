@@ -43,8 +43,8 @@ const config = {
           sidebarCollapsed: false,
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/ashtarcommunications/verbatim',
+          // editUrl:
+          //   'https://github.com/ashtarcommunications/verbatim',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -58,11 +58,19 @@ const config = {
     ({
       image: 'img/verbatim.ico',
       navbar: {
-        title: 'Paperless Debate',
+        title: 'Paperless Debate Manual',
         logo: {
           alt: 'Paperless Debate Logo',
           src: 'img/verbatim.ico',
         },
+        items: [
+          {
+            href: 'https://paperlessdebate.com',
+            position: 'right',
+            'aria-label': 'Back to paperlessdebate.com',
+            label: 'Back to paperlessdebate.com',
+          },
+        ],
       },
       footer: {
         style: 'dark',

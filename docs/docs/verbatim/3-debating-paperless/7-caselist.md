@@ -1,3 +1,9 @@
+---
+sidebar_position: 7
+id: caselist
+title: Caselist Integration
+---
+
 Caselist
 Verbatim has several built-in functions to make intel sharing easier.
 

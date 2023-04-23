@@ -1,3 +1,9 @@
+---
+sidebar_position: 1
+id: organization
+title: File Organization
+---
+
 ## Overview
 Properly formatting your files is the foundation of most other Verbatim features. If a macro isn't behaving like you expect, it's like a mistake with file formatting.
 
