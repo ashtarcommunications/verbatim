@@ -147,17 +147,30 @@ Public Sub CreateFlow()
     Filename = AutoSaveDir & Filename
     If Filename = "" Then Filename = "Flow"
     
-    Set xl = CreateObject("Excel.Application")
+    #If Mac Then
+        Dim xlwb As Object
+        Set xlwb = CreateObject("Excel.Application")
+        Set xl = xlwb.Application
+    #Else
+        Set xl = CreateObject("Excel.Application")
+    #End If
+        
     xl.Visible = True
     Set w = xl.Workbooks.Add(Template:=Application.NormalTemplate.Path & Application.PathSeparator & "Debate.xltm")
     w.SaveAs Filename:=Filename, FileFormat:=52  ' 52 = Macro-enabled workbook
     
     Set xl = Nothing
     Set w = Nothing
+    #If Mac Then
+        Set xlwb = Nothing
+    #End If
     Exit Sub
 
 Handler:
     Set xl = Nothing
     Set w = Nothing
+    #If Mac Then
+        Set xlwb = Nothing
+    #End If
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
