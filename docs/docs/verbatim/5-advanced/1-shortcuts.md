@@ -1,3 +1,9 @@
+---
+sidebar_position: 1
+id: shortcuts
+title: Keyboard Shortcuts
+---
+
 Keyboard shortcuts are the best way to improve your efficiency using Verbatim
 
 Below are the built-in defaults for keyboard shortcuts. Note that the Ctrl key is used on PC, while the Command key is used on the Mac.

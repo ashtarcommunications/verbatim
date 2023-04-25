@@ -1,3 +1,9 @@
+---
+sidebar_position: 3
+id: tub-organization
+title: Tub Organization
+---
+
 Digital Tub Organization
 One of the most important aspects of ensuring that you can use Verbatim hassle-free is effective file organization.  Much like having dozens of reams of paper without indexes or block titles thrown at random into a tub would make debating impossible, a single folder on your hard drive with 200 Word documents cryptically labeled “updates.docx” or “politics.docx” wouldn’t fare much better. There’s an infinite number of ways to organize your files on the computer – but here’s a basic set of suggestions that have proven workable in the past.
 

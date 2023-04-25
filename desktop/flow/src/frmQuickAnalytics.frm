@@ -4,7 +4,7 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmQuickAnalytics
    ClientHeight    =   5535
    ClientLeft      =   120
    ClientTop       =   465
-   ClientWidth     =   8370.001
+   ClientWidth     =   8370
    OleObjectBlob   =   "frmQuickAnalytics.frx":0000
    ShowModal       =   0   'False
    StartUpPosition =   1  'CenterOwner

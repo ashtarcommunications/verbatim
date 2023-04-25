@@ -1,5 +1,10 @@
+---
+sidebar_position: 3
+id: selection
+title: Selection Modes
+---
 
-Most formatting macros operate with a similar method of decided what portion of the document to operate on.
+Most formatting macros operate with a similar method of deciding what portion of the document to operate on.
 
 Selection philosophy:
 * Always respect user selection where possible. If text is selected, the macro will operate on that

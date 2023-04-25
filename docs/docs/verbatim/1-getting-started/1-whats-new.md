@@ -1,5 +1,7 @@
 ---
 sidebar_position: 1
+id: whats-new
+title: What's New
 ---
 
 # What's New
@@ -24,4 +26,4 @@ Verbatim 6 has been rewritten from scratch to be cross-platform, with many new f
 * Restyled forms for a more modern look and feel
 * Removed deprecated features, cleaned up the code, and ensured high quality code standards throughout
 
-For a more complete list, see the changelog!
+For a more complete list, see the [changelog](https://github.com/ashtarcommunications/verbatim/blob/master/desktop/CHANGELOG.md)!

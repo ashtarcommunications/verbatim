@@ -1,5 +1,9 @@
 ﻿Option Explicit
 
+Private Sub Workbook_Open()
+    Startup.Start
+End Sub
+
 Private Sub Workbook_SheetChange(ByVal sh As Object, ByVal Target As Range)
 ' Sets sheet name automatically based on value in A2
     If GetSetting("Verbatim", "Flow", "AutoLabelFlows", True) = False Then Exit Sub

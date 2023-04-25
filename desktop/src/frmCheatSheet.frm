@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmCheatSheet 
    Caption         =   "Cheat Sheet"
-   ClientHeight    =   9420.001
+   ClientHeight    =   9420
    ClientLeft      =   120
    ClientTop       =   450
    ClientWidth     =   6360

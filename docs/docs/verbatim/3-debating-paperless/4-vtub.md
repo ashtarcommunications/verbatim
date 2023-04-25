@@ -1,3 +1,9 @@
+---
+sidebar_position: 4
+id: vtub
+title: Virtual Tub
+---
+
 The Virtual Tub allows you to select a Block from a menu of files in the Ribbon and insert it right into your current document, without having to open the source file.
 
 To use the VTub, open the Verbatim Settings and go to the VTub tab. Click “Browse” and find the folder of files you want in your VTub, then click the “Create VTub” button. Wait, probably for a really long time.

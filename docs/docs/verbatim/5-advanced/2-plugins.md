@@ -1,3 +1,9 @@
+---
+sidebar_position: 2
+id: plugins
+title: Plugins
+---
+
 # PC
 
 The easiest way to install all the plugins on a PC is to use the automated installer. That will install all of the following plugins:

@@ -167,8 +167,10 @@ Public Sub RibbonMain(ByVal c As IRibbonControl)
         Paperless.NewSpeech
     Case Is = "ChooseSpeechDoc"
         UI.ShowForm "ChooseSpeechDoc"
-    Case Is = "NewDocument"
+    Case Is = "NewDocument", "NewDocument1"
         Paperless.NewDocument
+    Case Is = "CreateFlow"
+        Flow.CreateFlow
     Case Is = "CombineDocs"
         UI.ShowForm "CombineDocs"
     Case Is = "CopyToUSB"

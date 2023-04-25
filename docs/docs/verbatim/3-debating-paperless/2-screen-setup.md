@@ -1,3 +1,9 @@
+---
+sidebar_position: 2
+id: screen-setup
+title: Screen Setup
+---
+
 The Desktop
 
 It helps to conceptualize your desktop like a desk which moves workflow from left to right.  Starting with the taskbar along the left side, which keeps the open documents organized, try to use approximately the left half of your screen for all the open files.  Then, keep Speech open on the right side of your screen.  Even if you can’t fit two windows open side by side on your desktop, try to leave a little bit that doesn’t overlap. This enables you to rapidly switch between documents and your Speech doc without digging through a host of open windows.

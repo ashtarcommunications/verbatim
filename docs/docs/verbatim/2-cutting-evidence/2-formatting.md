@@ -1,4 +1,8 @@
-
+---
+sidebar_position: 2
+id: formatting
+title: Formatting Functions
+---
 
 Paste Text (default F2)
 This macro will paste text from the clipboard as “unformatted” text. This should almost always be used rather than Ctrl+V for pasting in card text. A failure to use unformatted text will quickly add extraneous headings and styles, making the Navigation Pane unusable and slowing down your document.

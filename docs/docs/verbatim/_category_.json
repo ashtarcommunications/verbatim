@@ -1,8 +1,9 @@
 {
-  "label": "Verbatim",
-  "position": 2,
+  "label": "Verbatim for Desktop",
+  "position": 1,
+  "collapsed": false,
   "link": {
-    "type": "generated-index",
-    "description": "Verbatim online manual"
+    "type": "doc",
+    "id": "verbatim/getting-started/whats-new"
   }
 }
