@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmQuickCards 
    Caption         =   "Quick Cards"
-   ClientHeight    =   6225
+   ClientHeight    =   7410
    ClientLeft      =   120
    ClientTop       =   465
    ClientWidth     =   8460
@@ -17,6 +17,8 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub UserForm_Initialize()
+    Dim Profile As String
+    
     On Error GoTo Handler
     
     Globals.InitializeGlobals
@@ -28,6 +30,22 @@ Private Sub UserForm_Initialize()
         Me.btnDeleteAll.ForeColor = Globals.RED
         Me.btnClose.ForeColor = Globals.BLUE
     #End If
+      
+    Me.cboQuickCardsProfile.AddItem "Profile 1"
+    Me.cboQuickCardsProfile.AddItem "Profile 2"
+    Me.cboQuickCardsProfile.AddItem "Profile 3"
+    Me.cboQuickCardsProfile.AddItem "Profile 4"
+    Me.cboQuickCardsProfile.AddItem "Profile 5"
+    Me.cboQuickCardsProfile.AddItem "Profile 6"
+    Me.cboQuickCardsProfile.AddItem "Profile 7"
+    Me.cboQuickCardsProfile.AddItem "Profile 8"
+    Me.cboQuickCardsProfile.AddItem "Profile 9"
+    Me.cboQuickCardsProfile.AddItem "Profile 10"
+    
+    Profile = GetSetting("Verbatim", "QuickCards", "QuickCardsProfile", "Verbatim1")
+    If Not Profile Like "Verbatim*" Then Profile = "Verbatim1"
+    
+    Me.cboQuickCardsProfile.Value = Replace(Profile, "Verbatim", "Profile ")
     
     PopulateQuickCards
         
@@ -37,7 +55,15 @@ Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
+Private Sub cboQuickCardsProfile_Change()
+    Dim Profile As String
+    Profile = Replace(Me.cboQuickCardsProfile.Value, "Profile ", "Verbatim")
+    SaveSetting "Verbatim", "QuickCards", "QuickCardsProfile", Profile
+    PopulateQuickCards
+End Sub
+
 Private Sub PopulateQuickCards()
+    Dim Profile As String
     Dim t As Template
     Dim i As Long
     Dim j As Long
@@ -47,13 +73,16 @@ Private Sub PopulateQuickCards()
     
     Me.lboxQuickCards.Clear
     
+    Profile = GetSetting("Verbatim", "QuickCards", "QuickCardsProfile", "Verbatim1")
+    If Not Profile Like "Verbatim*" Then Profile = "Verbatim1"
+    
     Set t = ActiveDocument.AttachedTemplate
 
     ' Populate the list of current Quick Cards in the Custom 1 / Verbatim gallery
     For i = 1 To t.BuildingBlockTypes.Count
         If t.BuildingBlockTypes.Item(i).Name = "Custom 1" Then
             For j = 1 To t.BuildingBlockTypes.Item(i).Categories.Count
-                If t.BuildingBlockTypes.Item(i).Categories.Item(j).Name = "Verbatim" Then
+                If t.BuildingBlockTypes.Item(i).Categories.Item(j).Name = Profile Then
                     For k = 1 To t.BuildingBlockTypes.Item(i).Categories.Item(j).BuildingBlocks.Count
                         Me.lboxQuickCards.AddItem
                         Me.lboxQuickCards.List(Me.lboxQuickCards.ListCount - 1, 0) = t.BuildingBlockTypes.Item(i).Categories.Item(j).BuildingBlocks.Item(k).Name

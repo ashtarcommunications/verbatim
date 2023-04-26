@@ -2,6 +2,7 @@ Attribute VB_Name = "QuickCards"
 Option Explicit
 
 Public Sub AddQuickCard()
+    Dim Profile As String
     Dim t As Template
     Dim Name As String
     Dim i As Long
@@ -17,13 +18,16 @@ Public Sub AddQuickCard()
     
     Name = InputBox("What shortcut word/phrase do you want to use for your Quick Card? Usually this is the author's last name.", "Add Quick Card", "")
     If Name = "" Then Exit Sub
+    
+    Profile = GetSetting("Verbatim", "QuickCards", "QuickCardsProfile", "Verbatim1")
+    If Not Profile Like "Verbatim*" Then Profile = "Verbatim1"
 
     Set t = ActiveDocument.AttachedTemplate
           
     For i = 1 To t.BuildingBlockTypes.Count
         If t.BuildingBlockTypes.Item(i).Name = "Custom 1" Then
             For j = 1 To t.BuildingBlockTypes.Item(i).Categories.Count
-                If t.BuildingBlockTypes.Item(i).Categories.Item(j).Name = "Verbatim" Then
+                If t.BuildingBlockTypes.Item(i).Categories.Item(j).Name = Profile Then
                     For k = 1 To t.BuildingBlockTypes.Item(i).Categories.Item(j).BuildingBlocks.Count
                         If LCase$(t.BuildingBlockTypes.Item(i).Categories.Item(j).BuildingBlocks.Item(k).Name) = LCase$(Name) Then
                             MsgBox "There's already a Quick Card with that name, try again with a different name!", vbOKOnly, "Failed To Add Quick Card"
@@ -35,7 +39,7 @@ Public Sub AddQuickCard()
         End If
     Next i
     
-    t.BuildingBlockEntries.Add Name, wdTypeCustom1, "Verbatim", Selection.Range
+    t.BuildingBlockEntries.Add Name, wdTypeCustom1, Profile, Selection.Range
     
     t.Save
 
@@ -59,6 +63,7 @@ Public Sub InsertCurrentQuickCard()
 End Sub
 
 Public Sub InsertQuickCard(ByRef QuickCardName As String)
+    Dim Profile As String
     Dim t As Template
     Dim i As Long
     Dim j As Long
@@ -66,12 +71,15 @@ Public Sub InsertQuickCard(ByRef QuickCardName As String)
     
     On Error GoTo Handler
     
+    Profile = GetSetting("Verbatim", "QuickCards", "QuickCardsProfile", "Verbatim1")
+    If Not Profile Like "Verbatim*" Then Profile = "Verbatim1"
+    
     Set t = ActiveDocument.AttachedTemplate
     
     For i = 1 To t.BuildingBlockTypes.Count
         If t.BuildingBlockTypes.Item(i).Name = "Custom 1" Then
             For j = 1 To t.BuildingBlockTypes.Item(i).Categories.Count
-                If t.BuildingBlockTypes.Item(i).Categories.Item(j).Name = "Verbatim" Then
+                If t.BuildingBlockTypes.Item(i).Categories.Item(j).Name = Profile Then
                     For k = 1 To t.BuildingBlockTypes.Item(i).Categories.Item(j).BuildingBlocks.Count
                         If LCase$(t.BuildingBlockTypes.Item(i).Categories.Item(j).BuildingBlocks.Item(k).Name) = LCase$(QuickCardName) Then
                             t.BuildingBlockTypes.Item(i).Categories.Item(j).BuildingBlocks.Item(k).Insert Selection.Range, True
@@ -91,6 +99,7 @@ Handler:
 End Sub
 
 Public Sub DeleteQuickCard(Optional ByRef QuickCardName As String)
+    Dim Profile As String
     Dim t As Template
     Dim i As Long
     Dim j As Long
@@ -104,13 +113,16 @@ Public Sub DeleteQuickCard(Optional ByRef QuickCardName As String)
         If MsgBox("Are you sure you want to delete all saved Quick Cards? This cannot be reversed.", vbYesNo, "Are you sure?") = vbNo Then Exit Sub
     End If
     
+    Profile = GetSetting("Verbatim", "QuickCards", "QuickCardsProfile", "Verbatim1")
+    If Not Profile Like "Verbatim*" Then Profile = "Verbatim1"
+    
     Set t = ActiveDocument.AttachedTemplate
 
     ' Delete all building blocks in the Custom 1/Verbatim category
     For i = 1 To t.BuildingBlockTypes.Count
         If t.BuildingBlockTypes.Item(i).Name = "Custom 1" Then
             For j = 1 To t.BuildingBlockTypes.Item(i).Categories.Count
-                If t.BuildingBlockTypes.Item(i).Categories.Item(j).Name = "Verbatim" Then
+                If t.BuildingBlockTypes.Item(i).Categories.Item(j).Name = Profile Then
                     For k = t.BuildingBlockTypes.Item(i).Categories.Item(j).BuildingBlocks.Count To 1 Step -1
                         ' If name provided, delete just that building block, otherwise delete everything in the category
                         If QuickCardName <> "" Or IsNull(QuickCardName) Then
@@ -140,6 +152,7 @@ End Sub
 '@Ignore ProcedureCanBeWrittenAsFunction
 Public Sub GetQuickCardsContent(ByVal c As IRibbonControl, ByRef returnedVal As Variant)
 ' Get content for dynamic menu for Quick Cards
+    Dim Profile As String
     Dim t As Template
     Dim i As Long
     Dim j As Long
@@ -150,6 +163,9 @@ Public Sub GetQuickCardsContent(ByVal c As IRibbonControl, ByRef returnedVal As 
        
     On Error Resume Next
         
+    Profile = GetSetting("Verbatim", "QuickCards", "QuickCardsProfile", "Verbatim1")
+    If Not Profile Like "Verbatim*" Then Profile = "Verbatim1"
+        
     Set t = ActiveDocument.AttachedTemplate
 
     ' Start the menu
@@ -159,7 +175,7 @@ Public Sub GetQuickCardsContent(ByVal c As IRibbonControl, ByRef returnedVal As 
     For i = 1 To t.BuildingBlockTypes.Count
         If t.BuildingBlockTypes.Item(i).Name = "Custom 1" Then
             For j = 1 To t.BuildingBlockTypes.Item(i).Categories.Count
-                If t.BuildingBlockTypes.Item(i).Categories.Item(j).Name = "Verbatim" Then
+                If t.BuildingBlockTypes.Item(i).Categories.Item(j).Name = Profile Then
                     For k = 1 To t.BuildingBlockTypes.Item(i).Categories.Item(j).BuildingBlocks.Count
                          QuickCardName = t.BuildingBlockTypes.Item(i).Categories.Item(j).BuildingBlocks.Item(k).Name
                          DisplayName = Strings.OnlySafeChars(QuickCardName)

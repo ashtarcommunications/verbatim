@@ -62,15 +62,6 @@ Public Sub PasteOCR()
             End If
         End If
         
-        If Filesystem.FileExists(Environ$("SYSTEMROOT") & Application.PathSeparator & "sysnative" & Application.PathSeparator & "SnippingTool.exe") = True Then
-            SnippingToolPath = Environ$("SYSTEMROOT") & Application.PathSeparator & "sysnative" & Application.PathSeparator & "SnippingTool.exe"
-        ElseIf Filesystem.FileExists(Environ$("SYSTEMROOT") & Application.PathSeparator & "System32" & Application.PathSeparator & "SnippingTool.exe") = True Then
-            SnippingToolPath = Environ$("SYSTEMROOT") & Application.PathSeparator & "System32" & Application.PathSeparator & "SnippingTool.exe"
-        Else
-            MsgBox "The Windows Snipping Tool must be installed to run OCR"
-            Exit Sub
-        End If
-        
         If Filesystem.FileExists(Environ$("ProgramW6432") _
             & Application.PathSeparator _
             & "Verbatim" _
@@ -97,8 +88,24 @@ Public Sub PasteOCR()
             Exit Sub
         End If
         
-        ' Take a screenshot with the snipping tool
-        CreateObject("WSCript.Shell").Run SnippingToolPath & " /clip", 0, True
+        ' Take a screenshot with the snipping tool - have to try alternate paths because FSO can't always find SnippingTool.exe
+        On Error Resume Next
+        SnippingToolPath = Environ$("SYSTEMROOT") & Application.PathSeparator & "sysnative" & Application.PathSeparator & "SnippingTool.exe"
+        CreateObject("WScript.Shell").Run SnippingToolPath & " /clip", 0, True
+        If Err.Number <> 0 Then
+            Err.Clear
+            SnippingToolPath = Environ$("SYSTEMROOT") & Application.PathSeparator & "System32" & Application.PathSeparator & "SnippingTool.exe"
+            CreateObject("WScript.Shell").Run SnippingToolPath & " /clip", 0, True
+        End If
+        If Err.Number <> 0 Then
+            Err.Clear
+            CreateObject("WScript.Shell").Run "SnippingTool.exe" & " /clip", 0, True
+        End If
+        If Err.Number <> 0 Then
+            MsgBox "Error running the Windows Snipping Tool. Is it installed?"
+            Exit Sub
+        End If
+        On Error GoTo Handler
         
         ' Save screenshot from clipboard to temp file
         TempImagePath = Environ$("TEMP") & Application.PathSeparator & "ocrtemp.jpg"
