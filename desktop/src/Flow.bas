@@ -22,6 +22,8 @@ Public Sub SendToFlow(Optional ByVal SplitParagraphs As Boolean, Optional ByVal 
     Dim w As Variant
     Dim Flow As Object
     Dim p As Paragraph
+    Dim Cite As String
+    Dim r As Range
     Dim i As Long
     Dim Overwrite As Boolean
     Dim SendText As String
@@ -77,11 +79,43 @@ Public Sub SendToFlow(Optional ByVal SplitParagraphs As Boolean, Optional ByVal 
         ' Copy each paragraph to a separate cell
         For Each p In Selection.Paragraphs
             ' In HeadingsOnly mode, just send headings and cites
-            If HeadingsOnly <> True Or (p.OutlineLevel <> wdOutlineLevelBodyText Or Paperless.IdentifyCiteStyle(p)) Then
+            If HeadingsOnly <> True Or p.OutlineLevel <> wdOutlineLevelBodyText Then
+                ' Add extra space for headings
+                If p.OutlineLevel <> wdOutlineLevelBodyText And i > 0 Then
+                    Flow.ActiveSheet.Application.ActiveCell.Offset(1, 0).Select
+                End If
                 Flow.ActiveSheet.Cells(Flow.ActiveSheet.Application.ActiveCell.Row, Flow.ActiveSheet.Application.ActiveCell.Column).Value = p.Range.Text
                 Flow.ActiveSheet.Application.ActiveCell.Offset(1, 0).Select
-                i = i + 1
+            ElseIf Paperless.IdentifyCiteStyle(p) = True Then
+                Cite = ""
+                Set r = p.Range
+                With r.Find
+                    .ClearFormatting
+                    .Replacement.ClearFormatting
+                    .Text = ""
+                    .Forward = True
+                    .Wrap = wdFindStop
+                    .Format = True
+                    .Style = "Cite"
+                    .MatchCase = False
+                    .MatchWholeWord = False
+                    .MatchWildcards = False
+                    .MatchSoundsLike = False
+                    .MatchAllWordForms = False
+                    
+                    Do While .Execute(Forward:=True) = True And r.InRange(p.Range)
+                        Cite = Cite & r.Text & " "
+                    Loop
+
+                    .ClearFormatting
+                    .Replacement.ClearFormatting
+                End With
+                Set r = Nothing
+
+                Flow.ActiveSheet.Cells(Flow.ActiveSheet.Application.ActiveCell.Row, Flow.ActiveSheet.Application.ActiveCell.Column).Value = Trim$(Cite)
+                Flow.ActiveSheet.Application.ActiveCell.Offset(1, 0).Select
             End If
+            i = i + 1
         Next p
     Else
         ' Copy selected content into the current cell
@@ -89,15 +123,58 @@ Public Sub SendToFlow(Optional ByVal SplitParagraphs As Boolean, Optional ByVal 
             If MsgBox("There is already text where you're sending.  Are you sure you want to overwrite it?", vbOKCancel) = vbCancel Then Exit Sub
         End If
         
+        i = 0
+
         For Each p In Selection.Paragraphs
-            If HeadingsOnly <> True Or (p.OutlineLevel <> wdOutlineLevelBodyText Or Paperless.IdentifyCiteStyle(p)) Then
+            If HeadingsOnly <> True Or p.OutlineLevel <> wdOutlineLevelBodyText Then
+                ' Add extra space for headings
+                If p.OutlineLevel <> wdOutlineLevelBodyText And i > 1 Then
+                    #If Mac Then
+                        SendText = SendText & Chr(13)
+                    #Else
+                        SendText = SendText & Chr$(10)
+                    #End If
+                End If
+
                 ' Use correct linebreak for each OS
                 #If Mac Then
                     SendText = SendText & p.Range.Text & Chr(13)
                 #Else
                     SendText = SendText & p.Range.Text & Chr$(10)
                 #End If
+            ElseIf Paperless.IdentifyCiteStyle(p) = True Then
+                Cite = ""
+                Set r = p.Range
+                With r.Find
+                    .ClearFormatting
+                    .Replacement.ClearFormatting
+                    .Text = ""
+                    .Forward = True
+                    .Wrap = wdFindStop
+                    .Format = True
+                    .Style = "Cite"
+                    .MatchCase = False
+                    .MatchWholeWord = False
+                    .MatchWildcards = False
+                    .MatchSoundsLike = False
+                    .MatchAllWordForms = False
+                    
+                    Do While .Execute(Forward:=True) = True And r.InRange(p.Range)
+                        Cite = Cite & r.Text & " "
+                    Loop
+
+                    .ClearFormatting
+                    .Replacement.ClearFormatting
+                End With
+                Set r = Nothing
+                
+                #If Mac Then
+                    SendText = SendText & Trim(Cite) & Chr(13)
+                #Else
+                    SendText = SendText & Trim$(Cite) & Chr$(10)
+                #End If
             End If
+            i = i + 1
         Next p
 
         Flow.ActiveSheet.Cells(Flow.ActiveSheet.Application.ActiveCell.Row, Flow.ActiveSheet.Application.ActiveCell.Column).Value = SendText

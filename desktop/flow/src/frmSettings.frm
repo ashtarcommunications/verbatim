@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmSettings 
    Caption         =   "Settings"
-   ClientHeight    =   7215
+   ClientHeight    =   7710
    ClientLeft      =   120
    ClientTop       =   465
    ClientWidth     =   6360
@@ -28,6 +28,7 @@ Private Sub UserForm_Initialize()
     #End If
     
     Me.chkInsertMode.Value = GetSetting("Verbatim", "Flow", "InsertMode", False)
+    Me.chkExtendWithArrow.Value = GetSetting("Verbatim", "Flow", "ExtendWithArrow", False)
     Me.chkAutoLabelFlows.Value = GetSetting("Verbatim", "Flow", "AutoLabelFlows", True)
     Me.chkDisableSheetPopup.Value = GetSetting("Verbatim", "Flow", "DisableSheetPopup", False)
     Me.chkFreezeSpeechNames.Value = GetSetting("Verbatim", "Flow", "FreezeSpeechNames", True)
@@ -80,6 +81,7 @@ End Sub
 
 Private Sub btnSave_Click()
     SaveSetting "Verbatim", "Flow", "InsertMode", Me.chkInsertMode.Value
+    SaveSetting "Verbatim", "Flow", "ExtendWithArrow", Me.chkExtendWithArrow.Value
     SaveSetting "Verbatim", "Flow", "AutoLabelFlows", Me.chkAutoLabelFlows.Value
     SaveSetting "Verbatim", "Flow", "DisableSpeechPopup", Me.chkDisableSheetPopup.Value
     SaveSetting "Verbatim", "Flow", "FreezeSpeechNames", Me.chkFreezeSpeechNames.Value

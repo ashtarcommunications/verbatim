@@ -26,6 +26,8 @@ Public Sub ResetKeyboardShortcuts()
     Application.OnKey Chr$(Settings.GetTildeCode), "Speech.SendToSpeechCursor"
     Application.OnKey "%" & Chr$(Settings.GetTildeCode), "Speech.SendToSpeechEnd"
         
+    Application.OnKey Modifier & "%+v", "QuickAnalytics.InsertCurrentQuickAnalytic"
+        
     Application.OnKey "{F3}", "Flow.InsertCellAbove"
     Application.OnKey "%{F3}", "Flow.InsertCellBelow"
     
@@ -81,6 +83,8 @@ Public Sub RemoveKeyBindings()
     ' Leaving off second parameter to Application.OnKey clears the key binding
     Application.OnKey Chr$(Settings.GetTildeCode)
     Application.OnKey "%" & Chr$(Settings.GetTildeCode)
+    
+    Application.OnKey Modifier & "%+v"
     
     Application.OnKey "{F2}"
     

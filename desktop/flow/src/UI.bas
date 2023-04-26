@@ -107,7 +107,7 @@ Public Sub GetSwitchSpeechContent(ByVal c As IRibbonControl, ByRef returnedVal A
     ' Start the menu
     xml = "<menu xmlns=""http://schemas.microsoft.com/office/2006/01/customui"">"
     
-    SpeechNames = Split(GetSetting("Verbatim", "Flow", "SpeechNames", "1AC,1NC,2AC,Block,1AR,2NC,2AR"), ",")
+    SpeechNames = Split(GetSetting("Verbatim", "Flow", "SpeechNames", "1AC,1NC,2AC,Block,1AR,2NR,2AR"), ",")
     For Each s In SpeechNames
         xml = xml & "<button id=""SwitchSpeech" & Replace(Strings.OnlySafeChars(s), " ", "") & """ label=""" & s & """ tag=""" & s & """ onAction=""Flow.SwitchSpeech"" imageMso=""FillRight"" />"
     Next s

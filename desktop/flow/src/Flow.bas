@@ -147,12 +147,12 @@ Public Sub ToggleHighlighting()
 End Sub
 
 Public Sub ToggleEvidence()
-    If ActiveCell.Borders.Weight = xlThick Then
-        ActiveCell.Borders.LineStyle = xlLineStyleNone ' Reset to default borders
+    If ActiveCell.Borders.[_Default](xlEdgeBottom).Weight = xlThick Then
+        ActiveCell.Borders.[_Default](xlEdgeBottom).LineStyle = xlLineStyleNone ' Reset to default borders
     Else
-        ActiveCell.Borders.LineStyle = xlContinuous
-        ActiveCell.Borders.Weight = xlThick
-        ActiveCell.Borders.Color = Globals.GREEN
+        ActiveCell.Borders.[_Default](xlEdgeBottom).LineStyle = xlContinuous
+        ActiveCell.Borders.[_Default](xlEdgeBottom).Weight = xlThick
+        ActiveCell.Borders.[_Default](xlEdgeBottom).Color = Globals.GREEN
     End If
 End Sub
 
@@ -166,7 +166,7 @@ Public Sub ToggleGroup()
     Next c
 
     If Grouped Then
-        Selection.Borders.LineStyle = xlLineStyleNone
+        Selection.Borders(xlEdgeRight).LineStyle = xlLineStyleNone
     Else
         Selection.Borders(xlEdgeRight).Weight = xlThick
     End If
@@ -193,6 +193,15 @@ Public Sub SwitchSpeech(ByVal c As IRibbonControl)
             s.Cells(2, col).Select
         End If
     Next s
+    
+    ' Switch back to first non-CX tab
+    If ActiveWorkbook.Sheets.Count > 1 Then
+        If ActiveWorkbook.Sheets.[_Default](2).Name = "CX" And ActiveWorkbook.Sheets.Count > 2 Then
+            ActiveWorkbook.Sheets.[_Default](3).Activate
+        Else
+            ActiveWorkbook.Sheets.[_Default](2).Activate
+        End If
+    End If
 End Sub
 
 Public Sub PasteAsText()
@@ -217,7 +226,12 @@ Public Sub ExtendArgument()
     End If
     
     For Each c In Selection
-        ActiveSheet.Cells(c.Row, c.Column + 2).Value = c.Value
+        If GetSetting("Verbatim", "Flow", "ExtendWithArrow", False) = True Then
+            ActiveSheet.Cells(c.Row, c.Column).Value = ActiveSheet.Cells(c.Row, c.Column).Value & vbCrLf & ChrW$(8594) & ChrW$(8594) & ChrW$(8594)
+            ActiveSheet.Cells(c.Row, c.Column + 2).Value = ChrW$(8594) & ChrW$(8594) & ChrW$(8594)
+        Else
+            ActiveSheet.Cells(c.Row, c.Column + 2).Value = c.Value
+        End If
     Next c
 End Sub
 

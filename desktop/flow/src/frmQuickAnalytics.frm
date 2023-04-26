@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmQuickAnalytics 
    Caption         =   "Quick Analytics"
-   ClientHeight    =   5535
+   ClientHeight    =   7110
    ClientLeft      =   120
    ClientTop       =   465
    ClientWidth     =   8370
@@ -29,6 +29,19 @@ Private Sub UserForm_Initialize()
         Me.btnClose.ForeColor = Globals.BLUE
     #End If
     
+    Me.cboQuickAnalyticsProfile.AddItem "Profile 1"
+    Me.cboQuickAnalyticsProfile.AddItem "Profile 2"
+    Me.cboQuickAnalyticsProfile.AddItem "Profile 3"
+    Me.cboQuickAnalyticsProfile.AddItem "Profile 4"
+    Me.cboQuickAnalyticsProfile.AddItem "Profile 5"
+    Me.cboQuickAnalyticsProfile.AddItem "Profile 6"
+    Me.cboQuickAnalyticsProfile.AddItem "Profile 7"
+    Me.cboQuickAnalyticsProfile.AddItem "Profile 8"
+    Me.cboQuickAnalyticsProfile.AddItem "Profile 9"
+    Me.cboQuickAnalyticsProfile.AddItem "Profile 10"
+    
+    Me.cboQuickAnalyticsProfile.Value = GetSetting("Verbatim", "Flow", "QuickAnalyticsProfile", "Profile 1")
+    
     PopulateQuickAnalytics
         
     Exit Sub
@@ -37,7 +50,13 @@ Handler:
     MsgBox "Error " & Err.Number & ": " & Err.Description
 End Sub
 
+Private Sub cboQuickAnalyticsProfile_Change()
+    SaveSetting "Verbatim", "Flow", "QuickAnalyticsProfile", Me.cboQuickAnalyticsProfile.Value
+    PopulateQuickAnalytics
+End Sub
+
 Private Sub PopulateQuickAnalytics()
+    Dim Profile As Long
     Dim xl As Object
     Dim wb As Workbook
     Dim i As Long
@@ -62,12 +81,15 @@ Private Sub PopulateQuickAnalytics()
     
     Me.lboxQuickAnalytics.Clear
     
-    For i = 1 To wb.Sheets.[_Default](1).UsedRange.Columns.Count
-        QuickAnalyticName = wb.Sheets.[_Default](1).Cells(1, i).Value
+    Profile = CLng(Replace(GetSetting("Verbatim", "Flow", "QuickAnalyticsProfile", "Profile 1"), "Profile ", ""))
+    If Profile < 1 Then Profile = 1
+    
+    For i = 1 To wb.Sheets.[_Default](Profile).UsedRange.Columns.Count
+        QuickAnalyticName = wb.Sheets.[_Default](Profile).Cells(1, i).Value
         If QuickAnalyticName <> "" Then
             Me.lboxQuickAnalytics.AddItem
             Me.lboxQuickAnalytics.List(Me.lboxQuickAnalytics.ListCount - 1, 0) = QuickAnalyticName
-            Me.lboxQuickAnalytics.List(Me.lboxQuickAnalytics.ListCount - 1, 1) = Left$(wb.Sheets.[_Default](1).Cells(2, i).Value, 50) & "..."
+            Me.lboxQuickAnalytics.List(Me.lboxQuickAnalytics.ListCount - 1, 1) = Left$(wb.Sheets.[_Default](Profile).Cells(2, i).Value, 50) & "..."
         End If
     Next i
     

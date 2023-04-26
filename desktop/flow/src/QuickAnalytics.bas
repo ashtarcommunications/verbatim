@@ -18,6 +18,7 @@ Public Sub CreateDebateAnalyticsWorkbook()
 
         Application.ScreenUpdating = False
         Set wb = xl.Workbooks.Add
+        wb.Sheets.Add Count:=9 ' Ensure 10 sheets for different profiles
         wb.SaveAs Application.TemplatesPath & "DebateAnalytics.xlsx"
         wb.Close SaveChanges:=True
         #If Mac Then
@@ -37,15 +38,12 @@ Public Sub CreateDebateAnalyticsWorkbook()
 End Sub
 
 Public Sub AddQuickAnalytic()
+    Dim Profile As Long
     Dim wb As Workbook
     Dim Name As String
     Dim OpenCol As Long
     
     On Error GoTo Handler
-    
-    ' Ensure the workbook exists before accessing it
-    QuickAnalytics.CreateDebateAnalyticsWorkbook
-    Set wb = GetObject(Application.TemplatesPath & "DebateAnalytics.xlsx")
     
     If Not Selection.Areas.Count = 1 Then
         MsgBox "Selection is not contiguous - please select only adjacent cells and try again.", vbOKOnly
@@ -62,16 +60,23 @@ Public Sub AddQuickAnalytic()
         Exit Sub
     End If
     
+    ' Ensure the workbook exists before accessing it
+    QuickAnalytics.CreateDebateAnalyticsWorkbook
+    Set wb = GetObject(Application.TemplatesPath & "DebateAnalytics.xlsx")
+    
     Name = InputBox("What shortcut word/phrase do you want to use for your Quick Analytic? This should be something short and memorable.", "Add Quick Analytic", "")
     If Name = "" Then Exit Sub
 
-    If Not Application.WorksheetFunction.CountIf(wb.Sheets.[_Default](1).Rows(1), Name) = 0 Then
+    Profile = CLng(Replace(GetSetting("Verbatim", "Flow", "QuickAnalyticsProfile", "Profile 1"), "Profile ", ""))
+    If Profile < 1 Then Profile = 1
+
+    If Not Application.WorksheetFunction.CountIf(wb.Sheets.[_Default](Profile).Rows(1), Name) = 0 Then
         MsgBox "There's already a Quick Analytic with that name, try again with a different name!", vbOKOnly, "Failed To Add Quick Analytic"
         Exit Sub
     End If
 
     ' Find the first unused column in the Analytics sheet
-    OpenCol = Utility.FirstEmptyColumn(wb.Sheets.[_Default](1))
+    OpenCol = Utility.FirstEmptyColumn(wb.Sheets.[_Default](Profile))
     
     ' This should never happen in normal usage, but just in case
     If OpenCol = 0 Then
@@ -80,10 +85,8 @@ Public Sub AddQuickAnalytic()
     End If
     
     ' Copy selected range to first open column in new sheet
-    wb.Sheets.[_Default](1).Cells(1, OpenCol).Value = Name
-    Selection.Copy destination:=wb.Sheets.[_Default](1).Cells(2, OpenCol)
-
-    'Ribbon.RefreshRibbon
+    wb.Sheets.[_Default](Profile).Cells(1, OpenCol).Value = Name
+    Selection.Copy destination:=wb.Sheets.[_Default](Profile).Cells(2, OpenCol)
     
     wb.Close SaveChanges:=True
     Set wb = Nothing
@@ -103,6 +106,7 @@ Public Sub InsertCurrentQuickAnalytic()
 End Sub
 
 Public Sub InsertQuickAnalytic(ByRef QuickCardAnalyticName As String)
+    Dim Profile As Long
     Dim wb As Workbook
     Dim c As Long
     Dim i As Long
@@ -113,9 +117,12 @@ Public Sub InsertQuickAnalytic(ByRef QuickCardAnalyticName As String)
     QuickAnalytics.CreateDebateAnalyticsWorkbook
     Set wb = GetObject(Application.TemplatesPath & "DebateAnalytics.xlsx")
     
+    Profile = CLng(Replace(GetSetting("Verbatim", "Flow", "QuickAnalyticsProfile", "Profile 1"), "Profile ", ""))
+    If Profile < 1 Then Profile = 1
+    
     ' Find the Quick Analytic with the specified name in the first row
-    For i = 1 To wb.Sheets.[_Default](1).UsedRange.Columns.Count
-        If StrComp(LCase$(wb.Sheets.[_Default](1).Cells(1, i).Value), LCase$(QuickCardAnalyticName), vbTextCompare) = 0 Then
+    For i = 1 To wb.Sheets.[_Default](Profile).UsedRange.Columns.Count
+        If StrComp(LCase$(wb.Sheets.[_Default](Profile).Cells(1, i).Value), LCase$(QuickCardAnalyticName), vbTextCompare) = 0 Then
             c = i
             Exit For
         End If
@@ -123,8 +130,8 @@ Public Sub InsertQuickAnalytic(ByRef QuickCardAnalyticName As String)
     
     ' If the Quick Analytic was found, copy the rest of the column to the active cell
     If c > 0 Then
-        LastRow = wb.Sheets.[_Default](1).Cells(wb.Sheets.[_Default](1).Rows.Count, c).End(xlUp).Row
-        wb.Sheets.[_Default](1).Range(wb.Sheets.[_Default](1).Cells(2, c), wb.Sheets.[_Default](1).Cells(LastRow, c)).Copy destination:=ActiveCell
+        LastRow = wb.Sheets.[_Default](Profile).Cells(wb.Sheets.[_Default](Profile).Rows.Count, c).End(xlUp).Row
+        wb.Sheets.[_Default](Profile).Range(wb.Sheets.[_Default](Profile).Cells(2, c), wb.Sheets.[_Default](Profile).Cells(LastRow, c)).Copy destination:=ActiveCell
     Else
         Application.StatusBar = "No Quick Analytic with that name found!"
     End If
@@ -140,16 +147,20 @@ Handler:
 End Sub
 
 Public Sub DeleteAllQuickAnalytics()
+    Dim Profile As Long
     Dim wb As Workbook
     
     On Error GoTo Handler
     
-    If MsgBox("Are you sure you want to delete all saved Quick Analytics? This cannot be reversed.", vbYesNo, "Are you sure?") = vbNo Then Exit Sub
+    If MsgBox("Are you sure you want to delete all saved Quick Analytics in this profile? This cannot be reversed.", vbYesNo, "Are you sure?") = vbNo Then Exit Sub
     
     QuickAnalytics.CreateDebateAnalyticsWorkbook
     Set wb = GetObject(Application.TemplatesPath & "DebateAnalytics.xlsx")
     
-    wb.Sheets.[_Default](1).Cells.Clear
+    Profile = CLng(Replace(GetSetting("Verbatim", "Flow", "QuickAnalyticsProfile", "Profile 1"), "Profile ", ""))
+    If Profile < 1 Then Profile = 1
+    
+    wb.Sheets.[_Default](Profile).Cells.Clear
 
     wb.Close SaveChanges:=True
     Set wb = Nothing
@@ -162,6 +173,7 @@ Handler:
 End Sub
 
 Public Sub DeleteQuickAnalytic(Optional ByRef QuickAnalyticName As String)
+    Dim Profile As Long
     Dim wb As Workbook
     Dim c As Long
     Dim i As Long
@@ -175,9 +187,12 @@ Public Sub DeleteQuickAnalytic(Optional ByRef QuickAnalyticName As String)
     QuickAnalytics.CreateDebateAnalyticsWorkbook
     Set wb = GetObject(Application.TemplatesPath & "DebateAnalytics.xlsx")
     
+    Profile = CLng(Replace(GetSetting("Verbatim", "Flow", "QuickAnalyticsProfile", "Profile 1"), "Profile ", ""))
+    If Profile < 1 Then Profile = 1
+    
     ' Find the Quick Analytic with the specified name in the first row
-    For i = 1 To wb.Sheets.[_Default](1).UsedRange.Columns.Count
-        If StrComp(LCase$(wb.Sheets.[_Default](1).Cells(1, i).Value), LCase$(QuickAnalyticName), vbTextCompare) = 0 Then
+    For i = 1 To wb.Sheets.[_Default](Profile).UsedRange.Columns.Count
+        If StrComp(LCase$(wb.Sheets.[_Default](Profile).Cells(1, i).Value), LCase$(QuickAnalyticName), vbTextCompare) = 0 Then
             c = i
             Exit For
         End If
@@ -185,7 +200,7 @@ Public Sub DeleteQuickAnalytic(Optional ByRef QuickAnalyticName As String)
     
     ' If the column was found, delete it
     If c > 0 Then
-        wb.Sheets.[_Default](1).Columns(c).Delete
+        wb.Sheets.[_Default](Profile).Columns(c).Delete
     End If
         
     wb.Close SaveChanges:=True
@@ -202,6 +217,7 @@ End Sub
 '@Ignore ProcedureCanBeWrittenAsFunction
 Public Sub GetQuickAnalyticsContent(ByVal c As IRibbonControl, ByRef returnedVal As Variant)
 ' Get content for dynamic menu for Quick Analytics
+    Dim Profile As Long
     Dim i As Long
     Dim wb As Workbook
     Dim xml As String
@@ -213,12 +229,15 @@ Public Sub GetQuickAnalyticsContent(ByVal c As IRibbonControl, ByRef returnedVal
     QuickAnalytics.CreateDebateAnalyticsWorkbook
     Set wb = GetObject(Application.TemplatesPath & "DebateAnalytics.xlsx")
 
+    Profile = CLng(Replace(GetSetting("Verbatim", "Flow", "QuickAnalyticsProfile", "Profile 1"), "Profile ", ""))
+    If Profile < 1 Then Profile = 1
+
     ' Start the menu
     xml = "<menu xmlns=""http://schemas.microsoft.com/office/2006/01/customui"">"
     
     ' Populate the list of current Quick Analytics
-    For i = 1 To wb.Sheets.[_Default](1).UsedRange.Columns.Count
-        QuickAnalyticName = wb.Sheets.[_Default](1).Cells(1, i)
+    For i = 1 To wb.Sheets.[_Default](Profile).UsedRange.Columns.Count
+        QuickAnalyticName = wb.Sheets.[_Default](Profile).Cells(1, i)
         DisplayName = Strings.OnlySafeChars(QuickAnalyticName)
                          
         If DisplayName <> "" Then

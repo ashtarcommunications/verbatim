@@ -1,6 +1,3 @@
-# Pre-release QA
-* Submit files for virus checking
-	
 # Future ideas
 * Window arranger for multiple screens
 * Save all style customizations to settings to survive updates
