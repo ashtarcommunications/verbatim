@@ -1,5 +1,5 @@
 Attribute VB_Name = "Condense"
-'@IgnoreModule ObsoleteWhileWendStatement
+'@IgnoreModule EmptyDoWhileBlock, ObsoleteWhileWendStatement
 Option Explicit
 
 '@Ignore ProcedureNotUsed
@@ -21,6 +21,7 @@ Public Sub CondenseCard(Optional ByVal r As Range)
 ' Removes white-space from selection and optionally retains paragraph integrity
 
     Dim CondenseRange As Range
+    Dim r2 As Range
     Dim PilcrowCode As Long
     
     #If Mac Then
@@ -133,25 +134,20 @@ Public Sub CondenseCard(Optional ByVal r As Range)
             End With
     
         Else ' Else, paragraph integrity is off and Pilcrows are off, leave single paragraph marks
+            ' Use duplicate range to prevent runaway find bug
+            Set r2 = CondenseRange
+            
             With CondenseRange.Find
                 .Text = "^p^w"
-                .Execute
                 .Replacement.Text = "^p"
-                Do Until .Found = False
-                    CondenseRange.Select
-                    .Execute Replace:=wdReplaceAll
-                    CondenseRange.Select
-                    .Execute
+                
+                Do While .Execute(Forward:=True, Replace:=wdReplaceAll) And CondenseRange.InRange(r2)
                 Loop
                 
                 .Text = "^p^p"
-                .Execute
                 .Replacement.Text = "^p"
-                Do Until .Found = False
-                    CondenseRange.Select
-                    .Execute Replace:=wdReplaceAll
-                    CondenseRange.Select
-                    .Execute
+                
+                Do While .Execute(Forward:=True, Replace:=wdReplaceAll) And CondenseRange.InRange(r2)
                 Loop
                 
                 .Text = "  "
@@ -162,7 +158,8 @@ Public Sub CondenseCard(Optional ByVal r As Range)
                 CondenseRange.Paragraphs.Item(1).Range.Start = CondenseRange.Start Then _
                 CondenseRange.Characters.Item(1).Delete
             End With
-    
+            
+            Set r2 = Nothing
         End If
     End If
     
@@ -329,4 +326,5 @@ Public Sub ToggleUsePilcrows(ByVal c As IRibbonControl, ByVal pressed As Boolean
 
     Ribbon.RefreshRibbon
 End Sub
+
 
