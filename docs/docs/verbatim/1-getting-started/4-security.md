@@ -24,7 +24,15 @@ For example, on the PC, you can use the dropdown box to switch between macro sec
 
 On the Mac, it will let you toggle your macro security settings:
 
-![PC Setup Tool](../assets/setup-check-mac-1.png)
+![Mac Setup Tool](../assets/setup-check-mac-1.png)
+
+On Windows, running the Setup Check tool may give you a Windows Defender prompt, where you'll have to click "More Information" and then "Run anyway:
+
+![Setup Defender](../assets/setup-defender.png)
+
+You may also be prompted to download and install the .NET runtime:
+
+![Setup .NET](../assets/setup-net-runtime.png)
 
 ## Security Settings
 
