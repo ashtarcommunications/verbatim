@@ -58,7 +58,7 @@ Search works slightly different on PC vs Mac. On the PC, search uses Windows Exp
 
 ![Search](../assets/search-results.png)
 
-Optionally, you can use the Everything Search [Plugin](../plugins) to repeat your search in Everything Search. Clicking the button in the results menu will launch Everything Search with your search terms already loaded. Note that by default Everything only searchs file names/paths, so if you want to also search in the contents of files (which can be slow), you need to manually add `content:` to the beginning of your search in Everything.
+Optionally, you can use the Everything Search [Plugin](./plugins) to repeat your search in Everything Search. Clicking the button in the results menu will launch Everything Search with your search terms already loaded. Note that by default Everything only searchs file names/paths, so if you want to also search in the contents of files (which can be slow), you need to manually add `content:` to the beginning of your search in Everything.
 
 On the Mac, search uses the default Mac OS Spotlight search, which may have mixed results searching in file content.
 
