@@ -6,17 +6,18 @@ title: Requirements
 
 # Requirements
 
-Verbatim 6 requires a full desktop version of Word (PC or Mac) with support for Visual Basic for Applications (VBA) Macros.
+Verbatim 6 requires a full desktop version of Word with support for Visual Basic for Applications (VBA) Macros. Almost all recent versions of Office (PC or Mac) will work fine.
 
-It is designed for use with Word 2019+/Office 365. It likely works with Word 2016 or even earlier versions, but is untested.
+It was designed using Word 2019+/Office 365. It likely works with Word 2016 or even earlier versions, but hasn't been thoroughly tested with earlier versions.
 
-## Incompatible versions
+## Incompatible Office versions
+
 The following versions of Word/Office will NOT work with Verbatim:
 * Office Online (in the web browser)
-* Mac Word 2008
-* Mac Word 2011
-* Office 2010 "Starter Pack"
-* Office RT for Surface RT Tablet
+* Microsoft App Store versions of Office
 * Office for iPad
 * Office for Android
-* Microsoft App Store versions of Office
+* Office 2010 "Starter Pack"
+* Office RT for Surface RT Tablet
+* Mac Word 2008
+* Mac Word 2011

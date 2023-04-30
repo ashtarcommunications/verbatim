@@ -6,7 +6,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Paperless Debate',
+  title: 'Paperless Debate Manual',
   tagline: 'Verbatim. openCaselist. More.',
   favicon: 'img/favicon.ico',
 
@@ -15,6 +15,7 @@ const config = {
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
+  trailingSlash: false,
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
@@ -23,6 +24,8 @@ const config = {
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
+
+  scripts: [{src: 'https://analytics.aaronhardy.net/js/script.file-downloads.js', defer: true, 'data-domain': 'docs.paperlessdebate.com'}],
 
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want
@@ -81,6 +84,10 @@ const config = {
               {
                 label: 'GitHub',
                 href: 'https://github.com/ashtarcommunications/verbatim',
+              },
+              {
+                label: 'Donate',
+                href: 'https://paperlessdebate.com/donate',
               },
             ],
           },
