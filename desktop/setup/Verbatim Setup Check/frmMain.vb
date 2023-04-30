@@ -5,7 +5,12 @@ Public Class frmMain
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         If Me.CheckVerbatimInstalled() = True Then
-            Me.lblStatusVerbatim.Text = "Verbatim is installed at version " & Me.GetVerbatimVersion()
+            Dim Version = Me.GetVerbatimVersion()
+            If Version = "x.x.x" Then
+                Me.lblStatusVerbatim.Text = "Verbatim appears to be installed, but version cannot be detected"
+            Else
+                Me.lblStatusVerbatim.Text = "Verbatim is installed at version " & Version
+            End If
             Me.UnblockTemplate()
         Else
             Me.lblStatusVerbatim.Text = "Verbatim is NOT installed"
@@ -82,7 +87,17 @@ Public Class frmMain
     End Function
 
     Private Function GetVerbatimVersion() As String
-        Return Registry.CurrentUser.OpenSubKey("Software\VB And VBA Program Settings\Verbatim\Profile").GetValue("Version")
+        Dim Profile = Registry.CurrentUser.OpenSubKey("Software\VB And VBA Program Settings\Verbatim\Profile", False)
+        If Profile Is Nothing Then
+            Return "x.x.x"
+        Else
+            Dim Version = Profile.GetValue("Version")
+            If Version Is Nothing Then
+                Return "x.x.x"
+            Else
+                Return Version
+            End If
+        End If
     End Function
 
     Private Sub UnblockTemplate()
