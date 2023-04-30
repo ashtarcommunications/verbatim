@@ -25,7 +25,7 @@ const config = {
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
 
-  scripts: [{src: 'https://analytics.aaronhardy.net/js/script.js', defer: true, 'data-domain': 'docs.paperlessdebate.com'}],
+  scripts: [{src: 'https://analytics.aaronhardy.net/js/script.file-downloads.js', defer: true, 'data-domain': 'docs.paperlessdebate.com'}],
 
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want
