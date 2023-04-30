@@ -1,6 +1,7 @@
 ---
 sidebar_position: 1
-id: index
+slug: /
+id: intro
 title: Paperless Debate Manual
 pagination_next: null
 ---
