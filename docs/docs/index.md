@@ -8,7 +8,7 @@ pagination_next: null
 
 # Paperless Debate Manual
 
-This site contains documentation for [Verbatim](https://paperlessdebate.com/verbatim) and associated tools.
+This site contains documentation for [Verbatim](https://paperlessdebate.com) and associated tools.
 
 ![Verbatim Ribbon](./verbatim/assets/ribbon.png)
 
