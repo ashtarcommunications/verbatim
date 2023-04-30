@@ -14,7 +14,9 @@ Getting a virus alert? See [Verbatim and Antivirus](./virus).
 
 ## Automated Installation
 
-The automatic installer for your operating system should work for the majority of people. If you’re using a school computer that disallows installing programs, or have other issues with the installer, you can use the instructions below to perform a manual installation. Then, make sure to read the section on [Security](./security).
+The automatic installer for your operating system should work for the majority of people. Then, make sure to read the section on [Security](./security) to understand how to adjust your macro security settings for use with Verbatim.
+
+On a PC, you also likely want to download the Plugins installer to automatically install all Verbatim [plugins](../advanced/plugins) at once, including the Vebratim Timer, OCR, search and more.
 
 On Mac, you may need to allow the installer to run as an unidentified developer. After running the installer, go to the apple menu, System Preferences - Privacy & Security, and grant an exception for the Verbatim installer.
 
@@ -24,11 +26,11 @@ https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unidentified-dev
 
 After running the automated installer, you can open Verbatim with the shortcut on your Desktop (or Start Menu/Applications folder). Or, you can open Word and select "New from Template" to open a file based on the "Debate" template.
 
-You may also want to run the automated installer for [Verbatim Plugins](../advanced/plugins), such as the timer or OCR.
-
 You may also run one of the Setup Check tools described in the section on [Security](./security) to ensure you've installed Verbatim correctly, and to help you manage your macro security settings.
 
 ## Manual Installation
+
+If you’re using a school computer that disallows installing programs, or have other issues with the installer, you can use the instructions below to perform a manual installation.
 
 Because Verbatim is a template for Word, to "install" it you just need to ensure the template files are placed in the correct folders. There are only 2 important files (3 on Mac):
 
