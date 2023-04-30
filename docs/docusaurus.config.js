@@ -85,6 +85,10 @@ const config = {
                 label: 'GitHub',
                 href: 'https://github.com/ashtarcommunications/verbatim',
               },
+              {
+                label: 'Donate',
+                href: 'https://paperlessdebate.com/donate',
+              },
             ],
           },
         ],
