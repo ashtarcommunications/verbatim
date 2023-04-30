@@ -103,11 +103,18 @@ Public Class frmMain
     Private Sub UnblockTemplate()
         Dim ps As PowerShell = PowerShell.Create()
 
-        ps.AddScript("Unblock-File -Path " & Environ("APPDATA") & "\Microsoft\Templates\Debate.dotm")
-        ps.Invoke()
+        Dim DebatePath = Environ("APPDATA") & "\Microsoft\Templates\Debate.dotm"
+        Dim StartupPath = Environ("APPDATA") & "\Microsoft\Word\STARTUP\DebateStartup.dotm"
 
-        ps.AddScript("Unblock-File -Path " & Environ("APPDATA") & "\Microsoft\Word\STARTUP\DebateStartup.dotm")
-        ps.Invoke()
+        If Not DebatePath Is Nothing Then
+            ps.AddScript("Unblock-File -Path " & DebatePath)
+            ps.Invoke()
+        End If
+
+        If Not StartupPath Is Nothing Then
+            ps.AddScript("Unblock-File -Path " & StartupPath)
+            ps.Invoke()
+        End If
     End Sub
 
     Private Sub cboMacroSecurity_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboMacroSecurity.SelectedIndexChanged

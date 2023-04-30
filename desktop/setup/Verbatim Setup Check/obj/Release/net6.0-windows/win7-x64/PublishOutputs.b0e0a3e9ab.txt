@@ -1,0 +1,2 @@
+C:\Users\Aaron\Projects\verbatim\desktop\setup\Verbatim Setup Check\bin\Release\net6.0-windows\win-x64\publish\VerbatimSetupCheck.pdb
+C:\Users\Aaron\Projects\verbatim\desktop\setup\Verbatim Setup Check\bin\Release\net6.0-windows\win-x64\publish\VerbatimSetupCheck.exe
