@@ -52,8 +52,18 @@ Most of the time, this is because your macro security settings are set too high,
 
 You should also check to make sure that you have Verbatim installed correctly in the Word Templates folder – otherwise someone else’s Verbatim document won’t be able to find it.
 
+### I'm getting "Error 5487 - can't save changes to Debate.dotm" when trying to save settings
+This is due to Verbatim being blocked by Windows Defender. See the section on [Antivirus](./getting-started/virus).
+
 ### My document keeps jumping to the top of the page on Mac
 This is due to a bug in Mac Word, not in Verbatim. It occurs if you’re in Web view, with the Navigation Pane turned on. The easiest fix is to switch to Draft view, or turn off the Navigation Pane. You can set your default view to Draft in the Verbatim settings.
+
+### Why don't the F-key shortcuts work on my Mac?
+First, ensure that you have "Use Fn keys as standard function keys" checked in your System Preferences - Keyboard settings.
+
+If some F-keys still don't work, it's likely you have conflicting Mac OS keyboard shortcuts preempting the Verbatim keys. You can disable these in your System Preferences, or run the Verbatim Setup Tool, which can automatically configure them for you.
+
+Note that the F6 key may be impossible to get to work - on some versions of Mac Word, F6 appears to be hardwired to a "Switch Pane" command, and isn't changeable by Verbatim. In that case, it's suggested you use the alternate keyboard shortcut, `Cmd + Alt + 6`
 
 ### My Debate ribbon is collapsing into sections
 Either you have a small screen, or you have “Touch Mode” turned on in Word. Turn it off by following the directions here:
@@ -78,6 +88,9 @@ This problem is most likely unrelated to Verbatim, and is caused by an error in 
 To disable, go to File – Word Options – Add-Ins. In the “Manage” drop-down box, select “COM Add-Ins.” You should then uncheck any Add-ins, especially if you have one called “Send to Bluetooth,” and click OK.
 
 Alternately, try running the Verbatim Troubleshooter and see if it lists any installation problems.
+
+### I get an error "User-defined type not defined for Private Function FindVBProject" on the Mac
+This is caused by having older incompatible Mac Verbatim versions still installed. Try opening your Templates folder and deleting your Normal.dotm template, then reinstalling Verbatim.
 
 ### I pressed the macro hotkey, and my screen suddenly rotated 90 degrees.
 This occurs on certain laptops using a particular graphics card software package. To get your screen back to normal, press Ctrl-Alt-Up Then, right click on your desktop, select “Graphics Options – Hotkeys” and select “Disable hotkeys.”

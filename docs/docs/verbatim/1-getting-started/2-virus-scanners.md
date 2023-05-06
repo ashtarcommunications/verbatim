@@ -12,12 +12,18 @@ There is nothing harmful in Verbatim, and it's not a virus. It's completely open
 
 Each new release of Verbatim is submitted to antivirus companies for approval, so the false postives are usually temporary. But if you're still getting a false positive, your best bet is to tell your antivirus software to allow Verbatim. You may need to reinstall Verbatim after doing so.
 
+Problem with your antivirus may not be immediately apparent, and may manifest themselves as none/some of the macros failing to run, errors about permissions with Debate.dotm, errors when saving your settings, or a variety of other issues.
+
 ## Windows Defender
+
+You may not realize Windows Defender has blocked Verbatim, as it has started silently deleting macros from the template file without notification. False positives may also not happen until after you have installed Verbatim and are using files or saving your settings. You may need to manually check your "Protection History" to allow Verbatim, and you may have multiple virus alerts for different viruses in a row before it will stop flagging it.
+
+You should reboot your computer after allowing Verbatim in Windows Defender, as it may still have a permissions lock on Debate.dotm and not allow you to use Verbatim until you've restarted.
 
 First, ensure you've updated Microsoft Defender to the latest security definitions. Verbatim is usually marked as allowed in the most recent definitions.
 
-However, Microsoft Defender has recently become significantly more aggressive at flagging files with VBA macros, even when harmless. It may even remove the macros from the Debate.dotm template and block Verbatim without notifying you. After installing Verbatim, check your Windows Defender protection history:
+After installing and opening Verbatim, check your Windows Defender protection history:
 
 ![Windows Defender](../assets/windows-defender.png)
 
-If you have an alert about Debate.dotm, use the Actions menu for the alert to "Allow" or "Restore" the file, depending on what the scanner did to block it.
+If you have an alert about Debate.dotm, vbaProject.bin, or temp files in your Templates folder, use the Actions menu for the alert to "Allow" or "Restore" the file, depending on what the scanner did to block it. Then, reboot. You may also need to try reinstalling Verbatim to restore the template file, and may have to repeat the steps multiple times if you get more than one virus alert.
