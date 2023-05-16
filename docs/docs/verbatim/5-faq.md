@@ -52,7 +52,7 @@ Most of the time, this is because your macro security settings are set too high,
 
 You should also check to make sure that you have Verbatim installed correctly in the Word Templates folder – otherwise someone else’s Verbatim document won’t be able to find it.
 
-### I'm getting "Error 5487 - can't save changes to Debate.dotm" when trying to save settings
+### I'm getting permissions errors or "Error 5487 - can't save changes to Debate.dotm" when trying to save settings
 This is due to Verbatim being blocked by Windows Defender. See the section on [Antivirus](./getting-started/virus).
 
 ### My document keeps jumping to the top of the page on Mac
