@@ -55,6 +55,9 @@ You should also check to make sure that you have Verbatim installed correctly in
 ### I'm getting permissions errors or "Error 5487 - can't save changes to Debate.dotm" when trying to save settings
 This is due to Verbatim being blocked by Windows Defender. See the section on [Antivirus](./getting-started/virus).
 
+### I get "Error 52: Bad File Name or Number" while uploading open source documents to the caselist
+This can happen when the file you are uploading is saved in a folder synced with an online cloud storage service like OneDrive or Dropbox. It happens because Word is unable to access the file from a networked filesystem while converting it into a format that the caselist can read. As a workaround, try temporarily saving a copy of your file to a non-synced folder, and uploading that copy instead.
+
 ### My document keeps jumping to the top of the page on Mac
 This is due to a bug in Mac Word, not in Verbatim. It occurs if you’re in Web view, with the Navigation Pane turned on. The easiest fix is to switch to Draft view, or turn off the Navigation Pane. You can set your default view to Draft in the Verbatim settings.
 
