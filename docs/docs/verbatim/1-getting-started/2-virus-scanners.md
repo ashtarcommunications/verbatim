@@ -18,6 +18,15 @@ Problem with your antivirus may not be immediately apparent, and may manifest th
 
 You may not realize Windows Defender has blocked Verbatim, as it has started silently deleting macros from the template file without notification. False positives may also not happen until after you have installed Verbatim and are using files or saving your settings. You may need to manually check your "Protection History" to allow Verbatim, and you may have multiple virus alerts for different viruses in a row before it will stop flagging it.
 
+It's also highly likely you will get multiple false detections, which may be for different files associated with Verbatim, such as:
+* Debate.dotm
+* vbaProject.bin
+* temp files like ~WRD00001.tmp
+
+You may want to consider adding an exclusion in Defender for your entire Templates folder, or individually adding each separate file that gets flagged.
+
+[How to Add an Exclusion to Windows Defender](https://support.microsoft.com/en-us/windows/add-an-exclusion-to-windows-security-811816c0-4dfd-af4a-47e4-c301afe13b26)
+
 You should reboot your computer after allowing Verbatim in Windows Defender, as it may still have a permissions lock on Debate.dotm and not allow you to use Verbatim until you've restarted.
 
 First, ensure you've updated Microsoft Defender to the latest security definitions. Verbatim is usually marked as allowed in the most recent definitions.
