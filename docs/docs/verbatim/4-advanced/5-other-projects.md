@@ -6,7 +6,7 @@ title: Other Debate Tech Projects
 
 This is a selection of links to other projects that are in some way related to paperless debating or in some way debate/tech related.
 
-Inclusion on this list **does not imply endorsement or affiliation with Paperless Debate or Verbatim.** They are included only as a convenience to the debate community, and your mileage may vary. Many of these kinds of projects are not actively maintained for very long.
+Inclusion on this list **does not imply endorsement or affiliation with Paperless Debate or Verbatim.** They are included only as a convenience to the debate community, and your mileage may vary.
 
 If you would like your project listed on this page, please email [support@paperlessdebate.com](mailto:support@paperlessdebate.com) with a link and description of your project. With very few exceptions, to be eligible for inclusion, your project must be free and open source.
 
