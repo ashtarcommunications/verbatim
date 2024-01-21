@@ -113,3 +113,5 @@ None of these are officially supported or endorsed by Tabroom, and Tabroom doesn
 **[VerbatimParser (unmaintained)](https://github.com/nrfulton/VerbatimParser)** - Verbatim document parser.
 
 **[OpenAI Card Cutting (beta)](https://github.com/debate/openai-card-cutting)** - Card cutting with OpenAI.
+
+**[Tabroom Auto-Summarize](https://github.com/benjmor/tabroom_auto_summarize)** - Generate press releases from Tabroom results using OpenAI.
