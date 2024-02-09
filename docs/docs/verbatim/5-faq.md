@@ -55,6 +55,9 @@ You should also check to make sure that you have Verbatim installed correctly in
 ### I'm getting permissions errors or "Error 5487 - can't save changes to Debate.dotm" when trying to save settings
 This is due to Verbatim being blocked by Windows Defender. See the section on [Antivirus](./getting-started/virus).
 
+### I get "Error 5152: Invalid Document Name" when trying to save a speech document
+Most likely, this is due to having your Auto Save folder set to a cloud folder (e.g. Dropbox, Google Drive, OneDrive), which isn't compatible with auto saving. Try changing your Auto Save folder to a local folder, like your Desktop or Documents folder.
+
 ### I get "Error 52: Bad File Name or Number" while uploading open source documents to the caselist
 This can happen when the file you are uploading is saved in a folder synced with an online cloud storage service like OneDrive or Dropbox. It happens because Word is unable to access the file from a networked filesystem while converting it into a format that the caselist can read. As a workaround, try temporarily saving a copy of your file to a non-synced folder, and uploading that copy instead.
 
