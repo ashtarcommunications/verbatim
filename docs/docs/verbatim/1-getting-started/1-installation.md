@@ -12,6 +12,8 @@ Problems with installation? Check the [FAQ](../faq).
 
 Getting a virus alert? See [Verbatim and Antivirus](./virus).
 
+Note that the current Mac installer may or may not work on Apple Silicon devices - we're working on a new version of the installer to support both. In the interim, if the installer fails on your device, use the manual installation instructions below.
+
 ## Automated Installation
 
 The automatic installer for your operating system should work for the majority of people. Then, make sure to read the section on [Security](./security) to understand how to adjust your macro security settings for use with Verbatim.
@@ -74,6 +76,6 @@ If you'd also like to install Verbatim Flow for Excel, put a copy of the `Debate
 
 3) Move `Verbatim.scpt` to:
 
-`~/Library/Application SCripts/com.microsoft.Word/`
+`~/Library/Application Scripts/com.microsoft.Word/`
 
 You may need to manually create the `com.microsoft.Word` folder for Verbatim.scpt – be careful to use the exact punctuation and capitalization above.
