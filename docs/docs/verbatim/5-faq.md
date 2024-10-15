@@ -42,7 +42,7 @@ You should have a shortcut to Verbatim on your desktop, or on Mac, in your Appli
 ## Security
 
 ### How do I make security prompts and protected view warnings go away?
-See the section on [Security](./verbatim/getting-started/security)
+See the section on [Security](./getting-started/security)
 
 
 ## Verbatim Usage
