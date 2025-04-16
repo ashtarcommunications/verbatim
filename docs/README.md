@@ -40,4 +40,10 @@ Not using SSH:
 $ GIT_USER=<Your GitHub username> yarn deploy
 ```
 
+If yarn isn't globally installed or you get SSL errors:
+
+```
+NODE_OPTION=--openssl-legacy-provider GIT_USER=<Your GitHub username> USE_SSH=false npx yarn deploy
+```
+
 If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
