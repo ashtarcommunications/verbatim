@@ -14,6 +14,7 @@ This section of the repo is for Verbatim for desktop versions of Microsoft Word.
     e) NavPaneCycle - an AutoHotKey script compiled to exe that cycles through the Word Navigation Pane levels<br />
 6) A PC setup check tool built with Visual Studio that helps administer macro security settings
 7) A Mac setup check tool built with Applescript that administers macro security and various other Mac system settings
+8) A "Mini" version of the two Word templates with features most likely to be flagged by antivirus removed.
 
 <br />
 
@@ -46,6 +47,8 @@ Note that the final template is NOT built from the /src directory. The source of
 +---/pc                           -- PC installer
 +---+---/Verbatim6.exe            -- Final PC installer
 +---+---/Verbatim6.nsi            -- NSIS installer script to generate Verbatim6.exe
+
+/mini	                          -- "Mini" version of the 2 main Word templates, currently created manually
 
 /plugins                          -- Plugins for various Verbatim features.
 +---/ocr                          -- Latest .zip distribution of Capture2Text
@@ -81,6 +84,7 @@ Verbatim.scpt                     -- Applescript file for use with Mac Verbatim
 5) On Mac, run `build-mac.sh` or manually copy new versions of files to the Mac installer bundle, and run pkgbuild to built the .pkg Mac installer
 6) Ensure all other tools are built, including Plugins, plugin installer, setup tools (PC and Mac), Mac uninstaller, and Timer
 7) Run `bin/release.bat x.x.x` to copy all build artifacts to the `/release` tree
+8) Manually create a "Mini" release - incorporate any template changes into the "Mini" versions then manually create a release folder renaming them to Debate.dotm and DebateStartup.dotm for distribution
 
 ## Things that do not work in Mac VBA
 The Mac version of Word and the Mac VBA runtime have a lot of bugs, feature limitations, and unexpected behavior relative to the PC. This is a list of Mac-specific gotchas that have been worked around, and should be kept in mind when adding new features:
