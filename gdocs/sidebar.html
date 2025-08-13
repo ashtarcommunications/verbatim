@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+    <!-- The CSS package above applies Google styling to buttons and other elements. -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
+    <?!= include('sidebar_css'); ?>
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="tab-container">
+            <div class="active">Paperless</div>
+            <div>vTub</div>
+            <div>Caselist</div>
+            <div>Settings</div>
+        </div>
+        <fieldset>
+            <legend>Paperless</legend>
+            <div id="current-speech"><p>Current Speech:</p></div>
+            <div class="thirds">
+                <br />
+                <div><button id="send">
+                    <span class="icon fas fa-arrow-right"></span>
+                    <br />
+                    <span>Send to Speech</span>
+                </button></div>
+                <div><button id="choose-speech">
+                    <span class="icon fas fa-object-group"></span>
+                    <br />
+                    <span>Choose Speech</span>
+                </button></div>
+                <div><button id="new-speech">
+                    <span class="icon fas fa-file-alt"></span>
+                    <br />
+                    <span>New Speech</span>
+                </button></div>
+                <br />
+                <div><button id="select">
+                    <span class="icon fas fa-heading"></span>
+                    <br />
+                    <span>Select Heading</span>
+                </button></div>
+                <div><button id="moveup">
+                    <span class="icon fas fa-arrow-up"></span>
+                    <br />
+                    <span>Move Up</span>
+                </button></div>
+                <div><button id="movedown">
+                    <span class="icon fas fa-arrow-down"></span>
+                    <br />
+                    <span>Move Down</span>
+                </button></div>
+                <br />
+                <div><button id="copy">
+                    <span class="icon fas fa-copy"></span>
+                    <br />
+                    <span>Copy</span>
+                </button></div>
+            </div>
+        </fieldset> 
+        <div class="quarters">
+            <fieldset>
+                <legend>Format</legend>
+                <div><button id="paste">F2<br />Paste</button></div>
+                <div><button id="condense">F3<br />Condense</button></div>
+                <div><button id="pocket">F4<br />Pocket</button></div>
+                <div><button id="hat">F5<br />Hat</button></div>
+                <br />
+                <div><button id="block">F6<br />Block</button></div>
+                <div><button id="tag">F7<br />Tag</button></div>
+                <div><button id="cite">F8<br />Cite</button></div>
+                <div><button id="underline">F9<br />Underline</button></div>
+                <br />
+                <div><button id="emphasis">F10<br />Emphasis</button></div>
+                <div><button id="highlight">F11<br />Highlight</button></div>
+                <div><button id="clear">F12<br />Clear</button></div>
+                <div><button id="shrink">
+                    <span class="icon fas fa-compress-arrows-alt"></span>
+                    <br />
+                    <span>Shrink</span>
+                </button></div>
+            </fieldset>
+        </div>
+        <div class="halves">
+            <div><button id="styles">Set Styles</button></div>
+            <div><button id="invisibility-on">Invisibility On</button></div>
+            <br />
+            <div><button id="invisibility-off">Invisibility Off</button></div>
+            <div><button id="get-files">Get Files</button></div>
+            <br />
+            <div><button id="get-doc">Get Doc</button></div>
+            <div><button id="get-heading">Get Heading</button></div>
+            <br />
+            <div><button id="create-vtub">Create Vtub</button></div>
+        </div>
+        <select id="highlight-color">
+            <option value="#ffff00">Yellow</option>
+            <option value="#cccccc">Gray</option>
+        </select>
+        <input id="search-query" type="text" />
+        <button id="search-button">Search</button>
+        <div id="error-message"></div>
+        <div id="picker-result"></div>
+    </div>
+    <?!= include('sidebar_js'); ?>
+</body>
+
+</html>
