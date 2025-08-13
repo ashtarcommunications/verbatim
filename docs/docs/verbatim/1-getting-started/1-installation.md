@@ -6,17 +6,21 @@ title: Installation
 
 # Installation
 
-To download the latest version, see [paperlessdebate.com](https://paperlessdebate.com)
+To download the latest version (full or mini), see [paperlessdebate.com](https://paperlessdebate.com)
 
 Problems with installation? Check the [FAQ](../faq).
 
 Getting a virus alert? See [Verbatim and Antivirus](./virus).
 
-Note that the current Mac installer may or may not work on Apple Silicon devices - we're working on a new version of the installer to support both. In the interim, if the installer fails on your device, use the manual installation instructions below.
+If you have issues with the automated installer, use the manual installation instructions below.
+
+If you're having issues installing the full version, try Verbatim Mini, which is a stripped down version of Verbatim with all the core functionality, but with features removed (like Tabroom integrations and automatic updates) that are most likely to trip antivirus scanners. If you’re having issues with the full version or have particularly restrictive school IT, try this version.
 
 ## Automated Installation
 
-The automatic installer for your operating system should work for the majority of people. Then, make sure to read the section on [Security](./security) to understand how to adjust your macro security settings for use with Verbatim.
+The automatic installer for your operating system should work for the majority of people. Only the full version has an automated installer. If you need the Mini version, you must install it manually with the instructions below.
+
+Then, make sure to read the section on [Security](./security) to understand how to adjust your macro security settings for use with Verbatim.
 
 On a PC, you also likely want to download the Plugins installer to automatically install all Verbatim [plugins](../advanced/plugins) at once, including the Vebratim Timer, OCR, search and more.
 
@@ -32,7 +36,7 @@ You may also run one of the Setup Check tools described in the section on [Secur
 
 ## Manual Installation
 
-If you’re using a school computer that disallows installing programs, or have other issues with the installer, you can use the instructions below to perform a manual installation.
+If you’re using a school computer that disallows installing programs, or have other issues with the installer, you can use the instructions below to perform a manual installation. The procedure is the same for the full version and the Mini version, just make sure to download the correct template files from the downloads page.
 
 Because Verbatim is a template for Word, to "install" it you just need to ensure the template files are placed in the correct folders. There are only 2 important files (3 on Mac):
 
@@ -42,7 +46,7 @@ Verbatim.scpt (Mac only) - must be placed in your Application Scripts folder.
 
 ### PC
 
-First, download the latest template files, `Debate.dotm` and `DebateStartup.dotm`, from the downloads page. Make sure that the files are saved as e.g. “Debate.dotm” and not “Debate (1).dotm” if you have accidentally downloaded more than one copy.
+First, download the latest template files, `Debate.dotm` and `DebateStartup.dotm`, from the downloads page. Choose whether you want the full version, or the Mini version. Make sure that the files are saved as e.g. “Debate.dotm” and not “Debate (1).dotm” if you have accidentally downloaded more than one copy.
 
 1) Move `Debate.dotm` to your Templates folder, usually located at:
 
@@ -60,7 +64,7 @@ That’s it, Verbatim is installed! For ease of use, create a “shortcut” to 
 
 ### Mac
 
-First, download the latest template files, `Debate.dotm` and `DebateStartup.dotm`, and the Verbatim script file `Verbatim.scpt` from the downloads page. Make sure that the files are saved as e.g. “Debate.dotm” and not “Debate (1).dotm” if you have accidentally downloaded more than one copy.
+First, download the latest template files, `Debate.dotm` and `DebateStartup.dotm`, and the Verbatim script file `Verbatim.scpt` from the downloads page. Choose whether you want hte full version, or the Mini version. Make sure that the files are saved as e.g. “Debate.dotm” and not “Debate (1).dotm” if you have accidentally downloaded more than one copy.
 
 Note that the following folders may be hidden by default, so you can use `Cmd+Shift+G` to go directly to the locations listed.
 

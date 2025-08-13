@@ -9,7 +9,7 @@ title: FAQ
 ## Installation
 
 ### Why do I get a virus alert when I download Verbatim?
-See the section on [Virus Scanners](./getting-started/virus).
+See the section on [Virus Scanners](./getting-started/virus). You can also try Verbatim Mini, which is a stripped-down version of Verbatim with less features likely to trip your virus scanner. For more information, see [Installation](./getting-started/installation).
 
 ### I'm getting a message that Debate.dotm doesn't exist after installation.
 You’re most likely using the version of Office in the Microsoft App Store, which doesn’t fully support VBA Macros. Try installing a full version of Office. For more details, see [Requirements](./getting-started/requirements).

@@ -10,9 +10,11 @@ Verbatim is often flagged as a false postive by antivirus programs, including Mi
 
 There is nothing harmful in Verbatim, and it's not a virus. It's completely open source, so you're welcome to inspect the code yourself to verify.
 
+You can also try Verbatim Mini, which is a stripped down version of Verbatim with all the core functionality, but with features removed (like Tabroom integrations and automatic updates) that are most likely to trip antivirus scanners. If you’re having issues with the full version or have particularly restrictive school IT, try this version. For more information, see the [Installation](./installation) page.
+
 Each new release of Verbatim is submitted to antivirus companies for approval, so the false postives are usually temporary. But if you're still getting a false positive, your best bet is to tell your antivirus software to allow Verbatim. You may need to reinstall Verbatim after doing so.
 
-Problem with your antivirus may not be immediately apparent, and may manifest themselves as none/some of the macros failing to run, errors about permissions with Debate.dotm, errors when saving your settings, or a variety of other issues.
+Problems with your antivirus may not be immediately apparent, and may manifest themselves as none/some of the macros failing to run, errors about permissions with Debate.dotm, errors when saving your settings, or a variety of other issues.
 
 ## Windows Defender
 

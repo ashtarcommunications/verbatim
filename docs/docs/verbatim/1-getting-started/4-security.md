@@ -10,7 +10,7 @@ Because Verbatim is a Word template which relies on Visual Basic for Application
 
 Verbatim itself is completely safe. It is not a virus, and it contains no malicious code. It is open source and has been downloaded hundreds of thousands of times with no security issues.
 
-However, depending on how you set up your macro security settings in Word while using Verbatim, you may open yourself to other people’s malicious code. For example, if you set your macro security to allow running all macros without notification, you wouldn't want to open a Word document from an untrusted source on the internet that may have malicious code on it.
+However, depending on how you set up your macro security settings in Word while using Verbatim, you may open yourself to other people’s malicious code. For example, if you set your macro security to allow running all macros without notification, you wouldn't want to open a Word document from an untrusted source on the internet that may have malicious code in it.
 
 For more information on the different options, see the section on security settings below.
 

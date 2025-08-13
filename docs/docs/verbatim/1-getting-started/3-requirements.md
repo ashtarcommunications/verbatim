@@ -19,5 +19,6 @@ The following versions of Word/Office will NOT work with Verbatim:
 * Office for Android
 * Office 2010 "Starter Pack"
 * Office RT for Surface RT Tablet
+* Office LTSC versions, if significantly out of date
 * Mac Word 2008
 * Mac Word 2011
