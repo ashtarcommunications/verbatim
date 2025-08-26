@@ -3,6 +3,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"
     integrity="sha512-RXf+QSDCUQs5uwRKaDoXt55jygZZm2V++WUZduaU/Ui/9EGp3f/2KZVahFZBKGH0s774sd3HmrhUy+SgOFQLVQ=="
     crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
     $(function () {
         console.log('sending from inner frame');
@@ -47,6 +48,7 @@
         $('#get-doc').click(getDoc);
         $('#get-heading').click(getHeadingFromDoc);
         $('#create-vtub').click(createVtub);
+        $('#export').click(exportAsDocx);
     });
 
     const run = (
@@ -69,7 +71,7 @@
             $('#current-speech').html(`<p>Current Speech:</p><p><a target="_blank" href="${activeSpeech.url}">${activeSpeech.name}</a></p>`);
         }
     }
-    run(settingsSuccess).getProperties();
+    // run(settingsSuccess).getProperties();
 
     const sendToSpeech = () => {
         this.disabled = true;
@@ -120,6 +122,136 @@
         run().getHeadingFromDoc('1Dj1loasY1jM38Hl3dOujHZs9Y0gKM93iUoTFPVtbxBc', 1);
     }
     const createVtub = () => run().createVtub();
+    const exportAsDocx = () => {
+        const successHandler = async (base64Data) => {
+            // Convert base64 to array buffer
+            const byteChars = atob(base64Data);
+            const byteNumbers = new Array(byteChars.length);
+            for (let i = 0; i < byteChars.length; i++) {
+                byteNumbers[i] = byteChars.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+
+            // Load zip
+            const zip = await JSZip.loadAsync(byteArray);
+
+            // =====================
+            // 1. settings.xml.rels
+            // =====================
+            const relsPath = "word/_rels/settings.xml.rels";
+            const targetPath =
+                "file:///C:/Users/ashtar/AppData/Roaming/Microsoft/Templates/Debate.dotm";
+            let relId = "rId1"; // default id if creating new
+
+            let relsDoc;
+            if (zip.file(relsPath)) {
+                let relsXml = await zip.file(relsPath).async("string");
+                relsDoc = new DOMParser().parseFromString(
+                relsXml,
+                "application/xml"
+                );
+            } else {
+                relsDoc = new DOMParser().parseFromString(
+                '<?xml version="1.0" encoding="UTF-8"?>' +
+                    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"/>',
+                "application/xml"
+                );
+            }
+
+            // Find or create attachedTemplate relationship
+            let rels = relsDoc.getElementsByTagName("Relationship");
+            let templateRel = null;
+            for (let i = 0; i < rels.length; i++) {
+                if (
+                rels[i].getAttribute("Type") ===
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/attachedTemplate"
+                ) {
+                templateRel = rels[i];
+                relId = rels[i].getAttribute("Id"); // reuse its Id
+                break;
+                }
+            }
+
+            if (templateRel) {
+                templateRel.setAttribute("Target", targetPath);
+            } else {
+                const newRel = relsDoc.createElement("Relationship");
+                newRel.setAttribute("Id", relId);
+                newRel.setAttribute(
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/attachedTemplate"
+                );
+                newRel.setAttribute("Target", targetPath);
+                relsDoc.documentElement.appendChild(newRel);
+            }
+
+            const updatedRelsXml = new XMLSerializer().serializeToString(relsDoc);
+            zip.file(relsPath, updatedRelsXml);
+
+            // =====================
+            // 2. word/settings.xml
+            // =====================
+            const settingsPath = "word/settings.xml";
+            let settingsDoc;
+
+            if (zip.file(settingsPath)) {
+                let settingsXml = await zip.file(settingsPath).async("string");
+                settingsDoc = new DOMParser().parseFromString(
+                settingsXml,
+                "application/xml"
+                );
+            } else {
+                // If missing entirely (rare from Google Docs), create a basic skeleton
+                settingsDoc = new DOMParser().parseFromString(
+                '<?xml version="1.0" encoding="UTF-8"?>' +
+                    '<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" ' +
+                    'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"/>',
+                "application/xml"
+                );
+            }
+
+            const wNS =
+                "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+            const rNS =
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+
+            // Look for existing w:attachedTemplate
+            let attachedTemplate = settingsDoc.getElementsByTagNameNS(
+                wNS,
+                "attachedTemplate"
+            )[0];
+
+            if (attachedTemplate) {
+                // Update the r:id to match relationship
+                attachedTemplate.setAttributeNS(rNS, "r:id", relId);
+            } else {
+                // Create new element
+                attachedTemplate = settingsDoc.createElementNS(
+                wNS,
+                "w:attachedTemplate"
+                );
+                attachedTemplate.setAttributeNS(rNS, "r:id", relId);
+
+                // Append it (placing it at the root is fine, usually right under <w:settings>)
+                settingsDoc.documentElement.appendChild(attachedTemplate);
+            }
+
+            const updatedSettingsXml = new XMLSerializer().serializeToString(
+                settingsDoc
+            );
+            zip.file(settingsPath, updatedSettingsXml);
+
+            // Re-zip and trigger download
+            const blob = await zip.generateAsync({ type: "blob" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "export.docx";
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+        run(successHandler).exportAsDocx();
+    }
 
     // const detectExtension = () => {
     //     setTimeout(() => {

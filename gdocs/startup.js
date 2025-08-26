@@ -12,7 +12,7 @@ function showSidebar() {
     var ui = HtmlService.createTemplateFromFile('sidebar').evaluate().setTitle('Verbatim');
     DocumentApp.getUi().showSidebar(ui);
 
-    setStyles();
+    // setStyles();
 }
 
 function include(filename) {

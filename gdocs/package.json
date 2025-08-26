@@ -4,7 +4,9 @@
   "description": "Verbatim",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "clasp push --watch",
+    "logs": "clasp logs --watch"
   },
   "author": "",
   "license": "ISC",

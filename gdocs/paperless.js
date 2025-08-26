@@ -170,3 +170,22 @@ const newSpeech = () => {
     DocumentApp.getUi().showModalDialog(ui, 'Open Doc');
     return id;
 }
+
+// const exportAsDocx = () => {
+//     const docId = DocumentApp.getActiveDocument().getId();
+//     const file = DriveApp.getFileById(docId);
+//     const blob = file.getAs("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+//     return Utilities.base64Encode(blob.getBytes());
+// };
+
+const exportAsDocx = () => {
+  const docId = DocumentApp.getActiveDocument().getId();
+  const url = "https://www.googleapis.com/drive/v3/files/" + docId + "/export?mimeType=application%2Fvnd.openxmlformats-officedocument.wordprocessingml.document";
+  const params = {
+    method: "get",
+    headers: { "Authorization": "Bearer " + ScriptApp.getOAuthToken() },
+    muteHttpExceptions: true
+  };
+  const blob = UrlFetchApp.fetch(url, params).getBlob();
+  return Utilities.base64Encode(blob.getBytes());
+};

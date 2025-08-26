@@ -1,0 +1,831 @@
+<customUI xmlns="http://schemas.microsoft.com/office/2006/01/customui" onLoad="Ribbon.OnLoad">
+	<ribbon startFromScratch="false">
+		<officeMenu>
+			<button id="VerbatimSettings"
+  			insertAfterMso="FileSaveAsMenu"
+		    onAction="Ribbon.RibbonMain"
+            label="Verbatim Settings"
+  	  	    description="Configure Verbatim user settings." />   
+		</officeMenu>
+
+		<tabs>
+			<tab id="DebateTab" label="Debate" insertBeforeMso="TabHome" keytip="D">
+			    <group id="Speech" label="Speech" imageMso="RightArrow2" getVisible="Ribbon.GetRibbonVisibility">
+			        <box id="SpeechBox1" boxStyle="horizontal">
+			            <splitButton id="SendSplit">
+							<button id="SendToSpeech"
+                            description="Send To Speech Document"
+                            imageMso="RightArrow2"
+                            keytip="`"
+                            screentip="Send To Speech"
+                            supertip="Sends selected text or current pocket/hat/block/card to active Speech document. (` key)"
+                            onAction="Ribbon.RibbonMain" />
+						
+							<menu id="SendMenu" screentip="Send" supertip="Send content">
+							    <button id="SendToSpeech2"
+							    label="Send To Speech"
+                                description="Send To Speech Document"
+                                imageMso="RightArrow2"
+                                keytip="`"
+                                screentip="Send To Speech"
+                                supertip="Sends selected text or current pocket/hat/block/card to active Speech document. (` key)"
+                                onAction="Ribbon.RibbonMain" />
+                                
+                                <button id="SendToSpeechEnd"
+							    label="Send To Speech End"
+                                description="Send To End Of Speech Document"
+                                imageMso="PageNextWord"
+                                keytip="`"
+                                screentip="Send To Speech End"
+                                supertip="Sends selected text or current pocket/hat/block/card to end of active Speech document. (Alt + ` key)"
+                                onAction="Ribbon.RibbonMain" />
+                            
+								<button id="SendToFlowCell" 
+                                label="Send To Flow (Cell)" 
+                                description="Send to active cell on Excel flow"
+                                getImage="GetRibbonImages"
+                                screentip="Send to Excel flow (cell)"
+                                supertip="Sends selected text or current pocket/hat/block/card to active cell on Excel flow. (Ctrl/Cmd + ` key)"
+                                onAction="Ribbon.RibbonMain" />
+                                
+                                <button id="SendToFlowColumn" 
+                                label="Send To Flow (Column)" 
+                                description="Send to active column on Excel flow"
+                                getImage="GetRibbonImages"
+                                screentip="Send to Excel flow (column)"
+                                supertip="Sends selected text or current pocket/hat/block/card to active column on Excel flow, one cell per paragraph. (Ctrl/Cmd + Alt + ` key)"
+                                onAction="Ribbon.RibbonMain" />
+                                
+                                <button id="SendHeadingsToFlowCell" 
+                                label="Send Headings To Flow (Cell)" 
+                                description="Sends headings and cites in selection to active cell on Excel flow"
+                                getImage="GetRibbonImages"
+                                screentip="Send headings to Excel flow (cell)"
+                                supertip="Sends headings and cites in selected text or current pocket/hat/block/card to active cell on Excel flow. (Ctrl/Cmd + Shift + ~ key)"
+                                onAction="Ribbon.RibbonMain" />
+                                
+                                <button id="SendHeadingsToFlowColumn" 
+                                label="Send Headings To Flow (Column)" 
+                                description="Sends headings and cites in selection to active column on Excel flow"
+                                getImage="GetRibbonImages"
+                                screentip="Send headings to Excel flow (column)"
+                                supertip="Sends headings and cites in selected text or current pocket/hat/block/card to active column on Excel flow, one cell per paragraph. (Ctrl/Cmd + Alt + Shift + ~ key)"
+                                onAction="Ribbon.RibbonMain" />
+                                
+                                <button id="SelectHeadingAndContent" 
+                                description="Selects all content and subheadings underneath the current heading level of the cursor"
+                                label="Select Heading and Content"
+                                imageMso="OutlineShowLevel"
+                                supertip="Selects all content and subheadings underneath the current heading level of the cursor (Ctrl/Cmd + Alt + A key)"
+                                onAction="Ribbon.RibbonMain" />
+                                
+                                <button id="MoveDown"
+							    label="Move Heading Down"
+                                description="Move Heading Down"
+                                imageMso="DownArrow2"
+                                screentip="Move Heading Down"
+                                supertip="Moves current heading down a level in the document outline. (Ctrl/Cmd + Alt + Down key)"
+                                onAction="Ribbon.RibbonMain" />
+                                
+                                <button id="MoveUp"
+							    label="Move Heading Up"
+                                description="Move Heading Up"
+                                imageMso="UpArrow2"
+                                screentip="Move Heading Up"
+                                supertip="Moves current heading up a level in the document outline. (Ctrl/Cmd + Alt + Up key)"
+                                onAction="Ribbon.RibbonMain" />
+                                
+                                <button id="MoveToBottom"
+							    label="Move To Bottom"
+                                description="Move to Bottom"
+                                imageMso="TableCellAlignBottomCenter"
+                                screentip="Move To Bottom"
+                                supertip="Moves current heading to the bottom of the document. (Ctrl/Cmd + Alt + Shift + Down key)"
+                                onAction="Ribbon.RibbonMain" />
+							</menu>
+						</splitButton>
+					</box>
+					<box id="SpeechBox2" boxStyle="horizontal">
+					    <dynamicMenu id="QuickCards"
+						description="QuickCards" 
+						imageMso="AutoSummaryResummarize"
+						supertip="Opens the Quick Cards Menu."
+					    getContent="QuickCards.GetQuickCardsContent" />
+					</box>
+					<box id="SpeechBox3" boxStyle="horizontal">
+					    <dynamicMenu id="VirtualTub"
+						description="Virtual Tub" 
+						image="tub"
+						supertip="Opens the Virtual Tub Menu. Configure in the Verbatim settings."
+					    getContent="VirtualTub.GetVTubContent" />
+					</box>
+			    </group>
+
+			    <group id="Organize" label="Organize" imageMso="ChangeStylesMenu" getVisible="Ribbon.GetRibbonVisibility">
+					<box id="OrganizeBox1" boxStyle="horizontal">
+						<button id="F2Button" 
+						getLabel="GetRibbonLabels"
+						supertip="If you have trouble with function keys, try alternate shortcut 'Ctrl/Cmd + Alt + 2' for default F2 macro."
+						onAction="Ribbon.RibbonMain" />
+						
+						<labelControl id="lblSep1" label="|" enabled="false"/>
+
+						<button id="F3Button" 
+						getLabel="GetRibbonLabels"
+						supertip="If you have trouble with function keys, try alternate shortcut 'Ctrl/Cmd + Alt + 3' for default F3 macro."
+						onAction="Ribbon.RibbonMain" />
+						
+						<labelControl id="lblSep2" label="|" enabled="false"/>
+
+						<button id="F4Button" 
+						getLabel="GetRibbonLabels"
+						supertip="If you have trouble with function keys, try alternate shortcut 'Ctrl/Cmd + Alt + 4' for default F4 macro."
+						onAction="Ribbon.RibbonMain" />
+
+						<labelControl id="lblSep3" label="|" enabled="false"/>
+						
+						<button id="F5Button" 
+						getLabel="GetRibbonLabels"
+						supertip="If you have trouble with function keys, try alternate shortcut 'Ctrl/Cmd + Alt + 5' for default F5 macro."
+						onAction="Ribbon.RibbonMain" />						
+					</box>
+					
+					<box id="OrganizeBox2" boxStyle="horizontal">
+					    <button id="F6Button" 
+						getLabel="GetRibbonLabels"
+						supertip="If you have trouble with function keys, try alternate shortcut 'Ctrl/Cmd + Alt + 6' for default F6 macro."
+						onAction="Ribbon.RibbonMain" />
+
+						<labelControl id="lblSep4" label="|" enabled="false"/>
+
+						<button id="F7Button" 
+						getLabel="GetRibbonLabels"
+						supertip="If you have trouble with function keys, try alternate shortcut 'Ctrl/Cmd + Alt + 7' for default F7 macro."
+						onAction="Ribbon.RibbonMain" />
+						
+						<labelControl id="lblSep5" label="|" enabled="false"/>
+						
+						<button id="F8Button" 
+						getLabel="GetRibbonLabels"
+						supertip="If you have trouble with function keys, try alternate shortcut 'Ctrl/Cmd + Alt + 8' for default F8 macro."
+						onAction="Ribbon.RibbonMain" />
+
+						<labelControl id="lblSep6" label="|" enabled="false"/>
+
+						<button id="F9Button" 
+						getLabel="GetRibbonLabels"
+						supertip="If you have trouble with function keys, try alternate shortcut 'Ctrl/Cmd + Alt + 9' for default F9 macro."
+						onAction="Ribbon.RibbonMain" />
+					</box>
+
+					<box id="OrganizeBox3" boxStyle="horizontal">
+					    <button id="F10Button" 
+						getLabel="GetRibbonLabels"
+						supertip="If you have trouble with function keys, try alternate shortcut 'Ctrl/Cmd + Alt + 0' for default F10 macro."
+						onAction="Ribbon.RibbonMain" />
+						
+						<labelControl id="lblSep7" label="|" enabled="false"/>
+
+						<button id="F11Button" 
+						getLabel="GetRibbonLabels"
+						supertip="If you have trouble with function keys, try alternate shortcut 'Ctrl/Cmd + Alt + -' for default F11 macro."
+						onAction="Ribbon.RibbonMain" />
+
+						<labelControl id="lblSep8" label="|" enabled="false"/>
+
+						<button id="F12Button" 
+						getLabel="GetRibbonLabels"
+						supertip="If you have trouble with function keys, try alternate shortcut 'Ctrl/Cmd + Alt + =' for default F12 macro."
+						onAction="Ribbon.RibbonMain" />
+					</box>
+                </group>
+
+                <group id="Format" label="Format" imageMso="ChangeStylesMenu" getVisible="Ribbon.GetRibbonVisibility">
+                    <box id="FormatBox1" boxStyle="horizontal">
+					    <splitButton id="ShrinkSplit">
+					        <button id="ShrinkText" 
+                            label="Shrink"
+                            description="Shrink non-underlined text to 8pt and lower"
+                            image="shrink"
+                            screentip="Shrink text"
+                            supertip="Sets all non-underlined text in the paragraph to 8pt and smaller. (Alt + F3)"
+                            onAction="Ribbon.RibbonMain" />
+
+					        <menu id="ShrinkMenu" screentip="Shrink" supertip="Shrink content">
+                                <button id="ShrinkText2" 
+                                label="Shrink"
+                                description="Shrink non-underlined text to 8pt and lower"
+                                image="shrink"
+                                screentip="Shrink text"
+                                supertip="Sets all non-underlined text in the paragraph to 8pt and smaller. (Alt + F3)"
+                                onAction="Ribbon.RibbonMain" />
+
+                                <button id="ShrinkAll" 
+                                description="Shrink All"
+                                label="Shrink All"
+                                image="shrink"
+                                supertip="Shrinks un-underlined text in all cards in the document to 8pt."
+                                onAction="Ribbon.RibbonMain" />
+
+                                <button id="ShrinkPilcrows" 
+                                description="Shrink Pilcrows"
+                                label="Shrink Pilcrows"
+                                imageMso="TextDirectionContext"
+                                supertip="Shrinks pilcrows in the paragraph to 8pt. If run at top of doc, will shrink ALL pilcrows."
+                                onAction="Ribbon.RibbonMain" />
+                                
+                                <button id="UnshrinkAll" 
+                                description="Unshrink all text in the document smaller than the normal font size"
+                                label="Unshrink All"
+                                imageMso="FontSizeIncreaseWord"
+                                supertip="Unshrink all text in the document smaller than the normal font size"
+                                onAction="Ribbon.RibbonMain" />
+						</menu>
+						</splitButton>                       				    
+
+						<labelControl id="lblSep9" label="|" enabled="false"/>
+						
+						<toggleButton id="UnderlineMode"
+						description="Toggle underlining mode"
+						imageMso="MinusSign"
+						screentip="Underlining Mode"
+						supertip="Toggles Underlining Mode which underlines any text you select without needing to press an additional key. Press again to turn off."
+						getPressed="GetRibbonToggles"
+						onAction="Formatting.UnderlineMode" />
+						
+					</box>
+					<box id="FormatBox2" boxStyle="horizontal">
+					    <control idMso="TextHighlightColorPicker" showLabel="false" />
+					    
+					    <labelControl id="lblSep10" label="|" enabled="false"/>
+					    
+                        <toggleButton id="ParagraphIntegrity"
+						description="Toggle retaining paragraphs when condensing text"
+						screentip="Toggle Paragraph Integrity"
+						supertip="Toggles retaining paragraphs when condensing text. Can be configured in the Verbatim settings."
+						imageMso="ParagraphSpaceBefore"
+						getPressed="GetRibbonToggles"
+						onAction="Condense.ToggleParagraphIntegrity" />
+
+						<labelControl id="lblSep11" label="|" enabled="false"/>
+						
+						<toggleButton id="UsePilcrows"
+						description="Toggle using Pilcrows when condensing paragraphs"
+						screentip="Toggle Pilcrows"
+						supertip="Toggles using Pilcrows when condensing paragraphs. Can be configured in the Verbatim settings."
+						imageMso="ParagraphMarks"
+						getPressed="GetRibbonToggles"
+						onAction="Condense.ToggleUsePilcrows" />
+					</box>
+					<box id="FormatBox3" boxStyle="horizontal">
+					    <menu id="FormatMenu1" label="Doc" imageMso="ControlToolboxOutlook">					
+							<menuSeparator title="Automatic Fixers" id="FormatMenu1Sep1" />
+							
+							<button id="FixFakeTags" 
+							description="Fix fake tags"
+							label="Fix Fake Tags"
+							imageMso="ChangeStylesMenu"
+							supertip="Replaces fake tags (for example tags accidentally formatted as Cite) with real tags."
+							onAction="Ribbon.RibbonMain" />
+							
+							<button id="ConvertAnalyticsToTags" 
+							description="Convert all analytics in the document into tags"
+							label="Convert Analytics To Tags"
+							imageMso="ConvertTextToTable"
+							supertip="Converts all text in the document formatted with custom analytics styles into tags."
+							onAction="Ribbon.RibbonMain" />
+							
+							<button id="FixFormattingGaps" 
+							description="Fix Formatting Gaps"
+							label="Fix Formatting Gaps"
+							imageMso="TableOfContentsUpdate"
+							supertip="Fixes card formatting irregularities like spaces missing underlining and highlighting."
+							onAction="Ribbon.RibbonMain" />
+							
+							<button id="ConvertToDefaultStyles" 
+							description="Convert to default styles"
+							label="Convert To Default Styles"
+							imageMso="ConvertTableToText"
+							supertip="Convert document to only use default styles. Run before 'Remove Extra Styles.'"
+							onAction="Ribbon.RibbonMain" />
+																			
+							<button id="RemoveExtraStyles" 
+							description="Removes extra styles"
+							label="Remove Extra Styles"
+							imageMso="TableOfContentsRemove"
+							supertip="Removes non-default styles from document. Safest to run 'Convert To Default Styles' first."
+							onAction="Ribbon.RibbonMain" />
+							
+                            <button id="AutoNumberTags" 
+							description="Auto Number Tags"
+							label="Auto Number Tags"
+							imageMso="PageNumbersInHeaderInsertGallery"
+							supertip="Automatically prepends numbers to all tags. (Ctrl/Cmd + Shift + #)"
+							onAction="Ribbon.RibbonMain" />
+
+							<button id="DeNumberTags" 
+							description="De-Number Tags"
+							label="De-Number Tags"
+							imageMso="PageNumbersRemove"
+							supertip="Removes numbering from all tags."
+							onAction="Ribbon.RibbonMain" />
+							
+							<button id="InsertHeader" 
+							description="Insert Header"
+							label="Insert Header"
+							imageMso="HeaderFooterInsert"
+							supertip="Inserts a header with your personal information from the Verbatim settings."
+							onAction="Ribbon.RibbonMain" />
+							
+							<menuSeparator title="Removal Tools" id="FormatMenu1Sep2" />
+							
+							<button id="RemoveEmphasis" 
+							description="Remove emphasis"
+							label="Remove Emphasis"
+							imageMso="ReviewRejectChange"
+							supertip="Converts emphasized text to underlining."
+							onAction="Ribbon.RibbonMain" />
+							
+							<button id="RemoveNonHighlightedUnderlining" 
+							description="Remove Non-Highlighted Underlining"
+							label="Remove Non-Highlighted Underlining"
+							imageMso="ReviewHighlightChanges"
+							supertip="Clears formatting from underlined text in the selection or document that isn't highlighted."
+							onAction="Ribbon.RibbonMain" />
+							
+							<button id="RemoveBlanks" 
+							description="Remove Blank Headers From NavPane"
+							label="Remove Blanks"
+							imageMso="CollapseAll"
+							supertip="Removes blank headers from the NavPane."
+							onAction="Ribbon.RibbonMain" />
+						
+                            <button id="RemovePilcrows" 
+							description="Remove Pilcrows"
+							label="Remove Pilcrows"
+							imageMso="TextDirectionRightToLeft"
+							supertip="Removes all pilcrows from the document."
+							onAction="Ribbon.RibbonMain" />
+							
+							<button id="RemoveHyperlinks" 
+							description="Remove hyperlinks"
+							label="Remove Hyperlinks"
+							imageMso="HyperlinkRemove"
+							supertip="Removes hyperlinks from the document."
+							onAction="Ribbon.RibbonMain" />
+
+							<button id="RemoveBookmarks" 
+							description="Remove bookmarks"
+							label="Remove Bookmarks"
+							imageMso="BookmarkInsert"
+							supertip="Removes bookmarks from the document."
+							onAction="Ribbon.RibbonMain" />
+							
+							<menuSeparator title="Styles" id="FormatMenu1Sep3" />
+							
+							<button id="UpdateStyles"
+							description="Update styles from template"
+							label="Update Styles"
+							imageMso="ApplyStylesPane"
+							supertip="Updates all document styles from the template. (Ctrl/Cmd + F12)"
+							onAction="Ribbon.RibbonMain" />
+
+							<button id="SelectSimilar" 
+							description="Select similar formatting"
+							label="Select Similar Formatting"
+							imageMso="CircularReferences"
+							supertip="Selects all formatting in the document similar to the selection. (Ctrl/Cmd + F2)"
+							onAction="Ribbon.RibbonMain" />
+							
+							<control idMso="ParagraphMarks" imageMso="StylesStyleSeparator" label="Show All Formatting" />	
+						</menu>
+
+						<menu id="FormatMenu2" label="Card" imageMso="QuickStylesGallery">
+						    <menuSeparator title="Condense" id="FormatMenu2Sep1" />
+						    
+						    <button id="CondenseNoPilcrows" 
+							description="Condense No Pilcrows"
+							label="Condense No Pilcrows"
+							imageMso="ParagraphSpacingAfter"
+							supertip="Condenses text without pilcrows, regardless of normal pilcrow settings. (Ctrl/Cmd + F3)"
+							onAction="Ribbon.RibbonMain" />
+							
+							<button id="CondenseWithPilcrows" 
+							description="Condense With Pilcrows"
+							label="Condense With Pilcrows"
+							imageMso="ParagraphDialog"
+							supertip="Condenses text using pilcrows, regardless of normal pilcrow settings. (Ctrl/Cmd + Alt + F3)"
+							onAction="Ribbon.RibbonMain" />						
+							
+							<button id="Uncondense" 
+							description="Uncondense card"
+							label="Uncondense"
+							imageMso="ParagraphSpacingBefore"
+							supertip="Uncondense card, replacing pilcrows with original paragraph breaks. (Ctrl/Cmd + Alt + Shift + F3)"
+							onAction="Ribbon.RibbonMain" />					    
+							
+							<menuSeparator title="Highlighting" id="FormatMenu2Sep2" />
+							
+							<button id="UniHighlight" 
+							description="Standardize Highlighting Color"
+							label="Standardize Highlighting"
+							imageMso="PageColorPicker"
+							supertip="Standardizes all highlighting to the currently selected color."
+							onAction="Ribbon.RibbonMain" />
+							
+							<button id="UniHighlightWithException" 
+							description="Standardize Highlighting with Exception"
+							label="Standardize Highlighting With Exception"
+							imageMso="PageColorPicker"
+							supertip="Standardizes all highlighting to the currently selected color, except for the exception color configured in the Verbatim settings."
+							onAction="Ribbon.RibbonMain" />
+							
+							<menuSeparator title="Card Formatting" id="FormatMenu2Sep3" />
+																				
+							<button id="AutoEmphasizeFirst" 
+							description="Auto-emphasize acronym"
+							label="Auto-Emphasize First"
+							imageMso="TextBoxInsert"
+							supertip="Adds emphasis to first letter of each selected word. (Ctrl/Cmd + Alt + F10)"
+							onAction="Ribbon.RibbonMain" />
+							
+							<button id="AutoUnderline" 
+                            description="Automatically underline card"
+                            label="Auto Underline Card"
+                            imageMso="AutoFormatChange"
+                            screentip="Automatically underline card"
+                            supertip="Automatically underlines the current card - cursor must be in the tag. (Alt + F9)"
+                            onAction="Ribbon.RibbonMain" />
+                            							
+                            <menuSeparator title="Cite Formatting" id="FormatMenu1Sep7" />
+                            
+							<button id="DuplicateCite" 
+							description="Duplicate Cite"
+							label="Duplicate Cite"
+							imageMso="HorizontalLineInsert"
+							supertip="Duplicates the previous cite in the document. Cites must be typed as a single paragraph and use the Cite style for the last name/date. (Alt + F8)"
+							onAction="Ribbon.RibbonMain" />
+
+							<button id="AutoFormatCite" 
+							description="Auto Format Cite"
+							label="Auto Format Cite"
+							imageMso="MailMergeRecepientsUseOutlookContacts"
+							supertip="While the cursor is in a cite, will attempt to automatically apply the Cite style to the last name and date. Uses the month/day for cites during the current year. (Ctrl/Cmd + F8)"
+							onAction="Ribbon.RibbonMain" />							
+
+                            <button id="ReformatAllCites" 
+							description="Reformat All Cites"
+							label="Reformat All Cites"
+							imageMso="DateAndTimeInsert"
+							supertip="Automatically auto formats existing cites, useful to switch to year instead of month/day for older cites."
+							onAction="Ribbon.RibbonMain" />
+							
+							<button id="GetFromCiteCreator" 
+							description="Get From Cite Creator"
+							label="Get From Cite Creator"
+							imageMso="ContactWebPage"
+							supertip="For use with the CiteMaker browser extension - will attempt to paste the cite from the top-most tab. (Alt + F2)"
+							onAction="Ribbon.RibbonMain" />
+						</menu>
+					</box>
+					
+					<dialogBoxLauncher>
+						<button idMso="StylesPane" />
+					</dialogBoxLauncher>
+
+				</group>				
+			    
+				<group id="Paperless" label="Paperless" imageMso="FileCheckIn" getVisible="Ribbon.GetRibbonVisibility">
+					<box id="PaperlessBox1" boxStyle="horizontal">
+                        <button id="NewSpeech" 
+						description="New Speech Document"
+						label="Speech"
+						imageMso="FileCheckIn"
+						screentip="New Speech Document"
+						supertip="Creates a new Speech document. (Ctrl/Cmd + Shift + N)" 
+						onAction="Ribbon.RibbonMain" />
+
+						<dynamicMenu id="NewSpeechMenu"
+						description="New Speech"
+						screentip="New Speech"
+						supertip="Suggest names for a new Speech Doc, including from your current rounds on Tabroom."
+						getContent="Paperless.GetSpeeches" />
+					</box>
+
+					<box id="PaperlessBox2" boxStyle="horizontal">
+						<button id="ChooseSpeechDoc" 
+						label="Choose"
+						description="Choose Speech Doc"
+						imageMso="ReviewAcceptChange"
+						screentip="Choose Speech Doc"
+						supertip="Lets you select which document to use as the active Speech doc."
+						onAction="Ribbon.RibbonMain" />				
+					</box>
+
+					<box id="PaperlessBox3" boxStyle="horizontal">
+					    <splitButton id="NewDocumentSplit">
+							<button id="NewDocument" 
+                            description="New Document"
+                            label="New"
+                            imageMso="FileNew"
+                            screentip="New Verbatim Document"
+                            supertip="Creates a new Verbatim document." 
+                            onAction="Ribbon.RibbonMain" />
+						
+							<menu id="NewDocumentMenu" screentip="New Document" supertip="New Document">
+                                <button id="NewDocument1" 
+                                description="New Document"
+                                label="New Document"
+                                imageMso="FileNew"
+                                screentip="New Verbatim Document"
+                                supertip="Creates a new Verbatim document." 
+                                onAction="Ribbon.RibbonMain" />
+                                
+                                <button id="CreateFlow" 
+                                description="Create a new Verbatim Flow in Excel"
+                                label="New Flow"
+                                imageMso="TableInsertDialogWord"
+                                screentip="New Verbatim Flow"
+                                supertip="Creates a new Verbatim Flow in Excel." 
+                                onAction="Ribbon.RibbonMain" />
+                            </menu>
+                        </splitButton>
+					</box>
+
+					<separator id="PaperlessSep1" />
+
+					<box id="PaperlessBox4" boxStyle="horizontal">
+                        <button id="CombineDocs" 
+						description="Combine Documents"
+						label="Merge"
+						imageMso="ReviewCombineRevisions"
+						screentip="Combine Documents"
+						supertip="Combine multiple documents (such as speech documents) into one." 
+						onAction="Ribbon.RibbonMain" />
+					</box>
+
+					<box id="PaperlessBox5" boxStyle="horizontal">
+					    <button id="CopyToUSB" 
+						description="Copy To USB"
+						label="USB"
+						image="usb"
+						screentip="Copy To USB"
+						supertip="Copies the current file to the root of the USB drive. (Ctrl/Cmd + Shift + U)"
+						onAction="Ribbon.RibbonMain" />
+					</box>
+					    
+					<box id="PaperlessBox6" boxStyle="horizontal">    
+						<button id="TabroomShare" 
+						description="Share to Tabroom"
+						label="Share"
+						image="share"
+						screentip="Share document on share.tabroom.com"
+						supertip="Shares document to share.tabroom.com and automatically emails linked participants. (Ctrl/Cmd + Shift + S)"
+						onAction="Ribbon.RibbonMain" />
+                    </box>
+
+					<dialogBoxLauncher>
+						<button id="VerbatimSettings1" onAction="Ribbon.RibbonMain" supertip="Verbatim Settings" />
+					</dialogBoxLauncher>
+
+				</group>
+				
+				<group id="Tools" label="Tools" imageMso="ControlToolboxOutlook" getVisible="Ribbon.GetRibbonVisibility">
+					<box id="ToolsBox1" boxStyle="horizontal">
+						<button id="StartTimer"
+						label="Timer"
+						description="Starts a Timer"
+						image="hourglass"
+						screentip="Start Timer"
+						supertip="Starts an on-screen timer. Must be in the same directory as the template and called Timer.exe (Ctrl/Cmd + Shift + T)"
+						onAction="Ribbon.RibbonMain" />
+					</box>
+
+                    <box id="ToolsBox2" boxStyle="horizontal">
+                        <button id="PasteOCR" 
+						label="OCR"
+						description="Automatically OCR a screen grab"
+						imageMso="SizeToFit"
+						screentip="Paste from OCR"
+						supertip="Automatically OCR's a screengrab and pastes the contents. After clicking the button, click once in the upper left of your capture area, then drag down and right and click in the lower right of your capture area to OCR."
+						onAction="Ribbon.RibbonMain" />
+					</box>
+
+					<box id="ToolsBox3" boxStyle="horizontal">
+						<button id="DocumentStats" 
+						label="Stats"
+						description="Document Stats"
+						imageMso="Calculator"
+						screentip="Document Stats"
+						supertip="Displays stats about the current document, such as number of cards, highlighted words, and a time estimate. (Ctrl/Cmd + Shift + I)"
+						onAction="Ribbon.RibbonMain" />
+					</box>
+					    
+					<separator id="ToolsSep1" />
+
+					<box id="ToolsBox4" boxStyle="horizontal">
+						<toggleButton id="RecordAudio"
+						label="Record"
+						description="Records Audio"
+						imageMso="SpeechMicrophone"
+						screentip="Record Audio"
+						supertip="Starts an audio recording from your computer's microphone. Press again to stop and save the file. Save location can be configured in the Verbatim settings."
+						getPressed="GetRibbonToggles"
+						onAction="Audio.RecordAudio" />
+						
+                    </box>
+
+                    <box id="ToolsBox5" boxStyle="horizontal">
+						<toggleButton id="AutoOpenFolder"
+						description="Toggle automatic opening"
+						screentip="Auto Open Folder"
+						supertip="Toggles automatic opening from your Auto Open Folder. Can be configured in the Verbatim settings."
+						imageMso="AddToFavorites"
+						getPressed="GetRibbonToggles"
+						onAction="Paperless.AutoOpenFolder" />
+						
+						<labelControl id="lblSep12" label="|" enabled="false"/>
+						
+						<button id="NavPaneCycle" 
+						description="Cycles headers on the NavPane"
+						imageMso="RecurrenceEdit"
+						screentip="Run NavPaneCycle"
+						supertip="Runs NavPaneCycle to cycle the headers on the NavPane automatically. Must be in the same directory as the template and called NavPaneCycle.exe (Ctrl/Cmd + Shift + W)"
+						onAction="Ribbon.RibbonMain" />
+						
+						<labelControl id="lblSep13" label="|" enabled="false"/>
+
+						<splitButton id="WarrantSplit">
+							<button id="NewWarrant" 
+							description="New Warrant" 
+							imageMso="ReviewNewComment"
+							screentip="New Warrant"
+							supertip="Add a new warrant box." 
+							onAction="Ribbon.RibbonMain" />
+						
+							<menu id="WarrantMenu" screentip="Warrants" supertip="Add/Remove warrant boxes">
+								<button id="NewWarrant1" 
+                                label="New Warrant" 
+                                description="New Warrant"
+                                imageMso="ReviewNewComment"
+                                screentip="New Warrant"
+                                supertip="Add a new warrant box."
+                                onAction="Ribbon.RibbonMain" />
+						
+								<button id="ShowComments"
+								description="Toggle Showing Warrants"
+								label="Show/Hide Warrants"
+								onAction="Ribbon.RibbonMain" />
+
+								<button idMso="ReviewDeleteComment" label="Delete Warrant" />
+
+								<button id="DeleteAllWarrants"
+								label="Delete All Warrants"
+								description="Delete All Warrants"
+								imageMso="ReviewDeleteAllCommentsInDocument"
+								supertip="Deletes all warrants in the document."
+								onAction="Ribbon.RibbonMain" />
+							</menu>
+						</splitButton>
+                    </box>
+
+                    <box id="ToolsBox6" boxStyle="horizontal">
+                        <editBox id="Search" 
+						supertip="Searches your computer for files containing a search term. Enter a search term and press enter. Search location can be configured in the Verbatim settings."
+						onChange="Search.SearchChanged"/>
+
+						<dynamicMenu id="SearchResults"
+						description="Search results - click to open a file." 
+						supertip="Search results - click to open a file." 
+						keytip="SR"
+						getContent="Search.GetSearchResultsContent" />
+                    </box>
+				</group>
+
+				<group id="View" label="View" imageMso="WatchWindow" getVisible="Ribbon.GetRibbonVisibility">
+					<box id="ViewBox1" boxStyle="horizontal">
+						<control idMso="NavigationPaneShowHide" label="Nav" />
+					</box>
+
+					<box id="ViewBox2" boxStyle="horizontal">
+						<button id="ReadingView" 
+						label="Read"
+						getImage="Ribbon.GetRibbonImages"
+						screentip="Reading View"
+						supertip="Switches to reading view. (Ctrl/Cmd + Alt + R)"
+						onAction="Ribbon.RibbonMain" />
+					</box>
+
+					<box id="ViewBox3" boxStyle="horizontal">
+						<button id="DefaultView" 
+						getLabel="GetRibbonLabels"
+						getImage="GetRibbonImages"
+						screentip="Default View"
+						supertip="Switches to the default view."
+						onAction="Ribbon.RibbonMain" />
+					</box>
+					
+					<separator id="ViewSep1" />
+					
+					<box id="ViewBox4" boxStyle="horizontal">
+					    <toggleButton id="InvisibilityMode"
+						description="Invisibility Mode"
+						image="eye"
+						screentip="Invisibility Mode"
+						supertip="Toggles 'invisibility' mode, which hides all card text except highlighted text. (Ctrl/Cmd + Shift + V goes visible)"
+						getPressed="GetRibbonToggles"
+						onAction="View.InvisibilityMode" />
+					</box>
+					<box id="ViewBox5" boxStyle="horizontal">					    
+                        <button id="WindowArranger" 
+                        description="Arranges Windows"
+                        image="arrange"
+                        screentip="Window Arranger"
+                        supertip="Arranges open windows side-by-side, with the active Speech doc on the right. Can be configured in the Verbatim settings. (Ctrl/Cmd + Shift + Tab)"
+                        onAction="Ribbon.RibbonMain" />
+					</box>
+					
+					<box id="ViewBox6" boxStyle="horizontal">
+					    <control idMso="WindowSwitchWindowsMenuWord" showLabel="false" supertip="Cycle through currently open windows. (Ctrl/Cmd + Tab)" />
+					</box>
+				</group>
+				
+				<group id="Caselist" label="Caselist" imageMso="UpgradeDocument" getVisible="Ribbon.GetRibbonVisibility">
+					<box id="CaselistBox1" boxStyle="horizontal">
+							<button id="CaselistWizard" 
+							description="Caselist Wizard"
+							label="Caselist"
+							getImage="Ribbon.GetRibbonImages"
+							screentip="Caselist Wizard"
+							supertip="Opens the Caselist Wizard to walk you through uploading your document to the college or high school wiki as cites, open source, or both."
+							onAction="Ribbon.RibbonMain" />							
+                    </box>
+                    <box id="CaselistBox2" boxStyle="horizontal">
+							<button id="ConvertToWiki" 
+							description="Convert Document to Wiki Syntax" 
+							label="Wikify" 
+							imageMso="OrganizationChartLayoutRightHanging"
+							screentip="Convert To Wiki Syntax"
+							supertip="Converts your document into wiki-ready syntax."
+							onAction="Ribbon.RibbonMain" />
+                    </box>
+                    <box id="CaselistBox3" boxStyle="horizontal">
+							<menu id="CaselistMenu1" label="Citeify" imageMso="MailMergeSetDocumentType">
+								<button id="CiteRequestDoc" 
+								label="Cite Request Doc"
+								description="Turn Doc into cite request"
+								imageMso="MailMergeSetDocumentType"
+								supertip="Turns your document into a cite-request ready format."
+								onAction="Ribbon.RibbonMain" />
+												
+								<button id="CiteRequest" 
+								description="Turn Card into cite request" 
+								label="Cite Request Card" 
+								imageMso="FileSendAsAttachment"
+								supertip="Turns a single card into cite-request ready format. (Ctrl/Cmd + Shift + Q)"
+								onAction="Ribbon.RibbonMain" />
+							</menu>
+					</box>
+				</group>
+
+				<group id="Settings" label="Settings" imageMso="AddInManager" getVisible="Ribbon.GetRibbonVisibility">
+					<box id="SettingsBox1" boxStyle="horizontal">
+						<button id="LaunchWebsite" 
+						label="paperlessdebate" 
+						imageMso="ContactWebPage" 
+						screentip="Open paperlessdebate.com"
+						supertip="Opens paperlessdebate.com in a web browser."
+						onAction="Ribbon.RibbonMain"  />
+					</box>				
+
+					<box id="SettingsBox2" boxStyle="horizontal">
+						<button id="VerbatimHelp" 
+						label="Verbatim Help" 
+						description="Open Verbatim Help" 
+						imageMso="Help"
+						screentip="Verbatim Help"
+						supertip="Opens Verbatim Help. (F1)"
+						onAction="Ribbon.RibbonMain" />
+					</box>
+
+					<box id="SettingsBox3" boxStyle="horizontal">
+					    <button id="CheatSheet" 
+						description="Cheat Sheet"
+						imageMso="AdvertisePublishAs"
+						screentip="Shortcut Cheat Sheet"
+						supertip="Opens a cheat sheet with all the Verbatim keyboard shortcuts for easy reference."
+						onAction="Ribbon.RibbonMain" />
+
+						<labelControl id="lblSep14" label="|" enabled="false"/>
+
+						<button id="VerbatimSettings2" 
+						label="Settings" 
+						imageMso="AddInManager" 
+						onAction="Ribbon.RibbonMain" 
+						supertip="Opens the Verbatim Settings (Alt + F1)" />
+					</box>
+				</group>				
+			</tab>
+		</tabs>
+	</ribbon>
+</customUI>
