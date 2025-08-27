@@ -1,0 +1,35 @@
+{
+	"scripts": {
+		"format": "npm run format --workspaces --if-present",
+		"format:check": "npm run format:check --workspaces --if-present",
+		"lint": "npm run lint --workspaces --if-present",
+		"test": "npm run test --workspaces --if-present",
+		"test:ci": "npm run test:ci --workspaces --if-present",
+		"build": "npm run build --workspaces --if-present",
+		"prepare": "husky"
+	},
+	"name": "verbatim",
+	"workspaces": [
+		"chrome",
+		"gdocs",
+		"owa"
+	],
+	"version": "1.0.0",
+	"type": "module",
+	"private": true,
+	"description": "Verbatim",
+	"keywords": [],
+	"homepage": "https://paperlessdebate.cmo",
+	"author": "Aaron Hardy <support@paperlessdebate.com> (https://paperlessdebate.com)",
+	"license": "GPL-3.0-only",
+	"main": "index.js",
+	"engines": {
+		"node": ">= 22.11.0"
+	},
+	"devDependencies": {
+		"@speechanddebate/eslint-config-nsda": "^2.0.17",
+		"eslint": "^8.57.0",
+		"husky": "^9.1.7",
+		"prettier": "3.5.3"
+	}
+}

@@ -1,16 +1,19 @@
 {
-  "name": "verbatim",
-  "version": "1.0.0",
-  "description": "Verbatim",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "clasp push --watch",
-    "logs": "clasp logs --watch"
-  },
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/google-apps-script": "^1.0.31"
-  }
+	"name": "verbatim",
+	"version": "1.0.0",
+	"description": "Verbatim",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"dev": "clasp push --watch",
+		"logs": "clasp logs --watch",
+		"lint": "eslint . --max-warnings 0",
+		"format": "prettier . --write --config ../.prettierrc --ignore-path ../.prettierignore",
+		"format:check": "prettier . --check --config ../.prettierrc --ignore-path ../.prettierignore"
+	},
+	"author": "",
+	"license": "GPL-3.0-only",
+	"devDependencies": {
+		"@types/google-apps-script": "^1.0.31"
+	}
 }

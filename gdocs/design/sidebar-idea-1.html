@@ -1,154 +1,158 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Debate Sidebar</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
-body {
-  font-family: Segoe UI, Arial, sans-serif;
-  margin: 0;
-  background: #f5f5f5;
-}
-.sidebar {
-  width: 260px;
-  background: #fff;
-  border-right: 1px solid #ccc;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow-y: auto;
-}
-.group {
-  border-bottom: 1px solid #ddd;
-  padding: 8px;
-}
-.group h3 {
-  font-size: 13px;
-  font-weight: bold;
-  margin: 0 0 6px;
-  color: #444;
-  text-transform: uppercase;
-}
-.button-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-.button {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: #f0f0f0;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  padding: 4px 6px;
-  font-size: 12px;
-  cursor: pointer;
-  flex: 1 1 auto;
-}
-.button:hover {
-  background: #e0e0e0;
-}
-.button i {
-  font-size: 14px;
-  color: #555;
-}
-.separator {
-  width: 100%;
-  height: 1px;
-  background: #ddd;
-  margin: 4px 0;
-}
-</style>
-</head>
-<body>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Debate Sidebar</title>
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+		/>
+		<style>
+			body {
+				font-family:
+					Segoe UI,
+					Arial,
+					sans-serif;
+				margin: 0;
+				background: #f5f5f5;
+			}
+			.sidebar {
+				width: 260px;
+				background: #fff;
+				border-right: 1px solid #ccc;
+				display: flex;
+				flex-direction: column;
+				height: 100vh;
+				overflow-y: auto;
+			}
+			.group {
+				border-bottom: 1px solid #ddd;
+				padding: 8px;
+			}
+			.group h3 {
+				font-size: 13px;
+				font-weight: bold;
+				margin: 0 0 6px;
+				color: #444;
+				text-transform: uppercase;
+			}
+			.button-row {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 4px;
+			}
+			.button {
+				display: flex;
+				align-items: center;
+				gap: 4px;
+				background: #f0f0f0;
+				border: 1px solid #ccc;
+				border-radius: 3px;
+				padding: 4px 6px;
+				font-size: 12px;
+				cursor: pointer;
+				flex: 1 1 auto;
+			}
+			.button:hover {
+				background: #e0e0e0;
+			}
+			.button i {
+				font-size: 14px;
+				color: #555;
+			}
+			.separator {
+				width: 100%;
+				height: 1px;
+				background: #ddd;
+				margin: 4px 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="sidebar">
+			<div class="group">
+				<h3>Speech</h3>
+				<div class="button-row">
+					<div class="button"><i class="fas fa-arrow-right"></i>Send</div>
+					<div class="button">
+						<i class="fas fa-layer-group"></i>Quick Cards
+					</div>
+					<div class="button"><i class="fas fa-box"></i>Virtual Tub</div>
+				</div>
+			</div>
 
-<div class="sidebar">
+			<div class="group">
+				<h3>Organize</h3>
+				<div class="button-row">
+					<div class="button">F2 Paste</div>
+					<div class="button">F3 Condense</div>
+					<div class="button">F4 Pocket</div>
+					<div class="button">F5 Hat</div>
+					<div class="button">F6 Block</div>
+				</div>
+			</div>
 
-  <div class="group">
-    <h3>Speech</h3>
-    <div class="button-row">
-      <div class="button"><i class="fas fa-arrow-right"></i>Send</div>
-      <div class="button"><i class="fas fa-layer-group"></i>Quick Cards</div>
-      <div class="button"><i class="fas fa-box"></i>Virtual Tub</div>
-    </div>
-  </div>
+			<div class="group">
+				<h3>Format</h3>
+				<div class="button-row">
+					<div class="button"><i class="fas fa-compress-alt"></i>Shrink</div>
+					<div class="button"><i class="fas fa-underline"></i>Underline</div>
+					<div class="button"><i class="fas fa-highlighter"></i>Highlight</div>
+				</div>
+			</div>
 
-  <div class="group">
-    <h3>Organize</h3>
-    <div class="button-row">
-      <div class="button">F2 Paste</div>
-      <div class="button">F3 Condense</div>
-      <div class="button">F4 Pocket</div>
-      <div class="button">F5 Hat</div>
-      <div class="button">F6 Block</div>
-    </div>
-  </div>
+			<div class="group">
+				<h3>Paperless</h3>
+				<div class="button-row">
+					<div class="button"><i class="fas fa-file-alt"></i>Speech</div>
+					<div class="button"><i class="fas fa-check"></i>Choose</div>
+					<div class="button"><i class="fas fa-plus"></i>New</div>
+					<div class="button"><i class="fas fa-object-group"></i>Merge</div>
+					<div class="button"><i class="fas fa-usb"></i>USB</div>
+					<div class="button"><i class="fas fa-share"></i>Share</div>
+				</div>
+			</div>
 
-  <div class="group">
-    <h3>Format</h3>
-    <div class="button-row">
-      <div class="button"><i class="fas fa-compress-alt"></i>Shrink</div>
-      <div class="button"><i class="fas fa-underline"></i>Underline</div>
-      <div class="button"><i class="fas fa-highlighter"></i>Highlight</div>
-    </div>
-  </div>
+			<div class="group">
+				<h3>Tools</h3>
+				<div class="button-row">
+					<div class="button"><i class="fas fa-hourglass"></i>Timer</div>
+					<div class="button"><i class="fas fa-camera"></i>OCR</div>
+					<div class="button"><i class="fas fa-calculator"></i>Stats</div>
+					<div class="button"><i class="fas fa-microphone"></i>Record</div>
+					<div class="button"><i class="fas fa-search"></i>Search</div>
+				</div>
+			</div>
 
-  <div class="group">
-    <h3>Paperless</h3>
-    <div class="button-row">
-      <div class="button"><i class="fas fa-file-alt"></i>Speech</div>
-      <div class="button"><i class="fas fa-check"></i>Choose</div>
-      <div class="button"><i class="fas fa-plus"></i>New</div>
-      <div class="button"><i class="fas fa-object-group"></i>Merge</div>
-      <div class="button"><i class="fas fa-usb"></i>USB</div>
-      <div class="button"><i class="fas fa-share"></i>Share</div>
-    </div>
-  </div>
+			<div class="group">
+				<h3>View</h3>
+				<div class="button-row">
+					<div class="button">Nav</div>
+					<div class="button"><i class="fas fa-book-reader"></i>Read</div>
+					<div class="button">Default</div>
+					<div class="button"><i class="fas fa-eye-slash"></i>Invisible</div>
+					<div class="button"><i class="fas fa-columns"></i>Arrange</div>
+				</div>
+			</div>
 
-  <div class="group">
-    <h3>Tools</h3>
-    <div class="button-row">
-      <div class="button"><i class="fas fa-hourglass"></i>Timer</div>
-      <div class="button"><i class="fas fa-camera"></i>OCR</div>
-      <div class="button"><i class="fas fa-calculator"></i>Stats</div>
-      <div class="button"><i class="fas fa-microphone"></i>Record</div>
-      <div class="button"><i class="fas fa-search"></i>Search</div>
-    </div>
-  </div>
+			<div class="group">
+				<h3>Caselist</h3>
+				<div class="button-row">
+					<div class="button">Caselist</div>
+					<div class="button">Wikify</div>
+					<div class="button">Citeify</div>
+				</div>
+			</div>
 
-  <div class="group">
-    <h3>View</h3>
-    <div class="button-row">
-      <div class="button">Nav</div>
-      <div class="button"><i class="fas fa-book-reader"></i>Read</div>
-      <div class="button">Default</div>
-      <div class="button"><i class="fas fa-eye-slash"></i>Invisible</div>
-      <div class="button"><i class="fas fa-columns"></i>Arrange</div>
-    </div>
-  </div>
-
-  <div class="group">
-    <h3>Caselist</h3>
-    <div class="button-row">
-      <div class="button">Caselist</div>
-      <div class="button">Wikify</div>
-      <div class="button">Citeify</div>
-    </div>
-  </div>
-
-  <div class="group">
-    <h3>Settings</h3>
-    <div class="button-row">
-      <div class="button">paperlessdebate</div>
-      <div class="button">Help</div>
-      <div class="button">Cheat Sheet</div>
-      <div class="button">Settings</div>
-    </div>
-  </div>
-
-</div>
-
-</body>
+			<div class="group">
+				<h3>Settings</h3>
+				<div class="button-row">
+					<div class="button">paperlessdebate</div>
+					<div class="button">Help</div>
+					<div class="button">Cheat Sheet</div>
+					<div class="button">Settings</div>
+				</div>
+			</div>
+		</div>
+	</body>
 </html>

@@ -1,379 +1,700 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<title>Debate Ribbon – Vertical Sidebar</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
-  :root{
-    --bg:#ffffff;
-    --panel:#f6f7f9;
-    --ink:#333;
-    --muted:#667085;
-    --line:#dcdfe4;
-    --accent:#e9eef6;
-    --btn:#eff1f4;
-    --btn-hover:#e6e9ee;
-    --chip:#f1f5ff;
-    --radius:8px;
-  }
-  html,body{height:100%}
-  body{
-    margin:0;
-    font:13px/1.35 "Segoe UI", Roboto, Arial, sans-serif;
-    color:var(--ink);
-    background:var(--panel);
-  }
-  .sidebar{
-    width:320px; max-width:100%;
-    height:100vh; overflow:auto;
-    background:var(--bg);
-    border-right:1px solid var(--line);
-    display:flex; flex-direction:column;
-  }
-  .brand{
-    padding:10px 12px;
-    border-bottom:1px solid var(--line);
-    background:linear-gradient(#fff,#fafbfc);
-    display:flex; align-items:center; gap:8px;
-    position:sticky; top:0; z-index:5;
-  }
-  .brand .tab{
-    padding:6px 10px; background:var(--chip);
-    border:1px solid #d7def2; border-radius:6px; font-weight:600;
-  }
+	<head>
+		<meta charset="UTF-8" />
+		<title>Debate Ribbon – Vertical Sidebar</title>
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+		/>
+		<style>
+			:root {
+				--bg: #ffffff;
+				--panel: #f6f7f9;
+				--ink: #333;
+				--muted: #667085;
+				--line: #dcdfe4;
+				--accent: #e9eef6;
+				--btn: #eff1f4;
+				--btn-hover: #e6e9ee;
+				--chip: #f1f5ff;
+				--radius: 8px;
+			}
+			html,
+			body {
+				height: 100%;
+			}
+			body {
+				margin: 0;
+				font:
+					13px/1.35 'Segoe UI',
+					Roboto,
+					Arial,
+					sans-serif;
+				color: var(--ink);
+				background: var(--panel);
+			}
+			.sidebar {
+				width: 320px;
+				max-width: 100%;
+				height: 100vh;
+				overflow: auto;
+				background: var(--bg);
+				border-right: 1px solid var(--line);
+				display: flex;
+				flex-direction: column;
+			}
+			.brand {
+				padding: 10px 12px;
+				border-bottom: 1px solid var(--line);
+				background: linear-gradient(#fff, #fafbfc);
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				position: sticky;
+				top: 0;
+				z-index: 5;
+			}
+			.brand .tab {
+				padding: 6px 10px;
+				background: var(--chip);
+				border: 1px solid #d7def2;
+				border-radius: 6px;
+				font-weight: 600;
+			}
 
-  .group{
-    padding:10px 10px 12px;
-    border-bottom:1px solid var(--line);
-    background:var(--bg);
-  }
-  .group-title{
-    margin:0 0 8px 0;
-    font-size:12px; text-transform:uppercase; letter-spacing:.5px;
-    color:#4a5568; display:flex; align-items:center; gap:8px;
-  }
-  .row{ display:flex; flex-wrap:wrap; gap:6px; }
+			.group {
+				padding: 10px 10px 12px;
+				border-bottom: 1px solid var(--line);
+				background: var(--bg);
+			}
+			.group-title {
+				margin: 0 0 8px 0;
+				font-size: 12px;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+				color: #4a5568;
+				display: flex;
+				align-items: center;
+				gap: 8px;
+			}
+			.row {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 6px;
+			}
 
-  /* Buttons */
-  .btn{
-    display:inline-flex; align-items:center; gap:6px;
-    background:var(--btn); border:1px solid #cfd6e0;
-    border-radius:6px; padding:6px 8px;
-    cursor:pointer; user-select:none; white-space:nowrap;
-  }
-  .btn:where(:hover,:focus){ background:var(--btn-hover); }
-  .btn .icon{width:16px; text-align:center; color:#5a6472;}
-  .btn.small{ padding:4px 6px; font-size:12px }
-  .btn.block{ flex:1 1 100% }
-  .btn.seamless{
-    background:transparent; border-color:transparent; padding:0 2px;
-  }
+			/* Buttons */
+			.btn {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				background: var(--btn);
+				border: 1px solid #cfd6e0;
+				border-radius: 6px;
+				padding: 6px 8px;
+				cursor: pointer;
+				user-select: none;
+				white-space: nowrap;
+			}
+			.btn:where(:hover, :focus) {
+				background: var(--btn-hover);
+			}
+			.btn .icon {
+				width: 16px;
+				text-align: center;
+				color: #5a6472;
+			}
+			.btn.small {
+				padding: 4px 6px;
+				font-size: 12px;
+			}
+			.btn.block {
+				flex: 1 1 100%;
+			}
+			.btn.seamless {
+				background: transparent;
+				border-color: transparent;
+				padding: 0 2px;
+			}
 
-  /* Split + Menu */
-  details.split, details.menu{
-    border:1px solid #cfd6e0; border-radius:6px; background:var(--btn);
-    overflow:hidden; min-width:100%;
-  }
-  details.split>summary, details.menu>summary{
-    list-style:none; cursor:pointer; padding:6px 8px; display:flex; align-items:center; gap:8px;
-  }
-  details[open]>summary{ background:var(--btn-hover); }
-  .menu-panel{
-    border-top:1px solid var(--line); background:#fff;
-    padding:6px;
-    display:flex; flex-direction:column; gap:6px;
-  }
-  .menu-sep{
-    margin:4px 0; padding:4px 0;
-    color:var(--muted); font-weight:600; font-size:11px;
-    border-top:1px dashed var(--line);
-  }
+			/* Split + Menu */
+			details.split,
+			details.menu {
+				border: 1px solid #cfd6e0;
+				border-radius: 6px;
+				background: var(--btn);
+				overflow: hidden;
+				min-width: 100%;
+			}
+			details.split > summary,
+			details.menu > summary {
+				list-style: none;
+				cursor: pointer;
+				padding: 6px 8px;
+				display: flex;
+				align-items: center;
+				gap: 8px;
+			}
+			details[open] > summary {
+				background: var(--btn-hover);
+			}
+			.menu-panel {
+				border-top: 1px solid var(--line);
+				background: #fff;
+				padding: 6px;
+				display: flex;
+				flex-direction: column;
+				gap: 6px;
+			}
+			.menu-sep {
+				margin: 4px 0;
+				padding: 4px 0;
+				color: var(--muted);
+				font-weight: 600;
+				font-size: 11px;
+				border-top: 1px dashed var(--line);
+			}
 
-  /* Toggle buttons */
-  .toggle{ gap:8px }
-  .toggle input{ appearance:none; width:28px; height:16px; border-radius:999px; background:#d3d8e1; position:relative; outline:none; transition:.2s; border:1px solid #c3cada }
-  .toggle input:after{ content:""; width:12px; height:12px; border-radius:50%; background:white; position:absolute; top:1px; left:1px; transition:.2s; box-shadow:0 1px 2px rgba(0,0,0,.15)}
-  .toggle input:checked{ background:#78a6ff }
-  .toggle input:checked:after{ left:13px }
-  .toggle label{ cursor:pointer }
+			/* Toggle buttons */
+			.toggle {
+				gap: 8px;
+			}
+			.toggle input {
+				appearance: none;
+				width: 28px;
+				height: 16px;
+				border-radius: 999px;
+				background: #d3d8e1;
+				position: relative;
+				outline: none;
+				transition: 0.2s;
+				border: 1px solid #c3cada;
+			}
+			.toggle input:after {
+				content: '';
+				width: 12px;
+				height: 12px;
+				border-radius: 50%;
+				background: white;
+				position: absolute;
+				top: 1px;
+				left: 1px;
+				transition: 0.2s;
+				box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+			}
+			.toggle input:checked {
+				background: #78a6ff;
+			}
+			.toggle input:checked:after {
+				left: 13px;
+			}
+			.toggle label {
+				cursor: pointer;
+			}
 
-  /* Inputs */
-  .input{
-    display:flex; gap:6px; align-items:center;
-    background:#fff; border:1px solid #cfd6e0; border-radius:6px; padding:6px 8px;
-  }
-  .input input{ border:none; outline:none; width:100%; font:inherit; }
-  .note{ color:var(--muted); font-size:12px }
+			/* Inputs */
+			.input {
+				display: flex;
+				gap: 6px;
+				align-items: center;
+				background: #fff;
+				border: 1px solid #cfd6e0;
+				border-radius: 6px;
+				padding: 6px 8px;
+			}
+			.input input {
+				border: none;
+				outline: none;
+				width: 100%;
+				font: inherit;
+			}
+			.note {
+				color: var(--muted);
+				font-size: 12px;
+			}
 
-  .sep{ height:1px; background:var(--line); margin:10px 0 6px }
+			.sep {
+				height: 1px;
+				background: var(--line);
+				margin: 10px 0 6px;
+			}
 
-  /* Helpers */
-  .w100{ flex:1 1 100%; }
-  .two-col .btn{ flex:1 1 calc(50% - 6px); }
-  .nowrap{ white-space:nowrap }
-</style>
-</head>
-<body>
-<div class="sidebar">
-  <div class="brand">
-    <span class="tab">Debate</span>
-    <span class="note">Vertical Ribbon</span>
-  </div>
+			/* Helpers */
+			.w100 {
+				flex: 1 1 100%;
+			}
+			.two-col .btn {
+				flex: 1 1 calc(50% - 6px);
+			}
+			.nowrap {
+				white-space: nowrap;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="sidebar">
+			<div class="brand">
+				<span class="tab">Debate</span>
+				<span class="note">Vertical Ribbon</span>
+			</div>
 
-  <!-- SPEECH -->
-  <section class="group" data-group="Speech">
-    <h3 class="group-title"><i class="icon fa-solid fa-comments"></i> Speech</h3>
-    <div class="row">
-      <!-- Send split -->
-      <details class="split w100" data-id="SendSplit">
-        <summary><i class="icon fa-solid fa-arrow-right"></i><strong>Send</strong> <span class="note">(`)</span></summary>
-        <div class="menu-panel">
-          <button class="btn w100" data-id="SendToSpeech2"><i class="icon fa-solid fa-arrow-right"></i>Send To Speech</button>
-          <button class="btn w100" data-id="SendToSpeechEnd"><i class="icon fa-solid fa-angles-right"></i>Send To Speech End</button>
-          <button class="btn w100" data-id="SendToFlowCell"><i class="icon fa-solid fa-table-cells"></i>Send To Flow (Cell)</button>
-          <button class="btn w100" data-id="SendToFlowColumn"><i class="icon fa-solid fa-table-columns"></i>Send To Flow (Column)</button>
-          <button class="btn w100" data-id="SendHeadingsToFlowCell"><i class="icon fa-solid fa-heading"></i>Send Headings To Flow (Cell)</button>
-          <button class="btn w100" data-id="SendHeadingsToFlowColumn"><i class="icon fa-solid fa-heading"></i>Send Headings To Flow (Column)</button>
-          <button class="btn w100" data-id="SelectHeadingAndContent"><i class="icon fa-solid fa-list-check"></i>Select Heading and Content</button>
-          <button class="btn w100" data-id="MoveDown"><i class="icon fa-solid fa-arrow-down"></i>Move Heading Down</button>
-          <button class="btn w100" data-id="MoveUp"><i class="icon fa-solid fa-arrow-up"></i>Move Heading Up</button>
-          <button class="btn w100" data-id="MoveToBottom"><i class="icon fa-solid fa-angles-down"></i>Move To Bottom</button>
-        </div>
-      </details>
-      <button class="btn w100" data-id="QuickCards"><i class="icon fa-solid fa-layer-group"></i>QuickCards</button>
-      <button class="btn w100" data-id="VirtualTub"><i class="icon fa-solid fa-box"></i>Virtual Tub</button>
-    </div>
-  </section>
+			<!-- SPEECH -->
+			<section class="group" data-group="Speech">
+				<h3 class="group-title">
+					<i class="icon fa-solid fa-comments"></i> Speech
+				</h3>
+				<div class="row">
+					<!-- Send split -->
+					<details class="split w100" data-id="SendSplit">
+						<summary>
+							<i class="icon fa-solid fa-arrow-right"></i><strong>Send</strong>
+							<span class="note">(`)</span>
+						</summary>
+						<div class="menu-panel">
+							<button class="btn w100" data-id="SendToSpeech2">
+								<i class="icon fa-solid fa-arrow-right"></i>Send To Speech
+							</button>
+							<button class="btn w100" data-id="SendToSpeechEnd">
+								<i class="icon fa-solid fa-angles-right"></i>Send To Speech End
+							</button>
+							<button class="btn w100" data-id="SendToFlowCell">
+								<i class="icon fa-solid fa-table-cells"></i>Send To Flow (Cell)
+							</button>
+							<button class="btn w100" data-id="SendToFlowColumn">
+								<i class="icon fa-solid fa-table-columns"></i>Send To Flow
+								(Column)
+							</button>
+							<button class="btn w100" data-id="SendHeadingsToFlowCell">
+								<i class="icon fa-solid fa-heading"></i>Send Headings To Flow
+								(Cell)
+							</button>
+							<button class="btn w100" data-id="SendHeadingsToFlowColumn">
+								<i class="icon fa-solid fa-heading"></i>Send Headings To Flow
+								(Column)
+							</button>
+							<button class="btn w100" data-id="SelectHeadingAndContent">
+								<i class="icon fa-solid fa-list-check"></i>Select Heading and
+								Content
+							</button>
+							<button class="btn w100" data-id="MoveDown">
+								<i class="icon fa-solid fa-arrow-down"></i>Move Heading Down
+							</button>
+							<button class="btn w100" data-id="MoveUp">
+								<i class="icon fa-solid fa-arrow-up"></i>Move Heading Up
+							</button>
+							<button class="btn w100" data-id="MoveToBottom">
+								<i class="icon fa-solid fa-angles-down"></i>Move To Bottom
+							</button>
+						</div>
+					</details>
+					<button class="btn w100" data-id="QuickCards">
+						<i class="icon fa-solid fa-layer-group"></i>QuickCards
+					</button>
+					<button class="btn w100" data-id="VirtualTub">
+						<i class="icon fa-solid fa-box"></i>Virtual Tub
+					</button>
+				</div>
+			</section>
 
-  <!-- ORGANIZE -->
-  <section class="group" data-group="Organize">
-    <h3 class="group-title"><i class="icon fa-solid fa-diagram-project"></i> Organize</h3>
-    <div class="row two-col">
-      <button class="btn" data-id="F2Button">F2 Paste</button>
-      <button class="btn" data-id="F3Button">F3 Condense</button>
-      <button class="btn" data-id="F4Button">F4 Pocket</button>
-      <button class="btn" data-id="F5Button">F5 Hat</button>
-      <button class="btn" data-id="F6Button">F6 Block</button>
-      <button class="btn" data-id="F7Button">F7 Tag</button>
-      <button class="btn" data-id="F8Button">F8 Cite</button>
-      <button class="btn" data-id="F9Button">F9 Underline</button>
-      <button class="btn" data-id="F10Button">F10 Emphasis</button>
-      <button class="btn" data-id="F11Button">F11 Highlight</button>
-      <button class="btn" data-id="F12Button">F12 Clear</button>
-    </div>
-  </section>
+			<!-- ORGANIZE -->
+			<section class="group" data-group="Organize">
+				<h3 class="group-title">
+					<i class="icon fa-solid fa-diagram-project"></i> Organize
+				</h3>
+				<div class="row two-col">
+					<button class="btn" data-id="F2Button">F2 Paste</button>
+					<button class="btn" data-id="F3Button">F3 Condense</button>
+					<button class="btn" data-id="F4Button">F4 Pocket</button>
+					<button class="btn" data-id="F5Button">F5 Hat</button>
+					<button class="btn" data-id="F6Button">F6 Block</button>
+					<button class="btn" data-id="F7Button">F7 Tag</button>
+					<button class="btn" data-id="F8Button">F8 Cite</button>
+					<button class="btn" data-id="F9Button">F9 Underline</button>
+					<button class="btn" data-id="F10Button">F10 Emphasis</button>
+					<button class="btn" data-id="F11Button">F11 Highlight</button>
+					<button class="btn" data-id="F12Button">F12 Clear</button>
+				</div>
+			</section>
 
-  <!-- FORMAT -->
-  <section class="group" data-group="Format">
-    <h3 class="group-title"><i class="icon fa-solid fa-wand-magic-sparkles"></i> Format</h3>
-    <div class="row">
-      <!-- Shrink split -->
-      <details class="split w100" data-id="ShrinkSplit">
-        <summary><i class="icon fa-solid fa-compress"></i><strong>Shrink</strong></summary>
-        <div class="menu-panel">
-          <button class="btn w100" data-id="ShrinkText2"><i class="icon fa-solid fa-compress"></i>Shrink</button>
-          <button class="btn w100" data-id="ShrinkAll"><i class="icon fa-solid fa-compress"></i>Shrink All</button>
-          <button class="btn w100" data-id="ShrinkPilcrows"><i class="icon fa-regular fa-paragraph"></i>Shrink Pilcrows</button>
-          <button class="btn w100" data-id="UnshrinkAll"><i class="icon fa-solid fa-expand"></i>Unshrink All</button>
-        </div>
-      </details>
+			<!-- FORMAT -->
+			<section class="group" data-group="Format">
+				<h3 class="group-title">
+					<i class="icon fa-solid fa-wand-magic-sparkles"></i> Format
+				</h3>
+				<div class="row">
+					<!-- Shrink split -->
+					<details class="split w100" data-id="ShrinkSplit">
+						<summary>
+							<i class="icon fa-solid fa-compress"></i><strong>Shrink</strong>
+						</summary>
+						<div class="menu-panel">
+							<button class="btn w100" data-id="ShrinkText2">
+								<i class="icon fa-solid fa-compress"></i>Shrink
+							</button>
+							<button class="btn w100" data-id="ShrinkAll">
+								<i class="icon fa-solid fa-compress"></i>Shrink All
+							</button>
+							<button class="btn w100" data-id="ShrinkPilcrows">
+								<i class="icon fa-regular fa-paragraph"></i>Shrink Pilcrows
+							</button>
+							<button class="btn w100" data-id="UnshrinkAll">
+								<i class="icon fa-solid fa-expand"></i>Unshrink All
+							</button>
+						</div>
+					</details>
 
-      <!-- Underline Mode toggle -->
-      <div class="btn toggle w100" data-id="UnderlineMode">
-        <input type="checkbox" aria-label="Underline Mode" />
-        <label><i class="icon fa-solid fa-underline"></i>Underlining Mode</label>
-      </div>
+					<!-- Underline Mode toggle -->
+					<div class="btn toggle w100" data-id="UnderlineMode">
+						<input type="checkbox" aria-label="Underline Mode" />
+						<label
+							><i class="icon fa-solid fa-underline"></i>Underlining Mode</label
+						>
+					</div>
 
-      <!-- Color / Paragraph toggles -->
-      <div class="row w100">
-        <div class="btn small"><i class="icon fa-solid fa-highlighter"></i>Highlight Color</div>
-        <span class="btn seamless">|</span>
-        <div class="btn toggle" data-id="ParagraphIntegrity"><input type="checkbox"/><label><i class="icon fa-solid fa-paragraph"></i>Paragraph Integrity</label></div>
-        <span class="btn seamless">|</span>
-        <div class="btn toggle" data-id="UsePilcrows"><input type="checkbox"/><label><i class="icon fa-solid fa-paragraph"></i>Use Pilcrows</label></div>
-      </div>
+					<!-- Color / Paragraph toggles -->
+					<div class="row w100">
+						<div class="btn small">
+							<i class="icon fa-solid fa-highlighter"></i>Highlight Color
+						</div>
+						<span class="btn seamless">|</span>
+						<div class="btn toggle" data-id="ParagraphIntegrity">
+							<input type="checkbox" /><label
+								><i class="icon fa-solid fa-paragraph"></i>Paragraph
+								Integrity</label
+							>
+						</div>
+						<span class="btn seamless">|</span>
+						<div class="btn toggle" data-id="UsePilcrows">
+							<input type="checkbox" /><label
+								><i class="icon fa-solid fa-paragraph"></i>Use Pilcrows</label
+							>
+						</div>
+					</div>
 
-      <!-- Doc / Card menus -->
-      <details class="menu w100" data-id="FormatMenu1">
-        <summary><i class="icon fa-solid fa-file-lines"></i><strong>Doc</strong></summary>
-        <div class="menu-panel">
-          <div class="menu-sep">Automatic Fixers</div>
-          <button class="btn w100" data-id="FixFakeTags">Fix Fake Tags</button>
-          <button class="btn w100" data-id="ConvertAnalyticsToTags">Convert Analytics To Tags</button>
-          <button class="btn w100" data-id="FixFormattingGaps">Fix Formatting Gaps</button>
-          <button class="btn w100" data-id="ConvertToDefaultStyles">Convert To Default Styles</button>
-          <button class="btn w100" data-id="RemoveExtraStyles">Remove Extra Styles</button>
-          <button class="btn w100" data-id="AutoNumberTags">Auto Number Tags</button>
-          <button class="btn w100" data-id="DeNumberTags">De-Number Tags</button>
-          <button class="btn w100" data-id="InsertHeader">Insert Header</button>
+					<!-- Doc / Card menus -->
+					<details class="menu w100" data-id="FormatMenu1">
+						<summary>
+							<i class="icon fa-solid fa-file-lines"></i><strong>Doc</strong>
+						</summary>
+						<div class="menu-panel">
+							<div class="menu-sep">Automatic Fixers</div>
+							<button class="btn w100" data-id="FixFakeTags">
+								Fix Fake Tags
+							</button>
+							<button class="btn w100" data-id="ConvertAnalyticsToTags">
+								Convert Analytics To Tags
+							</button>
+							<button class="btn w100" data-id="FixFormattingGaps">
+								Fix Formatting Gaps
+							</button>
+							<button class="btn w100" data-id="ConvertToDefaultStyles">
+								Convert To Default Styles
+							</button>
+							<button class="btn w100" data-id="RemoveExtraStyles">
+								Remove Extra Styles
+							</button>
+							<button class="btn w100" data-id="AutoNumberTags">
+								Auto Number Tags
+							</button>
+							<button class="btn w100" data-id="DeNumberTags">
+								De-Number Tags
+							</button>
+							<button class="btn w100" data-id="InsertHeader">
+								Insert Header
+							</button>
 
-          <div class="menu-sep">Removal Tools</div>
-          <button class="btn w100" data-id="RemoveEmphasis">Remove Emphasis</button>
-          <button class="btn w100" data-id="RemoveNonHighlightedUnderlining">Remove Non-Highlighted Underlining</button>
-          <button class="btn w100" data-id="RemoveBlanks">Remove Blanks</button>
-          <button class="btn w100" data-id="RemovePilcrows">Remove Pilcrows</button>
-          <button class="btn w100" data-id="RemoveHyperlinks">Remove Hyperlinks</button>
-          <button class="btn w100" data-id="RemoveBookmarks">Remove Bookmarks</button>
+							<div class="menu-sep">Removal Tools</div>
+							<button class="btn w100" data-id="RemoveEmphasis">
+								Remove Emphasis
+							</button>
+							<button
+								class="btn w100"
+								data-id="RemoveNonHighlightedUnderlining"
+							>
+								Remove Non-Highlighted Underlining
+							</button>
+							<button class="btn w100" data-id="RemoveBlanks">
+								Remove Blanks
+							</button>
+							<button class="btn w100" data-id="RemovePilcrows">
+								Remove Pilcrows
+							</button>
+							<button class="btn w100" data-id="RemoveHyperlinks">
+								Remove Hyperlinks
+							</button>
+							<button class="btn w100" data-id="RemoveBookmarks">
+								Remove Bookmarks
+							</button>
 
-          <div class="menu-sep">Styles</div>
-          <button class="btn w100" data-id="UpdateStyles">Update Styles</button>
-          <button class="btn w100" data-id="SelectSimilar">Select Similar Formatting</button>
-          <div class="note">Show All Formatting (ParagraphMarks)</div>
-        </div>
-      </details>
+							<div class="menu-sep">Styles</div>
+							<button class="btn w100" data-id="UpdateStyles">
+								Update Styles
+							</button>
+							<button class="btn w100" data-id="SelectSimilar">
+								Select Similar Formatting
+							</button>
+							<div class="note">Show All Formatting (ParagraphMarks)</div>
+						</div>
+					</details>
 
-      <details class="menu w100" data-id="FormatMenu2">
-        <summary><i class="icon fa-solid fa-note-sticky"></i><strong>Card</strong></summary>
-        <div class="menu-panel">
-          <div class="menu-sep">Condense</div>
-          <button class="btn w100" data-id="CondenseNoPilcrows">Condense No Pilcrows</button>
-          <button class="btn w100" data-id="CondenseWithPilcrows">Condense With Pilcrows</button>
-          <button class="btn w100" data-id="Uncondense">Uncondense</button>
+					<details class="menu w100" data-id="FormatMenu2">
+						<summary>
+							<i class="icon fa-solid fa-note-sticky"></i><strong>Card</strong>
+						</summary>
+						<div class="menu-panel">
+							<div class="menu-sep">Condense</div>
+							<button class="btn w100" data-id="CondenseNoPilcrows">
+								Condense No Pilcrows
+							</button>
+							<button class="btn w100" data-id="CondenseWithPilcrows">
+								Condense With Pilcrows
+							</button>
+							<button class="btn w100" data-id="Uncondense">Uncondense</button>
 
-          <div class="menu-sep">Highlighting</div>
-          <button class="btn w100" data-id="UniHighlight">Standardize Highlighting</button>
-          <button class="btn w100" data-id="UniHighlightWithException">Standardize Highlighting With Exception</button>
+							<div class="menu-sep">Highlighting</div>
+							<button class="btn w100" data-id="UniHighlight">
+								Standardize Highlighting
+							</button>
+							<button class="btn w100" data-id="UniHighlightWithException">
+								Standardize Highlighting With Exception
+							</button>
 
-          <div class="menu-sep">Card Formatting</div>
-          <button class="btn w100" data-id="AutoEmphasizeFirst">Auto-Emphasize First</button>
-          <button class="btn w100" data-id="AutoUnderline">Auto Underline Card</button>
+							<div class="menu-sep">Card Formatting</div>
+							<button class="btn w100" data-id="AutoEmphasizeFirst">
+								Auto-Emphasize First
+							</button>
+							<button class="btn w100" data-id="AutoUnderline">
+								Auto Underline Card
+							</button>
 
-          <div class="menu-sep">Cite Formatting</div>
-          <button class="btn w100" data-id="DuplicateCite">Duplicate Cite</button>
-          <button class="btn w100" data-id="AutoFormatCite">Auto Format Cite</button>
-          <button class="btn w100" data-id="ReformatAllCites">Reformat All Cites</button>
-          <button class="btn w100" data-id="GetFromCiteCreator">Get From Cite Creator</button>
-        </div>
-      </details>
+							<div class="menu-sep">Cite Formatting</div>
+							<button class="btn w100" data-id="DuplicateCite">
+								Duplicate Cite
+							</button>
+							<button class="btn w100" data-id="AutoFormatCite">
+								Auto Format Cite
+							</button>
+							<button class="btn w100" data-id="ReformatAllCites">
+								Reformat All Cites
+							</button>
+							<button class="btn w100" data-id="GetFromCiteCreator">
+								Get From Cite Creator
+							</button>
+						</div>
+					</details>
 
-      <div class="note w100">Styles Pane (dialog launcher)</div>
-    </div>
-  </section>
+					<div class="note w100">Styles Pane (dialog launcher)</div>
+				</div>
+			</section>
 
-  <!-- PAPERLESS -->
-  <section class="group" data-group="Paperless">
-    <h3 class="group-title"><i class="icon fa-solid fa-file-import"></i> Paperless</h3>
-    <div class="row">
-      <button class="btn w100" data-id="NewSpeech"><i class="icon fa-solid fa-file-circle-plus"></i>Speech</button>
-      <div class="note w100">New Speech (dynamic menu)</div>
+			<!-- PAPERLESS -->
+			<section class="group" data-group="Paperless">
+				<h3 class="group-title">
+					<i class="icon fa-solid fa-file-import"></i> Paperless
+				</h3>
+				<div class="row">
+					<button class="btn w100" data-id="NewSpeech">
+						<i class="icon fa-solid fa-file-circle-plus"></i>Speech
+					</button>
+					<div class="note w100">New Speech (dynamic menu)</div>
 
-      <button class="btn w100" data-id="ChooseSpeechDoc"><i class="icon fa-solid fa-check-to-slot"></i>Choose</button>
+					<button class="btn w100" data-id="ChooseSpeechDoc">
+						<i class="icon fa-solid fa-check-to-slot"></i>Choose
+					</button>
 
-      <details class="split w100" data-id="NewDocumentSplit">
-        <summary><i class="icon fa-solid fa-file-circle-plus"></i><strong>New</strong></summary>
-        <div class="menu-panel">
-          <button class="btn w100" data-id="NewDocument1"><i class="icon fa-solid fa-file-circle-plus"></i>New Document</button>
-          <button class="btn w100" data-id="CreateFlow"><i class="icon fa-solid fa-table"></i>New Flow</button>
-        </div>
-      </details>
+					<details class="split w100" data-id="NewDocumentSplit">
+						<summary>
+							<i class="icon fa-solid fa-file-circle-plus"></i
+							><strong>New</strong>
+						</summary>
+						<div class="menu-panel">
+							<button class="btn w100" data-id="NewDocument1">
+								<i class="icon fa-solid fa-file-circle-plus"></i>New Document
+							</button>
+							<button class="btn w100" data-id="CreateFlow">
+								<i class="icon fa-solid fa-table"></i>New Flow
+							</button>
+						</div>
+					</details>
 
-      <div class="sep w100"></div>
+					<div class="sep w100"></div>
 
-      <button class="btn w100" data-id="CombineDocs"><i class="icon fa-solid fa-object-group"></i>Merge</button>
-      <button class="btn w100" data-id="CopyToUSB"><i class="icon fa-solid fa-usb-drive"></i>USB</button>
-      <button class="btn w100" data-id="TabroomShare"><i class="icon fa-solid fa-share-nodes"></i>Share</button>
+					<button class="btn w100" data-id="CombineDocs">
+						<i class="icon fa-solid fa-object-group"></i>Merge
+					</button>
+					<button class="btn w100" data-id="CopyToUSB">
+						<i class="icon fa-solid fa-usb-drive"></i>USB
+					</button>
+					<button class="btn w100" data-id="TabroomShare">
+						<i class="icon fa-solid fa-share-nodes"></i>Share
+					</button>
 
-      <div class="note w100">Verbatim Settings (dialog launcher)</div>
-    </div>
-  </section>
+					<div class="note w100">Verbatim Settings (dialog launcher)</div>
+				</div>
+			</section>
 
-  <!-- TOOLS -->
-  <section class="group" data-group="Tools">
-    <h3 class="group-title"><i class="icon fa-solid fa-screwdriver-wrench"></i> Tools</h3>
-    <div class="row">
-      <button class="btn w100" data-id="StartTimer"><i class="icon fa-regular fa-hourglass"></i>Timer</button>
-      <button class="btn w100" data-id="PasteOCR"><i class="icon fa-solid fa-camera"></i>OCR</button>
-      <button class="btn w100" data-id="DocumentStats"><i class="icon fa-solid fa-calculator"></i>Stats</button>
+			<!-- TOOLS -->
+			<section class="group" data-group="Tools">
+				<h3 class="group-title">
+					<i class="icon fa-solid fa-screwdriver-wrench"></i> Tools
+				</h3>
+				<div class="row">
+					<button class="btn w100" data-id="StartTimer">
+						<i class="icon fa-regular fa-hourglass"></i>Timer
+					</button>
+					<button class="btn w100" data-id="PasteOCR">
+						<i class="icon fa-solid fa-camera"></i>OCR
+					</button>
+					<button class="btn w100" data-id="DocumentStats">
+						<i class="icon fa-solid fa-calculator"></i>Stats
+					</button>
 
-      <div class="sep w100"></div>
+					<div class="sep w100"></div>
 
-      <div class="btn toggle w100" data-id="RecordAudio"><input type="checkbox"/><label><i class="icon fa-solid fa-microphone"></i>Record</label></div>
+					<div class="btn toggle w100" data-id="RecordAudio">
+						<input type="checkbox" /><label
+							><i class="icon fa-solid fa-microphone"></i>Record</label
+						>
+					</div>
 
-      <div class="row w100" style="gap:6px; align-items:center;">
-        <div class="btn toggle" data-id="AutoOpenFolder"><input type="checkbox"/><label><i class="icon fa-regular fa-folder-open"></i>Auto Open Folder</label></div>
-        <span class="btn seamless">|</span>
-        <button class="btn" data-id="NavPaneCycle"><i class="icon fa-solid fa-rotate"></i>NavPaneCycle</button>
-        <span class="btn seamless">|</span>
+					<div class="row w100" style="gap: 6px; align-items: center">
+						<div class="btn toggle" data-id="AutoOpenFolder">
+							<input type="checkbox" /><label
+								><i class="icon fa-regular fa-folder-open"></i>Auto Open
+								Folder</label
+							>
+						</div>
+						<span class="btn seamless">|</span>
+						<button class="btn" data-id="NavPaneCycle">
+							<i class="icon fa-solid fa-rotate"></i>NavPaneCycle
+						</button>
+						<span class="btn seamless">|</span>
 
-        <!-- Warrant split -->
-        <details class="split w100" data-id="WarrantSplit">
-          <summary><i class="icon fa-regular fa-comment-dots"></i><strong>Warrants</strong></summary>
-          <div class="menu-panel">
-            <button class="btn w100" data-id="NewWarrant1"><i class="icon fa-regular fa-comment-dots"></i>New Warrant</button>
-            <button class="btn w100" data-id="ShowComments">Show/Hide Warrants</button>
-            <button class="btn w100" data-id="ReviewDeleteComment">Delete Warrant</button>
-            <button class="btn w100" data-id="DeleteAllWarrants"><i class="icon fa-solid fa-comments"></i>Delete All Warrants</button>
-          </div>
-        </details>
-      </div>
+						<!-- Warrant split -->
+						<details class="split w100" data-id="WarrantSplit">
+							<summary>
+								<i class="icon fa-regular fa-comment-dots"></i
+								><strong>Warrants</strong>
+							</summary>
+							<div class="menu-panel">
+								<button class="btn w100" data-id="NewWarrant1">
+									<i class="icon fa-regular fa-comment-dots"></i>New Warrant
+								</button>
+								<button class="btn w100" data-id="ShowComments">
+									Show/Hide Warrants
+								</button>
+								<button class="btn w100" data-id="ReviewDeleteComment">
+									Delete Warrant
+								</button>
+								<button class="btn w100" data-id="DeleteAllWarrants">
+									<i class="icon fa-solid fa-comments"></i>Delete All Warrants
+								</button>
+							</div>
+						</details>
+					</div>
 
-      <!-- Search -->
-      <div class="input w100" data-id="Search">
-        <i class="icon fa-solid fa-magnifying-glass"></i>
-        <input type="text" placeholder="Search files…" />
-      </div>
-      <div class="note w100">Search Results (dynamic menu)</div>
-    </div>
-  </section>
+					<!-- Search -->
+					<div class="input w100" data-id="Search">
+						<i class="icon fa-solid fa-magnifying-glass"></i>
+						<input type="text" placeholder="Search files…" />
+					</div>
+					<div class="note w100">Search Results (dynamic menu)</div>
+				</div>
+			</section>
 
-  <!-- VIEW -->
-  <section class="group" data-group="View">
-    <h3 class="group-title"><i class="icon fa-solid fa-display"></i> View</h3>
-    <div class="row">
-      <div class="btn w100" data-id="NavigationPaneShowHide">Nav</div>
-      <button class="btn w100" data-id="ReadingView"><i class="icon fa-solid fa-book-open-reader"></i>Read</button>
-      <button class="btn w100" data-id="DefaultView"><i class="icon fa-solid fa-window-maximize"></i>Default</button>
+			<!-- VIEW -->
+			<section class="group" data-group="View">
+				<h3 class="group-title">
+					<i class="icon fa-solid fa-display"></i> View
+				</h3>
+				<div class="row">
+					<div class="btn w100" data-id="NavigationPaneShowHide">Nav</div>
+					<button class="btn w100" data-id="ReadingView">
+						<i class="icon fa-solid fa-book-open-reader"></i>Read
+					</button>
+					<button class="btn w100" data-id="DefaultView">
+						<i class="icon fa-solid fa-window-maximize"></i>Default
+					</button>
 
-      <div class="sep w100"></div>
+					<div class="sep w100"></div>
 
-      <div class="btn toggle w100" data-id="InvisibilityMode"><input type="checkbox"/><label><i class="icon fa-regular fa-eye-slash"></i>Invisibility Mode</label></div>
-      <button class="btn w100" data-id="WindowArranger"><i class="icon fa-solid fa-columns"></i>Window Arranger</button>
-      <div class="note w100">Switch Windows (control)</div>
-    </div>
-  </section>
+					<div class="btn toggle w100" data-id="InvisibilityMode">
+						<input type="checkbox" /><label
+							><i class="icon fa-regular fa-eye-slash"></i>Invisibility
+							Mode</label
+						>
+					</div>
+					<button class="btn w100" data-id="WindowArranger">
+						<i class="icon fa-solid fa-columns"></i>Window Arranger
+					</button>
+					<div class="note w100">Switch Windows (control)</div>
+				</div>
+			</section>
 
-  <!-- CASELIST -->
-  <section class="group" data-group="Caselist">
-    <h3 class="group-title"><i class="icon fa-solid fa-list-ol"></i> Caselist</h3>
-    <div class="row">
-      <button class="btn w100" data-id="CaselistWizard">Caselist</button>
-      <button class="btn w100" data-id="ConvertToWiki">Wikify</button>
+			<!-- CASELIST -->
+			<section class="group" data-group="Caselist">
+				<h3 class="group-title">
+					<i class="icon fa-solid fa-list-ol"></i> Caselist
+				</h3>
+				<div class="row">
+					<button class="btn w100" data-id="CaselistWizard">Caselist</button>
+					<button class="btn w100" data-id="ConvertToWiki">Wikify</button>
 
-      <details class="menu w100" data-id="CaselistMenu1">
-        <summary><i class="icon fa-solid fa-quote-right"></i><strong>Citeify</strong></summary>
-        <div class="menu-panel">
-          <button class="btn w100" data-id="CiteRequestDoc">Cite Request Doc</button>
-          <button class="btn w100" data-id="CiteRequest">Cite Request Card</button>
-        </div>
-      </details>
-    </div>
-  </section>
+					<details class="menu w100" data-id="CaselistMenu1">
+						<summary>
+							<i class="icon fa-solid fa-quote-right"></i
+							><strong>Citeify</strong>
+						</summary>
+						<div class="menu-panel">
+							<button class="btn w100" data-id="CiteRequestDoc">
+								Cite Request Doc
+							</button>
+							<button class="btn w100" data-id="CiteRequest">
+								Cite Request Card
+							</button>
+						</div>
+					</details>
+				</div>
+			</section>
 
-  <!-- SETTINGS -->
-  <section class="group" data-group="Settings">
-    <h3 class="group-title"><i class="icon fa-solid fa-gear"></i> Settings</h3>
-    <div class="row">
-      <button class="btn w100" data-id="LaunchWebsite"><i class="icon fa-solid fa-globe"></i>paperlessdebate</button>
-      <button class="btn w100" data-id="VerbatimHelp"><i class="icon fa-regular fa-circle-question"></i>Verbatim Help</button>
-      <div class="row w100">
-        <button class="btn" data-id="CheatSheet"><i class="icon fa-regular fa-file-lines"></i>Cheat Sheet</button>
-        <span class="btn seamless">|</span>
-        <button class="btn" data-id="VerbatimSettings2"><i class="icon fa-solid fa-sliders"></i>Settings</button>
-      </div>
-    </div>
-  </section>
-</div>
+			<!-- SETTINGS -->
+			<section class="group" data-group="Settings">
+				<h3 class="group-title">
+					<i class="icon fa-solid fa-gear"></i> Settings
+				</h3>
+				<div class="row">
+					<button class="btn w100" data-id="LaunchWebsite">
+						<i class="icon fa-solid fa-globe"></i>paperlessdebate
+					</button>
+					<button class="btn w100" data-id="VerbatimHelp">
+						<i class="icon fa-regular fa-circle-question"></i>Verbatim Help
+					</button>
+					<div class="row w100">
+						<button class="btn" data-id="CheatSheet">
+							<i class="icon fa-regular fa-file-lines"></i>Cheat Sheet
+						</button>
+						<span class="btn seamless">|</span>
+						<button class="btn" data-id="VerbatimSettings2">
+							<i class="icon fa-solid fa-sliders"></i>Settings
+						</button>
+					</div>
+				</div>
+			</section>
+		</div>
 
-<script>
-  // Example wiring: log clicks with their original XML ids
-  document.addEventListener('click', (e)=>{
-    const btn = e.target.closest('.btn, summary');
-    if(!btn) return;
-    const parentSplit = btn.closest('[data-id]');
-    const id = btn.dataset.id || (parentSplit? parentSplit.dataset.id : null);
-    if(id){ console.log('Clicked:', id); }
-  });
-</script>
-</body>
+		<script>
+			// Example wiring: log clicks with their original XML ids
+			document.addEventListener('click', (e) => {
+				const btn = e.target.closest('.btn, summary');
+				if (!btn) return;
+				const parentSplit = btn.closest('[data-id]');
+				const id =
+					btn.dataset.id || (parentSplit ? parentSplit.dataset.id : null);
+				if (id) {
+					console.log('Clicked:', id);
+				}
+			});
+		</script>
+	</body>
 </html>
