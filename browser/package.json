@@ -1,0 +1,36 @@
+{
+	"name": "verbatim-browser",
+	"version": "1.0.0",
+	"description": "Verbatim",
+	"main": "src/verbatim.js",
+	"type": "module",
+	"scripts": {
+		"build": "./build.sh",
+		"lint": "eslint . --max-warnings 0",
+		"web-ext-lint": "cp firefox/manifest.json src/manifest.json && web-ext lint --source-dir src/ && rm src/manifest.json",
+		"format": "prettier . --write --config ../.prettierrc --ignore-path ../.prettierignore",
+		"format:check": "prettier . --check --config ../.prettierrc --ignore-path ../.prettierignore",
+		"dev": "npm run dev-chrome",
+		"dev-chrome": "cp chrome/manifest.json src/manifest.json && web-ext run --source-dir src/ --target chromium && rm src/manifest.json",
+		"dev-firefox": "mkdir -p ~/ff-tmp && cp firefox/manifest.json src/manifest.json && TMPDIR=~/ff-tmp web-ext run --source-dir src/ && rm src/manifest.json && rm -fr ~/ff-tmp",
+		"test": "cp chrome/manifest.json src/manifest.json && vitest watch && rm src/manifest.json",
+		"test-silent": "cp chrome/manifest.json src/manifest.json && vitest --silent && rm src/manifest.json",
+		"test-ci": "cp chrome/manifest.json src/manifest.json && vitest --run && rm src/manifest.json"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ashtarcommunications/verbatim.git"
+	},
+	"author": "Aaron Hardy <support@paperlessdebate.com>",
+	"license": "GPL-3.0-or-later",
+	"bugs": {
+		"url": "https://github.com/ashtarcommunications/verbatim/issues"
+	},
+	"homepage": "https://github.com/ashtarcommunications/verbatim#readme",
+	"devDependencies": {
+		"jsdom": "^26.1.0",
+		"puppeteer": "^24.17.0",
+		"vitest": "^3.2.4",
+		"web-ext": "^8.9.0"
+	}
+}

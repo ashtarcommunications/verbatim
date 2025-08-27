@@ -1,5 +1,17 @@
-import { configs } from '@speechanddebate/eslint-config-nsda';
+import nsda from '@speechanddebate/eslint-config-nsda';
 
 export default [
-	...configs.recommended,
+	...nsda,
+	{
+		languageOptions: {
+			globals: {
+				browser: 'readonly',
+				hotkeys: 'readonly',
+				splitter: 'readonly',
+			},
+		},
+	},
+	{
+		rules: {},
+	},
 ];

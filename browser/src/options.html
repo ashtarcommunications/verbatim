@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="verbatim.css" />
+		<link rel="stylesheet" type="text/css" href="options.css" />
+		<script src="vendor/browser-polyfill.min.js"></script>
+		<script src="options.js"></script>
+	</head>
+
+	<body>
+		<div id="options-logo">
+			<img src="icons/48.png" alt="Logo" />
+			<h1>Verbatim Settings</h1>
+			<br />
+		</div>
+
+		<div class="switch">
+			<input
+				type="checkbox"
+				name="enabled"
+				class="switch-checkbox"
+				id="enabled"
+				checked
+			/>
+			<label class="switch-label" for="enabled">
+				<span class="switch-inner"></span>
+				<span class="switch-switch"></span>
+			</label>
+		</div>
+
+		<div id="instructions">
+			<h2>Instructions</h2>
+			<p>
+				When enabled, Verbatim enables keyboard shortcuts for the Verbatim
+				extension for Google Docs.
+			</p>
+			<code>F2</code> / <code>F2</code> - Paste Special
+			<br /><br />
+		</div>
+
+		<div id="options">
+			<h2>Options</h2>
+			<input type="checkbox" name="debug-mode" id="debug-mode" />Debug Mode<br />
+		</div>
+
+		<div>
+			<h2>Keyboard Shortcuts</h2>
+			<p>
+				Custom keyboard shortcuts must be a single string (no spaces) using
+				<a
+					href="https://wangchujiang.com/hotkeys-js/"
+					target="_blank"
+					rel="noopener noreferrer"
+					>hotkeys syntax</a
+				>, e.g.: <code>ctrl+alt+c</code> or <code>command+option+1</code> or
+				<code>f2</code>. Some shortcuts may conflict with built-in browser
+				shortcuts or other extensions, so only change these if you know what
+				you're doing. Changes require reloading the current page.
+			</p>
+
+			Custom keyboard shortcut for Send to Speech<br />
+			<input type="text" name="shortcut-tilde" id="shortcut-tilde" /><br />
+		</div>
+
+		<div id="footer">
+			<a href="https://paperlessdebate.com">Paperless Debate</a>
+			<br />
+			<span id="version">vX.X.X</span><br />
+			<span>
+				Find this extension useful?
+				<a href="https://paperlessdebate.com/donate">Donate</a>.
+			</span>
+		</div>
+	</body>
+</html>

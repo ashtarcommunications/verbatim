@@ -10,7 +10,7 @@
 	},
 	"name": "verbatim",
 	"workspaces": [
-		"chrome",
+		"browser",
 		"gdocs",
 		"owa"
 	],
@@ -21,7 +21,7 @@
 	"keywords": [],
 	"homepage": "https://paperlessdebate.cmo",
 	"author": "Aaron Hardy <support@paperlessdebate.com> (https://paperlessdebate.com)",
-	"license": "GPL-3.0-only",
+	"license": "GPL-3.0-or-later",
 	"main": "index.js",
 	"engines": {
 		"node": ">= 22.11.0"

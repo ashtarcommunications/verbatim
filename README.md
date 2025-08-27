@@ -19,6 +19,7 @@ This repo contains a number of related tools, many of which need to be built and
 <br />
 
 ```
+/browser                     -- Cross-platform browser extension for keyboard shortcuts
 /desktop                     -- Verbatim for desktop Word, and associated tools/plugins
 /docs                        -- Documentation site at docs.paperlessdebate.com, built with Docusaurus
 /gdocs                       -- Google docs port of Verbatim
