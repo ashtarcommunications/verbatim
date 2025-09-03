@@ -3,9 +3,12 @@
 	"version": "1.0.0",
 	"description": "Verbatim",
 	"main": "index.js",
+	"type": "module",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"dev": "clasp push --watch",
+		"build": "vite build --empty-out-dir",
+		"dev": "vite",
+		"dev:live": "clasp push --watch",
 		"logs": "clasp logs --watch",
 		"lint": "eslint . --max-warnings 0",
 		"format": "prettier . --write --config ../.prettierrc --ignore-path ../.prettierignore",
@@ -14,6 +17,9 @@
 	"author": "",
 	"license": "GPL-3.0-or-later",
 	"devDependencies": {
-		"@types/google-apps-script": "^1.0.31"
+		"@types/google-apps-script": "^1.0.31",
+		"vite": "^6.3.5",
+		"vite-plugin-singlefile": "^2.3.0",
+		"vite-plugin-static-copy": "^3.1.2"
 	}
 }

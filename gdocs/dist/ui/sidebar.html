@@ -1,0 +1,370 @@
+<!doctype html>
+<html>
+	<head>
+		<base target="_top" />
+		<link
+			rel="stylesheet"
+			href="https://ssl.gstatic.com/docs/script/css/add-ons1.css"
+		/>
+		<!-- The CSS package above applies Google styling to buttons and other elements. -->
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+			integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+			crossorigin="anonymous"
+		/>
+		<script type="module" crossorigin>(function polyfill() {
+  const relList = document.createElement("link").relList;
+  if (relList && relList.supports && relList.supports("modulepreload")) {
+    return;
+  }
+  for (const link of document.querySelectorAll('link[rel="modulepreload"]')) {
+    processPreload(link);
+  }
+  new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      if (mutation.type !== "childList") {
+        continue;
+      }
+      for (const node of mutation.addedNodes) {
+        if (node.tagName === "LINK" && node.rel === "modulepreload")
+          processPreload(node);
+      }
+    }
+  }).observe(document, { childList: true, subtree: true });
+  function getFetchOpts(link) {
+    const fetchOpts = {};
+    if (link.integrity) fetchOpts.integrity = link.integrity;
+    if (link.referrerPolicy) fetchOpts.referrerPolicy = link.referrerPolicy;
+    if (link.crossOrigin === "use-credentials")
+      fetchOpts.credentials = "include";
+    else if (link.crossOrigin === "anonymous") fetchOpts.credentials = "omit";
+    else fetchOpts.credentials = "same-origin";
+    return fetchOpts;
+  }
+  function processPreload(link) {
+    if (link.ep)
+      return;
+    link.ep = true;
+    const fetchOpts = getFetchOpts(link);
+    fetch(link.href, fetchOpts);
+  }
+})();
+$(function() {
+  console.log("sending from inner frame");
+  window.parent.parent.parent.postMessage("innerFrame", "*");
+  window.addEventListener(
+    "message",
+    (event) => {
+      if (event.data === "sendToSpeech") {
+        console.log("sending to speech");
+        sendToSpeech();
+      }
+    },
+    false
+  );
+  $("#new-speech").click(newSpeech);
+  $("#choose-speech").click(chooseSpeech);
+  $("#send").click(sendToSpeech);
+  $("#condense").click(condense);
+  $("#copy").click(copySelected);
+  $("#paste").click(pasteSelected);
+  $("#select").click(selectHeading);
+  $("#moveup").click(moveUp);
+  $("#movedown").click(moveDown);
+  $("#styles").click(styles);
+  $("#pocket").click(setHeading);
+  $("#hat").click(setHeading);
+  $("#block").click(setHeading);
+  $("#tag").click(setHeading);
+  $("#cite").click(setFormatting);
+  $("#underline").click(setFormatting);
+  $("#emphasis").click(setFormatting);
+  $("#highlight").click(setFormatting);
+  $("#clear").click(setFormatting);
+  $("#shrink").click(shrink);
+  $("#invisibility-on").click(invisibilityOn);
+  $("#invisibility-off").click(invisibilityOff);
+  $("#highlight-color").change(changeHighlight);
+  $("#search-button").click(search);
+  $("#get-files").click(getFiles);
+  $("#get-doc").click(getDoc);
+  $("#get-heading").click(getHeadingFromDoc);
+  $("#create-vtub").click(createVtub);
+});
+const run = (successHandler, failureHandler = (err) => $("#error-message").text(err), userObject = void 0) => {
+  return google.script.run.withSuccessHandler(successHandler).withFailureHandler(failureHandler).withUserObject(userObject);
+};
+const sendToSpeech = () => {
+  (void 0).disabled = true;
+  $("#error").remove();
+  run().sendToSpeech();
+  (void 0).disabled = false;
+};
+Mousetrap.bind("`", function(e) {
+  alert("You pressed tilde");
+  return false;
+});
+const newSpeech = () => {
+  console.log("running new speech");
+  run(sucessHandler).newSpeech();
+};
+const chooseSpeech = () => run().showPicker();
+const setHeading = (e) => run().setHeading(e.currentTarget.id);
+const setFormatting = (e) => run().setFormatting(e.currentTarget.id);
+const styles = () => run().restoreStyles();
+const shrink = () => run().shrink();
+const invisibilityOn = () => run().invisibilityOn();
+const invisibilityOff = () => run().invisibilityOff();
+const condense = () => run().condense();
+const selectHeading = () => run().selectHeading();
+const moveUp = () => run().moveUp();
+const moveDown = () => run().moveDown();
+const copySelected = () => run().copySelected();
+const pasteSelected = () => run().pasteSelected();
+const changeHighlight = (e) => run().changeHighlight(e.currentTarget.value);
+const search = () => run().searchDrive($("#search-query").val());
+const getFiles = () => {
+  const successHandler = (files) => files.forEach((f) => console.log(f));
+  run(successHandler).getDriveDocs();
+};
+const getDoc = () => {
+  const successHandler = (headings) => headings.forEach((h) => console.log(h));
+  run(successHandler).getDocContent(
+    "1Dj1loasY1jM38Hl3dOujHZs9Y0gKM93iUoTFPVtbxBc"
+  );
+};
+const getHeadingFromDoc = () => {
+  run().getHeadingFromDoc("1Dj1loasY1jM38Hl3dOujHZs9Y0gKM93iUoTFPVtbxBc", 1);
+};
+const createVtub = () => run().createVtub();</script>
+		<style rel="stylesheet" crossorigin>.sidebar {
+	width: 300px;
+	padding: 1rem;
+	font-size: 12px;
+}
+
+#format-buttons {
+	text-align: center;
+}
+
+#format-buttons button {
+	font-size: 10px;
+	margin: 0;
+	padding: 0;
+	min-width: 0;
+	background: none;
+	border: none;
+}
+.tab-container {
+	display: flex;
+	margin: -12px;
+}
+.tab-container div {
+	cursor: pointer;
+	width: 25%;
+	border: 1px solid #eee;
+	padding: 5px;
+	text-align: center;
+}
+.tab-container div.active {
+	background-color: #ccc;
+	color: white;
+}
+button span.fas {
+	margin-right: 5px;
+}
+span.icon,
+svg.icon,
+.icon span,
+icon svg {
+	color: #416098;
+	font-size: 18px;
+}
+
+.halves,
+.thirds {
+	display: block;
+}
+.halves div {
+	display: inline-block;
+	cursor: pointer;
+	width: 49%;
+	border: none;
+	padding: 0px;
+	text-align: center;
+}
+.thirds div {
+	display: inline-block;
+	cursor: pointer;
+	width: 32%;
+	border: none;
+	padding: 0px;
+	text-align: center;
+}
+.quarters div {
+	display: inline-block;
+	cursor: pointer;
+	width: 23%;
+	border: none;
+	padding: 0px;
+	text-align: center;
+}
+button {
+	height: 100%;
+	width: 100%;
+	padding: 10px;
+	line-height: 18px;
+	font-size: 9px;
+}</style>
+	</head>
+
+	<body>
+		<div class="sidebar">
+			<div class="tab-container">
+				<div class="active">Paperless</div>
+				<div>vTub</div>
+				<div>Caselist</div>
+				<div>Settings</div>
+			</div>
+			<fieldset>
+				<legend>Paperless</legend>
+				<div id="current-speech"><p>Current Speech:</p></div>
+				<div class="thirds">
+					<br />
+					<div>
+						<button id="send">
+							<span class="icon fas fa-arrow-right"></span>
+							<br />
+							<span>Send to Speech</span>
+						</button>
+					</div>
+					<div>
+						<button id="choose-speech">
+							<span class="icon fas fa-object-group"></span>
+							<br />
+							<span>Choose Speech</span>
+						</button>
+					</div>
+					<div>
+						<button id="new-speech">
+							<span class="icon fas fa-file-alt"></span>
+							<br />
+							<span>New Speech</span>
+						</button>
+					</div>
+					<br />
+					<div>
+						<button id="select">
+							<span class="icon fas fa-heading"></span>
+							<br />
+							<span>Select Heading</span>
+						</button>
+					</div>
+					<div>
+						<button id="moveup">
+							<span class="icon fas fa-arrow-up"></span>
+							<br />
+							<span>Move Up</span>
+						</button>
+					</div>
+					<div>
+						<button id="movedown">
+							<span class="icon fas fa-arrow-down"></span>
+							<br />
+							<span>Move Down</span>
+						</button>
+					</div>
+					<br />
+					<div>
+						<button id="copy">
+							<span class="icon fas fa-copy"></span>
+							<br />
+							<span>Copy</span>
+						</button>
+					</div>
+				</div>
+			</fieldset>
+			<div class="quarters">
+				<fieldset>
+					<legend>Format</legend>
+					<div>
+						<button id="paste">F2<br />Paste</button>
+					</div>
+					<div>
+						<button id="condense">F3<br />Condense</button>
+					</div>
+					<div>
+						<button id="pocket">F4<br />Pocket</button>
+					</div>
+					<div>
+						<button id="hat">F5<br />Hat</button>
+					</div>
+					<br />
+					<div>
+						<button id="block">F6<br />Block</button>
+					</div>
+					<div>
+						<button id="tag">F7<br />Tag</button>
+					</div>
+					<div>
+						<button id="cite">F8<br />Cite</button>
+					</div>
+					<div>
+						<button id="underline">F9<br />Underline</button>
+					</div>
+					<br />
+					<div>
+						<button id="emphasis">F10<br />Emphasis</button>
+					</div>
+					<div>
+						<button id="highlight">F11<br />Highlight</button>
+					</div>
+					<div>
+						<button id="clear">F12<br />Clear</button>
+					</div>
+					<div>
+						<button id="shrink">
+							<span class="icon fas fa-compress-arrows-alt"></span>
+							<br />
+							<span>Shrink</span>
+						</button>
+					</div>
+				</fieldset>
+			</div>
+			<div class="halves">
+				<div><button id="styles">Set Styles</button></div>
+				<div><button id="invisibility-on">Invisibility On</button></div>
+				<br />
+				<div><button id="invisibility-off">Invisibility Off</button></div>
+				<div><button id="get-files">Get Files</button></div>
+				<br />
+				<div><button id="get-doc">Get Doc</button></div>
+				<div><button id="get-heading">Get Heading</button></div>
+				<br />
+				<div><button id="create-vtub">Create Vtub</button></div>
+				<div><button id="export">Export Docx</button></div>
+			</div>
+			<select id="highlight-color">
+				<option value="#ffff00">Yellow</option>
+				<option value="#cccccc">Gray</option>
+			</select>
+			<input id="search-query" type="text" />
+			<button id="search-button">Search</button>
+			<div id="error-message"></div>
+			<div id="picker-result"></div>
+		</div>
+		
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script
+			type="text/javascript"
+			src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.5/mousetrap.min.js"
+		></script>
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"
+			integrity="sha512-RXf+QSDCUQs5uwRKaDoXt55jygZZm2V++WUZduaU/Ui/9EGp3f/2KZVahFZBKGH0s774sd3HmrhUy+SgOFQLVQ=="
+			crossorigin="anonymous"
+		></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+	</body>
+</html>

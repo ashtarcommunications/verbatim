@@ -10,7 +10,7 @@ function onInstall(e) {
 }
 
 function showSidebar() {
-	var ui = HtmlService.createTemplateFromFile('sidebar')
+	var ui = HtmlService.createTemplateFromFile('ui/sidebar')
 		.evaluate()
 		.setTitle('Verbatim');
 	DocumentApp.getUi().showSidebar(ui);
