@@ -4,36 +4,56 @@
 	font-size: 12px;
 }
 
-#format-buttons {
-	text-align: center;
-}
-
-#format-buttons button {
-	font-size: 10px;
-	margin: 0;
-	padding: 0;
-	min-width: 0;
-	background: none;
-	border: none;
-}
-.tab-container {
+.tabs {
 	display: flex;
 	margin: -12px;
 }
-.tab-container div {
+
+.tabs ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	width: 100%;
+	display: flex;
+}
+
+.tabs li {
 	cursor: pointer;
 	width: 25%;
 	border: 1px solid #eee;
 	padding: 5px;
 	text-align: center;
 }
-.tab-container div.active {
+.tabs li.active {
 	background-color: #ccc;
 	color: white;
 }
+
+h2 {
+	text-transform: uppercase;
+	font-size: 10px;
+	font-weight: bold;
+	letter-spacing: 0.5px;
+	color: #4a5568;
+}
+
+button {
+	cursor: pointer;
+	height: 100%;
+	width: 100%;
+	min-width: 0;
+	padding: 10px;
+	line-height: 12px;
+	font-size: 9px;
+	border-radius: 6px;
+	margin: 0 !important;
+	box-sizing: border-box;
+}
+
 button span.fas {
 	margin-right: 5px;
 }
+
 span.icon,
 svg.icon,
 .icon span,
@@ -42,38 +62,28 @@ icon svg {
 	font-size: 18px;
 }
 
-.halves,
+.section {
+	padding: 1rem 0;
+	border-bottom: 1px solid #eee;
+}
+
+.halves {
+	margin-top: 1rem;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 0.2rem;
+}
+
 .thirds {
-	display: block;
+	margin-top: 1rem;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 0.2rem;
 }
-.halves div {
-	display: inline-block;
-	cursor: pointer;
-	width: 49%;
-	border: none;
-	padding: 0px;
-	text-align: center;
-}
-.thirds div {
-	display: inline-block;
-	cursor: pointer;
-	width: 32%;
-	border: none;
-	padding: 0px;
-	text-align: center;
-}
-.quarters div {
-	display: inline-block;
-	cursor: pointer;
-	width: 23%;
-	border: none;
-	padding: 0px;
-	text-align: center;
-}
-button {
-	height: 100%;
-	width: 100%;
-	padding: 10px;
-	line-height: 18px;
-	font-size: 9px;
+
+.quarters {
+	margin-top: 1rem;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 0.2rem;
 }

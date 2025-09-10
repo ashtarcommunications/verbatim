@@ -18,138 +18,98 @@
 
 	<body>
 		<div class="sidebar">
-			<div class="tab-container">
-				<div class="active">Paperless</div>
-				<div>vTub</div>
-				<div>Caselist</div>
-				<div>Settings</div>
+			<div class="tabs">
+				<ul>
+					<li class="active">Paperless</li>
+					<li>vTub</li>
+					<li>Caselist</li>
+					<li>Settings</li>
+				</ul>
 			</div>
-			<fieldset>
-				<legend>Paperless</legend>
+
+			<div class="section">
+				<h2>Paperless</h2>
 				<div id="current-speech"><p>Current Speech:</p></div>
 				<div class="thirds">
-					<br />
-					<div>
-						<button id="send">
-							<span class="icon fas fa-arrow-right"></span>
-							<br />
-							<span>Send to Speech</span>
-						</button>
-					</div>
-					<div>
-						<button id="choose-speech">
-							<span class="icon fas fa-object-group"></span>
-							<br />
-							<span>Choose Speech</span>
-						</button>
-					</div>
-					<div>
-						<button id="new-speech">
-							<span class="icon fas fa-file-alt"></span>
-							<br />
-							<span>New Speech</span>
-						</button>
-					</div>
-					<br />
-					<div>
-						<button id="select">
-							<span class="icon fas fa-heading"></span>
-							<br />
-							<span>Select Heading</span>
-						</button>
-					</div>
-					<div>
-						<button id="moveup">
-							<span class="icon fas fa-arrow-up"></span>
-							<br />
-							<span>Move Up</span>
-						</button>
-					</div>
-					<div>
-						<button id="movedown">
-							<span class="icon fas fa-arrow-down"></span>
-							<br />
-							<span>Move Down</span>
-						</button>
-					</div>
-					<br />
-					<div>
-						<button id="copy">
-							<span class="icon fas fa-copy"></span>
-							<br />
-							<span>Copy</span>
-						</button>
-					</div>
+					<button id="send">
+						<span class="icon fas fa-arrow-right"></span>
+						<br />
+						<span>Send to Speech</span>
+					</button>
+					<button id="choose-speech">
+						<span class="icon fas fa-object-group"></span>
+						<br />
+						<span>Choose Speech</span>
+					</button>
+					<button id="new-speech">
+						<span class="icon fas fa-file-alt"></span>
+						<br />
+						<span>New Speech</span>
+					</button>
+					<button id="select">
+						<span class="icon fas fa-heading"></span>
+						<br />
+						<span>Select Heading</span>
+					</button>
+					<button id="moveup">
+						<span class="icon fas fa-arrow-up"></span>
+						<br />
+						<span>Move Up</span>
+					</button>
+					<button id="movedown">
+						<span class="icon fas fa-arrow-down"></span>
+						<br />
+						<span>Move Down</span>
+					</button>
+					<button id="copy">
+						<span class="icon fas fa-copy"></span>
+						<br />
+						<span>Copy</span>
+					</button>
 				</div>
-			</fieldset>
-			<div class="quarters">
-				<fieldset>
-					<legend>Format</legend>
-					<div>
-						<button id="paste">F2<br />Paste</button>
-					</div>
-					<div>
-						<button id="condense">F3<br />Condense</button>
-					</div>
-					<div>
-						<button id="pocket">F4<br />Pocket</button>
-					</div>
-					<div>
-						<button id="hat">F5<br />Hat</button>
-					</div>
-					<br />
-					<div>
-						<button id="block">F6<br />Block</button>
-					</div>
-					<div>
-						<button id="tag">F7<br />Tag</button>
-					</div>
-					<div>
-						<button id="cite">F8<br />Cite</button>
-					</div>
-					<div>
-						<button id="underline">F9<br />Underline</button>
-					</div>
-					<br />
-					<div>
-						<button id="emphasis">F10<br />Emphasis</button>
-					</div>
-					<div>
-						<button id="highlight">F11<br />Highlight</button>
-					</div>
-					<div>
-						<button id="clear">F12<br />Clear</button>
-					</div>
-					<div>
-						<button id="shrink">
-							<span class="icon fas fa-compress-arrows-alt"></span>
-							<br />
-							<span>Shrink</span>
-						</button>
-					</div>
-				</fieldset>
 			</div>
-			<div class="halves">
-				<div><button id="styles">Set Styles</button></div>
-				<div><button id="invisibility-on">Invisibility On</button></div>
-				<br />
-				<div><button id="invisibility-off">Invisibility Off</button></div>
-				<div><button id="get-files">Get Files</button></div>
-				<br />
-				<div><button id="get-doc">Get Doc</button></div>
-				<div><button id="get-heading">Get Heading</button></div>
-				<br />
-				<div><button id="create-vtub">Create Vtub</button></div>
-				<div><button id="export">Export Docx</button></div>
+
+			<div class="section">
+				<h2>Format</h2>
+				<div class="quarters">
+					<button id="paste">F2<br />Paste</button>
+					<button id="condense">F3<br />Condense</button>
+					<button id="pocket">F4<br />Pocket</button>
+					<button id="hat">F5<br />Hat</button>
+					<button id="block">F6<br />Block</button>
+					<button id="tag">F7<br />Tag</button>
+					<button id="cite">F8<br />Cite</button>
+					<button id="underline">F9<br />Underline</button>
+					<button id="emphasis">F10<br />Emphasis</button>
+					<button id="highlight">F11<br />Highlight</button>
+					<button id="clear">F12<br />Clear</button>
+					<button id="shrink">
+						<span class="icon fas fa-compress-arrows-alt"></span>
+						<br />
+						<span>Shrink</span>
+					</button>
+				</div>
+				<div class="halves">
+					<div><button id="styles">Set Styles</button></div>
+					<div><button id="invisibility-on">Invisibility On</button></div>
+					<div><button id="invisibility-off">Invisibility Off</button></div>
+					<div><button id="get-files">Get Files</button></div>
+					<div><button id="get-doc">Get Doc</button></div>
+					<div><button id="get-heading">Get Heading</button></div>
+					<div><button id="create-vtub">Create Vtub</button></div>
+					<div><button id="export">Export Docx</button></div>
+				</div>
+				<div class="halves">
+					<select id="highlight-color">
+						<option value="#ffff00">Yellow</option>
+						<option value="#cccccc">Gray</option>
+					</select>
+					<input id="search-query" type="text" />
+					<button id="search-button">Search</button>
+					<div id="error-message"></div>
+					<div id="picker-result"></div>
+				</div>
 			</div>
-			<select id="highlight-color">
-				<option value="#ffff00">Yellow</option>
-				<option value="#cccccc">Gray</option>
-			</select>
-			<input id="search-query" type="text" />
-			<button id="search-button">Search</button>
-			<div id="error-message"></div>
-			<div id="picker-result"></div>
 		</div>
 		
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
