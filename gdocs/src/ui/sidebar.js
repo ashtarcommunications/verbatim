@@ -8,6 +8,9 @@ $(function () {
 				console.log('sending to speech');
 				sendToSpeech();
 			}
+			if (event.data === 'extensioninstalled') {
+				console.log('extension installed');
+			}
 		},
 		false,
 	);

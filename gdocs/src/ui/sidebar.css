@@ -1,6 +1,28 @@
+:root {
+	/* Harmonic 16 - janniks.github.io/harmonic16 */
+	--black: #0b1c2c;
+	--darkblue: #223b54;
+	--blue: #405c79;
+	--lightblue: #627e99;
+	--darkgray: #aabcce;
+	--gray: #cbd6e2;
+	--lightgray: #e5ebf1;
+	--white: #f7f9fb;
+	--offwhite: #eeeeee;
+	--orange: #bf8b56;
+	--yellow: #bfbf56;
+	--green: #8bbf56;
+	--lightgreen: #56bf8b;
+	--brightblue: #568bbf;
+	--purple: #8b56bf;
+	--magenta: #bf568b;
+	--red: #bf5656;
+
+	--default-border-radius: 6px;
+}
+
 .sidebar {
 	width: 300px;
-	padding: 1rem;
 	font-size: 12px;
 }
 
@@ -20,13 +42,13 @@
 .tabs li {
 	cursor: pointer;
 	width: 25%;
-	border: 1px solid #eee;
+	border: 1px solid var(--offwhite);
 	padding: 5px;
 	text-align: center;
 }
 .tabs li.active {
-	background-color: #ccc;
-	color: white;
+	background-color: var(--offwhite);
+	color: var(--white);
 }
 
 h2 {
@@ -34,7 +56,7 @@ h2 {
 	font-size: 10px;
 	font-weight: bold;
 	letter-spacing: 0.5px;
-	color: #4a5568;
+	color: var(--darkgray)
 }
 
 button {
@@ -45,7 +67,7 @@ button {
 	padding: 10px;
 	line-height: 12px;
 	font-size: 9px;
-	border-radius: 6px;
+	border-radius: var(--default-border-radius);
 	margin: 0 !important;
 	box-sizing: border-box;
 }
@@ -58,13 +80,13 @@ span.icon,
 svg.icon,
 .icon span,
 icon svg {
-	color: #416098;
+	color: var(--darkblue);
 	font-size: 18px;
 }
 
 .section {
 	padding: 1rem 0;
-	border-bottom: 1px solid #eee;
+	border-bottom: 1px solid var(--offwhite);
 }
 
 .halves {

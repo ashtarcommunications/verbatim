@@ -20,6 +20,10 @@ var editingIFrame = document.getElementsByClassName(
 editingIFrame.contentDocument.addEventListener('keydown', hook, false);
 // }
 
+// innerframe = document.querySelector(
+// 	'iframe[src*="apps.googleusercontent.com"]',
+// );
+
 async function hook(e) {
 	var keyCode = e.keyCode;
 	console.log('keycode: ' + keyCode);
@@ -49,6 +53,7 @@ window.addEventListener(
 		if (event.data === 'innerFrame') {
 			console.log('received inner frame');
 			innerFrame = event.source;
+			innerFrame.contentWindow.postMessage('extensioninstalled', '*');
 		}
 	},
 	false,
