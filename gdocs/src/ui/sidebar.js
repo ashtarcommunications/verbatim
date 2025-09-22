@@ -49,6 +49,8 @@ $(function () {
 	$('#get-heading').click(getHeadingFromDoc);
 	$('#create-vtub').click(createVtub);
 	// $('#export').click(exportAsDocx);
+
+	$('.tabs li').click(switchTab);
 });
 
 const run = (
@@ -129,6 +131,20 @@ const getHeadingFromDoc = () => {
 	run().getHeadingFromDoc('1Dj1loasY1jM38Hl3dOujHZs9Y0gKM93iUoTFPVtbxBc', 1);
 };
 const createVtub = () => run().createVtub();
+
+const switchTab = function() {
+	const targetTab = $(this).data('tab');
+
+	// Remove active class from all tabs and pages
+	$('.tabs li').removeClass('active');
+	$('.page').removeClass('active');
+
+	// Add active class to clicked tab
+	$(this).addClass('active');
+
+	// Show corresponding page
+	$('#' + targetTab).addClass('active');
+};
 // const exportAsDocx = () => {
 // 	const successHandler = async (base64Data) => {
 // 		// Convert base64 to array buffer
