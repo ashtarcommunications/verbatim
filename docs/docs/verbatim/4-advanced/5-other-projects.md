@@ -27,6 +27,9 @@ If you would like your project listed on this page, please email [support@paperl
 
 **[Debate Template for Google Docs (defunct)](https://github.com/TGNYC/Debate-Template)** - Google docs add-on with some similar functionality to Verbatim.
 
+## Other Verbatim Implementations
+**[Verbatim for Obsidian](https://github.com/ethanelasky/verbatim-obsidian)** - An Obsidian plugin that implements some of the features of Verbatim.
+
 ## Disclosure/Evidence
 **[openCaselist](https://opencaselist.com)** - Collaborative disclosure for the debate community, and the home of the Open Evidence project.
 
